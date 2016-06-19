@@ -110,7 +110,6 @@ const styles = {
   listRow: {
     flexDirection: 'row',
     paddingLeft: 20,
-    paddingRight: 20,
     paddingTop: 10,
     paddingBottom: 10,
     borderRightColor: '#ccc',
@@ -118,8 +117,8 @@ const styles = {
   },
 
   listRowItem: {
-    paddingRight: 10,
-    width: 65
+    paddingRight: 6,
+    width: 70
   },
 
   listRowItemCommitted: {

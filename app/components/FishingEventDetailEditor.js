@@ -17,6 +17,8 @@ import FishingEventActions from '../actions/FishingEventActions';
 import {connect} from 'react-redux';
 import FishingEventModel from '../models/FishingEvent';
 import TCERFishingEvent from '../models/TCERFishingEvent';
+import DatePicker from 'react-native-datepicker';
+import moment from 'moment';
 
 const fishingEventTypeModels = {
   "tcer": TCERFishingEvent
@@ -63,52 +65,6 @@ class FishingEventEditor extends React.Component{
           fishingEventActions.showLocationEditor());
     }
 
-    getInputField(model, fishingEvent){
-      /*let value = fishingEvent[model.id];
-      let onChange = (Value)=>{
-        this.onTextChange(model.id, Value);
-      };
-      if(['number', 'float'].indexOf(model.type) !== 1){
-        let numInput = (
-          <NumberTextInput
-            key={model.id + "Kdkdk"}
-            model={model}
-            value={value}
-            onChange={
-              onChange.bind(this)
-            }
-        />);
-        return (
-            <View key={model.id + "Key"}>
-              <InputRowWide
-                model={model}
-                input={numInput}
-                value={value} />
-            </View>
-          );
-      }
-      if(model.type == 'dateTime' && value){
-        return (
-          <DateTimeEditor
-            title={model.name}
-            value={value}
-            key={model.id + "Key"}
-            onChange={
-              onChange.bind(this)
-            }
-          />
-        );
-      }
-      if(model.type == 'switch'){
-        return(
-          <Switch
-            onValueChange={(value) => this.onNonFishChange(value, model.id)}
-            value={value}
-           />
-        );
-      }*/
-    }
-
     renderFishingEventModelInputs(type){
       let model = type ? fishingEventTypeModels[type] : FishingEventModel;
       let inputs = [];
@@ -121,23 +77,43 @@ class FishingEventEditor extends React.Component{
       return inputs;
     }
 
+    getEditor(attribute, value){
+      let displayVal = value ? value.toString() : "";
+      switch (attribute.type) {
+        case "datetime":
+            return (<DatePicker
+              style={{width: 200}}
+              date={new moment()}
+              mode="datetime"
+              format="YYYY-MM-DD HH:mm"
+              confirmBtnText="Confirm"
+              cancelBtnText="Cancel"
+              onDateChange={(datetime) => {console.log(datetime)}}
+            />);
+          break;
+        default:
+          return (<TextInput clearTextOnFocus={true}
+                   defaultValue=""
+                   style={[styles.textInput]}
+                   value={displayVal}
+                   onChangeText={text => this.onTextChange(attribute.id, text)} />);
+      }
+    }
+
     renderRow(attribute){
       if(!this.props.fishingEvent){
         return null;
       }
       let value = this.props.fishingEvent[attribute.id];
-      let displayVal = value ? value.toString() : "";
+      let input = this.getEditor(attribute, value);
+
       return (
         <View style={[styles.tableRow]} key={attribute.id + "editor"}>
           <View style={[styles.tableCell]}>
             <Text>{attribute.label}</Text>
           </View>
           <View style={[styles.tableCell]}>
-            <TextInput clearTextOnFocus={true}
-                       defaultValue=""
-                       style={[styles.textInput]}
-                       value={displayVal}
-                       onChangeText={text => this.onTextChange(attribute.id, text)} />
+            {input}
           </View>
         </View>
       );
@@ -181,7 +157,8 @@ const styles = {
   },
   tableView: {
     marginTop: 20,
-    flexDirection: 'column'
+    flexDirection: 'column',
+    width: 350
   },
   tableRow: {
     flexDirection: 'row',
