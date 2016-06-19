@@ -14,46 +14,85 @@ import {
 import {connect} from 'react-redux';
 import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import FishingEventActions from '../actions/FishingEventActions';
+import FishingEventList from './FishingEventList';
+import ProductDetailEditor from './ProductDetailEditor';
+import FishingEventEditor from './FishingEventDetailEditor';
+const detailTabs = ["details", "catches", "custom"];
+
+const fishingEventActions = new FishingEventActions();
 
 class Dashboard extends Component {
     constructor(props){
         super(props);
         this.state = {
-          selectedTab: 'catches',
+          selectedTab: "catches",
+          selectedDetail: 1,
           notifCount: 2,
           presses: 0,
+          ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
         };
     }
-    _renderContent(color: string, pageText: string, num?: number) {
+    renderContent(color: string, pageText: string, num?: number) {
       return (
         <View style={[styles.tabContent, {backgroundColor: color}]}>
           <Text style={styles.tabText}>{pageText}</Text>
-          <Text style={styles.tabText}>{num} re-renders of the {pageText}</Text>
+          <Text style={styles.tabText}>{num} reRenders of the {pageText}</Text>
         </View>
       );
     }
 
-    _renderCatches() {
+    startFishingEvent(){
+      this.props.dispatch(fishingEventActions.startFishingEvent());
+    }
+
+    getPrimaryActionColor(){
+      return "#2d74fa";
+    }
+
+    getPrimaryActionText(){
+      return "Haul";
+    }
+
+    getPrimaryActionIcon(){
+      return false  ? "arrow-circle-up" : "arrow-circle-down";
+    }
+
+    renderDetailView(){
+      switch (this.state.selectedDetail) {
+        case 0:
+          return (<FishingEventEditor />);
+        break;
+        case 1:
+          let id = this.props.viewingFishingEventId;
+          let products = id ? this.props.fishingEvents[id - 1].products : [];
+          return (<ProductDetailEditor
+                    products={products}
+                  />);
+        break;
+        case 2:
+          return (<View></View>);
+        break;
+      }
+    }
+
+    renderCatches() {
       return (
         <View style={[styles.container]}>
           <View style={[styles.toolbar]}>
             <View style={[styles.toolbarLeft]}>
-              <View style={[styles.buttonWrapper]}>
-                <Icon.Button
-                  name="arrow-circle-up"
-                  backgroundColor="#2d74fa"
-                  style={[styles.toolbarButton, styles.primaryActionButton]}>
-                  Haul
-                </Icon.Button>
-              </View>
-              <View style={[styles.buttonWrapper]}>
-                <Icon.Button
-                  name="cloud-upload"
-                  backgroundColor="#2d74fa"
-                  style={[styles.toolbarButton, styles.secondaryActionButton]}>
-                  Commit ( 3)
-                </Icon.Button>
-              </View>
+              <TouchableOpacity
+                style={[styles.buttonWrapper]}
+                >
+                <View>
+                  <Icon.Button
+                    name={this.getPrimaryActionIcon()}
+                    onPress={this.startFishingEvent.bind(this)}
+                    style={[styles.toolbarButton, styles.primaryActionButton, {backgroundColor: this.getPrimaryActionColor()}]}>
+                    {this.getPrimaryActionText()}
+                  </Icon.Button>
+                </View>
+              </TouchableOpacity>
               <View style={[styles.toolbarInfoPanel]}>
                 <Text style={[styles.textBase, styles.toolbarPanelLabel, styles.Sexagesimal]}>
                   {'66° 30′ 360″ N'}
@@ -77,436 +116,20 @@ class Dashboard extends Component {
 
           <View style={[styles.masterDetailView]}>
             <View style={[styles.masterView]}>
-              <ScrollView style={[styles.listView]}>
-                <View style={[styles.listRow, styles.selectedListRow]}>
-                  <Text style={[styles.selectedListRowItemNarrow]}>
-                    <Icon name="circle-thin" size={16} color="white" />
-                  </Text>
-                  <Text style={[styles.selectedListRowItem]}>Shot 20</Text>
-                  <Text style={[styles.selectedListRowItem]}>15:12</Text>
-                  <Text style={[styles.selectedListRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow, styles.listRowSelected]}>
-                  <Text style={[styles.listRowItemNarrow]}>
-                    <Icon name="exclamation-triangle" size={16} color="orange" />
-                  </Text>
-                  <Text style={[styles.listRowItem]}>Shot 19</Text>
-                  <Text style={[styles.listRowItem]}>12:14</Text>
-                  <Text style={[styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemNarrow]}>
-                    <Icon name="exclamation-triangle" size={16} color="orange" />
-                  </Text>
-                  <Text style={[styles.listRowItem]}>Shot 18</Text>
-                  <Text style={[styles.listRowItem]}>10:13</Text>
-                  <Text style={[styles.listRowItemNarrow]}>SNA</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemNarrow]}>
-                    <Icon name="check-circle" size={16} color="green" />
-                  </Text>
-                  <Text style={[styles.listRowItem]}>Shot 17</Text>
-                  <Text style={[styles.listRowItem]}>09:13</Text>
-                  <Text style={[styles.listRowItemNarrow]}>ELE</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemNarrow]}>
-                    <Icon name="check-circle" size={16} color="green" />
-                  </Text>
-                  <Text style={[styles.listRowItem]}>Shot 16</Text>
-                  <Text style={[styles.listRowItem]}>08:07</Text>
-                  <Text style={[styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemNarrow]}>
-                    <Icon name="check-circle" size={16} color="green" />
-                  </Text>
-                  <Text style={[styles.listRowItem]}>Shot 15</Text>
-                  <Text style={[styles.listRowItem]}>06:53</Text>
-                  <Text style={[styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 14</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>15:12</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow, styles.listRowSelected]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 13</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>12:14</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 12</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>10:13</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>SNA</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 11</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>09:13</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>ELE</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 10</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>08:07</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 9</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>06:53</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 8</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>15:12</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow, styles.listRowSelected]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 7</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>12:14</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 6</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>06:53</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 5</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>08:07</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 4</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>06:53</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 3</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>15:12</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow, styles.listRowSelected]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 2</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>12:14</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-
-                <View style={[styles.listRow]}>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-                    <Icon name="cloud" size={16} color="gray" />
-                  </Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>Shot 1</Text>
-                  <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>06:53</Text>
-                  <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>OCT</Text>
-                </View>
-              </ScrollView>
+              <FishingEventList
+                fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents].reverse())}
+                fishingEventType={this.props.fishingEventType}
+              />
             </View>
-
             <View style={[styles.detailView]}>
-              <SegmentedControlIOS values={['Details', 'Catches', 'Notes']} selectedIndex={1} />
-              <ScrollView style={[styles.tableView]}>
-                <View style={[styles.tableRow]}>
-                  <View style={[styles.tableCell]}>
-                    <Text>Species</Text>
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <Text>Weight</Text>
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <Text>S</Text>
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <Text>M</Text>
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <Text>L</Text>
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <Text>XL</Text>
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <Text>Discard</Text>
-                  </View>
-                </View>
-
-                <View style={[styles.tableRow]}>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                </View>
-
-                <View style={[styles.tableRow]}>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                </View>
-
-                <View style={[styles.tableRow]}>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                </View>
-
-                <View style={[styles.tableRow]}>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                </View>
-
-                <View style={[styles.tableRow]}>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                </View>
-
-
-                <View style={[styles.tableRow]}>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                </View>
-
-                <View style={[styles.tableRow]}>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                </View>
-
-                <View style={[styles.tableRow]}>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                </View>
-
-                <View style={[styles.tableRow]}>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                  <View style={[styles.tableCell]}>
-                    <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} />
-                  </View>
-                </View>
-
-              </ScrollView>
+              <SegmentedControlIOS
+                values={detailTabs}
+                selectedIndex={this.state.selectedDetail}
+                onChange={({nativeEvent}) => {
+                  this.setState({selectedDetail: nativeEvent.selectedSegmentIndex});
+                }} />
+                {this.renderDetailView()}
             </View>
-
           </View>
         </View>
       );
@@ -529,7 +152,7 @@ class Dashboard extends Component {
                 selectedTab: 'start'
               });
             }}>
-            {this._renderContent('#414A8C', 'start')}
+            {this.renderContent('#414A8C', 'start')}
           </Icon.TabBarItemIOS>
 
           <Icon.TabBarItemIOS
@@ -541,7 +164,7 @@ class Dashboard extends Component {
                 selectedTab: 'catches'
               });
             }}>
-            {this._renderCatches()}
+            {this.renderCatches()}
           </Icon.TabBarItemIOS>
 
           <Icon.TabBarItemIOS
@@ -555,7 +178,7 @@ class Dashboard extends Component {
                 notifCount: this.state.notifCount + 1
               });
             }}>
-            {this._renderContent('#783E33', 'Forms', this.state.notifCount)}
+            {this.renderContent('#783E33', 'Forms', this.state.notifCount)}
           </Icon.TabBarItemIOS>
 
           <Icon.TabBarItemIOS
@@ -568,7 +191,7 @@ class Dashboard extends Component {
                 presses: this.state.presses + 1
               });
             }}>
-            {this._renderContent('#414A8C', 'Profile', this.state.presses)}
+            {this.renderContent('#414A8C', 'Profile', this.state.presses)}
           </Icon.TabBarItemIOS>
         </TabBarIOS>
       );
@@ -599,6 +222,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
 
+  toolbarButton: {
+    padding: 15
+  },
+
   toolbarInfoPanel: {
     flexDirection: 'column',
     marginLeft: 15
@@ -626,25 +253,6 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
 
-  listRow: {
-    flexDirection: 'row',
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderRightColor: '#ccc',
-    borderRightWidth: 1,
-  },
-
-  listRowItem: {
-    paddingRight: 10,
-    width: 65
-  },
-
-  listRowItemCommitted: {
-    color: 'gray'
-  },
-
   listRowItemNarrow: {
     width: 35
   },
@@ -664,33 +272,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     width: 35
   },
-
-  tableView: {
-    marginTop: 20,
-  },
-
-  tableRow: {
-    flexDirection: 'row',
-    paddingBottom: 20,
-  },
-
-  tableCell: {
-    width: 105,
-  },
-
-  textInput: {
-    borderColor: 'gray',
-    borderWidth: 1,
-    height: 30,
-    width: 80,
-    paddingLeft: 10,
-  }
 });
 
 
-const select = (_state, dispatch) => {
-    let state = _state.default;
+const select = (State, dispatch) => {
+    let state = State.default;
     return {
+      fishingEvents: state.fishingEvents.events,
+      viewingFishingEventId: state.view.viewingFishingEventId,
+      fishingEventType: state.me.user.fishingEventType
     };
 }
 

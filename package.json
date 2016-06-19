@@ -8,9 +8,11 @@
   "dependencies": {
     "react": "^15.1.0",
     "react-native": "0.27.2",
+    "react-native-datepicker": "^1.2.1",
     "react-native-vector-icons": "^2.0.3",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
-    "redux-thunk": "^2.1.0"
+    "redux-thunk": "^2.1.0",
+    "sexagesimal": "^0.5.0"
   }
 }

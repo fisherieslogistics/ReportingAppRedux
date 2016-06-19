@@ -9,7 +9,7 @@ class ReportingApp extends Component {
   }
 }
 export default connect((state, dispatch) => {
-  let d_state = state.default;
+  let dState = state.default;
   return {
   }
 })(ReportingApp);
