@@ -31,6 +31,10 @@ class FishingEventList extends React.Component {
         this.props.dispatch(fishingEventActions.hidefishingEventEditor());
     }
 
+    setViewingFishingEvent(id){
+      this.props.dispatch(fishingEventActions.setViewingFishingEvent(id));
+    }
+
     showCatchEditor(fishingEvent){
       this.setState({
         showCatchEditor: true,
@@ -45,14 +49,14 @@ class FishingEventList extends React.Component {
     }
 
     onCatchClose(){
-        this.props.dispatch(catchActions.closeCatchDetail());
+      this.props.dispatch(catchActions.closeCatchDetail());
     }
     getFishingEventColor(fishingEvent){
       if(fishingEvent.committed){
         return "#404040";
       }else if(fishingEvent.catchValid){
         return "#009933";
-      }else if(fishingEvent.finished){
+      }else if(fishingEvent.datetimeAtEnd){
         return "#e68a00";
       }
       return '#6699ff';
@@ -71,24 +75,28 @@ class FishingEventList extends React.Component {
     }
 
     renderRow (fishingEvent, sectionID, rowID) {
-      if(!fishingEvent.datetimeAtStart){
-        debugger;
-      }
-      return (<View style={[styles.listRow]}>
-        <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-          <Icon name="cloud" size={16} color="gray" />
-        </Text>
-        <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>
-          {Lang.fishingEvents.tcer.numberOfInTrip + "  " + fishingEvent.id}
-        </Text>
-        <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>
-          {fishingEvent.datetimeAtStart.format("HH:mm")}
-        </Text>
-        <Text style={[styles.listRowItem, styles.listRowItemCommitted, {color: this.getFishingEventColor(fishingEvent)}]}>
-          {this.getFishingEventDesc(fishingEvent)}
-        </Text>
-        <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>{fishingEvent.targetsSpecies || Lang.fishingEvents.noTarget}</Text>
-      </View>);
+      return (
+        <TouchableHighlight
+          onPress={this.setViewingFishingEvent.bind(this, fishingEvent.id)}
+          underlayColor={"#2d74fa"}
+          activeOpacity={0.3}
+        >
+          <View style={[styles.listRow]}>
+            <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
+              <Icon name="cloud" size={16} color="gray" />
+            </Text>
+            <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>
+              {Lang.fishingEvents.tcer.numberOfInTrip + "  " + fishingEvent.id}
+            </Text>
+            <Text style={[styles.listRowItem, styles.listRowItemCommitted]}>
+              {fishingEvent.datetimeAtStart.format("HH:mm")}
+            </Text>
+            <Text style={[styles.listRowItem, styles.listRowItemCommitted, {color: this.getFishingEventColor(fishingEvent)}]}>
+              {this.getFishingEventDesc(fishingEvent)}
+            </Text>
+            <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>{fishingEvent.targetsSpecies || Lang.fishingEvents.noTarget}</Text>
+          </View>
+        </TouchableHighlight>);
     }
 
     render () {

@@ -78,17 +78,19 @@ class FishingEventEditor extends React.Component{
     }
 
     getEditor(attribute, value){
-      let displayVal = value ? value.toString() : "";
+      let displayVal = value ? value : null;
       switch (attribute.type) {
         case "datetime":
             return (<DatePicker
               style={{width: 200}}
-              date={new moment()}
+              date={value}
               mode="datetime"
               format="YYYY-MM-DD HH:mm"
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"
-              onDateChange={(datetime) => {console.log(datetime)}}
+              onDateChange={(datetime) => {
+                this.onTextChange.bind(this)(attribute.id, new moment(datetime));
+              }}
             />);
           break;
         default:
@@ -101,9 +103,6 @@ class FishingEventEditor extends React.Component{
     }
 
     renderRow(attribute){
-      if(!this.props.fishingEvent){
-        return null;
-      }
       let value = this.props.fishingEvent[attribute.id];
       let input = this.getEditor(attribute, value);
 
@@ -120,11 +119,11 @@ class FishingEventEditor extends React.Component{
     }
 
     render() {
+      if(!this.props.fishingEvent){
+        return null;
+      }
       return (
         <ScrollView>
-          <View style={styles.heading}>
-            <Text>Editng Shot 2</Text>
-          </View>
           <View style={styles.tableWrapper}>
             <View style={[styles.tableView]}>
               {this.renderFishingEventModelInputs(false)}
@@ -146,10 +145,6 @@ const select = (State, dispatch) => {
 }
 
 const styles = {
-  heading: {
-    marginTop: 20,
-    flexDirection:'row'
-  },
   tableWrapper: {
     flexWrap: 'wrap',
     alignItems: 'flex-start',

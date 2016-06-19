@@ -58,6 +58,34 @@ class Dashboard extends Component {
       return false  ? "arrow-circle-up" : "arrow-circle-down";
     }
 
+    getTripTab(){
+      return {iconName: "anchor", selectedIconName: "ship", title: "Stop", selectedTab: "start", render: this.renderContent.bind(this)};
+    }
+
+    renderTabs(){
+      const tabs = [
+        {iconName: "calendar-check-o", title: "Catches", selectedTab: 'catches', render: this.renderCatches.bind(this)},
+        {iconName: "wpforms", title: "Forms", selectedTab: 'form', render: this.renderContent.bind(this)},
+        {iconName: "user", title: "Profile", selectedTab: 'profile', render: this.renderContent.bind(this)},
+      ]
+      tabs.unshift(this.getTripTab());
+      return tabs.map((tab)=>{
+        return (<Icon.TabBarItemIOS
+                  key={tab.selectedTab}
+                  iconName={tab.iconName}
+                  selectedIconName={tab.selectedIconName || tab.iconName}
+                  title={tab.title}
+                  selected={this.state.selectedTab === tab.selectedTab}
+                  onPress={() => {
+                    this.setState({
+                      selectedTab: tab.selectedTab
+                    });
+                  }}>
+                  {tab.render()}
+                </Icon.TabBarItemIOS>);
+      });
+    }
+
     renderDetailView(){
       switch (this.state.selectedDetail) {
         case 0:
@@ -117,6 +145,7 @@ class Dashboard extends Component {
           <View style={[styles.masterDetailView]}>
             <View style={[styles.masterView]}>
               <FishingEventList
+                dispatch={this.props.dispatch}
                 fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents].reverse())}
                 fishingEventType={this.props.fishingEventType}
               />
@@ -128,6 +157,9 @@ class Dashboard extends Component {
                 onChange={({nativeEvent}) => {
                   this.setState({selectedDetail: nativeEvent.selectedSegmentIndex});
                 }} />
+                <View style={styles.headingWrapper}>
+                  <Text style={styles.heading}>{this.props.viewingFishingEventId ? "Editing Shot: " + this.props.viewingFishingEventId : ""}</Text>
+                </View>
                 {this.renderDetailView()}
             </View>
           </View>
@@ -141,58 +173,7 @@ class Dashboard extends Component {
           unselectedTintColor="#ccc"
           tintColor="white"
           barTintColor="#2d74fa">
-
-          <Icon.TabBarItemIOS
-            iconName="anchor"
-            selectedIconName="ship"
-            title="Stop"
-            selected={this.state.selectedTab === 'start'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'start'
-              });
-            }}>
-            {this.renderContent('#414A8C', 'start')}
-          </Icon.TabBarItemIOS>
-
-          <Icon.TabBarItemIOS
-            iconName="calendar-check-o"
-            title="Catches"
-            selected={this.state.selectedTab === 'catches'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'catches'
-              });
-            }}>
-            {this.renderCatches()}
-          </Icon.TabBarItemIOS>
-
-          <Icon.TabBarItemIOS
-            iconName="wpforms"
-            title="Forms"
-            badge={this.state.notifCount > 0 ? this.state.notifCount : undefined}
-            selected={this.state.selectedTab === 'forms'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'form',
-                notifCount: this.state.notifCount + 1
-              });
-            }}>
-            {this.renderContent('#783E33', 'Forms', this.state.notifCount)}
-          </Icon.TabBarItemIOS>
-
-          <Icon.TabBarItemIOS
-            iconName="user"
-            title="Profile"
-            selected={this.state.selectedTab === 'profile'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'profile',
-                presses: this.state.presses + 1
-              });
-            }}>
-            {this.renderContent('#414A8C', 'Profile', this.state.presses)}
-          </Icon.TabBarItemIOS>
+          {this.renderTabs()}
         </TabBarIOS>
       );
     }
@@ -209,6 +190,16 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingLeft: 20,
     paddingRight: 20,
+  },
+
+  headingWrapper: {
+    marginTop: 15,
+    flexDirection:'row',
+    height: 25
+  },
+  heading:{
+    fontSize: 19,
+    fontWeight: 'bold'
   },
 
   toolbarLeft: {
