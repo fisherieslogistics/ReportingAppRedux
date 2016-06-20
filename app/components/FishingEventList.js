@@ -94,7 +94,9 @@ class FishingEventList extends React.Component {
             <Text style={[styles.listRowItem, styles.listRowItemCommitted, {color: this.getFishingEventColor(fishingEvent)}]}>
               {this.getFishingEventDesc(fishingEvent)}
             </Text>
-            <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>{fishingEvent.targetsSpecies || Lang.fishingEvents.noTarget}</Text>
+            <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
+              {fishingEvent.targetsSpecies || Lang.fishingEvents.noTarget}
+            </Text>
           </View>
         </TouchableHighlight>);
     }

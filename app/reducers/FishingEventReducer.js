@@ -4,38 +4,13 @@ import Helper from '../utils/Helper';
 import FishingEvent from '../models/FishingEvent';
 import TCERFishingEvent from '../models/TCERFishingEvent';
 const helper = new Helper();
-const NUMBER_OF_products = 15;
+const NUMBER_OF_PRODUCTS = 12;
 
 let fishingEventModel = [...FishingEvent.concat(TCERFishingEvent)];
 let fishingMethodSpecificModel = TCERFishingEvent;
 
 let initialState = {
-  events: [
-    {id: 1, datetimeAtEnd: new moment(), datetimeAtStart: new moment(), catchValid: true},
-    {id: 2, datetimeAtEnd: new moment(), datetimeAtStart: new moment(), catchValid: true, products: [
-      {code: "sna", weight: "2344"},
-      {code: "lin", weight: "4500"},
-      {code: "sta", weight: "3433"},
-      {code: "", weight: ""},
-      {code: "", weight: ""},
-      {code: "", weight: ""},
-      {code: "", weight: ""},
-      {code: "", weight: ""},
-      {code: "", weight: ""},
-      {code: "", weight: ""},
-      {code: "", weight: ""},
-      {code: "", weight: ""},
-    ]},
-    {id: 3, datetimeAtEnd: new moment(), datetimeAtStart: new moment(), catchValid: true, products: []},
-    {id: 4, datetimeAtEnd: new moment(), datetimeAtStart: new moment(), catchValid: false, products: []},
-    {id: 5, datetimeAtEnd: new moment(), datetimeAtStart: new moment(), catchValid: false, products: []},
-    {id: 6, datetimeAtEnd: new moment(), datetimeAtStart: new moment(), catchValid: true, products: []},
-    {id: 7, datetimeAtEnd: new moment(), datetimeAtStart: new moment(), catchValid: false, products: []},
-    {id: 8, datetimeAtEnd: new moment(), datetimeAtStart: new moment(), catchValid: true, products: []},
-    {id: 9, datetimeAtEnd: new moment(), datetimeAtStart: new moment(), catchValid: true, products: []},
-    {id: 10, datetimeAtEnd: new moment(), datetimeAtStart: new moment(), catchValid: true, products: []},
-    {id: 11, datetimeAtEnd: null, datetimeAtStart: new moment(), catchValid: false, products: []}
-  ]
+  events: []
 }
 
 export default (state = initialState, action) => {
@@ -61,7 +36,7 @@ export default (state = initialState, action) => {
             return ChangeCatch(action, state, "code");
         case 'changeWeight':
             return ChangeCatch(action, state, "weight");
-        case 'changeCategoryNumOf':
+        case 'changeCustom':
             return ChangeCatch(action, state, action.name);
         case 'setFishingEventId':
             return ChangeShot(action.fishingEventId - 1, state, { fishyFishId: action.fishyFishId, lastSubmitted: action.lastSubmitted }, true);
@@ -138,7 +113,7 @@ const CalculateCaughtDiscardValid = (Event) => {
 const CreateBlankSpeciesWeightPairs = (number) => {
     let result = [];
     for(let i = 0; i < number; i++){
-      result.push({code: '', weight: '' });
+      result.push({code: '', weight: ''});
     }
     return result;
 };
@@ -151,8 +126,7 @@ const newFishingEvent = (state, location, trawl) => {
     newEvent.datetimeAtStart = moment();
     let Location = Object.assign({}, location);
     newEvent.locationAtStart = Location;
-    newEvent.products = CreateBlankSpeciesWeightPairs(NUMBER_OF_products);
-
+    newEvent.products = CreateBlankSpeciesWeightPairs(NUMBER_OF_PRODUCTS);
     let previousEvent = state.events.length ? Object.assign({}, state.events[state.events.length - 1]) : null;
     if(previousEvent){
       newEvent.targetSpecies = previousEvent.targetSpecies;

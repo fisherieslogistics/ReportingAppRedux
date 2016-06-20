@@ -3,6 +3,7 @@ import {
   StyleSheet,
   View,
   Text,
+  AlertIOS,
   TouchableOpacity,
   ScrollView,
   TouchableHighlight,
@@ -11,6 +12,7 @@ import {
   TextInput,
   ListView
 } from 'react-native';
+
 import {connect} from 'react-redux';
 import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -18,8 +20,10 @@ import FishingEventActions from '../actions/FishingEventActions';
 import FishingEventList from './FishingEventList';
 import ProductDetailEditor from './ProductDetailEditor';
 import FishingEventEditor from './FishingEventDetailEditor';
-const detailTabs = ["details", "catches", "custom"];
+import Strings from '../constants/Strings';
 
+const strings = Strings.english;
+const detailTabs = ["details", "catches", "custom"];
 const fishingEventActions = new FishingEventActions();
 
 class Dashboard extends Component {
@@ -33,6 +37,15 @@ class Dashboard extends Component {
           ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
         };
     }
+
+    getNextStage(){
+      if(!this.props.fishingEvents.length){
+        return 'start';
+      }
+      let fe = this.props.fishingEvents[this.props.fishingEvents.length -1];
+      return fe.datetimeAtEnd ? 'start' : 'end';
+    }
+
     renderContent(color: string, pageText: string, num?: number) {
       return (
         <View style={[styles.tabContent, {backgroundColor: color}]}>
@@ -42,8 +55,33 @@ class Dashboard extends Component {
       );
     }
 
-    startFishingEvent(){
-      this.props.dispatch(fishingEventActions.startFishingEvent());
+    onPrimaryActionPress(){
+      switch (this.getNextStage()) {
+        case 'start':
+          this.props.dispatch(fishingEventActions.startFishingEvent());
+          break;
+        case 'end':
+          this.endFishingEvent();
+          break;
+        default:
+
+      }
+    }
+
+    endFishingEvent(){
+      AlertIOS.alert(
+        strings.fishingEvents[this.props.fishingEventType].endingFishingEvent + "?",
+        'Click Yes to save time and location haul',
+        [
+          {text: 'No', onPress: () => {
+            return null;
+          }, style: 'cancel'},
+          {text: 'Yes', onPress: () => {
+            let fe = this.props.fishingEvents[this.props.fishingEvents.length -1];
+            return this.props.dispatch(fishingEventActions.endFishingEvent(fe.id));
+          }}
+        ]
+      );
     }
 
     getPrimaryActionColor(){
@@ -51,7 +89,14 @@ class Dashboard extends Component {
     }
 
     getPrimaryActionText(){
-      return "Haul";
+      switch (this.getNextStage()){
+        case 'start':
+          return strings.fishingEvents[this.props.fishingEventType].startFishingEvent;
+          break;
+        case 'end':
+          return strings.fishingEvents[this.props.fishingEventType].endFishingEvent;
+          break;
+      }
     }
 
     getPrimaryActionIcon(){
@@ -115,7 +160,7 @@ class Dashboard extends Component {
                 <View>
                   <Icon.Button
                     name={this.getPrimaryActionIcon()}
-                    onPress={this.startFishingEvent.bind(this)}
+                    onPress={this.onPrimaryActionPress.bind(this)}
                     style={[styles.toolbarButton, styles.primaryActionButton, {backgroundColor: this.getPrimaryActionColor()}]}>
                     {this.getPrimaryActionText()}
                   </Icon.Button>
@@ -186,8 +231,8 @@ const styles = StyleSheet.create({
 
   toolbar: {
     flexDirection: 'row',
-    paddingTop: 30,
-    paddingBottom: 20,
+    paddingTop: 20,
+    paddingBottom: 0,
     paddingLeft: 20,
     paddingRight: 20,
   },

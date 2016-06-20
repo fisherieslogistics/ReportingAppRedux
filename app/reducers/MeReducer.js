@@ -5,11 +5,11 @@ let initialState = {
       fishingEventType: "tcer",
       customInputs: {
         product: [
-          {label: "Bins Of", type: "number"},
-          {label: "State", type: "string"},
-          {label: "Size (110)", type: "number"},
-          {label: "Notes", type: "string"},
-          {label: "Discard KGs", type: "number"}
+          {label: "Bins", type: "number", name: "bins"},
+          {label: "State", type: "string", name: "state"},
+          {label: "Size (110)", type: "number", name: "size"},
+          {label: "Notes", type: "string", name: "notes"},
+          {label: "Discard KGs", type: "number", name: "discards"}
         ],
         fishingEvent: [
           {label: "Cod End", type: "string"},

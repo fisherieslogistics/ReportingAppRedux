@@ -33,9 +33,9 @@ class CatchActions{
             timestamp: moment()
         };
     }
-    changeCategoryNumOf(name, id, catchId, value) {
+    changeCustom(name, id, catchId, value) {
         return {
-            type: 'changeCategoryNumOf',
+            type: 'changeCustom',
             'name': name,
             'id': id,
             'catchId': catchId,

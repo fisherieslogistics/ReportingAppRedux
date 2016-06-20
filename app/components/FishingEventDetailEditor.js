@@ -4,6 +4,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  TouchableHighlight,
   Modal,
   ScrollView,
   Switch,
@@ -18,7 +19,11 @@ import {connect} from 'react-redux';
 import FishingEventModel from '../models/FishingEvent';
 import TCERFishingEvent from '../models/TCERFishingEvent';
 import DatePicker from 'react-native-datepicker';
+import FishPicker from './FishPicker';
+import Sexagesimal from 'sexagesimal';
+
 import moment from 'moment';
+import Strings from '../constants/Strings'
 
 const fishingEventTypeModels = {
   "tcer": TCERFishingEvent
@@ -27,27 +32,30 @@ const fishingEventTypeModels = {
 const fishingEventActions = new FishingEventActions();
 
 class FishingEventEditor extends React.Component{
-    constructor (){
-        super();
+    constructor (props){
+        super(props);
+        this.state = {
+          strings: Strings.english.fishingEvents[props.fishingEventType]
+        }
     }
 
-    onTextChange(name, value) {
+    onChangeText(name, value) {
         this.props.dispatch(
           fishingEventActions.setfishingEventValue(this.props.fishingEvent.id, name, value));
     }
 
-    onNonFishChange(value, name){
+    onNonFishChange(name, value){
       if(value){
         AlertIOS.alert(
           'Non Fish are you sure?',
           'You will need to fill out a Non Fish Protected Species Form in you form book',
           [
-            {text: 'Cancel', onPress: () => {this.onTextChange(name, false)}, style: 'cancel'},
-            {text: 'OK', onPress: () => {this.onTextChange(name, true)}}
+            {text: 'Cancel', onPress: () => {this.onChangeText(name, false)}, style: 'cancel'},
+            {text: 'OK', onPress: () => {this.onChangeText(name, true)}}
           ]
         );
       }else{
-        this.onTextChange(name, false);
+        this.onChangeText(name, false);
       }
     }
 
@@ -78,9 +86,11 @@ class FishingEventEditor extends React.Component{
     }
 
     getEditor(attribute, value){
-      let displayVal = value ? value : null;
       switch (attribute.type) {
         case "datetime":
+            if(!value){
+              return (<Text>{this.state.strings.notComplete}</Text>)
+            }
             return (<DatePicker
               style={{width: 200}}
               date={value}
@@ -89,16 +99,37 @@ class FishingEventEditor extends React.Component{
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"
               onDateChange={(datetime) => {
-                this.onTextChange.bind(this)(attribute.id, new moment(datetime));
+                this.onChangeText.bind(this)(attribute.id, new moment(datetime));
               }}
             />);
           break;
+        case "product":
+          return (<FishPicker
+                    onChange={(value) => this.onChangeText(attribute.id, value)}
+                    value={value}
+                  />);
+        case "location":
+          if(!value){
+            return (<Text>{this.state.strings.noPositon}</Text>);
+          }
+          return (
+            <TouchableHighlight>
+              <View>
+                <Text>{Sexagesimal.format(value.lat, 'lat')}</Text>
+                <Text>{Sexagesimal.format(value.lon, 'lon')}</Text>
+              </View>
+            </TouchableHighlight>
+          );
+        case "bool":
+          return (<Switch
+                    onValueChange={(bool) => this.onNonFishChange(attribute.id, bool)}
+                    value={value || false} />);
         default:
           return (<TextInput clearTextOnFocus={true}
                    defaultValue=""
                    style={[styles.textInput]}
-                   value={displayVal}
-                   onChangeText={text => this.onTextChange(attribute.id, text)} />);
+                   value={value}
+                   onChangeText={text => this.onChangeText(attribute.id, text)} />);
       }
     }
 
@@ -140,7 +171,8 @@ class FishingEventEditor extends React.Component{
 const select = (State, dispatch) => {
     let state = State.default;
     return {
-      fishingEvent: state.fishingEvents.events[state.view.viewingFishingEventId - 1]
+      fishingEvent: state.fishingEvents.events[state.view.viewingFishingEventId - 1],
+      fishingEventType: state.me.user.fishingEventType
     };
 }
 
@@ -148,7 +180,7 @@ const styles = {
   tableWrapper: {
     flexWrap: 'wrap',
     alignItems: 'flex-start',
-    flexDirection:'row',
+    flexDirection:'row'
   },
   tableView: {
     marginTop: 20,
@@ -158,9 +190,11 @@ const styles = {
   tableRow: {
     flexDirection: 'row',
     paddingBottom: 20,
+    width: 175,
+    height: 50
   },
   tableCell: {
-    width: 105,
+    width: 135,
   },
   textInput: {
     borderColor: 'gray',

@@ -10,73 +10,87 @@ import {
 } from 'react-native';
 
 import React from 'react';
-
-//import FishPicker from './FishPicker';
 import {connect}  from 'react-redux';
-//import ErrorChecker from '../classes/ErrorChecker';
-//import config from '../constants/config';
 import CatchActions from '../actions/CatchActions';
-//import Validator from '../reducers/Validator';
-//import NumberTextInput from './NumberTextInput';
-//const sizes = config.sizes;
+import FishPicker from './FishPicker';
 const catchActions = new CatchActions();
-//const errorChecker = new ErrorChecker();
-
-//import inputStyle from '../styles/inputField';
-//import styles from '../styles/style';
-//import catchStyle from '../styles/CatchDetailStyles';
 
 class ProductDetailEditor extends React.Component {
 
     constructor(){
       super();
-      this.invalidSpecies = {};
     }
 
-    getErrors(){
-      let errs = errorChecker.catchesUnique(this.props.fishingEvent.catches) ? false : true;
-      console.log(errs);
-      return errs;
+    onChangeSpecies(value, index) {
+      this.props.dispatch(catchActions.changeSpecies(this.props.fishingEventId,
+                                                    index, value));
+    };
+
+    onChangeWeight(value, index) {
+      this.props.dispatch(catchActions.changeWeight(this.props.fishingEventId,
+                                                    index, value));
+    };
+
+    onCustomChange(name, value, index) {
+      this.props.dispatch(catchActions.changeCustom(name, this.props.fishingEventId,
+                                                    index, value));
     }
 
-    onClose () {
-        if(this.getErrors()){
-            return;
+    getCustomInput(customInput, value, index){
+        switch (customInput.type) {
+          case 'string':
+            return (<TextInput
+                      clearTextOnFocus={true}
+                      defaultValue=""
+                      onChangeText={(text) => {
+                        this.onCustomChange(customInput.name, text, index);
+                      }}
+                      style={[styles.textInput]}
+                      value={value} />);
+            break;
+          case 'number':
+            return (<TextInput
+                      clearTextOnFocus={true}
+                      defaultValue=""
+                      keyboardType="numeric"
+                      onChangeText={(text)=>{
+                        if(isNaN(text)){
+                          this.onCustomChange(customInput.name, "", index);
+                          return;
+                        }
+                        this.onCustomChange(customInput.name, text, index);
+                      }}
+                      style={[styles.textInput]}
+                      value={value} />);
         }
-        this.props.dispatch(catchActions.errors(null))
-        this.props.onClose();
-    }
 
-    onSpeciesChange(value, index) {
-      value = index == 8 ? "other": value;
-      this.props.changeCatchSpecies(this.props.fishingEvent.id,
-                                    index, value);
-    };
-
-    onWeightChange(value, index) {
-      this.props.changeCatchWeight(this.props.fishingEvent.id,
-                                   index, value);
-    };
-
-    onCategoryNumberOfChange(name, value, index) {
-      this.props.changeCategoryNumOf(
-          name, this.props.fishingEvent.id,
-          index, value
-      );
     }
 
     renderRow(product, index){
       return (
         <View style={[styles.tableRow]} key={"productRow" + index}>
           <View style={[styles.tableCell]}>
-            <TextInput clearTextOnFocus={true} defaultValue="" style={[styles.textInput]} value={product.code}/>
+            <FishPicker
+                onChange={(value) => this.onChangeSpecies(value, index)}
+                value={product.code}
+            />
           </View>
           <View style={[styles.tableCell]}>
-            <TextInput clearTextOnFocus={true} defaultValue="0" style={[styles.textInput]} value={product.estimatedWieght} />
+            <TextInput clearTextOnFocus={true}
+                       onChangeText={(weight) => {
+                         if(isNaN(weight)){
+                           this.onChangeWeight("", index);
+                         }else{
+                           this.onChangeWeight(weight, index);
+                         }
+                       }}
+                       keyboardType={'numeric'}
+                       style={[styles.textInput]}
+                       value={product.weight} />
           </View>
           {this.props.customInputs.map((ci)=>
             (<View style={[styles.tableCell]} key={ci.label + "header"}>
-              <TextInput clearTextOnFocus={true} defaultValue="" style={[styles.textInput]} value={ci.value} />
+              {this.getCustomInput(ci, product[ci.name], index)}
             </View>)
           )}
         </View>);
@@ -101,6 +115,9 @@ class ProductDetailEditor extends React.Component {
     }
 
     render () {
+      if(!this.props.fishingEventId){
+        return null;
+      }
       return(
       <ScrollView style={styles.productsScroll}>
         <View style={[styles.tableView]}>
@@ -114,7 +131,8 @@ class ProductDetailEditor extends React.Component {
 const select = (State) => {
   let state = State.default;
   return {
-    customInputs: state.me.user.customInputs.product
+    customInputs: state.me.user.customInputs.product,
+    fishingEventId: state.view.viewingFishingEventId,
   }
 }
 

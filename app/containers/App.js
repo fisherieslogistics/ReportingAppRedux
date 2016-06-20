@@ -26,7 +26,7 @@ export default class App extends Component {
     var height = Dimensions.get('window').height; //full height
     return (
       <Provider store={store}>
-        <View style={{paddingTop: 20, width: width, height: height}}>
+        <View style={{width: width, height: height}}>
         <StatusBar
           backgroundColor="black"
           barStyle="light-content"
