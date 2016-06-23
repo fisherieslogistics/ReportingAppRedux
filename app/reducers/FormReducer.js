@@ -35,7 +35,7 @@ const FormReducer = (state = initialState, action) => {
       break;
     case 'setViewingForm':
       if(action.tripId){
-        let form = state.pastTrips[action.tripId].forms[action.formId]
+        let form = state.pastTrips[action.tripId].forms[action.formId];
         return update(state, {viewingForm: form});
       }else{
         return update(state, {viewingForm: state.currentTrip[action.formId]});
@@ -82,9 +82,9 @@ const createForms = (fishingEvents, resources, model) => {
     forms.push(setGenericFormValues(model, form, resources));
   }
   let addFishingEvent = (fe) => {
-    let _form = forms[forms.length -1]
-    let formReady = _form && _form.fishingEvents.length !== _form.meta.eventsPerForm;
-    if(formReady && model.compatible(_form.fishingEvents[count -1], fe)){
+    let _form = forms[forms.length -1];
+    let formReady = (_form && _form.fishingEvents.length !== _form.meta.eventsPerForm) ? true : false;
+    if(formReady && _form.meta.compatible(_form.fishingEvents[_form.fishingEvents.length -1], fe)){
       _form.fishingEvents.push(helper.assign(fe));
     }else {
       newForm(fe);

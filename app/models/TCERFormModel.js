@@ -5,7 +5,7 @@ const helper = new Helper();
 
 const meta = {
   formCode: 'tcer',
-  compatable: (event1, event2) => {
+  compatible: (event1, event2) => {
     let dayString = event1.datetimeAtStart.year() +
                      ":" + event1.datetimeAtStart.dayOfYear();
     let previousDayString = event2.datetimeAtStart.year() +
