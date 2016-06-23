@@ -3,7 +3,7 @@ export default {
     fishingEvents: {
       "tcer": {
         noTarget: "no target species",
-        numberOfInTrip: " shot",
+        numberOfInTrip: " Shot",
         ended: "hauled",
         completed: "done",
         committed: "committed",

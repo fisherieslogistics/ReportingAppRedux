@@ -1,16 +1,18 @@
 import moment from 'moment';
 import ModelUtils from '../utils/ModelUtils';
 import Helper from '../utils/Helper';
-import FishingEvent from '../models/FishingEvent';
-import TCERFishingEvent from '../models/TCERFishingEvent';
+import FishingEventModel from '../models/FishingEventModel';
+import TCERFishingEventModel from '../models/TCERFishingEventModel';
+import {findCombinedErrors, findErrors} from '../utils/ModelErrors';
 const helper = new Helper();
 const NUMBER_OF_PRODUCTS = 12;
 
-let fishingEventModel = [...FishingEvent.concat(TCERFishingEvent)];
-let fishingMethodSpecificModel = TCERFishingEvent;
+const fishingEventModel = [...FishingEventModel.concat(TCERFishingEventModel)];
+const fishingMethodSpecificModel = TCERFishingEventModel;
 
 let initialState = {
-  events: []
+  events: [],
+  errors: {}
 }
 
 export default (state = initialState, action) => {
@@ -27,11 +29,11 @@ export default (state = initialState, action) => {
         case 'setFishingEventValue':
             let change = {};
             change[action.inputId] = action.value;
-            return ChangeShot(action.fishingEventId - 1, state, change);
+            return ChangeEvent(action.fishingEventId - 1, state, change);
         case 'setLocationValue':
             //always negative whatever they put it for lat
             let negativeLatChanges = Object.assign({}, action.changes, {lat: (0 - Math.abs(parseFloat(action.changes.lat)))});
-            return ChangeShot(action.id - 1, state, {locationAtStart: negativeLatChanges});
+            return ChangeEvent(action.id - 1, state, {locationAtStart: negativeLatChanges});
         case 'changeSpecies':
             return ChangeCatch(action, state, "code");
         case 'changeWeight':
@@ -39,50 +41,53 @@ export default (state = initialState, action) => {
         case 'changeCustom':
             return ChangeCatch(action, state, action.name);
         case 'setFishingEventId':
-            return ChangeShot(action.fishingEventId - 1, state, { fishyFishId: action.fishyFishId, lastSubmitted: action.lastSubmitted }, true);
+            return ChangeEvent(action.fishingEventId - 1, state, { fishyFishId: action.fishyFishId, lastSubmitted: action.lastSubmitted }, true);
         default:
             return state;
     }
+}
+
+const updateErrors = (fishingEvent, state) => {
+  let change = {};
+  change[fishingEvent.id] = findErrors(fishingEventModel, fishingEvent).concat(findCombinedErrors(fishingEventModel, fishingEvent));
+  return change;
 }
 
 const changeState = (state, change) => {
   return Object.assign({}, state, change);
 }
 
-const ChangeShot = (index, state, changes, silent) => {
-    updatedShot = Object.assign({}, state.events[index], changes);
-    if(!silent){
-        updatedShot.lastChange = moment();
-    }
-    return Object.assign({}, state, {events: [
+const ChangeEvent = (index, state, changes) => {
+    changes.lastChange = moment();
+    updatedEvent = Object.assign({}, state.events[index], changes);
+    let errUpdate = updateErrors(updatedEvent, state);
+    return Object.assign({}, state,
+      {events: [
         ...state.events.slice(0, index),
-        updatedShot,
+        updatedEvent,
         ...state.events.slice(index + 1)
-    ]});
+      ],
+      errors: Object.assign({}, state.errors, errUpdate)
+    });
 }
 
-
-const ChangeCatch = (action, state, attr, silent) => {
+const ChangeCatch = (action, state, attr) => {
     let fishingEventId = action.id - 1;
     let change = {}
     change[attr] = action.value;
     let newCatch = Object.assign({}, state.events[fishingEventId].products[action.catchId], change)
-
     let fishingEventChange = {};
-    fishingEventChange["products"] = [
+    fishingEventChange.products = [
         ...state.events[fishingEventId].products.slice(0, action.catchId),
         newCatch,
         ...state.events[fishingEventId].products.slice(action.catchId + 1)
     ];
-    if(!silent && state.events[fishingEventId].finished) {
-        change.lastChange = moment();
-    }
-    updatedShot = Object.assign({}, state.events[fishingEventId], fishingEventChange);
-    updatedShot.lastChange = moment();
-    updatedShot.caughtDiscardValid = CalculateCaughtDiscardValid(updatedShot);
+    updatedEvent = Object.assign({}, state.events[fishingEventId], fishingEventChange);
+    updatedEvent.lastChange = moment();
+    updatedEvent.productsValid = calculateProductsValid(updatedEvent);
     return Object.assign({}, state, {events: [
         ...state.events.slice(0, fishingEventId),
-        updatedShot,
+        updatedEvent,
         ...state.events.slice(fishingEventId + 1)
     ]});
 }
@@ -99,7 +104,7 @@ const endFishingEvent = (state, location, id) => {
     ]});
 };
 
-const CalculateCaughtDiscardValid = (Event) => {
+const calculateProductsValid = (Event) => {
     let products = Event.products;
     let hasAtLeastOne = false;
     for(let i = 0; i < products.length; i++) {
@@ -113,7 +118,7 @@ const CalculateCaughtDiscardValid = (Event) => {
 const CreateBlankSpeciesWeightPairs = (number) => {
     let result = [];
     for(let i = 0; i < number; i++){
-      result.push({code: '', weight: ''});
+      result.push({code: "", weight: ""});
     }
     return result;
 };
@@ -129,16 +134,17 @@ const newFishingEvent = (state, location, trawl) => {
     newEvent.products = CreateBlankSpeciesWeightPairs(NUMBER_OF_PRODUCTS);
     let previousEvent = state.events.length ? Object.assign({}, state.events[state.events.length - 1]) : null;
     if(previousEvent){
-      newEvent.targetSpecies = previousEvent.targetSpecies;
-      newEvent.custom = previousEvent.custom;
+      newEvent.targetSpecies = "" + previousEvent.targetSpecies;
+      newEvent.custom = Object.assign({}, previousEvent.custom);
       fishingMethodSpecificModel.forEach((attribute) => {
-        newEvent[attribute.id] = previousEvent[attribute.id];
+        let update = {};
+        update[attribute.id] = previousEvent[attribute.id];
+        newEvent = Object.assign({}, newEvent, update);
       });
       previousEvent.products.forEach((c, i) =>{
-        newEvent.products[i].code = c.code;
+        newEvent.products[i].code = "" + c.code;
       });
     }
-
     return Object.assign({}, state, {
         events: [
             ...state.events,

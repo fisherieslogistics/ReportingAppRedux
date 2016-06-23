@@ -6,14 +6,23 @@ class Helper {
     getDegreesMinutesFromLocation(location) {
         const lat = Sexagesimal.format(location.lat, 'lat').split(" ");
         const lon = Sexagesimal.format(location.lon, 'lon').split(" ");
+        let ew = "w";
+        if(location.lon > 0){
+            ew = "E";
+        }
         return {
             latDegrees: parseInt(lat[0].replace(/\D/g,'')),
             latMinutes: lat.length >= 3 ? parseInt(lat[1].replace(/\D/g,'')) : 0,
             latSeconds: lat.length >= 4 ? parseInt(lat[2].replace(/\D/g,'')) : 0,
             lonDegrees: parseInt(lon[0].replace(/\D/g,'')),
             lonMinutes: lon.length >= 3 ? parseInt(lon[1].replace(/\D/g,'')) : 0,
-            lonSeconds: lon.length >= 4 ? parseInt(lon[2].replace(/\D/g,'')) : 0
+            lonSeconds: lon.length >= 4 ? parseInt(lon[2].replace(/\D/g,'')) : 0,
+            ew: ew
         };
+    }
+    formatLocation(location){
+      return {lat: Sexagesimal.format(location.lat, 'lat'),
+              lon: Sexagesimal.format(location.lon, 'lon')};
     }
     createGuid() {
       const s4 = () => {
@@ -65,6 +74,7 @@ class Helper {
     }
 
     deflate(state) {
+
         if(Object.prototype.toString.call(state)==='[object Array]') {
             //Is var as let causes error;
             var clone = [];
@@ -73,7 +83,7 @@ class Helper {
             }
             return clone;
         } else if(typeof state === 'object' && state) {
-            if(state.IsAMomentObject) {
+            if(state._isAMomentObject) {
                 return { savedMoment: state.toISOString() };
             } else {
                 var clone = {};
@@ -93,33 +103,106 @@ class Helper {
           const state = JSON.parse(jsonData);
           return this.inflate(state);
         }catch(e){
+          console.log(e);
           return this.inflate(jsonData);
         }
     };
 
     serialize(state) {
-        return JSON.stringify(this.deflate(state));
+        let deflated = this.deflate(state);
+        return JSON.stringify(deflated);
     };
 
-    async loadSavedState(callback) {
-        let s = await AsyncStorage.getItem('savedState');
-        let savedState = this.deserialize(s) || {};
-        callback(savedState);
+    clearLocalStorage(){
+      AsyncStorage.clear(() => console.log("clear"));
+    }
+
+    loadSavedState(callback) {
+        AsyncStorage.getItem('savedState', (err, state)=>{
+          if(err){
+            console.log(err, state);
+          }
+          if(!state){
+            console.log("nef");
+          }
+          let savedState = this.deserialize(state) || {};
+          callback(savedState);
+        });
     };
 
-    async saveToLocalStorage(state, actionType) {
+    async saveToLocalStorage(state, actionType, key) {
       switch (actionType) {
         case 'loadSavedState':
-          return;
         case 'updateGps':
           return;
       }
-      await AsyncStorage.setItem('savedState', this.serialize(state));
+      if(actionType.indexOf('@@redux') !== -1){
+        return;
+      }
+      let serializedState = this.serialize(state);
+      await AsyncStorage.setItem('savedState', serializedState, (err, something) => {
+        console.log(err, something)
+      });
     };
 
     assign(obj, change){
       return Object.assign({}, obj, change);
     };
+
+    timeAgo(date){
+      var now = new Date();
+       var rightNow = moment(now);
+       var before = moment(date);
+       return before.from(rightNow);
+    };
+
+    mostCommon(list, attribute){
+      var occurances = {};
+      var max = 0;
+      var result;
+      list.forEach((t) => {
+        let val = attribute ? t[attribute] : t;
+        let key = JSON.stringify(val);
+        occurances[key]=(occurances[key] || 0)+1;
+        if(occurances[key] > max) {
+            max = occurances[key];
+            result = val;
+        }
+      });
+      return result;
+    };
+
+    concatArrays(arrays){
+      return [].concat.apply([], arrays);
+    }
+
+    getTotals(products){
+      let totals = {};
+      products.forEach((p) => {
+        if(p.weight){
+          totals[p.code] = (totals[p.code] || 0) + parseInt(p.weight);
+        }
+      });
+      return Object.keys(totals).map((k) => {
+        return {code: k, weight: totals[k]};
+      });
+    }
+
+    getUncountedWeight(products, numberOfCounted){
+      let totals = this.getTotals(products);
+      return totals.sort((c1, c2) => c1.weight > c2.weight)
+                   .map(t => t.weight)
+                   .split(numberOfCounted, totals.length)
+                   .reduce((n, b) => n + b, 0);
+    }
+
+    needsSync(obj){
+      return !obj.lastSubmitted || obj.lastChange.isAfter(obj.lastSubmitted);
+    }
+
+    isA(obj, typeStr){
+      return typeof obj === string;
+    }
 
 };
 

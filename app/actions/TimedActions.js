@@ -1,18 +1,15 @@
 'use strict';
 var moment = require('moment');
 var util = require('util');
-var getLokkaClient = require('./getLokkaClient');
 
-import Helper from '../classes/helperFunctions';
-import ErrorChecker from '../classes/ErrorChecker';
+import Helper from '../utils/Helper';
 import FishingEventActions from './FishingEventActions';
 import TripActions from './TripActions';
-import config from '../constants/config';
 import request from 'superagent';
+import Client from '../utils/Client';
 
 const tripActions = new TripActions();
 const helper = new Helper();
-const errorChecker = new ErrorChecker();
 const fishingEventActions = new FishingEventActions();
 
 class TimedActions {
@@ -26,7 +23,7 @@ class TimedActions {
           return;
       }
       if(trip.lastChange && !trip.id) {
-          const client = getLokkaClient.default(state, dispatch);
+
           client.mutate(`
             {
               newTrip: createTrip(
@@ -63,7 +60,8 @@ class TimedActions {
             }
             `).then((responce) => {
                 dispatch({
-                    type: 'setSubmitted',
+                    type: 'setTripId',
+                    id: responce.updateTrip.id,
                     lastSubmitted: startTime
                 });
                 callback(arguments[0], arguments[1], arguments[2]);
@@ -110,9 +108,6 @@ class TimedActions {
 
               const startTime = moment();
 
-              if(errorChecker.fishingEventErrors(shoot).length){
-                  return;
-              };
               let datetimeAtEnd = shoot.datetimeAtEnd ? shoot.datetimeAtEnd.toISOString() : new moment().toISOString();
               shoot.trawl.headlineHeight = shoot.headlineHeight;
               shoot.trawl.wingSpread = shoot.wingSpread;
@@ -216,10 +211,10 @@ class TimedActions {
       }, 5000);
     }
 
-    timedCheckTrip();
-    timedCheckFishing();
+    //timedCheckTrip();
+    //timedCheckFishing();
 
-    getPosition();
+    //getPosition();
 
     function checkGraphQueue() {
         var state = getState().default;
@@ -267,8 +262,8 @@ class TimedActions {
         }
     }
 
-    checkGraphQueue();
-    checkFormQueue();
+    //checkGraphQueue();
+    //checkFormQueue();
   }
 };
 

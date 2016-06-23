@@ -8,8 +8,4 @@ class ReportingApp extends Component {
     return (<Dashboard />);
   }
 }
-export default connect((state, dispatch) => {
-  let dState = state.default;
-  return {
-  }
-})(ReportingApp);
+export default ReportingApp

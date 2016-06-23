@@ -27,11 +27,14 @@ class FishingEventActions{
             });
         };
     }
-    cancelFishingEvent() {
-        return {
+    cancelFishingEvent(id) {
+      return(dispatch) => {
+        dispatch({
             type: 'cancelFishingEvent',
             timestamp: moment()
-        };
+        });
+        dispatch(this.setViewingFishingEvent(id -1));
+      }
     }
     setfishingEventValue(fishingEventId, inputId, value) {
         return {

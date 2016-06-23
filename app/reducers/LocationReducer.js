@@ -3,10 +3,10 @@ import moment from 'moment';
 
 const initialState = {
     location: {
-        lat: 45.55,
-        lon: 174.23
+        lat: 0,
+        lon: 0
     },
-    last_updated: moment()
+    lastUpdated: new moment()
 };
 
 const LocationReducer = (state, action) => {
@@ -15,10 +15,10 @@ const LocationReducer = (state, action) => {
     }
 
     switch(action.type) {
-        case 'update_gps':
+        case 'updateGps':
             return {
                 location: Object.assign({}, action.location),
-                last_updated: moment()
+                lastUpdated: new moment()
             };
         default:
             return state;

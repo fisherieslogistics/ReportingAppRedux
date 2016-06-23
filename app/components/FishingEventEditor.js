@@ -16,17 +16,18 @@ import {
 import React from 'react';
 import FishingEventActions from '../actions/FishingEventActions';
 import {connect} from 'react-redux';
-import FishingEventModel from '../models/FishingEvent';
-import TCERFishingEvent from '../models/TCERFishingEvent';
+import FishingEventModel from '../models/FishingEventModel';
+import TCERFishingEventModel from '../models/TCERFishingEventModel';
 import DatePicker from 'react-native-datepicker';
 import FishPicker from './FishPicker';
 import Sexagesimal from 'sexagesimal';
+import Errors from './Errors';
 
 import moment from 'moment';
 import Strings from '../constants/Strings'
 
 const fishingEventTypeModels = {
-  "tcer": TCERFishingEvent
+  "tcer": TCERFishingEventModel
 }
 
 const fishingEventActions = new FishingEventActions();
@@ -37,6 +38,10 @@ class FishingEventEditor extends React.Component{
         this.state = {
           strings: Strings.english.fishingEvents[props.fishingEventType]
         }
+    }
+
+    componentWillReceiveProps(props){
+
     }
 
     onChangeText(name, value) {
@@ -86,13 +91,17 @@ class FishingEventEditor extends React.Component{
     }
 
     getEditor(attribute, value){
+      let validStyle = {}
+      if(attribute.valid && attribute.valid.func(value) !== true){
+          validStyle = styles.invalid;
+      }
       switch (attribute.type) {
         case "datetime":
             if(!value){
               return (<Text>{this.state.strings.notComplete}</Text>)
             }
             return (<DatePicker
-              style={{width: 200}}
+              style={[{width: 200}]}
               date={value}
               mode="datetime"
               format="YYYY-MM-DD HH:mm"
@@ -105,7 +114,10 @@ class FishingEventEditor extends React.Component{
           break;
         case "product":
           return (<FishPicker
-                    onChange={(value) => this.onChangeText(attribute.id, value)}
+                    style={validStyle}
+                    onChange={(value) => {
+                      this.onChangeText(attribute.id, value);
+                    }}
                     value={value}
                   />);
         case "location":
@@ -125,9 +137,11 @@ class FishingEventEditor extends React.Component{
                     onValueChange={(bool) => this.onNonFishChange(attribute.id, bool)}
                     value={value || false} />);
         default:
-          return (<TextInput clearTextOnFocus={true}
+          return (<TextInput
+                   clearTextOnFocus={true}
+                   onFocus={() => this.onChangeText(attribute.id, "")}
                    defaultValue=""
-                   style={[styles.textInput]}
+                   style={[styles.textInput, validStyle]}
                    value={value}
                    onChangeText={text => this.onChangeText(attribute.id, text)} />);
       }
@@ -136,9 +150,9 @@ class FishingEventEditor extends React.Component{
     renderRow(attribute){
       let value = this.props.fishingEvent[attribute.id];
       let input = this.getEditor(attribute, value);
-
+      let rowStyle = [styles.tableRow];
       return (
-        <View style={[styles.tableRow]} key={attribute.id + "editor"}>
+        <View style={rowStyle} key={attribute.id + "editor"}>
           <View style={[styles.tableCell]}>
             <Text>{attribute.label}</Text>
           </View>
@@ -149,6 +163,16 @@ class FishingEventEditor extends React.Component{
       );
     }
 
+    renderCombinedErrors(){
+      return null;
+      let model = [...FishingEventModel,
+                   ...fishingEventTypeModels[this.props.fishingEventType]];
+      return (<Errors model={model}
+                      obj={this.props.fishingEvent}
+                      combinedErrors={true}
+              />);
+    }
+
     render() {
       if(!this.props.fishingEvent){
         return null;
@@ -156,12 +180,15 @@ class FishingEventEditor extends React.Component{
       return (
         <ScrollView>
           <View style={styles.tableWrapper}>
-            <View style={[styles.tableView]}>
-              {this.renderFishingEventModelInputs(false)}
+            <View style={styles.row}>
+              <View style={[styles.tableView]}>
+                {this.renderFishingEventModelInputs(false)}
+              </View>
+              <View style={[styles.tableView]}>
+                {this.renderFishingEventModelInputs("tcer")}
+              </View>
             </View>
-            <View style={[styles.tableView]}>
-              {this.renderFishingEventModelInputs("tcer")}
-            </View>
+            {this.renderCombinedErrors()}
           </View>
         </ScrollView>
         );
@@ -176,7 +203,10 @@ const select = (State, dispatch) => {
     };
 }
 
-const styles = {
+const styles = StyleSheet.create({
+  row:{
+    flexDirection: 'row'
+  },
   tableWrapper: {
     flexWrap: 'wrap',
     alignItems: 'flex-start',
@@ -203,7 +233,10 @@ const styles = {
     width: 80,
     paddingLeft: 10,
   },
-}
+  invalid: {
+    backgroundColor: '#FFB3BA'
+  },
+});
 
 
 export default connect(select)(FishingEventEditor);

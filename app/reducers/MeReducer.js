@@ -1,7 +1,15 @@
 let initialState = {
-    ports: [],
-    vessel: null,
+    initialUse: true,
+    ports: ['Port of Napier', 'Eastland Port Gisbourne', 'Viaduct Harbour Auckland', 'Port Motueka', 'Port Nelson Wharf',
+            'Careys bay Wharf', 'Port Chalmers', 'South Port Bluff', 'Westport Harbour Wharf',
+            'Port Lyttleton', 'Prime Port Timaru'],
+    vessel: {name: "Nancy Glen 2", number: 76533},
     user: {
+      fullName: "Rick Burch",
+      firstName: "Rick",
+      lastName: "Burch",
+      permitHolderName: "Awesome Fishing",
+      permitHolderNumber: 6663,
       fishingEventType: "tcer",
       customInputs: {
         product: [

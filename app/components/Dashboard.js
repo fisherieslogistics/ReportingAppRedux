@@ -10,7 +10,8 @@ import {
   SegmentedControlIOS,
   TabBarIOS,
   TextInput,
-  ListView
+  ListView,
+  Dimensions
 } from 'react-native';
 
 import {connect} from 'react-redux';
@@ -18,22 +19,30 @@ import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FishingEventActions from '../actions/FishingEventActions';
 import FishingEventList from './FishingEventList';
-import ProductDetailEditor from './ProductDetailEditor';
-import FishingEventEditor from './FishingEventDetailEditor';
+import ProductEditor from './ProductEditor';
+import FishingEventEditor from './FishingEventEditor';
+import TripEditor from './TripEditor';
 import Strings from '../constants/Strings';
+import FormActions from '../actions/FormActions';
+import FormView from './FormView.js';
+import Toolbar from './Toolbar';
+import LocationView from './LocationView';
 
 const strings = Strings.english;
 const detailTabs = ["details", "catches", "custom"];
+const masterTabs = ["trip", "fishing", "forms", "profile"];
 const fishingEventActions = new FishingEventActions();
+const formActions = new FormActions();
+
+var {height, width} = Dimensions.get('window');
 
 class Dashboard extends Component {
     constructor(props){
         super(props);
         this.state = {
-          selectedTab: "catches",
-          selectedDetail: 1,
+          selectedTab: "trip",
+          selectedDetail: 0,
           notifCount: 2,
-          presses: 0,
           ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
         };
     }
@@ -56,6 +65,9 @@ class Dashboard extends Component {
     }
 
     onPrimaryActionPress(){
+      console.log(
+        "press"
+      )
       switch (this.getNextStage()) {
         case 'start':
           this.props.dispatch(fishingEventActions.startFishingEvent());
@@ -64,28 +76,56 @@ class Dashboard extends Component {
           this.endFishingEvent();
           break;
         default:
-
       }
     }
 
     endFishingEvent(){
+      if(!this.props.fishingEvents.length){
+        return null;
+      }
       AlertIOS.alert(
         strings.fishingEvents[this.props.fishingEventType].endingFishingEvent + "?",
         'Click Yes to save time and location haul',
         [
           {text: 'No', onPress: () => {
-            return null;
+            return;
           }, style: 'cancel'},
           {text: 'Yes', onPress: () => {
             let fe = this.props.fishingEvents[this.props.fishingEvents.length -1];
-            return this.props.dispatch(fishingEventActions.endFishingEvent(fe.id));
+            this.props.dispatch(fishingEventActions.endFishingEvent(fe.id));
+          }}
+        ]
+      );
+    }
+
+    removeFishingEvent(){
+      if(!this.props.fishingEvents.length){
+        return null;
+      }
+      AlertIOS.alert(
+        "Cancel",
+        'Would you like to cancel the latest shot?',
+        [
+          {text: 'No', onPress: () => {
+            return;
+          }, style: 'cancel'},
+          {text: 'Yes', onPress: () => {
+            let fe = this.props.fishingEvents[this.props.fishingEvents.length -1];
+            return this.props.dispatch(fishingEventActions.cancelFishingEvent(fe.id));
           }}
         ]
       );
     }
 
     getPrimaryActionColor(){
-      return "#2d74fa";
+      switch (this.getNextStage()){
+        case 'start':
+          return "#2d74fa"
+          break;
+        case 'end':
+          return "green"
+          break;
+      }
     }
 
     getPrimaryActionText(){
@@ -99,49 +139,70 @@ class Dashboard extends Component {
       }
     }
 
+    getSecondaryActionColor(){
+      return this.props.fishingEvents.length ? "red" : "grey";
+    }
+
     getPrimaryActionIcon(){
       return false  ? "arrow-circle-up" : "arrow-circle-down";
     }
 
-    getTripTab(){
-      return {iconName: "anchor", selectedIconName: "ship", title: "Stop", selectedTab: "start", render: this.renderContent.bind(this)};
+    renderTripEditor(){
+      return (<TripEditor
+                ds={this.state.ds}
+              />);
+    }
+
+    renderForms(){
+      return (<FormView
+                formResources={this.props.formResources}
+                fishingEvents={this.props.fishingEvents}
+              />);
     }
 
     renderTabs(){
       const tabs = [
-        {iconName: "calendar-check-o", title: "Catches", selectedTab: 'catches', render: this.renderCatches.bind(this)},
-        {iconName: "wpforms", title: "Forms", selectedTab: 'form', render: this.renderContent.bind(this)},
-        {iconName: "user", title: "Profile", selectedTab: 'profile', render: this.renderContent.bind(this)},
+        {iconName: "anchor", title: "Trip", selectedTab: masterTabs[0], render: this.renderTripEditor.bind(this), preStartTrip: true},
+        {iconName: "ship", title: "Fishing", selectedTab: masterTabs[1], render: this.renderCatches.bind(this), preStartTrip: false},
+        {iconName: "wpforms", title: "Forms", selectedTab: masterTabs[2],
+         render: this.renderForms.bind(this), preStartTrip: true, onPress: () => {
+             this.props.dispatch(formActions.showingForms(this.props.formResources, this.props.fishingEvents));
+         }},
+        {iconName: "user", title: "Profile", selectedTab: masterTabs[3], render: this.renderContent.bind(this), preStartTrip: true},
       ]
-      tabs.unshift(this.getTripTab());
       return tabs.map((tab)=>{
+        if(!(this.props.tripStarted || tab.preStartTrip)){
+          return;
+        }
         return (<Icon.TabBarItemIOS
+                  style={styles.toEdges}
                   key={tab.selectedTab}
                   iconName={tab.iconName}
-                  selectedIconName={tab.selectedIconName || tab.iconName}
+                  selectedIconName={tab.iconName}
                   title={tab.title}
                   selected={this.state.selectedTab === tab.selectedTab}
                   onPress={() => {
+                    if(tab.onPress){
+                      tab.onPress();
+                    }
                     this.setState({
                       selectedTab: tab.selectedTab
                     });
                   }}>
-                  {tab.render()}
+                  <View>
+                    {tab.render()}
+                  </View>
                 </Icon.TabBarItemIOS>);
       });
     }
 
-    renderDetailView(){
+    renderSelectedDetailView(){
       switch (this.state.selectedDetail) {
         case 0:
           return (<FishingEventEditor />);
         break;
         case 1:
-          let id = this.props.viewingFishingEventId;
-          let products = id ? this.props.fishingEvents[id - 1].products : [];
-          return (<ProductDetailEditor
-                    products={products}
-                  />);
+          return this.props.viewingFishingEventId ? (<ProductEditor />) : null;
         break;
         case 2:
           return (<View></View>);
@@ -149,64 +210,66 @@ class Dashboard extends Component {
       }
     }
 
-    renderCatches() {
-      return (
-        <View style={[styles.container]}>
-          <View style={[styles.toolbar]}>
-            <View style={[styles.toolbarLeft]}>
-              <TouchableOpacity
-                style={[styles.buttonWrapper]}
-                >
-                <View>
-                  <Icon.Button
-                    name={this.getPrimaryActionIcon()}
-                    onPress={this.onPrimaryActionPress.bind(this)}
-                    style={[styles.toolbarButton, styles.primaryActionButton, {backgroundColor: this.getPrimaryActionColor()}]}>
-                    {this.getPrimaryActionText()}
-                  </Icon.Button>
-                </View>
-              </TouchableOpacity>
-              <View style={[styles.toolbarInfoPanel]}>
-                <Text style={[styles.textBase, styles.toolbarPanelLabel, styles.Sexagesimal]}>
-                  {'66° 30′ 360″ N'}
-                </Text>
-                <Text style={[styles.textBase, styles.toolbarPanelLabel, styles.Sexagesimal]}>
-                  {'122° 1′ 30″ W'}
-                </Text>
-              </View>
-            </View>
-            <View style={[styles.toolbarRight]}>
-              <View style={[styles.buttonWrapper]}>
-                <Icon.Button
-                  name="stop-circle-o"
-                  backgroundColor="red"
-                  style={[styles.toolbarButton, styles.secondaryActionButton]}>
-                  Cancel
-                </Icon.Button>
-              </View>
-            </View>
-          </View>
+    renderToolBar(){
+      let primaryProps = {
+        onPress: this.onPrimaryActionPress.bind(this),
+        iconName: this.getPrimaryActionIcon(),
+        color: this.getPrimaryActionColor(),
+        text: this.getPrimaryActionText()
+      };
+      let secondaryProps = {
+        onPress: this.removeFishingEvent.bind(this),
+        iconName: "check-circle-o",
+        color: this.getSecondaryActionColor(),
+        text: "Cancel"
+      }
+      return (<Toolbar
+                primaryButton={primaryProps}
+                secondaryButton={secondaryProps}
+                infoPanel={(<LocationView />)}
+              />);
+    }
 
-          <View style={[styles.masterDetailView]}>
-            <View style={[styles.masterView]}>
-              <FishingEventList
-                dispatch={this.props.dispatch}
-                fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents].reverse())}
-                fishingEventType={this.props.fishingEventType}
-              />
-            </View>
-            <View style={[styles.detailView]}>
+    renderDetailView(){
+      return(<View style={[styles.detailView]}>
               <SegmentedControlIOS
                 values={detailTabs}
                 selectedIndex={this.state.selectedDetail}
                 onChange={({nativeEvent}) => {
                   this.setState({selectedDetail: nativeEvent.selectedSegmentIndex});
                 }} />
-                <View style={styles.headingWrapper}>
-                  <Text style={styles.heading}>{this.props.viewingFishingEventId ? "Editing Shot: " + this.props.viewingFishingEventId : ""}</Text>
+                <View style={{padding: 10, paddingTop: 15}}>
+                  <View>
+                    <Text style={styles.heading}>{this.props.viewingFishingEventId ? "Editing Event: " + this.props.viewingFishingEventId : ""}</Text>
+                  </View>
+                  <View>
+                    {this.renderSelectedDetailView()}
+                  </View>
                 </View>
-                {this.renderDetailView()}
-            </View>
+            </View>);
+    }
+
+    renderMasterView(){
+      return (
+        <View style={[styles.masterView]}>
+          <FishingEventList
+            dispatch={this.props.dispatch}
+            fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents].reverse())}
+            fishingEventType={this.props.fishingEventType}
+            selectedId={this.props.viewingFishingEventId}
+          />
+      </View>);
+    }
+
+    renderCatches() {
+      return (
+        <View style={styles.toEdges}>
+          <View style={[styles.toolbarWrapper, {width: width}]}>
+            {this.renderToolBar.bind(this)()}
+          </View>
+          <View style={[styles.masterDetailView, {width: width}]}>
+            {this.renderMasterView.bind(this)()}
+            {this.renderDetailView.bind(this)()}
           </View>
         </View>
       );
@@ -218,105 +281,62 @@ class Dashboard extends Component {
           unselectedTintColor="#ccc"
           tintColor="white"
           barTintColor="#2d74fa">
-          {this.renderTabs()}
+          {this.renderTabs.bind(this)()}
         </TabBarIOS>
       );
     }
 };
 
 const styles = StyleSheet.create({
+  heading: {
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  toEdges:{
+    position: 'absolute',
+    left: 0,
+    top: 0
+  },
+  toolbarWrapper: {
+    height: 100,
+    flex: 1,
+    paddingTop: 10,
+    flexDirection: 'row'
+  },
+  masterDetailView: {
+    flex: 1,
+    paddingTop: 5,
+    flexDirection: 'row'
+  },
   textBase: {
     color: '#333333',
-  },
-
-  toolbar: {
-    flexDirection: 'row',
-    paddingTop: 20,
-    paddingBottom: 0,
-    paddingLeft: 20,
-    paddingRight: 20,
-  },
-
-  headingWrapper: {
-    marginTop: 15,
-    flexDirection:'row',
-    height: 25
-  },
-  heading:{
-    fontSize: 19,
-    fontWeight: 'bold'
-  },
-
-  toolbarLeft: {
-    flexDirection: 'row',
-    flex: 0.89
-  },
-
-  toolbarRight: {
-    flex: 0.11,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-  },
-
-  toolbarButton: {
-    padding: 15
-  },
-
-  toolbarInfoPanel: {
-    flexDirection: 'column',
-    marginLeft: 15
   },
 
   buttonWrapper: {
     marginRight: 15,
   },
 
-  masterDetailView: {
-    flex: 1,
-    paddingTop: 0,
-    flexDirection: 'row',
-  },
-
   masterView: {
-    flex: 0.25,
+    flex: 0.28,
     alignItems: 'flex-start',
+    paddingTop: 10
   },
 
   detailView: {
-    flex: 0.75,
-    paddingTop: 20,
-    paddingRight: 20,
-    paddingLeft: 20,
-  },
-
-  listRowItemNarrow: {
-    width: 35
-  },
-
-  selectedListRow: {
-    backgroundColor: '#2d74fa',
-  },
-
-  selectedListRowItem: {
-    color: '#eee',
-    fontWeight: 'bold',
-    width: 65
-  },
-
-  selectedListRowItemNarrow: {
-    color: '#eee',
-    fontWeight: 'bold',
-    width: 35
+    flex: 0.72,
+    margin: 15
   },
 });
-
 
 const select = (State, dispatch) => {
     let state = State.default;
     return {
       fishingEvents: state.fishingEvents.events,
       viewingFishingEventId: state.view.viewingFishingEventId,
-      fishingEventType: state.me.user.fishingEventType
+      fishingEventType: state.me.user.fishingEventType,
+      ports: state.me.ports,
+      tripStarted: state.trip.started,
+      formResources: {trip: state.trip, user: state.me.user, vessel: state.me.vessel}
     };
 }
 

@@ -8,6 +8,8 @@ import{
   AlertIOS
 } from 'react-native';
 
+import Validator from '../utils/Validator';
+
 import React from 'react';
 import species_codes from '../constants/speciesCodes.json';
 
@@ -16,8 +18,16 @@ class FishPicker extends React.Component {
     constructor(props){
       super(props);
       this.state = {
-        value: this.props.value
+        valid: true,
+        value: props.value || ""
       }
+    }
+
+    componentWillReceiveProps(props){
+      this.setState({
+        valid: Validator.valid.productCode.func(props.value),
+        value: props.value
+      })
     }
 
     onTyping (text) {
@@ -25,6 +35,8 @@ class FishPicker extends React.Component {
       this.setState({
         value: text
       });
+      this.setState({valid: (text.length === 3 || text.length === 0)});
+
       if((text.length === 3 && species_codes.indexOf(text) !== -1) || !text.length){
         this.props.onChange(text);
         return;
@@ -41,7 +53,7 @@ class FishPicker extends React.Component {
     render () {
       return (
           <TextInput
-            style={styles.textInput}
+            style={[styles.textInput, this.props.style || {}, this.state.valid ? {} : styles.invalid]}
             onChangeText={this.onTyping.bind(this)}
             value={this.state.value}
             maxLength={3}
@@ -51,7 +63,7 @@ class FishPicker extends React.Component {
     }
 };
 
-const styles = {
+const styles = StyleSheet.create({
   textInput: {
     borderColor: 'gray',
     borderWidth: 1,
@@ -59,6 +71,9 @@ const styles = {
     width: 80,
     paddingLeft: 10,
   },
-}
+  invalid: {
+    backgroundColor: '#FFB3BA'
+  },
+});
 
 export default FishPicker;

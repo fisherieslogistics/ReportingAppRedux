@@ -13,9 +13,10 @@ import React from 'react';
 import {connect}  from 'react-redux';
 import CatchActions from '../actions/CatchActions';
 import FishPicker from './FishPicker';
+import Validator from '../utils/Validator';
 const catchActions = new CatchActions();
 
-class ProductDetailEditor extends React.Component {
+class ProductEditor extends React.Component {
 
     constructor(){
       super();
@@ -67,6 +68,7 @@ class ProductDetailEditor extends React.Component {
     }
 
     renderRow(product, index){
+      console.log(product.code);
       return (
         <View style={[styles.tableRow]} key={"productRow" + index}>
           <View style={[styles.tableCell]}>
@@ -122,7 +124,7 @@ class ProductDetailEditor extends React.Component {
       <ScrollView style={styles.productsScroll}>
         <View style={[styles.tableView]}>
           {this.renderHeaders()}
-          {this.props.products.map((p, i) => this.renderRow(p, i))}
+          {this.props.fishingEvent.products.map((p, i) => this.renderRow(p, i))}
         </View>
       </ScrollView>);
     }
@@ -133,10 +135,11 @@ const select = (State) => {
   return {
     customInputs: state.me.user.customInputs.product,
     fishingEventId: state.view.viewingFishingEventId,
+    fishingEvent: state.fishingEvents.events[state.view.viewingFishingEventId-1]
   }
 }
 
-const styles = {
+const styles = StyleSheet.create({
   productsScroll:{
     height: 600
   },
@@ -147,19 +150,21 @@ const styles = {
   },
   tableRow: {
     flexDirection: 'row',
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
   tableCell: {
-    width: 105,
+    width: 95,
   },
   textInput: {
     borderColor: 'gray',
     borderWidth: 1,
     height: 30,
     width: 80,
-    paddingLeft: 10,
   },
-}
+  invalid: {
+    backgroundColor: '#FFB3BA'
+  },
+});
 
 
-export default connect(select)(ProductDetailEditor);
+export default connect(select)(ProductEditor);
