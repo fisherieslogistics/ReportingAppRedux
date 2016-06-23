@@ -21,6 +21,7 @@ import FishingEventActions from '../actions/FishingEventActions';
 import FishingEventList from './FishingEventList';
 import ProductEditor from './ProductEditor';
 import FishingEventEditor from './FishingEventEditor';
+import FishingEventCustomEditor from './FishingEventCustomEditor';
 import TripEditor from './TripEditor';
 import Strings from '../constants/Strings';
 import FormActions from '../actions/FormActions';
@@ -205,7 +206,7 @@ class Dashboard extends Component {
           return this.props.viewingFishingEventId ? (<ProductEditor />) : null;
         break;
         case 2:
-          return (<View></View>);
+          return (<FishingEventCustomEditor />);
         break;
       }
     }
