@@ -40,46 +40,13 @@ class FishingEventCustomEditor extends React.Component{
         }
     }
 
-    componentWillReceiveProps(props){
-
-    }
-
     onChangeText(name, value) {
         this.props.dispatch(
           fishingEventActions.setfishingEventValue(this.props.fishingEvent.id, name, value));
     }
 
-    onNonFishChange(name, value){
-      if(value){
-        AlertIOS.alert(
-          'Non Fish are you sure?',
-          'You will need to fill out a Non Fish Protected Species Form in you form book',
-          [
-            {text: 'Cancel', onPress: () => {this.onChangeText(name, false)}, style: 'cancel'},
-            {text: 'OK', onPress: () => {this.onChangeText(name, true)}}
-          ]
-        );
-      }else{
-        this.onChangeText(name, false);
-      }
-    }
-
-    editLocation(editedLocation){
-
-    }
-
-    hideLocationEditor(){
-        this.props.dispatch(
-          fishingEventActions.hideLocationEditor());
-    }
-
-    showLocationEditor(){
-        this.props.dispatch(
-          fishingEventActions.showLocationEditor());
-    }
-
     renderFishingEventModelInputs(type){
-      let model = type ? fishingEventTypeModels[type] : FishingEventCustomModel;
+      let model = FishingEventCustomModel;
       let inputs = [];
       model.forEach((attribute) => {
           if(attribute.readOnly || attribute.hidden) {

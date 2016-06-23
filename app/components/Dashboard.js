@@ -233,7 +233,7 @@ class Dashboard extends Component {
                 }} />
                 <View style={{padding: 10, paddingTop: 15}}>
                   <View>
-                    <Text style={styles.heading}>{this.props.viewingFishingEventId ? "Editing Event: " + this.props.viewingFishingEventId : ""}</Text>
+                    <Text style={styles.heading}>{this.props.viewingFishingEventId ? "Editing Shot: " + this.props.viewingFishingEventId : ""}</Text>
                   </View>
                   <View>
                     {this.renderSelectedDetailView()}
@@ -326,7 +326,7 @@ const select = (State, dispatch) => {
     return {
       fishingEvents: state.fishingEvents.events,
       viewingFishingEventId: state.view.viewingFishingEventId,
-      fishingEventType: state.me.user.fishingEventType,
+      fishingEventType: "tcer",
       ports: state.me.ports,
       tripStarted: state.trip.started,
       formResources: {trip: state.trip, user: state.me.user, vessel: state.me.vessel}

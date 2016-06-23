@@ -7,7 +7,7 @@ let initialState = {
           'Careys bay Wharf', 'Port Chalmers', 'South Port Bluff', 'Westport Harbour Wharf',
           'Port Lyttleton', 'Prime Port Timaru'],
   vessel: {name: "Nancy Glen 2", number: 76533},
-  user: ModelUtils.blankModel(),
+  user: ModelUtils.blankModel(UserModel),
   customInputs: {
     product: [
       {label: "Bins", type: "number", name: "bins"},
@@ -27,8 +27,6 @@ let initialState = {
     ]
   }
 }
-
-initialState.user =
 
 export default (state = initialState, action) => {
     switch (action.type) {
