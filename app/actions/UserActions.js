@@ -2,11 +2,10 @@
 
 class UserActions{
 
-    editUser(key, value){
+    editUser(change){
       return {
         'type': 'editUser',
-        'key': key,
-        'value': value
+        'change': change
       }
     }
 

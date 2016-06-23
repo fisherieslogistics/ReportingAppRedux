@@ -14,7 +14,6 @@ const model = [
   {label: 'Wing Spread',         id: 'wingSpread',         valid: valid.greaterThanZero, type: 'number', defaultValue: null},
   {label: 'Headline Height',     id: 'headlineHeight',     valid: valid.greaterThanZero, type: 'float', defaultValue: null},
   {label: 'Non Fish Protected Species',  id: 'nonFishProtected',  valid: valid.alwaysValid, defaultValue: false, type: 'bool'},
-  {label: 'Gear Code', id: 'gearCode', defaultValue: 'BT', readOnly: true}
 ];
 
 export default model;

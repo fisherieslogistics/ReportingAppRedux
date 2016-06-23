@@ -135,7 +135,7 @@ const select = (State, dispatch) => {
     let state = State.default;
     return {
       fishingEvent: state.fishingEvents.events[state.view.viewingFishingEventId - 1],
-      fishingEventType: state.me.user.fishingEventType
+      fishingEventType: "tcer"
     };
 }
 

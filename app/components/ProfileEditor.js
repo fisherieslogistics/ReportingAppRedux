@@ -30,7 +30,9 @@ class ProfileEditor extends React.Component {
     }
 
     onChangeText(key, value){
-      this.props.dispatch(userActions.editUser(key, value));
+      var change = {};
+      change[key] = value
+      this.props.dispatch(userActions.editUser(change));
     }
 
     renderInput(attr){
@@ -66,7 +68,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   padding: {
-    
+
   },
   row:{
     flex: 1,

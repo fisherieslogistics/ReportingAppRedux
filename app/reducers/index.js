@@ -28,7 +28,6 @@ const mutateState = (state, action) => {
   if(action.type == 'loadSavedState'){
     let loadedState = MainReducer(undefined, {type: 'init'});
     let savedState = action.savedState
-    console.log("SAVED", savedState);
     if(!savedState){
       return newState;
     }
@@ -37,7 +36,7 @@ const mutateState = (state, action) => {
         loadedState[k] = savedState[k];
       }
     });
-    return loadedState;
+    return MainReducer(loadedState, action);
   }
   helper.saveToLocalStorage(newState, action.type);
   return newState;

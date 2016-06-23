@@ -1,13 +1,13 @@
 import ModelUtils from '../utils/ModelUtils';
 import UserModel from '../models/UserModel';
 
-let initialState = {
-  initialUse: true,
+const initialUser = ModelUtils.blankModel(UserModel);
+const initialState = {
   ports: ['Port of Napier', 'Eastland Port Gisbourne', 'Viaduct Harbour Auckland', 'Port Motueka', 'Port Nelson Wharf',
           'Careys bay Wharf', 'Port Chalmers', 'South Port Bluff', 'Westport Harbour Wharf',
           'Port Lyttleton', 'Prime Port Timaru'],
   vessel: {name: "Nancy Glen 2", number: 76533},
-  user: ModelUtils.blankModel(UserModel),
+  user: initialUser,
   customInputs: {
     product: [
       {label: "Bins", type: "number", name: "bins"},
@@ -29,15 +29,20 @@ let initialState = {
 }
 
 export default (state = initialState, action) => {
+    /*if(!state.user){
+      return Object.assign({}, state, {user: initialUser});
+    }*/
     switch (action.type) {
         case 'setMe':
             if(!action.user){
               return state;
             }
-            return { ...state, user: action.user };
+            debugger;
+            return state = Object.assign({}, state, {user: action.user});
         case 'editUser':
-            const user = Object.assign({}, state.user, action.change);
-            return Object.assign({}, state,  { user: action.user });
+            let user = Object.assign({}, state.user, action.change);
+            console.log(user);
+            return Object.assign({}, state,  { user: user });
         case 'setVessel':
             return Object.assign({}, state, { vessel: action.vessel });
         case 'setPorts':

@@ -9,18 +9,11 @@ import {
 } from 'react-native';
 
 import React from 'react';
-import DatePicker from 'react-native-datepicker';
 import moment from 'moment';
 import {connect} from 'react-redux';
 import Helper from '../utils/Helper';
-import FormModel from '../models/FormModel';
-import TCERFormModel from '../models/TCERFormModel';
-import fishingEventModel from '../models/FishingEventModel';
-import TCERFishingEventModel from '../models/TCERFishingEventModel';
-import FormActions from '../actions/FormActions';
+import {createForms} from '../utils/FormUtils';
 import FormsList from './FormsList';
-
-const formActions = new FormActions();
 const helper = new Helper();
 
 class FormView extends React.Component {
@@ -28,96 +21,106 @@ class FormView extends React.Component {
         super(props);
         this.state = {
           ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
-          form: null
+          form: null,
+          xMulti: null,
         };
     }
+
     renderFormsListView(){
       return (
         <View style={[styles.masterView]}>
           <FormsList
             dispatch={this.props.dispatch}
-            forms={this.state.ds.cloneWithRows([...this.props.currentTrip.forms])}
+            forms={this.state.ds.cloneWithRows([...this.props.forms])}
             onSelect={this.setForm.bind(this)}
           />
         </View>
       );
     }
     setForm(form){
-      this.setState({form: form});
+      this.setState({form: form, xMulti: form.meta.xMultiplier});
     }
 
-    renderRepeating(_val, parts, key, allText){
-      _val.forEach((v) => {
-        this.renderMultiple(v, parts, key, allText);
+    renderRepeating(obj, parts, k, allText, meta, eventIndex){
+      let items = meta.prep ? meta.prep(obj[k]) : obj[k];
+      items.forEach((v, i) => {
+        this.renderMultiple(obj, parts, k, allText, eventIndex, i);
       });
     }
 
-    renderMultiple(_val, parts, key, allText){
-      parts.forEach((p, i) => {
-        let val = p.resolve(_val);
-        let y = p.y;
-        if(p.ymultiple){
-          y += (p.ymultiple * (i + 1));
-        }
-        allText.push(this.renderText(val, p.x, y, p.textStyle, p.viewStyle, key));
+    renderMultiple(obj, parts, key, allText, eventIndex, itemIndex){
+      parts.forEach((p) => {
+        let val = p.resolve(obj, itemIndex);
+        allText.push(this.renderText(val, p, eventIndex, itemIndex));
       });
     }
 
-    renderValue(obj, meta, k, isFishingEvent, index, allText){
-      let m = meta.printMapping[k];
-      let val = obj[k];
-      if(m.resolve && val){
-        val = m.resolve(val);
+    resolveValue(resolve, obj){
+      let val = "";
+      try {
+        val = resolve(obj);
+      } catch (e) {
       }
-      let exists = (k in obj) ? true : false;
-      let needed = (isFishingEvent && m.resolveFromEvents) ? false : true;
-      if(exists && needed){
-        if(m.multiple && obj[k]){
-          this.renderMultiple(obj[k], m.parts, k, allText);
-        }else if(m.repeating && obj[k].length) {
-          this.renderRepeating(obj[k], m.parts, k, allText);
-        }else{
-          allText.push(this.renderText(val, m.x + xMultiplier, m.y, m.textStyle, m.viewStyle, k));
-        }
+      return val;
+    }
+
+    getValue(obj, meta, k){
+      if(!meta.resolve){
+        return obj[k];
+      }
+      return this.resolveValue(meta.resolve, meta.resolveFrom ? this.props[meta.resolveFrom] : obj);
+    }
+
+    renderValue(obj, meta, k, allText, eventIndex){
+      if(meta.repeating && obj[k].length) {
+        this.renderRepeating(obj, meta.parts, k, allText, meta, eventIndex);
+      }
+      else if(meta.multiple && obj[k]){
+        this.renderMultiple(obj, meta.parts, k, allText, eventIndex);
+      }
+      else{
+        allText.push(this.renderText(this.getValue(obj, meta, k), meta, eventIndex));
       }
     }
 
-    renderObj(obj, meta, isFishingEvent, index){
+    renderObj(obj, meta, eventIndex){
       let allText = [];
-      Object.keys(meta.printMapping).forEach((k) => {
-        this.renderValue(obj, meta, k, isFishingEvent, index, allText);
+      Object.keys(meta).forEach((k) => {
+        this.renderValue(obj, meta[k], k, allText, eventIndex);
       });
       return allText;
     }
-    renderText(val, x, y, _textStyle, _viewStyle, key){
-      let textStyle = [styles.text];
-      let viewStyle = [styles.textWrapper, {left: x, top: y}];
-      if(textStyle){
-        textStyle.push(_textStyle);
+
+    renderText(val, meta, xIndex=0, yIndex=0){
+      let _key = Math.random().toString() + new Date().getTime().toString();
+      let xy = {left: meta.x * 0.81, top: meta.y * 0.81};
+      if(meta.ymultiple){
+        xy.top += (meta.ymultiple * yIndex);
       }
-      if(_viewStyle){
-        viewStyle.push(_viewStyle);
-      }
-      x += 200;
-      console.log(val, x, y);
+      xy.left += (this.state.xMulti * xIndex);
       return (
-        <View style={viewStyle} key={key + x + y}>
-          <Text style={textStyle}>{"" + (val || key)}</Text>
+        <View style={[styles.textWrapper, xy, meta.viewStyle || {}]} key={_key}>
+          <Text style={[styles.text, meta.textStyle || {}]}>{val}</Text>
         </View>);
     }
-    renderFishingEvents(){
-      let allText = [];
-      this.state.form.fishingEvents.forEach((f, i) => {
-        allText = allText.concat(this.renderObj(f, this.state.form.meta, true, i));
+
+    renderFishingEvents(allText){
+      const meta = this.state.form.meta.printMapping.fishingEvents;
+      const fe = this.state.form.fishingEvents;
+      fe.forEach((f, i) => {
+        allText = allText.concat(this.renderObj(f, meta, i));
       });
       return allText;
     }
-    renderForm(){
-      return this.renderObj(this.state.form, this.state.form.meta);
+    renderForm(allText){
+      return this.renderObj(this.state.form, this.state.form.meta.printMapping.form);
     }
     render() {
-      //let formText = this.state.form ? this.renderForm() : null;
-      let eventsText = this.state.form ? this.renderFishingEvents() : null;
+      let text = [];
+      if(this.state.form){
+        text = this.renderForm(text);
+        text = this.renderFishingEvents(text);
+      }
       return (
         <View style={styles.row}>
           <View style={styles.col}>
@@ -126,7 +129,7 @@ class FormView extends React.Component {
           <View style={styles.col}>
             <Image source={require('../images/TCER.png')} style={styles.bgImage}>
               <View style={styles.form}>
-                {eventsText}
+                {text}
               </View>
             </Image>
           </View>
@@ -138,10 +141,7 @@ class FormView extends React.Component {
 const select = (State, dispatch) => {
     let state = State.default;
     return {
-      currentTrip: state.forms.currentTrip,
-      pastTrips: state.forms.pastTrips,
-      viewingForm: state.forms.viewingForm,
-      formModel: state.forms.formModel,
+      forms: createForms(state.fishingEvents.events),
       user: state.me.user,
       vessel: state.me.vessel
     };
@@ -159,10 +159,11 @@ const styles = StyleSheet.create({
     width: 842,
   },
   textWrapper: {
-    position: 'absolute'
+    position: 'absolute',
+    backgroundColor: 'transparent'
   },
   text: {
-    color: 'black'
+    color: 'red'
   },
   listRowItemNarrow: {
     width: 35,

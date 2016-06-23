@@ -122,9 +122,6 @@ class Helper {
           if(err){
             console.log(err, state);
           }
-          if(!state){
-            console.log("nef");
-          }
           let savedState = this.deserialize(state) || {};
           callback(savedState);
         });
@@ -180,7 +177,7 @@ class Helper {
       let totals = {};
       products.forEach((p) => {
         if(p.weight){
-          totals[p.code] = (totals[p.code] || 0) + parseInt(p.weight);
+          totals[p.code] = ((totals[p.code] || 0) + parseInt(p.weight));
         }
       });
       return Object.keys(totals).map((k) => {
@@ -190,9 +187,9 @@ class Helper {
 
     getUncountedWeight(products, numberOfCounted){
       let totals = this.getTotals(products);
-      return totals.sort((c1, c2) => c1.weight > c2.weight)
+      return totals.sort((c1, c2) => (c1.weight < c2.weight))
                    .map(t => t.weight)
-                   .split(numberOfCounted, totals.length)
+                   .slice(numberOfCounted, totals.length)
                    .reduce((n, b) => n + b, 0);
     }
 

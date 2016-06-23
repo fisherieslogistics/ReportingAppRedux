@@ -36,7 +36,6 @@ class FormsList extends React.Component {
       if(rowID === this.state.selectedListRow){
         rowStyle.push(styles.selectedListRow);
       }
-      console.log(this.state);
       return (
         <TouchableHighlight
           onPress={() => {

@@ -17,7 +17,6 @@ class TripSummary extends React.Component {
       let sailingTime = helper.timeAgo(this.props.trip.sailingTime);
       let unloadTime = helper.timeAgo(this.props.trip.ETA);
       return this.renderText([
-        `Captain ${this.props.user.fullName} on ${this.props.vesselName}`,
         `Sailed from ${this.props.trip.portFrom} ${sailingTime}`,
         `Scheduled to unload to ${unloadTime} at ${this.props.trip.portTo}`
       ]);
@@ -26,7 +25,6 @@ class TripSummary extends React.Component {
     welcomeText(){
       let optionsReady = (this.props.trip.portTo && this.props.trip.portFrom) ? true : false;
       return this.renderText([
-        `Captain ${this.props.user.fullName} on ${this.props.vesselName}`,
         optionsReady ? `` : `Please select sailing and unload options`
       ]);
     }

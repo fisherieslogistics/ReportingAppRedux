@@ -68,7 +68,6 @@ class ProductEditor extends React.Component {
     }
 
     renderRow(product, index){
-      console.log(product.code);
       return (
         <View style={[styles.tableRow]} key={"productRow" + index}>
           <View style={[styles.tableCell]}>

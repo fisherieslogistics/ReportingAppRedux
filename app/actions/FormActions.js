@@ -11,10 +11,9 @@ class FormActions{
       tripId: tripId
     }
   }
-  showingForms(resources, fishingEvents){
+  showingForms(fishingEvents){
     return {
       type: 'showingForms',
-      resources: resources,
       fishingEvents: fishingEvents
     }
   }
