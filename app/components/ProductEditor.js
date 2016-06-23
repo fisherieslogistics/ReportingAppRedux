@@ -133,7 +133,7 @@ class ProductEditor extends React.Component {
 const select = (State) => {
   let state = State.default;
   return {
-    customInputs: state.me.user.customInputs.product,
+    customInputs: state.me.customInputs.product,
     fishingEventId: state.view.viewingFishingEventId,
     fishingEvent: state.fishingEvents.events[state.view.viewingFishingEventId-1]
   }

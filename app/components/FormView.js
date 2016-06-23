@@ -55,7 +55,6 @@ class FormView extends React.Component {
     renderMultiple(_val, parts, key, allText){
       parts.forEach((p, i) => {
         let val = p.resolve(_val);
-        console.log(val);
         let y = p.y;
         if(p.ymultiple){
           y += (p.ymultiple * (i + 1));
@@ -65,12 +64,9 @@ class FormView extends React.Component {
     }
 
     renderValue(obj, meta, k, isFishingEvent, index, allText){
-      let xMultiplier = isFishingEvent ? 100 * index + 1 : 1;
       let m = meta.printMapping[k];
-      console.log(val, k);
       let val = obj[k];
       if(m.resolve && val){
-        console.log(val, k);
         val = m.resolve(val);
       }
       let exists = (k in obj) ? true : false;
@@ -145,7 +141,9 @@ const select = (State, dispatch) => {
       currentTrip: state.forms.currentTrip,
       pastTrips: state.forms.pastTrips,
       viewingForm: state.forms.viewingForm,
-      formModel: state.forms.formModel
+      formModel: state.forms.formModel,
+      user: state.me.user,
+      vessel: state.me.vessel
     };
 }
 

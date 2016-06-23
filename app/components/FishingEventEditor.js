@@ -22,10 +22,11 @@ import DatePicker from 'react-native-datepicker';
 import FishPicker from './FishPicker';
 import Sexagesimal from 'sexagesimal';
 import Errors from './Errors';
-
+import Editor from '../utils/Editor';
 import moment from 'moment';
 import Strings from '../constants/Strings'
 
+const editor = new Editor();
 const fishingEventTypeModels = {
   "tcer": TCERFishingEventModel
 }
@@ -38,10 +39,6 @@ class FishingEventEditor extends React.Component{
         this.state = {
           strings: Strings.english.fishingEvents[props.fishingEventType]
         }
-    }
-
-    componentWillReceiveProps(props){
-
     }
 
     onChangeText(name, value) {
@@ -64,20 +61,6 @@ class FishingEventEditor extends React.Component{
       }
     }
 
-    editLocation(editedLocation){
-
-    }
-
-    hideLocationEditor(){
-        this.props.dispatch(
-          fishingEventActions.hideLocationEditor());
-    }
-
-    showLocationEditor(){
-        this.props.dispatch(
-          fishingEventActions.showLocationEditor());
-    }
-
     renderFishingEventModelInputs(type){
       let model = type ? fishingEventTypeModels[type] : FishingEventModel;
       let inputs = [];
@@ -90,66 +73,19 @@ class FishingEventEditor extends React.Component{
       return inputs;
     }
 
-    getEditor(attribute, value){
-      let validStyle = {}
-      if(attribute.valid && attribute.valid.func(value) !== true){
-          validStyle = styles.invalid;
-      }
-      switch (attribute.type) {
-        case "datetime":
-            if(!value){
-              return (<Text>{this.state.strings.notComplete}</Text>)
-            }
-            return (<DatePicker
-              style={[{width: 200}]}
-              date={value}
-              mode="datetime"
-              format="YYYY-MM-DD HH:mm"
-              confirmBtnText="Confirm"
-              cancelBtnText="Cancel"
-              onDateChange={(datetime) => {
-                this.onChangeText.bind(this)(attribute.id, new moment(datetime));
-              }}
-            />);
-          break;
-        case "product":
-          return (<FishPicker
-                    style={validStyle}
-                    onChange={(value) => {
-                      this.onChangeText(attribute.id, value);
-                    }}
-                    value={value}
-                  />);
-        case "location":
-          if(!value){
-            return (<Text>{this.state.strings.noPositon}</Text>);
-          }
-          return (
-            <TouchableHighlight>
-              <View>
-                <Text>{Sexagesimal.format(value.lat, 'lat')}</Text>
-                <Text>{Sexagesimal.format(value.lon, 'lon')}</Text>
-              </View>
-            </TouchableHighlight>
-          );
+    getCallback(attr){
+      switch (attr.type) {
         case "bool":
-          return (<Switch
-                    onValueChange={(bool) => this.onNonFishChange(attribute.id, bool)}
-                    value={value || false} />);
+          return this.onNonFishChange
+          break;
         default:
-          return (<TextInput
-                   clearTextOnFocus={true}
-                   onFocus={() => this.onChangeText(attribute.id, "")}
-                   defaultValue=""
-                   style={[styles.textInput, validStyle]}
-                   value={value}
-                   onChangeText={text => this.onChangeText(attribute.id, text)} />);
+          return this.onChangeText
       }
     }
 
     renderRow(attribute){
       let value = this.props.fishingEvent[attribute.id];
-      let input = this.getEditor(attribute, value);
+      let input = editor.editor(attribute, value, this.getCallback(attribute).bind(this), styles);
       let rowStyle = [styles.tableRow];
       return (
         <View style={rowStyle} key={attribute.id + "editor"}>

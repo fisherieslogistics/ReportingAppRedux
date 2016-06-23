@@ -27,6 +27,7 @@ import FormActions from '../actions/FormActions';
 import FormView from './FormView.js';
 import Toolbar from './Toolbar';
 import LocationView from './LocationView';
+import ProfileEditor from './ProfileEditor';
 
 const strings = Strings.english;
 const detailTabs = ["details", "catches", "custom"];
@@ -42,7 +43,6 @@ class Dashboard extends Component {
         this.state = {
           selectedTab: "trip",
           selectedDetail: 0,
-          notifCount: 2,
           ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
         };
     }
@@ -55,19 +55,11 @@ class Dashboard extends Component {
       return fe.datetimeAtEnd ? 'start' : 'end';
     }
 
-    renderContent(color: string, pageText: string, num?: number) {
-      return (
-        <View style={[styles.tabContent, {backgroundColor: color}]}>
-          <Text style={styles.tabText}>{pageText}</Text>
-          <Text style={styles.tabText}>{num} reRenders of the {pageText}</Text>
-        </View>
-      );
+    renderContent(){
+      return (<ProfileEditor />);
     }
 
     onPrimaryActionPress(){
-      console.log(
-        "press"
-      )
       switch (this.getNextStage()) {
         case 'start':
           this.props.dispatch(fishingEventActions.startFishingEvent());
