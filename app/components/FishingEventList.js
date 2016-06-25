@@ -25,76 +25,23 @@ const fishingEventDesc = {
   "started": {
     icon: "ship",
     color: "#1b85b8",
-    text: "in water"
   },
   "ended":{
-    icon: "pause",
-    color: "#FF9900",
-    text: "onboard"
+    icon: "exclamation-triangle",
+    color: "#FF9500",
   },
   "readyToSync": {
-    icon: "send-o",
-    color: "#559e83",
-    text: "uploading"
+    icon: "check-circle-o",
+    color: "#0BD318"
   },
   "done":{
-    icon: "cloud",
-    color: "#eaeaea",
-    text: "uploaded"
+    icon: "check-circle-o",
+    color: "#8E8E93"
   },
-  "invalid": {
-    icon: "exclamation-triangle",
-    color: "#FF7878",
-    text: "invalid"
-  }
 }
 
-const fishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
-
 class FishingEventList extends React.Component {
-    constructor(props){
-      super(props);
-      this.state={
-        inputErrors: {}
-      }
-    }
 
-    showfishingEventEditor(fishingEventId){
-        this.props.dispatch(fishingEventActions.showfishingEventEditor(fishingEventId));
-    }
-
-    hidefishingEventEditor(){
-        this.props.dispatch(fishingEventActions.hidefishingEventEditor());
-    }
-
-    setViewingFishingEvent(id){
-      this.props.dispatch(fishingEventActions.setViewingFishingEvent(id));
-    }
-
-    showCatchEditor(fishingEvent){
-      this.setState({
-        showCatchEditor: true,
-        editingFishingEvent: fishingEvent
-      });
-    }
-
-    hideCatchEditor(){
-      this.setState({
-        showCatchEditor: false
-      });
-    }
-
-    getErrors(fishingEvent){
-      let errors = [];
-      if(this.props.inputErrors){
-        errors = errors.concat(findErrors(fishingEventModel, fishingEvent));
-      }
-      return errors;
-    }
-
-    onCatchClose(){
-      this.props.dispatch(catchActions.closeCatchDetail());
-    }
     getFishingEventColor(fishingEvent){
       return fishingEventDesc[this.getFishingEventStatus(fishingEvent)].color;
     }
@@ -118,35 +65,35 @@ class FishingEventList extends React.Component {
 
     getIcon(fishingEvent){
       let status = fishingEventDesc[this.getFishingEventStatus(fishingEvent)];
-      return (<Icon name={status.icon} size={16} color={status.color} />);
+      return (<Icon name={status.icon} size={20} color={status.color} />);
     }
 
     renderRow (fishingEvent, sectionID, rowID) {
-      let listRowStyle = [styles.listRow];
-      if (fishingEvent.id == this.props.selectedId){
-        listRowStyle.push(styles.selectedListRow);
-      }
       return (
         <TouchableHighlight
-          onPress={this.setViewingFishingEvent.bind(this, fishingEvent.id)}
+          onPress={() => {
+            this.setState({
+              selectedSectionID: sectionID
+            });
+            this.props.onPress(fishingEvent);
+          }}
           underlayColor={"#2d74fa"}
           activeOpacity={0.3}
         >
-          <View style={listRowStyle}>
+          <View style={styles.listRow}>
+            <Text style={[styles.listRowItemTiny]}>
+            </Text>
             <Text style={[styles.listRowItemNarrow]}>
               {this.getIcon(fishingEvent)}
             </Text>
-            <Text style={[styles.listRowItem]}>
+            <Text style={[styles.listRowItem, styles.listItemText]}>
               {Lang.fishingEvents.tcer.numberOfInTrip + "  " + fishingEvent.id}
             </Text>
-            <Text style={[styles.listRowItem]}>
+            <Text style={[styles.listRowItem, styles.listItemText]}>
               {fishingEvent.datetimeAtStart.format("HH:mm")}
             </Text>
-            <Text style={[styles.listRowItem, {color: this.getFishingEventColor(fishingEvent)}]}>
-              {this.getFishingEventDesc(fishingEvent)}
-            </Text>
-            <Text style={[styles.listRowItemCommitted, styles.listRowItemNarrow]}>
-              {fishingEvent.targetsSpecies || Lang.fishingEvents.noTarget}
+            <Text style={[styles.listRowItem]}>
+              {fishingEvent.targetsSpecies}
             </Text>
           </View>
         </TouchableHighlight>);
@@ -156,7 +103,7 @@ class FishingEventList extends React.Component {
         <View
           key={`${sectionID}-${rowID}`}
           style={{
-            height: adjacentRowHighlighted ? 4 : 1,
+            height: 1,
             backgroundColor: adjacentRowHighlighted ? '#3B5998' : '#CCCCCC',
           }}
         />
@@ -165,15 +112,14 @@ class FishingEventList extends React.Component {
 
     render () {
       return (
-        <View style={{height: 600, paddingTop: 25, paddingLeft: 20}}>
           <ListView
+            style={[styles.listView]}
             enableEmptySections={true}
             dataSource={this.props.fishingEvents}
             renderRow={this.renderRow.bind(this)}
             renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
             renderSeparator={this.renderSeperator}
           />
-        </View>
       );
     }
 };
@@ -181,31 +127,30 @@ class FishingEventList extends React.Component {
 const styles = StyleSheet.create({
   listRow: {
     flexDirection: 'row',
-    paddingLeft: 20,
+    flex: 1,
     paddingTop: 10,
     paddingBottom: 10,
-    borderRightColor: '#ccc',
-    borderRightWidth: 1,
+    backgroundColor: "#FFF"
   },
-
-  invalid: {
-    backgroundColor: '#FFB3BA'
-  },
-
   selectedListRow: {
-    backgroundColor: '#eee',
+    backgroundColor: '#efefef',
   },
-
   listRowItem: {
-    paddingRight: 6,
-    width: 70
+    flex: 0.5
   },
   listRowItemNarrow: {
-    width: 20,
-    paddingRight: 0
+    flex: 0.25,
+  },
+  listRowItemTiny:{
+    flex: 0.1,
+  },
+  listItemText: {
+    fontSize: 19,
+    color: "#808080"
+  },
+  listView:{
+    marginTop: -20
   }
 });
-
-
 
 export default FishingEventList;

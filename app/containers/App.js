@@ -52,11 +52,8 @@ export default class App extends Component {
     }
     return (
       <Provider store={store}>
-        <View style={{width: width, height: height}}>
-        <StatusBar
-          backgroundColor="black"
-          barStyle="light-content"
-        />
+        <View>
+        <StatusBar />
         <ReportingApp
           store={store} />
         </View>

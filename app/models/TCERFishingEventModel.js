@@ -13,7 +13,7 @@ const model = [
   {label: 'Average Speed',       id: 'averageSpeed',       valid: valid.greaterThanZero, type: 'float', defaultValue: null},
   {label: 'Wing Spread',         id: 'wingSpread',         valid: valid.greaterThanZero, type: 'number', defaultValue: null},
   {label: 'Headline Height',     id: 'headlineHeight',     valid: valid.greaterThanZero, type: 'float', defaultValue: null},
-  {label: 'Non Fish Protected Species',  id: 'nonFishProtected',  valid: valid.alwaysValid, defaultValue: false, type: 'bool'},
+  /*{label: 'Non Fish Protected Species',  id: 'nonFishProtected',  valid: valid.alwaysValid, defaultValue: false, type: 'bool'},*/
 ];
 
 export default model;

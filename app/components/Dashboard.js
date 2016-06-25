@@ -42,7 +42,7 @@ class Dashboard extends Component {
     constructor(props){
         super(props);
         this.state = {
-          selectedTab: "forms",
+          selectedTab: "fishing",
           selectedDetail: 0,
           ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
         };
@@ -189,20 +189,6 @@ class Dashboard extends Component {
       });
     }
 
-    renderSelectedDetailView(){
-      switch (this.state.selectedDetail) {
-        case 0:
-          return (<FishingEventEditor />);
-        break;
-        case 1:
-          return this.props.viewingFishingEventId ? (<ProductEditor />) : null;
-        break;
-        case 2:
-          return (<FishingEventCustomEditor />);
-        break;
-      }
-    }
-
     renderToolBar(){
       let primaryProps = {
         onPress: this.onPrimaryActionPress.bind(this),
@@ -231,7 +217,7 @@ class Dashboard extends Component {
                 onChange={({nativeEvent}) => {
                   this.setState({selectedDetail: nativeEvent.selectedSegmentIndex});
                 }} />
-                <View style={{padding: 10, paddingTop: 15}}>
+                <View>
                   <View>
                     <Text style={styles.heading}>{this.props.viewingFishingEventId ? "Editing Shot: " + this.props.viewingFishingEventId : ""}</Text>
                   </View>
@@ -293,7 +279,6 @@ const styles = StyleSheet.create({
   toolbarWrapper: {
     height: 100,
     flex: 1,
-    paddingTop: 10,
     flexDirection: 'row'
   },
   masterDetailView: {

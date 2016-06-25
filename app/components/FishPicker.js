@@ -18,14 +18,12 @@ class FishPicker extends React.Component {
     constructor(props){
       super(props);
       this.state = {
-        valid: true,
         value: props.value || ""
       }
     }
 
     componentWillReceiveProps(props){
       this.setState({
-        valid: Validator.valid.productCode.func(props.value),
         value: props.value
       })
     }
@@ -53,7 +51,7 @@ class FishPicker extends React.Component {
     render () {
       return (
           <TextInput
-            style={[styles.textInput, this.props.style || {}, this.state.valid ? {} : styles.invalid]}
+            style={[styles.textInput]}
             onChangeText={this.onTyping.bind(this)}
             value={this.state.value}
             maxLength={3}
@@ -65,14 +63,12 @@ class FishPicker extends React.Component {
 
 const styles = StyleSheet.create({
   textInput: {
-    borderColor: 'gray',
-    borderWidth: 1,
-    height: 30,
-    width: 80,
-    paddingLeft: 10,
-  },
-  invalid: {
-    backgroundColor: '#FFB3BA'
+    borderBottomColor: '#b0b0b0',
+    borderBottomWidth: 1,
+    alignSelf: 'stretch',
+    fontSize: 20,
+    color: "#707070",
+    flex: 1
   },
 });
 

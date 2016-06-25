@@ -15,34 +15,34 @@ import {
 import React from 'react';
 import FishPicker from '../components/FishPicker';
 import DatePicker from 'react-native-datepicker';
+import inputStyle from '../styles/inputStyle';
 
 class Editor {
 
-  editor(attribute, value, callback, styles){
-    let validStyle = {}
-    if(attribute.valid && attribute.valid.func(value) !== true){
-        validStyle = styles.invalid;
-    }
+  editor(attribute, value, callback, _style){
     switch (attribute.type) {
       case "datetime":
           if(!value){
-            return (<Text>{"   "}</Text>)
+            return null;
           }
-          return (<DatePicker
-            style={[{width: 200}]}
-            date={value}
-            mode="datetime"
-            format="YYYY-MM-DD HH:mm"
-            confirmBtnText="Confirm"
-            cancelBtnText="Cancel"
-            onDateChange={(datetime) => {
+          return (
+            <DatePicker
+              date={value}
+              mode="datetime"
+              format="YYYY-MM-DD HH:mm"
+              confirmBtnText="Confirm"
+              cancelBtnText="Cancel"
+              customStyles={{
+                dateInput: inputStyle.dateInput,
+                dateIcon: inputStyle.dateIcon
+              }}
+              onDateChange={(datetime) => {
               callback(attribute.id, new moment(datetime));
             }}
           />);
         break;
       case "product":
         return (<FishPicker
-                  style={validStyle}
                   onChange={(value) => {
                     callback(attribute.id, value);
                   }}
@@ -57,10 +57,11 @@ class Editor {
       default:
         return (<TextInput
                  clearTextOnFocus={true}
+                 placeholderText={attribute.label}
                  onFocus={() => callback(attribute.id, "")}
                  defaultValue=""
-                 style={[styles.textInput, validStyle]}
                  value={value}
+                 style={inputStyle.textInput}
                  onChangeText={text => callback(attribute.id, text)} />);
     }
   }

@@ -17,36 +17,28 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 var {height, width} = Dimensions.get('window');
 class Toolbar extends React.Component {
-    renderButton({onPress, iconName, color, text}){
+    renderButton(button){
+      console.log(button)
       return (
-        <View style={{paddingLeft: 15, paddingRight: 15}}>
-          <TouchableOpacity
-            >
-            <View>
-              <Icon.Button
-                name={iconName}
-                onPress={onPress}
-                style={[{backgroundColor: color, height: 50}]}>
-                {text}
-              </Icon.Button>
-            </View>
+          <TouchableOpacity onPress={button.onPress}>
+            <Text style={[styles.button, {color: button.color}]}>{button.text}</Text>
           </TouchableOpacity>
-        </View>
       );
     }
     render() {
-      let button1 = this.props.primaryButton ? this.renderButton(this.props.primaryButton) : null;
-      let button2 = this.props.secondaryButton ? this.renderButton(this.props.secondaryButton) : null;
       return (
         <View style={[styles.toolbar]}>
-          <View style={[styles.toolbarSection, styles.left]}>
-            {button1}
+          <View style={[styles.left]}>
+            {this.renderButton(this.props.buttons.left)}
           </View>
-          <View style={[styles.toolbarSection, styles.center]}>
-            {this.props.infoPanel}
+          <View style={[styles.centerLeft]}>
+            {this.renderButton(this.props.buttons.center)}
           </View>
-          <View style={[styles.toolbarSection, styles.right]}>
-            {button2}
+          <View style={[styles.centerRight]}>
+            <Text style={styles.text}>{this.props.text}</Text>
+          </View>
+          <View style={[styles.right]}>
+            {this.renderButton(this.props.buttons.right)}
           </View>
         </View>
       );
@@ -55,27 +47,43 @@ class Toolbar extends React.Component {
 
 const styles = StyleSheet.create({
   toolbar:{
-       marginTop: 15,
-       flexWrap: 'wrap',
-       flex: 1,
-       paddingRight: 20
-   },
-   toolbarSection:{
-       height: 60,
+     backgroundColor: "#eceef0",
+     flexDirection: 'row',
+     flex: 1
    },
    left: {
-     alignSelf: 'flex-start',
-     paddingRight: 20,
-     width: width * 0.25,
+     alignSelf: 'stretch',
+     flex: 0.3,
+     borderRightColor: "#E0E0E0",
+     borderRightWidth: 2,
+     alignItems: 'flex-start'
    },
    right:{
-     alignSelf: 'flex-end',
-     paddingLeft: 20,
-     width: width * 0.25,
+     alignSelf: 'stretch',
+     flex: 0.3,
+     alignItems: 'flex-end'
    },
-   center:{
+   centerLeft:{
+     alignSelf: 'stretch',
+     flex: 0.2,
+   },
+   centerRight:{
+     alignSelf: 'stretch',
+     flex: 0.2,
+     alignItems: 'center'
+   },
+   text: {
      alignSelf: 'center',
-     width: width * 0.5,
+     marginTop: 25,
+     fontSize: 18,
+     fontWeight: "300"
+   },
+   button: {
+     marginTop: 28,
+     fontSize: 17,
+     marginLeft: 16,
+     marginRight: 16,
+     fontWeight: "300"
    }
 });
 
