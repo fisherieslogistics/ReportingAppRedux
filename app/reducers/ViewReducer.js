@@ -6,7 +6,7 @@ const assign = helper.assign;
 
 let initialState = {
   viewingFishingEventId: null,
-  detailView: "catch"
+  detailView: "catch",
 }
 
 export default (state = initialState, action) => {

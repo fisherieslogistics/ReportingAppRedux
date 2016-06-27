@@ -9,8 +9,7 @@ import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Fishing from '../components/Fishing';
 import {connect} from 'react-redux';
-
-var {height, width} = Dimensions.get('window');
+import AutoSuggestBar from '../components/AutoSuggestBar';
 
 class ReportingApp extends Component {
 
@@ -82,8 +81,9 @@ class ReportingApp extends Component {
   }
 
   render(){
+    var {height, width} = Dimensions.get('window');
     return (
-      <View style={styles.wrapper}>
+      <View style={[styles.wrapper, {width: width, height: height}]>
         <TabBarIOS
           unselectedTintColor="#bbbbbb"
           tintColor="#007aff"
@@ -91,6 +91,7 @@ class ReportingApp extends Component {
         >
           {this.renderTabs.bind(this)()}
         </TabBarIOS>
+        <AutoSuggestBar />
       </View>
     );
   }
@@ -105,8 +106,6 @@ const select = (State, dispatch) => {
 
 const styles = StyleSheet.create({
   wrapper: {
-    width: width,
-    height: height,
     left: 0,
     top: 0
   },

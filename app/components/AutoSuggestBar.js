@@ -11,7 +11,7 @@ import{
 import React from 'react';
 import speciesCodes from '../constants/speciesCodes.json';
 let {height, width} = Dimensions.get('window');
-import inputStyle from '../styles/inputStyle';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 class AutoSuggestBar extends React.Component {
 
@@ -134,23 +134,18 @@ class AutoSuggestBar extends React.Component {
     render () {
       let bar = null;
       if(this.state.focus){
-        bar = (<View style={styles.resultsBar}>
-                 {this.renderResults.bind(this)()}
-               </View>);
+        bar = (
+            <View style={styles.resultsBarWrapper}>
+              <View style={styles.resultsBar}>
+                {this.renderResults.bind(this)()}
+              </View>
+              <KeyboardSpacer />
+            </View>
+        );
       }
       return (
         <View style={[styles.row]}>
-          <TextInput
-            style={[inputStyle.textInput]}
-            onFocus={this.onFocus.bind(this)}
-            onBlur={this.onBlur.bind(this)}
-            onChangeText={this.onChangeText.bind(this)}
-            value={this.state.text}
-            maxLength={3}
-            autoCapitalize={'none'}
-            autoCorrect={false}
-          />
-          {bar}
+
         </View>
       );
     }
@@ -161,7 +156,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
   },
+  resultsBarWrapper: {
+    position: 'absolute',
+    left: -334,
+    bottom: 0
+  },
   resultsBar: {
+    height: 80,
+    width: width,
+    flex: 1,
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+  },
+  resultsBarBeef: {
     position: 'absolute',
     height: 80,
     top: 162,

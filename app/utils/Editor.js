@@ -17,8 +17,18 @@ import FishPicker from '../components/FishPicker';
 import DatePicker from 'react-native-datepicker';
 import inputStyle from '../styles/inputStyle';
 
+import speciesCodes from '../constants/speciesCodes.json';
+
+let speciesSuggestions = speciesCodes.map((s) => { return {value: s, description: s + " description"}});
+
 class Editor {
 
+  autoSuggestCodes(){
+    switch (attribute.type) {
+      case "product":
+        return speciesSuggestions;
+    }
+  }
   editor(attribute, value, callback){
     switch (attribute.type) {
       case "datetime":
