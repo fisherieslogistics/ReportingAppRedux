@@ -12,15 +12,16 @@ export class MasterDetailView extends React.Component {
   render(){
     return (
       <View style={[styles.wrapper]}>
-        <View style={[styles.row, styles.small]}>
-          {this.props.toolbar}
-        </View>
         <View style={[styles.row]}>
           <View style={[styles.master]}>
+            {this.props.masterToolbar}
             <View style={[styles.col, styles.background]}>{this.props.master}</View>
           </View>
           <View style={[styles.detail]}>
-            <View style={[styles.col]}>{this.props.detail}</View>
+            {this.props.detailToolbar}
+            <View style={[styles.col]}>
+              {this.props.detail}
+            </View>
           </View>
         </View>
     </View>);
@@ -32,10 +33,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
-    alignSelf: 'stretch'
-  },
-  small: {
-    flex: 0.09
+    alignSelf: 'stretch',
+    backgroundColor: '#efeff4'
   },
   col: {
     flexDirection: 'column',

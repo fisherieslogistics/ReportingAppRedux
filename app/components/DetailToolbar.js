@@ -16,9 +16,8 @@ import {
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 var {height, width} = Dimensions.get('window');
-class Toolbar extends React.Component {
+class DetailToolbar extends React.Component {
     renderButton(button){
-      console.log(button)
       return (
           <TouchableOpacity onPress={button.onPress}>
             <Text style={[styles.button, {color: button.color}]}>{button.text}</Text>
@@ -29,16 +28,18 @@ class Toolbar extends React.Component {
       return (
         <View style={[styles.toolbar]}>
           <View style={[styles.left]}>
-            {this.renderButton(this.props.buttons.left)}
+            {this.renderButton(this.props.left)}
           </View>
-          <View style={[styles.centerLeft]}>
-            {this.renderButton(this.props.buttons.center)}
-          </View>
-          <View style={[styles.centerRight]}>
-            <Text style={styles.text}>{this.props.text}</Text>
+          <View style={styles.center}>
+            <View style={[styles.centerTop]}>
+              {this.props.centerTop}
+            </View>
+            <View style={[styles.centerBottom]}>
+              {this.props.centerBottom}
+            </View>
           </View>
           <View style={[styles.right]}>
-            {this.renderButton(this.props.buttons.right)}
+            {this.renderButton(this.props.right)}
           </View>
         </View>
       );
@@ -46,45 +47,40 @@ class Toolbar extends React.Component {
 };
 
 const styles = StyleSheet.create({
-  toolbar:{
-     backgroundColor: "#eceef0",
+   toolbar:{
+     backgroundColor: "#F9F9F9",
      flexDirection: 'row',
-     flex: 1
+     flex: 0.1
    },
    left: {
      alignSelf: 'stretch',
-     flex: 0.3,
-     borderRightColor: "#E0E0E0",
-     borderRightWidth: 2,
+     flex: 0.2,
      alignItems: 'flex-start'
    },
    right:{
      alignSelf: 'stretch',
-     flex: 0.3,
+     flex: 0.2,
      alignItems: 'flex-end'
    },
-   centerLeft:{
-     alignSelf: 'stretch',
-     flex: 0.2,
+   center:{
+     paddingTop: 15,
+     flex: 0.6,
+     alignItems: 'center',
    },
-   centerRight:{
-     alignSelf: 'stretch',
-     flex: 0.2,
+   centerTop:{
+     flex: 0.4,
+   },
+   centerBottom:{
+     flex: 0.6,
      alignItems: 'center'
-   },
-   text: {
-     alignSelf: 'center',
-     marginTop: 25,
-     fontSize: 18,
-     fontWeight: "300"
    },
    button: {
      marginTop: 28,
-     fontSize: 17,
+     fontSize: 20,
      marginLeft: 16,
      marginRight: 16,
-     fontWeight: "300"
+     fontWeight: "500"
    }
 });
 
-module.exports = Toolbar;
+module.exports = DetailToolbar;

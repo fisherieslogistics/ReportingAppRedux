@@ -200,7 +200,6 @@ class Helper {
     isA(obj, typeStr){
       return typeof obj === string;
     }
-
 };
 
 export default Helper;

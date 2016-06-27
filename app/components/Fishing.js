@@ -13,10 +13,12 @@ import MasterDetailView from './MasterDetailView';
 import FishingEventActions from '../actions/FishingEventActions';
 import FishingEventCustomEditor from './FishingEventCustomEditor';
 import ProductEditor from './ProductEditor';
+import DetailToolbar from './DetailToolbar';
+import MasterToolbar from './MasterToolbar';
 
 import {connect} from 'react-redux';
 import moment from 'moment';
-import Toolbar from './Toolbar';
+
 const detailTabs = ["details", "catches", "custom"];
 const fishingEventActions = new FishingEventActions();
 
@@ -31,6 +33,17 @@ class Fishing extends React.Component{
 
   startFishingEvent(){
     this.props.dispatch(fishingEventActions.startFishingEvent());
+  }
+
+  commitFishingEvents(){
+    AlertIOS.alert(
+      'Commit Fishing',
+      'Click OK to confirm that all data is correct this will sign any unsigned forms',
+      [
+        {text: 'Cancel', onPress: () => {}, style: 'cancel'},
+        {text: 'OK', onPress: () => {}}
+      ]
+    );
   }
 
   endFishingEvent(){
@@ -100,6 +113,7 @@ class Fishing extends React.Component{
       case 0:
         return (<FishingEventEditor
                  fishingEvent={this.props.fishingEvent}
+                 editorType={'event'}
                  />);
       break;
       case 1:
@@ -115,17 +129,20 @@ class Fishing extends React.Component{
     }
   }
 
+  renderSegementedControl(){
+    return (
+      <SegmentedControlIOS
+        values={detailTabs}
+        selectedIndex={this.state.selectedDetail}
+        style={styles.detailSelector}
+        onChange={({nativeEvent}) => {
+          this.setState({selectedDetail: nativeEvent.selectedSegmentIndex});
+        }}
+      />);
+  }
+
   renderDetailView(){
     return(<View style={[styles.detailView, styles.col]}>
-            <View style={[styles.col, styles.detailSelectorWrapper]}>
-              <SegmentedControlIOS
-                values={detailTabs}
-                selectedIndex={this.state.selectedDetail}
-                style={styles.detailSelector}
-                onChange={({nativeEvent}) => {
-                  this.setState({selectedDetail: nativeEvent.selectedSegmentIndex});
-                }} />
-            </View>
               <View style={[styles.row]}>
                   {this.selectedDetailView()}
               </View>
@@ -133,24 +150,32 @@ class Fishing extends React.Component{
   }
 
   render(){
+    let detailToolbar = (
+      <DetailToolbar
+        left={{color: "red", text: "Delete", onPress: this.removeFishingEvent.bind(this)}}
+        right={{color: "#007aff", text: "End", onPress: this.endFishingEvent.bind(this)}}
+        centerTop={<Text>{this.props.fishingEvent.id}</Text>}
+        centerBottom={this.renderSegementedControl()}
+      />
+    );
+    let masterToolbar = (
+      <MasterToolbar
+        left={{color: "#007aff", text: "Commit", onPress: this.commitFishingEvents.bind(this)}}
+        right={{color: "#007aff", text: "Plus", onPress: this.startFishingEvent.bind(this)}}
+      />
+    )
+    console.log(detailToolbar);
     return (
       <MasterDetailView
-        toolbar={
-          <Toolbar
-            buttons={{
-              left: {color: "#007aff", text: "Shoot", onPress: this.startFishingEvent.bind(this)},
-              center: {color: "red", text: "Cancel", onPress: this.removeFishingEvent.bind(this)},
-              right: {color: "#007aff", text: "Haul", onPress: this.endFishingEvent.bind(this)}
-            }}
-            text={this.props.fishingEvent ? "Shot " + this.props.fishingEvent.id : ""}
-          />
-        }
         master={<FishingEventList
                   fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents].reverse())}
                   onPress={this.setViewingFishingEvent.bind(this)}
                 />}
         detail={this.renderDetailView.bind(this)()}
-      />);
+        detailToolbar={detailToolbar}
+        masterToolbar={masterToolbar}
+      />
+    );
   }
 };
 
@@ -166,12 +191,9 @@ const styles = {
     flexDirection: 'row',
     flex: 1,
   },
-  detailSelectorWrapper: {
-    flex: 0.08,
-    alignItems: 'center'
-  },
   detailSelector:{
-    width: 280,
+    width: 260,
+    height: 25,
     alignSelf: 'center'
   }
 }

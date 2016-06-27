@@ -1,22 +1,23 @@
 export default {
   textInput: {
-    alignSelf: 'stretch',
-    fontSize: 20,
-    color: "#707070",
+    fontSize: 16,
+    flex: 1,
+    height: 30,
+    color: "#707070"
   },
   inputRow:{
     flexDirection: 'row',
     borderBottomColor: '#b0b0b0',
     borderBottomWidth: 1,
-    height: 40
+    height: 40,
+    flex: 1
   },
   dateIcon: {
-     position: 'absolute',
-     left: -22,
-     top: 1,
-     marginLeft: 0
+    height: 0,
+    opacity: 0
   },
   dateInput:{
+    marginLeft: 20,
     borderWidth: 0,
     flexDirection: 'row',
     flex: 1,
@@ -32,7 +33,8 @@ export default {
     color: "#b0b0b0",
   },
   inputWrapper:{
+    alignItems: 'flex-start',
     flex: 0.6,
-    paddingLeft: 5,
+    paddingLeft: 4,
   },
 }

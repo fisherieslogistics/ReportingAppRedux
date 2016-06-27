@@ -19,12 +19,9 @@ import inputStyle from '../styles/inputStyle';
 
 class Editor {
 
-  editor(attribute, value, callback, _style){
+  editor(attribute, value, callback){
     switch (attribute.type) {
       case "datetime":
-          if(!value){
-            return null;
-          }
           return (
             <DatePicker
               date={value}

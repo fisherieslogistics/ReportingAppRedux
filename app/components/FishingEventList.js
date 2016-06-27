@@ -18,25 +18,27 @@ import Validator from '../utils/Validator';
 import {findCombinedErrors, findErrors} from '../utils/ModelErrors';
 import FishingEventModel from '../models/FishingEventModel';
 import TCERFishingEventModel from '../models/TCERFishingEventModel';
+import colors from '../styles/colors.js';
 const helper = new Helper();
 const Lang = Strings.english;
+
 
 const fishingEventDesc = {
   "started": {
     icon: "ship",
-    color: "#1b85b8",
+    color: colors.blue,
   },
   "ended":{
     icon: "exclamation-triangle",
-    color: "#FF9500",
+    color: colors.orange,
   },
   "readyToSync": {
     icon: "check-circle-o",
-    color: "#0BD318"
+    color: colors.green
   },
   "done":{
-    icon: "check-circle-o",
-    color: "#8E8E93"
+    icon: "cloud",
+    color: colors.gray
   },
 }
 
@@ -77,7 +79,7 @@ class FishingEventList extends React.Component {
             });
             this.props.onPress(fishingEvent);
           }}
-          underlayColor={"#2d74fa"}
+          underlayColor={colors.blue}
           activeOpacity={0.3}
         >
           <View style={styles.listRow}>
@@ -104,7 +106,7 @@ class FishingEventList extends React.Component {
           key={`${sectionID}-${rowID}`}
           style={{
             height: 1,
-            backgroundColor: adjacentRowHighlighted ? '#3B5998' : '#CCCCCC',
+            backgroundColor: colors.midGray,
           }}
         />
       );
@@ -130,10 +132,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor: "#FFF"
+    backgroundColor: colors.white
   },
   selectedListRow: {
-    backgroundColor: '#efefef',
+    backgroundColor: colors.blue,
   },
   listRowItem: {
     flex: 0.5
@@ -146,7 +148,7 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     fontSize: 19,
-    color: "#808080"
+    color: colors.midGray
   },
   listView:{
     marginTop: -20

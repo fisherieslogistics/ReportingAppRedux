@@ -11,7 +11,9 @@ import{
 import Validator from '../utils/Validator';
 
 import React from 'react';
-import species_codes from '../constants/speciesCodes.json';
+import speciesCodes from '../constants/speciesCodes.json';
+import AutoSuggestBar from './AutoSuggestBar';
+let codes = speciesCodes.map((s) => { return {value: s, description: s + " description"}});
 
 class FishPicker extends React.Component {
 
@@ -28,14 +30,14 @@ class FishPicker extends React.Component {
       })
     }
 
-    onTyping (text) {
+    onChangeText(text) {
       text = text.toLowerCase();
       this.setState({
         value: text
       });
       this.setState({valid: (text.length === 3 || text.length === 0)});
 
-      if((text.length === 3 && species_codes.indexOf(text) !== -1) || !text.length){
+      if((text.length === 3 && speciesCodes.indexOf(text) !== -1) || !text.length){
         this.props.onChange(text);
         return;
       }
@@ -49,27 +51,15 @@ class FishPicker extends React.Component {
     }
 
     render () {
-      return (
-          <TextInput
-            style={[styles.textInput]}
-            onChangeText={this.onTyping.bind(this)}
-            value={this.state.value}
-            maxLength={3}
-            autoCapitalize={'none'}
-            autoCorrect={false}/>
-      );
+      return(
+        <AutoSuggestBar
+         choices={codes}
+         favourites={["bco", "rco", "sna", "tar", "gur"]}
+         maxResults={10}
+         onChangeText={this.onChangeText.bind(this)}
+      />);
+
     }
 };
-
-const styles = StyleSheet.create({
-  textInput: {
-    borderBottomColor: '#b0b0b0',
-    borderBottomWidth: 1,
-    alignSelf: 'stretch',
-    fontSize: 20,
-    color: "#707070",
-    flex: 1
-  },
-});
 
 export default FishPicker;

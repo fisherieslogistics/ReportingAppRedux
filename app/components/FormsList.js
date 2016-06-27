@@ -42,7 +42,7 @@ class FormsList extends React.Component {
             this.setState({selectedListRow: rowID.toString()});
             this.props.onSelect(form);
           }}
-          underlayColor={"#2d74fa"}
+          underlayColor={colors.blue}
           activeOpacity={0.3}
           style={rowStyle}
         >
