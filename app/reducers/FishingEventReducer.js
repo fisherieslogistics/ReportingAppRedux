@@ -131,7 +131,7 @@ const newFishingEvent = (state, location, trawl) => {
     newEvent.datetimeAtStart = moment();
     let Location = Object.assign({}, location);
     newEvent.locationAtStart = Location;
-    newEvent.products = CreateBlankSpeciesWeightPairs(NUMBER_OF_PRODUCTS);
+    newEvent.products = [];
     let previousEvent = state.events.length ? Object.assign({}, state.events[state.events.length - 1]) : null;
     if(previousEvent){
       newEvent.targetSpecies = "" + previousEvent.targetSpecies;
@@ -142,7 +142,9 @@ const newFishingEvent = (state, location, trawl) => {
         newEvent = Object.assign({}, newEvent, update);
       });
       previousEvent.products.forEach((c, i) =>{
-        newEvent.products[i].code = "" + c.code;
+        products.push({code: c.code,
+                       containerType: c.containerType,
+                       treatment: c.treatment});
       });
     }
     return Object.assign({}, state, {

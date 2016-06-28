@@ -37,13 +37,21 @@ class FishingEventActions{
       }
     }
     setfishingEventValue(fishingEventId, inputId, value) {
-        return {
+      return (dispatch, getState) => {
+        dispatch({
             type: 'setFishingEventValue',
             inputId: inputId,
             fishingEventId: fishingEventId,
             value: value,
             timestamp: moment()
-        };
+        });
+        dispatch({
+          type: 'addFavourite',
+          favouriteName: inputId,
+          value: value
+        })
+      }
+
     }
     setfishingEventLocationValue(fishingEventId, changes) {
         return {

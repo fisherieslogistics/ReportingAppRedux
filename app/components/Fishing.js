@@ -7,14 +7,14 @@ import {
   Text
 } from 'react-native';
 import React, { Component } from 'react';
-import FishingEventEditor from './FishingEventEditor';
+import EventDetailEditor from './EventDetailEditor';
 import FishingEventList from './FishingEventList';
 import MasterDetailView from './MasterDetailView';
 import FishingEventActions from '../actions/FishingEventActions';
 import FishingEventCustomEditor from './FishingEventCustomEditor';
-import ProductEditor from './ProductEditor';
-import DetailToolbar from './DetailToolbar';
+import DetailToolbar from  './DetailToolbar';
 import MasterToolbar from './MasterToolbar';
+import EventProductsEditor from './EventProductsEditor';
 
 import {connect} from 'react-redux';
 import moment from 'moment';
@@ -27,7 +27,7 @@ class Fishing extends React.Component{
     super(props);
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
-      selectedDetail: 0
+      selectedDetail: 1
     };
   }
 
@@ -111,16 +111,16 @@ class Fishing extends React.Component{
   selectedDetailView(){
     switch (this.state.selectedDetail) {
       case 0:
-        return (<FishingEventEditor
+        return (<EventDetailEditor
                  fishingEvent={this.props.fishingEvent}
                  editorType={'event'}
                  dispatch={this.props.dispatch}
                  />);
       break;
       case 1:
-        return this.props.viewingFishingEventId ? (<ProductEditor
-                                                    fishingEvent={this.props.fishingEvent}
-                                                    />) : null;
+        return (<EventProductsEditor
+                 fishingEvent={this.props.fishingEvent}
+                />);
       break;
       case 2:
         return (<FishingEventCustomEditor
@@ -182,7 +182,7 @@ class Fishing extends React.Component{
 
 const styles = {
   detailView: {
-    padding: 15,
+    padding: 0,
   },
   col: {
     flexDirection: 'column',

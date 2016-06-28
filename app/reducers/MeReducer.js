@@ -31,29 +31,41 @@ const initialState = {
 }
 
 export default (state = initialState, action) => {
-    /*if(!state.user){
-      return Object.assign({}, state, {user: initialUser});
-    }*/
-    switch (action.type) {
-        case 'setMe':
-            if(!action.user){
-              return state;
-            }
-            debugger;
-            return state = Object.assign({}, state, {user: action.user});
-        case 'editUser':
-            let user = Object.assign({}, state.user, action.change);
-            console.log(user);
-            return Object.assign({}, state,  { user: user });
-        case 'setVessel':
-            return Object.assign({}, state, { vessel: action.vessel });
-        case 'setPorts':
-            return Object.assign({}, state, { ports: action.ports });
-        case 'setCedricData':
-            return Object.assign({}, state, { cedricData: action.data});
-        case 'logout':
-            return Object.assign({}, state, defaultState);
+  switch (action.type) {
+    case 'setMe':
+      if(!action.user){
+        return state;
+      }
+      return state = update(state, {user: action.user});
+    case 'editUser':
+      let user = update(state.user, action.change);
+      console.log(user);
+      return update(state,  { user: user });
+    case 'setVessel':
+      return update(state, { vessel: action.vessel });
+    case 'setPorts':
+      return update(state, { ports: action.ports });
+    case 'setCedricData':
+      return update(state, { cedricData: action.data});
+    case 'logout':
+      return update(state, defaultState);
+    case 'addFavourite':
+      switch (action.favouriteName) {
+        case "targetSpecies":
+        case "species":
+          let faves = update({}, state.autoSuggestFavourites);
+          let change = faves[action.favouriteName] || {};
+          change[action.value] = (change[action.value] || 0) + 1;
+          faves[action.favouriteName] = change;
+          return update(state, {autoSuggestFavourites: faves});
+          break;
         default:
-            return state;
-    }
+      }
+    default:
+      return state;
+  }
 };
+
+const update = (obj, change) => {
+  return Object.assign({}, obj, change);
+}

@@ -18,7 +18,7 @@ import DatePicker from 'react-native-datepicker';
 import inputStyle from '../styles/inputStyle';
 
 class Editor {
-  editor(attribute, value, callback){
+  editor(attribute, value, callback, extraProps = {}){
     switch (attribute.type) {
       case "datetime":
           return (
@@ -44,6 +44,7 @@ class Editor {
                   }}
                   value={value}
                   name={attribute.id}
+                  {...extraProps}
                 />);
       case "location":
         break;

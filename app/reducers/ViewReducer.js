@@ -11,18 +11,14 @@ let initialState = {
   autoSuggestBar: {
     choices: [],
     favourites: [],
-    favouritesChangedAt: null,
     text: "",
     name: null,
     visible: false
   },
-  eventEmitter: null
 }
 
+
 export default (state = initialState, action) => {
-    if(!state.eventEmitter){
-      state = update(state, {eventEmitter: new EventEmitter()});
-    }
     switch (action.type) {
       case 'setViewingFishingEvent':
         return update(state, {viewingFishingEventId: action.fishingEventId});
@@ -35,10 +31,12 @@ export default (state = initialState, action) => {
           name: action.name
         })});
       case 'toggleAutoSuggestBar':
-        console.log(action);
-        return update(state, {autoSuggestBar: update(state.autoSuggestBar, {
-          visible: action.visible
-        })});
+        if(action.visible){
+          return update(state, {autoSuggestBar: update(state.autoSuggestBar, {
+            visible: action.visible
+          })});
+        }
+        return update(state, {autoSuggestBar: initialState.autoSuggestBar});
     default:
         return state;
     }

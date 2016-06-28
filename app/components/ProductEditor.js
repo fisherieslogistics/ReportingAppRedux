@@ -116,7 +116,7 @@ class ProductEditor extends React.Component {
     }
 
     render () {
-      if(!this.props.fishingEventId){
+      if(!this.props.fishingEvent){
         return null;
       }
       return(
@@ -132,9 +132,7 @@ class ProductEditor extends React.Component {
 const select = (State) => {
   let state = State.default;
   return {
-    customInputs: state.me.customInputs.product,
-    fishingEventId: state.view.viewingFishingEventId,
-    fishingEvent: state.fishingEvents.events[state.view.viewingFishingEventId-1]
+    customInputs: state.me.customInputs.product
   }
 }
 

@@ -5,7 +5,7 @@ import{
   View,
   Dimensions,
   TextInput,
-  TouchableHighlight
+  TouchableOpacity
 } from 'react-native';
 
 import React from 'react';
@@ -19,7 +19,6 @@ class AutoSuggestBar extends React.Component {
 
     constructor(props){
       super(props);
-      this.eventEmitter = props.eventEmitter;
       this.__searchTimeout = null;
       this.state = {
         focus: false,
@@ -27,8 +26,7 @@ class AutoSuggestBar extends React.Component {
         descriptionStore:{},
         choices: [],
         results: [],
-        name: "",
-        favouritesChangedAt: null
+        name: ""
       }
     }
 
@@ -80,7 +78,7 @@ class AutoSuggestBar extends React.Component {
     }
 
     onResultPress(value){
-      this.eventEmitter.emit('AutoSuggestResultPress', {name: this.state.name, value: value});
+      this.props.eventEmitter.emit('AutoSuggestResultPress', {name: this.state.name, value: value});
     }
 
     componentWillReceiveProps(props){
@@ -93,7 +91,6 @@ class AutoSuggestBar extends React.Component {
         this.onChangeText("");
         return;
       }
-
       if(props.text !== this.state.text){
         this.onChangeText(props.text);
       }
@@ -102,11 +99,10 @@ class AutoSuggestBar extends React.Component {
     renderResult(resultIndex){
       let result = this.state.choices[resultIndex];
       let isSelected = (result.value.toUpperCase() === this.props.text.toUpperCase());
-      console.log(result.value.toUpperCase(), this.props.text.toUpperCase());
       let resultTextStyle = isSelected ? styles.resultTextSelected : styles.resultText;
       let backgroundStyle = isSelected ? styles.resultBackgroundSelected : styles.resultBackground;
       return (
-        <TouchableHighlight key={resultIndex + "autoSuggest"}
+        <TouchableOpacity key={resultIndex + "autoSuggest"}
           onPress={() => this.onResultPress(result.value)}
         >
           <View style={[styles.result, backgroundStyle]}>
@@ -117,7 +113,7 @@ class AutoSuggestBar extends React.Component {
               {result.description}
             </Text>
           </View>
-        </TouchableHighlight>);
+        </TouchableOpacity>);
     }
 
     renderResults(){

@@ -8,6 +8,8 @@ import LocationReducer from './LocationReducer';
 import TripReducer from './TripReducer';
 import FormReducer from './FormReducer';
 import Helper from '../utils/Helper';
+import EventsReducer from './EventsReducer';
+
 const helper = new Helper();
 var AsyncStorage = require('AsyncStorage');
 
@@ -18,7 +20,8 @@ const reducers = {
     view: ViewReducer,
     location: LocationReducer,
     trip: TripReducer,
-    forms: FormReducer
+    forms: FormReducer,
+    uiEvents: EventsReducer
 }
 
 let MainReducer = combineReducers(reducers);
@@ -36,7 +39,6 @@ const mutateState = (state, action) => {
         loadedState[k] = savedState[k];
       }
     });
-    delete loadedState.view.eventEmitter;
     return MainReducer(loadedState, action);
   }
   helper.saveToLocalStorage(newState, action.type);

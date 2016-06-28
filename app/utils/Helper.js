@@ -139,7 +139,6 @@ class Helper {
       if(actionType.indexOf('@@redux') !== -1){
         return;
       }
-      delete state.view.eventEmitter;
       let serializedState = this.serialize(state);
       await AsyncStorage.setItem('savedState', serializedState, (err, something) => {
         console.log(err, something)

@@ -32,7 +32,7 @@ import colors from '../styles/colors';
 const editor = new Editor();
 const fishingEventActions = new FishingEventActions();
 
-class FishingEventEditor extends React.Component{
+class EventDetailEditor extends React.Component{
     constructor (props){
         super(props);
         this.state = {
@@ -86,7 +86,8 @@ class FishingEventEditor extends React.Component{
     getEditor(attribute){
       return editor.editor(attribute,
                      this.props.fishingEvent[attribute.id],
-                     this.onChange.bind(this))
+                     this.onChange.bind(this),
+                     {fishingEvent: this.props.fishingEvent});
     }
 
     renderSingleEditor(attribute){
@@ -171,6 +172,8 @@ class FishingEventEditor extends React.Component{
 const styles = StyleSheet.create({
   wrapper:{
    backgroundColor: '#fff',
+   margin: 15,
+   marginRight: 18,
    borderRadius: 10,
    paddingTop: 10,
    paddingLeft: 30,
@@ -207,4 +210,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FishingEventEditor;
+export default EventDetailEditor;

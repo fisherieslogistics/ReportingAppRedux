@@ -29,7 +29,8 @@ class FishPicker extends React.Component {
     constructor(props){
       super(props);
       this.state = {
-        value: ""
+        value: "",
+        fishingEventId: props.fishingEventId
       }
     }
 
@@ -37,7 +38,20 @@ class FishPicker extends React.Component {
       this.setState({
         value: this.props.value
       });
-      this.addListenerOn(this.props.eventEmitter, 'AutoSuggestResultPress', this.autoSuggestEmitted.bind(this));
+      this.addListenerOn(this.props.eventEmitter,
+                         'AutoSuggestResultPress',
+                         this.autoSuggestEmitted.bind(this));
+    }
+
+    componentWillReceiveProps(props){
+      if(this.state.fishingEventId !== props.fishingEvent.id){
+        this.setState({
+          value: props.value
+        });
+      }
+      this.setState({
+        fishingEventId: props.fishingEvent.id
+      });
     }
 
     autoSuggestEmitted(event){
@@ -55,18 +69,22 @@ class FishPicker extends React.Component {
     }
 
     onFocus(){
+      let userFavourites = this.props.favourites[this.props.name];
+      let favourites = userFavourites ? Object.keys(userFavourites).sort((k1, k2) => {
+        return userFavourites[k1] - userFavourites[k2];
+      }) : [];
       this.props.dispatch(viewActions.initAutoSuggestBarChoices(speciesCodesDesc,
-                                                                ["rco", "bco"],
+                                                                favourites,
                                                                 this.props.value,
                                                                 this.props.name));
       this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
     }
 
     onBlur(){
-      this.props.dispatch(viewActions.initAutoSuggestBarChoices([],
-                                                                [],
-                                                                "",
-                                                                ""));
+      this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
+    }
+
+    componentWillUnmount(){
       this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
     }
 
@@ -112,7 +130,8 @@ reactMixin(FishPicker.prototype, Subscribable.Mixin);
 const select = (State, dispatch) => {
     let state = State.default;
     return {
-      eventEmitter: state.view.eventEmitter
+      eventEmitter: state.uiEvents.eventEmitter,
+      favourites: state.me.autoSuggestFavourites
     };
 }
 

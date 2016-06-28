@@ -110,9 +110,10 @@ class ReportingApp extends Component {
 
 const select = (State, dispatch) => {
     let state = State.default;
+    console.log("EVENTS", state.uiEvents.eventEmitter);
     return {
       autoSuggestBar: state.view.autoSuggestBar,
-      eventEmitter: state.view.eventEmitter
+      eventEmitter: state.uiEvents.eventEmitter
     };
 }
 
