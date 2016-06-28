@@ -29,9 +29,7 @@ import moment from 'moment';
 import Strings from '../constants/Strings'
 import inputStyle from '../styles/inputStyle';
 import colors from '../styles/colors';
-
 const editor = new Editor();
-
 const fishingEventActions = new FishingEventActions();
 
 class FishingEventEditor extends React.Component{

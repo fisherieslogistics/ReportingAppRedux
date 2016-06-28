@@ -11,12 +11,14 @@ import Fishing from '../components/Fishing';
 import {connect} from 'react-redux';
 import AutoSuggestBar from '../components/AutoSuggestBar';
 
+const MAX_AUTOSUGGEST_RESULTS = 12;
+
 class ReportingApp extends Component {
 
   constructor(props){
     super(props);
     this.state = {
-      selectedTab: "fishing"
+      selectedTab: "fishing",
     }
   }
 
@@ -83,7 +85,7 @@ class ReportingApp extends Component {
   render(){
     var {height, width} = Dimensions.get('window');
     return (
-      <View style={[styles.wrapper, {width: width, height: height}]>
+      <View style={[styles.wrapper, {width: width, height: height}]}>
         <TabBarIOS
           unselectedTintColor="#bbbbbb"
           tintColor="#007aff"
@@ -91,7 +93,16 @@ class ReportingApp extends Component {
         >
           {this.renderTabs.bind(this)()}
         </TabBarIOS>
-        <AutoSuggestBar />
+        <AutoSuggestBar
+          eventEmitter={this.props.eventEmitter}
+          visible={this.props.autoSuggestBar.visible}
+          favourites={this.props.autoSuggestBar.favourites}
+          choices={this.props.autoSuggestBar.choices}
+          favouritesChangedAt={this.props.autoSuggestBar.favouritesChangedAt}
+          name={this.props.autoSuggestBar.name}
+          text={this.props.autoSuggestBar.text}
+          maxResults={MAX_AUTOSUGGEST_RESULTS}
+        />
       </View>
     );
   }
@@ -100,7 +111,8 @@ class ReportingApp extends Component {
 const select = (State, dispatch) => {
     let state = State.default;
     return {
-      fishingEvents: state.fishingEvents.events
+      autoSuggestBar: state.view.autoSuggestBar,
+      eventEmitter: state.view.eventEmitter
     };
 }
 
@@ -116,4 +128,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReportingApp
+export default connect(select)(ReportingApp)

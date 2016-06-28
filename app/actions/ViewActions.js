@@ -2,30 +2,29 @@
 import moment from 'moment';
 
 class ViewActions{
-    closeAlert() {
-        return {
-            type: 'alertClosed',
-            timestamp: moment()
-        };
-    }
-    showForms(){
+    initAutoSuggestBarChoices(choices, favourites, text, name){
+      //use a name change to tell it to re initialise
       return {
-        type:'showForms'
+        type: 'initAutoSuggestBarChoices',
+        choices: choices,
+        favourites: favourites,
+        text: text,
+        name: name
       }
     }
-    hideForms(){
+
+    changeAutoSuggestBarText(text, name){
       return {
-        type:'hideForms'
+        type: 'changeAutoSuggestBarText',
+        text: text,
+        name: name
       }
     }
-    showHome(){
+
+    toggleAutoSuggestBar(visible){
       return {
-        type: 'showHome'
-      }
-    }
-    hideHome(){
-      return {
-        type: 'hideHome'
+        type: 'toggleAutoSuggestBar',
+        visible: visible
       }
     }
 }

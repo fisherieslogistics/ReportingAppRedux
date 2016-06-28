@@ -36,6 +36,7 @@ const mutateState = (state, action) => {
         loadedState[k] = savedState[k];
       }
     });
+    delete loadedState.view.eventEmitter;
     return MainReducer(loadedState, action);
   }
   helper.saveToLocalStorage(newState, action.type);

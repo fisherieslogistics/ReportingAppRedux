@@ -114,6 +114,7 @@ class Fishing extends React.Component{
         return (<FishingEventEditor
                  fishingEvent={this.props.fishingEvent}
                  editorType={'event'}
+                 dispatch={this.props.dispatch}
                  />);
       break;
       case 1:
@@ -123,6 +124,7 @@ class Fishing extends React.Component{
       break;
       case 2:
         return (<FishingEventCustomEditor
+                 dispatch={this.props.dispatch}
                  fishingEvent={this.props.fishingEvent}
                 />);
       break;
@@ -154,7 +156,7 @@ class Fishing extends React.Component{
       <DetailToolbar
         left={{color: "red", text: "Delete", onPress: this.removeFishingEvent.bind(this)}}
         right={{color: "#007aff", text: "End", onPress: this.endFishingEvent.bind(this)}}
-        centerTop={<Text>{this.props.fishingEvent.id}</Text>}
+        centerTop={<Text>{this.props.fishingEvent ? this.props.fishingEvent.id : null}</Text>}
         centerBottom={this.renderSegementedControl()}
       />
     );
@@ -164,7 +166,6 @@ class Fishing extends React.Component{
         right={{color: "#007aff", text: "Plus", onPress: this.startFishingEvent.bind(this)}}
       />
     )
-    console.log(detailToolbar);
     return (
       <MasterDetailView
         master={<FishingEventList

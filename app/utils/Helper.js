@@ -131,11 +131,15 @@ class Helper {
       switch (actionType) {
         case 'loadSavedState':
         case 'updateGps':
+        case 'changeAutoSuggestBarText':
+        case 'initAutoSuggestBarChoices':
+        case 'toggleAutoSuggestBar':
           return;
       }
       if(actionType.indexOf('@@redux') !== -1){
         return;
       }
+      delete state.view.eventEmitter;
       let serializedState = this.serialize(state);
       await AsyncStorage.setItem('savedState', serializedState, (err, something) => {
         console.log(err, something)

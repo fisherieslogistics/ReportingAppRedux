@@ -25,6 +25,8 @@ const initialState = {
       {label: "Wind direction", type: "string"},
       {label: "Notes", type: "string"}
     ]
+  },
+  autoSuggestFavourites: {
   }
 }
 

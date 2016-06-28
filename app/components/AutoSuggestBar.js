@@ -9,22 +9,26 @@ import{
 } from 'react-native';
 
 import React from 'react';
-import speciesCodes from '../constants/speciesCodes.json';
 let {height, width} = Dimensions.get('window');
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import UserActions from '../actions/UserActions';
+import colors from '../styles/colors';
+const userActions = new UserActions();
 
 class AutoSuggestBar extends React.Component {
 
     constructor(props){
       super(props);
+      this.eventEmitter = props.eventEmitter;
       this.__searchTimeout = null;
       this.state = {
-        text: "",
         focus: false,
         valueStore: {},
         descriptionStore:{},
         choices: [],
         results: [],
+        name: "",
+        favouritesChangedAt: null
       }
     }
 
@@ -72,49 +76,44 @@ class AutoSuggestBar extends React.Component {
 
     onChangeText(text){
       clearTimeout(this.__searchTimeout);
-      if(!text.length){
-        this.setState({
-          text: ""
-        });
-        return;
-      }
-      this.setState({
-        text: text
-      });
       this.__searchTimeout = setTimeout(() => this.searchChoices(text));
     }
 
-    componentWillMount(){
-      this.initSuggestions(this.props.choices, this.props.favourites);
+    onResultPress(value){
+      this.eventEmitter.emit('AutoSuggestResultPress', {name: this.state.name, value: value});
     }
 
-    valueChanged(value){
-      this.props.onChange(value);
-    }
+    componentWillReceiveProps(props){
+      //use a name change to tell it to re initialise
+      if(props.name !== this.state.name || props.favouritesChangedAt !== this.state.favouritesChangedAt){
+        this.initSuggestions(props.choices, props.favourites);
+        this.setState({
+          name: props.name
+        });
+        this.onChangeText("");
+        return;
+      }
 
-    onFocus(){
-      this.setState({
-        focus: true
-      })
-    }
-
-    onBlur(){
-      this.setState({
-        focus: false
-      })
+      if(props.text !== this.state.text){
+        this.onChangeText(props.text);
+      }
     }
 
     renderResult(resultIndex){
       let result = this.state.choices[resultIndex];
+      let isSelected = (result.value.toUpperCase() === this.props.text.toUpperCase());
+      console.log(result.value.toUpperCase(), this.props.text.toUpperCase());
+      let resultTextStyle = isSelected ? styles.resultTextSelected : styles.resultText;
+      let backgroundStyle = isSelected ? styles.resultBackgroundSelected : styles.resultBackground;
       return (
-        <TouchableHighlight
-          onPress={() => this.onChangeText(result.value)}
+        <TouchableHighlight key={resultIndex + "autoSuggest"}
+          onPress={() => this.onResultPress(result.value)}
         >
-          <View style={styles.result} key={resultIndex + "pppp"}>
-            <Text style={styles.resultText, styles.resultTextValue}>
+          <View style={[styles.result, backgroundStyle]}>
+            <Text style={[resultTextStyle, styles.resultTextValue]}>
               {result.value.toUpperCase()}
             </Text>
-            <Text style={styles.resultText}>
+            <Text style={[resultTextStyle]}>
               {result.description}
             </Text>
           </View>
@@ -122,7 +121,7 @@ class AutoSuggestBar extends React.Component {
     }
 
     renderResults(){
-      if(this.state.text.length){
+      if(this.props.text.length){
         return this.state.results.map(this.renderResult.bind(this));
       }else{
         return this.state.choices.slice(0, this.props.maxResults).map((r, i) => {
@@ -132,20 +131,15 @@ class AutoSuggestBar extends React.Component {
     }
 
     render () {
-      let bar = null;
-      if(this.state.focus){
-        bar = (
-            <View style={styles.resultsBarWrapper}>
-              <View style={styles.resultsBar}>
-                {this.renderResults.bind(this)()}
-              </View>
-              <KeyboardSpacer />
-            </View>
-        );
+      if(!this.props.visible){
+        return null;
       }
       return (
-        <View style={[styles.row]}>
-
+        <View style={styles.resultsBarWrapper}>
+          <View style={styles.resultsBar}>
+            {this.renderResults.bind(this)()}
+          </View>
+          <KeyboardSpacer />
         </View>
       );
     }
@@ -158,7 +152,6 @@ const styles = StyleSheet.create({
   },
   resultsBarWrapper: {
     position: 'absolute',
-    left: -334,
     bottom: 0
   },
   resultsBar: {
@@ -167,17 +160,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-start',
     flexDirection: 'row',
-  },
-  resultsBarBeef: {
-    position: 'absolute',
-    height: 80,
-    top: 162,
-    paddingTop: 4,
-    left: -324,
-    width: width,
-    flex: 1,
-    alignItems: 'flex-start',
-    flexDirection: 'row',
+    borderTopWidth: 1,
+    backgroundColor: "#fff",
+    borderTopColor: colors.lightestGray,
+    padding: 8
   },
   resultText: {
     color: "white"
@@ -186,11 +172,20 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600'
   },
+  resultTextSelected: {
+    color: colors.white
+  },
+  resultBackgroundSelected: {
+    backgroundColor: colors.blue
+  },
+  resultBackground: {
+    backgroundColor: colors.lightBlue
+  },
   result: {
-    height: 72,
-    backgroundColor: "blue",
+    height: 62,
     padding: 4,
     marginRight: 4,
+    borderRadius: 8
   },
 });
 
