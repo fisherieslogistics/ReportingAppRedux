@@ -102,6 +102,7 @@ class ReportingApp extends Component {
           name={this.props.autoSuggestBar.name}
           text={this.props.autoSuggestBar.text}
           maxResults={MAX_AUTOSUGGEST_RESULTS}
+          inputId={this.props.autoSuggestBar.inputId}
         />
       </View>
     );
@@ -110,7 +111,6 @@ class ReportingApp extends Component {
 
 const select = (State, dispatch) => {
     let state = State.default;
-    console.log("EVENTS", state.uiEvents.eventEmitter);
     return {
       autoSuggestBar: state.view.autoSuggestBar,
       eventEmitter: state.uiEvents.eventEmitter

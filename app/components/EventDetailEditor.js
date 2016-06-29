@@ -84,20 +84,22 @@ class EventDetailEditor extends React.Component{
     }
 
     getEditor(attribute){
+      let inputId = attribute.id + "__event__" + this.props.fishingEvent.id;
       return editor.editor(attribute,
                      this.props.fishingEvent[attribute.id],
                      this.onChange.bind(this),
-                     {fishingEvent: this.props.fishingEvent});
+                     {fishingEvent: this.props.fishingEvent},
+                     inputId);
     }
 
-    renderSingleEditor(attribute){
+    renderSingleEditor(attribute, index){
       return (
         <View style={[styles.col, styles.inputRow]} key={attribute.id}>
             <View style={[styles.row, styles.labelRow]}>
               <Text style={styles.labelText}>{attribute.label}</Text>
             </View>
             <View style={[styles.row, styles.editorRow]}>
-              {this.getEditor(attribute)}
+              {this.getEditor(attribute, attribute.id + "_product_" + index)}
             </View>
         </View>
       );
@@ -105,11 +107,11 @@ class EventDetailEditor extends React.Component{
 
     renderCombinedEditors(editors, key){
       return (
-        <View style={[styles.col, styles.inputRow]} key={key}>
+        <View style={[styles.col, styles.inputRow]} key={key + Math.random().toString()}>
           <View style={[styles.row]}>
             {editors.map((e) => {
               return (
-                  <View style={[styles.third]} key={e.label + key}>
+                  <View style={[styles.third]} key={e.label + e.id + key}>
                     <View style={[styles.labelRow]}>
                       <Text style={styles.labelText}>{e.label}</Text>
                     </View>

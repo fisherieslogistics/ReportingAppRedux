@@ -17,8 +17,82 @@ import FishPicker from '../components/FishPicker';
 import DatePicker from 'react-native-datepicker';
 import inputStyle from '../styles/inputStyle';
 
+class EditOnBlur extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.state = {
+      value: props.value || "",
+      inputId: props.inputId
+    }
+  }
+
+  componentWillReceiveProps(props){
+    if(props.inputId !== this.state.inputId){
+      this.setState({
+        value: this.getRenderedValue(props.value),
+        inputId: props.inputId
+      });
+    }
+  }
+
+  onChangeText(text){
+    this.setState({
+      value: text
+    })
+  }
+
+  onFocus(){
+    console.log(this)
+  }
+
+  onBlur(){
+    this.props.callback(this.props.attribute.id, this.state.value);
+    this.setState({
+      value: this.getRenderedValue(this.state.value)
+    });
+  }
+
+  getKeypad(){
+    switch (this.props.attribute.type) {
+      case "number":
+        return 'number-pad'
+      case "float":
+        return 'numeric'
+      default:
+        return 'default'
+    }
+  }
+
+  getRenderedValue(value){
+    switch (this.props.attribute.type) {
+      case "number":
+        return isNaN(parseInt(value)) ? "0" : parseInt(value).toString();
+      case "float":
+        return isNaN(parseFloat(value)) ? "0.00" : parseFloat(value).toFixed(2).toString();
+      default:
+        return (value !== null && value !== undefined) ? value.toString() : "";
+    }
+  }
+
+  render(){
+    return (
+      <TextInput
+        clearTextOnFocus={true}
+        keyboardType={this.getKeypad.bind(this)()}
+        placeholderText={this.props.attribute.label}
+        value={this.state.value}
+        style={inputStyle.textInput}
+        onFocus={this.onFocus.bind(this)}
+        onBlur={this.onBlur.bind(this)}
+        onChangeText={this.onChangeText.bind(this)}
+        {...this.props.extraProps} />
+    );
+  }
+}
+
 class Editor {
-  editor(attribute, value, callback, extraProps = {}){
+  editor(attribute, value, callback, extraProps = {}, inputId){
     switch (attribute.type) {
       case "datetime":
           return (
@@ -44,6 +118,7 @@ class Editor {
                   }}
                   value={value}
                   name={attribute.id}
+                  inputId={inputId}
                   {...extraProps}
                 />);
       case "location":
@@ -52,15 +127,19 @@ class Editor {
         return (<Switch
                   onValueChange={(bool) => callback(attribute.id, bool)}
                   value={value || false} />);
+      case "number":
+      case "float":
       default:
-        return (<TextInput
-                 clearTextOnFocus={true}
-                 placeholderText={attribute.label}
-                 onFocus={() => callback(attribute.id, "")}
-                 defaultValue=""
-                 value={value}
-                 style={inputStyle.textInput}
-                 onChangeText={text => callback(attribute.id, text)} />);
+        return (
+          <EditOnBlur
+            attribute={attribute}
+            value={value}
+            callback={callback}
+            extraProps={extraProps}
+            inputId={inputId}
+            {...extraProps}
+          />
+        );
     }
   }
 }

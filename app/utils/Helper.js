@@ -141,7 +141,9 @@ class Helper {
       }
       let serializedState = this.serialize(state);
       await AsyncStorage.setItem('savedState', serializedState, (err, something) => {
-        console.log(err, something)
+        if(err){
+          console.log(err, something);
+        }
       });
     };
 

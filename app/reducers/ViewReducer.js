@@ -11,9 +11,11 @@ let initialState = {
   autoSuggestBar: {
     choices: [],
     favourites: [],
+    taken: [],
     text: "",
     name: null,
-    visible: false
+    visible: false,
+    inputId: null
   },
 }
 

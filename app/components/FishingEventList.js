@@ -28,6 +28,10 @@ const fishingEventDesc = {
     icon: "ship",
     color: colors.blue,
   },
+  "startedActive": {
+    icon: "ship",
+    color: colors.white,
+  },
   "ended":{
     icon: "exclamation-triangle",
     color: colors.orange,
@@ -43,6 +47,9 @@ const fishingEventDesc = {
 }
 
 class FishingEventList extends React.Component {
+    constructor(props){
+      super(props)
+    }
 
     getFishingEventColor(fishingEvent){
       return fishingEventDesc[this.getFishingEventStatus(fishingEvent)].color;
@@ -53,6 +60,9 @@ class FishingEventList extends React.Component {
     }
 
     getFishingEventStatus(fishingEvent){
+      if(!fishingEvent.datetimeAtEnd && this.props.selectedFishingEvent.id == fishingEvent.id){
+        return "startedActive";
+      }
       if(!fishingEvent.datetimeAtEnd){
         return "started";
       }
@@ -71,18 +81,16 @@ class FishingEventList extends React.Component {
     }
 
     renderRow (fishingEvent, sectionID, rowID) {
+      let rowStyle = (this.props.selectedFishingEvent.id == fishingEvent.id) ? styles.selectedListRow : {}
       return (
         <TouchableHighlight
           onPress={() => {
-            this.setState({
-              selectedSectionID: sectionID
-            });
             this.props.onPress(fishingEvent);
           }}
           underlayColor={colors.blue}
           activeOpacity={0.3}
         >
-          <View style={styles.listRow}>
+          <View style={[styles.listRow, rowStyle]}>
             <Text style={[styles.listRowItemTiny]}>
             </Text>
             <Text style={[styles.listRowItemNarrow]}>

@@ -30,58 +30,83 @@ class EventProductsEditor extends React.Component{
         }
     }
 
-    getEditor(attribute){
-      return editor.editor(attribute,
-                     this.props.fishingEvent[attribute.id],
-                     this.onChange.bind(this))
+    addProduct(){
+      this.props.dispatch(productActions.addProduct(this.props.fishingEvent.id));
     }
 
-    renderEditors(){
+    getEditor(attribute, value, index){
+      let inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index;
+      return editor.editor(attribute,
+                     value,
+                     (name, v) => this.onChange(name, v, index),
+                     {fishingEvent: this.props.fishingEvent},
+                     inputId);
+    }
+
+    onChange(name, value, catchId){
+      switch (name) {
+        case "code":
+          this.props.dispatch(productActions.changeSpecies(this.props.fishingEvent.id, catchId, value));
+          break;
+        case "weight":
+          this.props.dispatch(productActions.changeWeight(this.props.fishingEvent.id, catchId, value));
+          break;
+        default:
+          this.props.dispatch(productActions.changeCustom(name, this.props.fishingEvent.id, catchId, value));
+          break;
+      }
+    }
+
+    renderEditors(product, index){
       let inputs = [];
-      let labels = []
       ProductModel.forEach((attribute) => {
-          if(attribute.readOnly || attribute.hidden) {
+          if(!attribute.editorDisplay) {
               return;
           }
-          inputs.push(this.renderEditor(attribute));
+          inputs.push(this.renderEditor(attribute, product, index));
       });
-      return inputs;
-    }
-
-    renderCombinedEditors(editors, key){
       return (
-        <View style={[styles.col, styles.inputRow]} key={key}>
-          <View style={[styles.row]}>
-            {editors.map((e) => {
-              return (
-                  <View style={[styles.third]} key={e.label + key}>
-                    <View style={[styles.labelRow]}>
-                      <Text style={styles.labelText}>{e.label}</Text>
-                    </View>
-                    <View style={[styles.editorRow]}>
-                      {e.editor}
-                    </View>
-                </View>
-              );
-            })}
-          </View>
+        <View style={[styles.fill, styles.wrapper]} key={"product" + index + Math.random.toString()}>
+          {inputs}
         </View>
       );
     }
 
-    renderEditor(attribute){
-      if(attribute.editorDisplay && attribute.editorDisplay.hideNull && this.props.fishingEvent[attribute.id] === null){
+    renderCombinedEditors(editors, key){
+      return (
+          <View style={[styles.col, styles.inputRow]} key={"combined" + key +  Math.random().toString()}>
+            <View style={[styles.row]}>
+              {editors.map((e) => {
+                return (
+                    <View style={[styles.quarter]} key={e.label +  Math.random().toString()}>
+                      <View style={[styles.labelRow]}>
+                        <Text style={styles.labelText}>{e.label}</Text>
+                      </View>
+                      <View style={[styles.editorRow]}>
+                        {e.editor}
+                      </View>
+                  </View>
+                );
+              })}
+            </View>
+        </View>
+      );
+    }
+
+    renderEditor(attribute, product, index){
+      if(attribute.editorDisplay && attribute.editorDisplay.hideNull){
         return null;
       }
       if(attribute.editorDisplay && attribute.editorDisplay.editor === this.props.editorType){
         switch (attribute.editorDisplay.type) {
           case "combined":
-            let editors = [{label: attribute.label, editor: this.getEditor(attribute)}];
+            let editors = [{label: attribute.label, editor: this.getEditor(attribute, product[attribute.id], index)}];
             let addedEditors = attribute.editorDisplay.siblings.map((s) => {
-                let attr = this.state.model.find((a) => {
+                let attr = ProductModel.find((a) => {
                              return a.id === s;
                             });
-                return {label: attr.label, editor: this.getEditor(attr)};
+
+                return {label: attr.label, editor: this.getEditor(attr, product[attr.id], index)};
             });
             return this.renderCombinedEditors(editors.concat(addedEditors), attribute.id);
           default:
@@ -89,29 +114,20 @@ class EventProductsEditor extends React.Component{
       }
     }
 
-    getCallback(attr){
-      return this.onChangeText
-    }
-
     render() {
       if(!this.props.fishingEvent){
         return null;
       }
       let inputs = [];
-      this.props.fishingEvent.products.forEach((p) => {
-        [].push.apply(inputs, this.renderEditors(p));
+      this.props.fishingEvent.products.forEach((p, i) => {
+        inputs.push(this.renderEditors(p, i));
       });
-      let inputView = (
-        <View style={[styles.col, styles.fill, {alignSelf: 'flex-start'}, styles.wrapper]}>
-          {inputs}
-        </View>
-      );
       let undoStyle = this.state.undoDeleteActive ? styles.undoActive : {};
       let undoTextStyle = this.state.undoDeleteActive ? styles.activeText : styles.inactiveText;
       return (
         <View>
           <ScrollView style={[styles.scroll]}>
-            {this.props.fishingEvent.products.length ? inputView : null}
+            {this.props.fishingEvent.products.length ? inputs.reverse() : null}
           </ScrollView>
           <View style={[styles.bottomRow]}>
             <TouchableOpacity
@@ -119,7 +135,9 @@ class EventProductsEditor extends React.Component{
               activeOpacity={this.state.undoDeleteActive ? 1 : 0.7}>
               <Text style={[undoTextStyle]}>Undo Delete</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.addProduct, styles.button]}>
+            <TouchableOpacity
+              style={[styles.addProduct, styles.button]}
+              onPress={this.addProduct.bind(this)}>
               <Text style={[styles.activeText]}>Add Catch</Text>
             </TouchableOpacity>
           </View>
@@ -130,8 +148,7 @@ class EventProductsEditor extends React.Component{
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "red",//colors.lightGray,
-    alignSelf: 'stretch'
+    backgroundColor: colors.lightGray
   },
   addProduct:{
     marginLeft: 10,
@@ -163,12 +180,14 @@ const styles = StyleSheet.create({
     color: colors.midGray
   },
   wrapper:{
-    margin: 15,
+    marginTop: 5,
+    marginLeft: 5,
+    marginRight: 5,
     backgroundColor: '#fff',
     borderRadius: 10,
-    paddingTop: 10,
+    paddingTop: 2,
     paddingLeft: 30,
-    paddingBottom: 10,
+    paddingBottom: 8,
   },
   col:{
     flexDirection: 'column',
@@ -178,7 +197,7 @@ const styles = StyleSheet.create({
   },
   inputRow: {
     paddingTop: 5,
-    alignSelf: 'stretch',
+    height: 50,
     borderBottomWidth: 1,
     borderBottomColor: colors.midGray
   },
@@ -190,13 +209,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   labelRow: {
-    flex: 0.3,
+    flex: 0.25,
   },
   labelText: {
     color: colors.blue
   },
-  third: {
-    flex: 0.3
+  quarter: {
+    width: 160
   }
 });
 

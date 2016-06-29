@@ -26,7 +26,8 @@ class AutoSuggestBar extends React.Component {
         descriptionStore:{},
         choices: [],
         results: [],
-        name: ""
+        name: "",
+        inputId: null
       }
     }
 
@@ -78,7 +79,7 @@ class AutoSuggestBar extends React.Component {
     }
 
     onResultPress(value){
-      this.props.eventEmitter.emit('AutoSuggestResultPress', {name: this.state.name, value: value});
+      this.props.eventEmitter.emit('AutoSuggestResultPress', {name: this.state.name, value: value, inputId: this.props.inputId});
     }
 
     componentWillReceiveProps(props){

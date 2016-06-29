@@ -30,11 +30,14 @@ class FishPicker extends React.Component {
       super(props);
       this.state = {
         value: "",
-        fishingEventId: props.fishingEventId
+        fishingEventId: props.fishingEventId,
+        changedByEvent: false,
+        error: false
       }
     }
 
     componentWillMount(){
+      this.__mounted = true;
       this.setState({
         value: this.props.value
       });
@@ -44,23 +47,27 @@ class FishPicker extends React.Component {
     }
 
     componentWillReceiveProps(props){
-      if(this.state.fishingEventId !== props.fishingEvent.id){
+      if(this.state.fishingEventId !== props.fishingEvent.id || this.state.changedByEvent){
         this.setState({
           value: props.value
         });
       }
+      this.setState({
+        changedByEvent: false
+      });
       this.setState({
         fishingEventId: props.fishingEvent.id
       });
     }
 
     autoSuggestEmitted(event){
-      if(event.name == event.name){
-        this.props.onChange(event.value);
+      if(event.name == event.name && event.inputId == this.props.inputId){
+        this.setState({
+          changedByEvent: true
+        });
         setTimeout(() => {
-          this.setState({
-            value: this.props.value
-          });
+          this.forceUpdate();
+          this.props.onChange(event.value);
         });
         if(this.refs.textInput){
           this.refs.textInput.blur();
@@ -76,11 +83,13 @@ class FishPicker extends React.Component {
       this.props.dispatch(viewActions.initAutoSuggestBarChoices(speciesCodesDesc,
                                                                 favourites,
                                                                 this.props.value,
-                                                                this.props.name));
+                                                                this.props.name,
+                                                                this.props.inputId));
       this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
     }
 
     onBlur(){
+      this.props.onChange(this.state.value);
       this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
     }
 
@@ -94,18 +103,6 @@ class FishPicker extends React.Component {
         value: text
       });
       this.props.dispatch(viewActions.changeAutoSuggestBarText(text, this.props.name));
-      if((text.length === 3 && speciesCodes.indexOf(text) !== -1) || !text.length){
-        this.props.onChange(text);
-        return;
-      }
-      if(text.length == 3){
-        AlertIOS.alert(text, "Invalid Species Code");
-        this.setState({
-          value: ""
-        });
-        this.props.dispatch(viewActions.changeAutoSuggestBarText("", this.props.name));
-        return;
-      }
     }
 
     render () {

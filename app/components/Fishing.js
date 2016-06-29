@@ -120,6 +120,8 @@ class Fishing extends React.Component{
       case 1:
         return (<EventProductsEditor
                  fishingEvent={this.props.fishingEvent}
+                 dispatch={this.props.dispatch}
+                 editorType={'event'}
                 />);
       break;
       case 2:
@@ -171,6 +173,7 @@ class Fishing extends React.Component{
         master={<FishingEventList
                   fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents].reverse())}
                   onPress={this.setViewingFishingEvent.bind(this)}
+                  selectedFishingEvent={this.props.fishingEvent}
                 />}
         detail={this.renderDetailView.bind(this)()}
         detailToolbar={detailToolbar}
