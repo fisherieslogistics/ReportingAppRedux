@@ -30,13 +30,7 @@ const FormReducer = (state = initialState, action) => {
       return update(state, state);
       break;
     case 'setViewingForm':
-      if(action.tripId){
-        let form = state.pastTrips[action.tripId].forms[action.formId];
-        return update(state, {viewingForm: form});
-      }else{
-        return update(state, {viewingForm: state.currentTrip[action.formId]});
-      }
-      break;
+      return update(state, {viewingForm: action.form});
     }
     return state;
 };

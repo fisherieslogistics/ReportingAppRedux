@@ -4,11 +4,10 @@ import Helper from '../utils/Helper';
 const helper = new Helper();
 
 class FormActions{
-  setViewingForm(formId, tripId){
+  setViewingForm(form){
     return {
       type: 'setViewingForm',
-      formId: formId,
-      tripId: tripId
+      form: form
     }
   }
   showingForms(fishingEvents){

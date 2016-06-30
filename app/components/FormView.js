@@ -18,6 +18,9 @@ import colors from '../styles/colors';
 import MasterDetailView from './MasterDetailView';
 import DetailToolbar from './DetailToolbar';
 import MasterToolbar from './MasterToolbar';
+import TCERFormModel from '../models/TCERFormModel';
+import ModelUtils from '../utils/ModelUtils';
+const formModelMeta = ModelUtils.blankModel(TCERFormModel).meta;
 const helper = new Helper();
 
 class FormView extends React.Component {
@@ -25,8 +28,6 @@ class FormView extends React.Component {
         super(props);
         this.state = {
           ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
-          form: null,
-          xMulti: null,
         };
     }
 
@@ -35,13 +36,9 @@ class FormView extends React.Component {
         <FormsList
           dispatch={this.props.dispatch}
           forms={this.state.ds.cloneWithRows([...this.props.forms])}
-          onSelect={this.setForm.bind(this)}
+          viewingForm={this.props.viewingForm}
         />
       );
-    }
-
-    setForm(form){
-      this.setState({form: form, xMulti: form.meta.xMultiplier});
     }
 
     renderRepeating(obj, parts, k, allText, meta, eventIndex){
@@ -96,11 +93,11 @@ class FormView extends React.Component {
 
     renderText(val, meta, xIndex=0, yIndex=0){
       let _key = Math.random().toString() + new Date().getTime().toString();
-      let xy = {left: meta.x * 0.81, top: meta.y * 0.81};
+      let xy = {left: meta.x * 0.675, top: meta.y * 0.70};
       if(meta.ymultiple){
         xy.top += (meta.ymultiple * yIndex);
       }
-      xy.left += (this.state.xMulti * xIndex);
+      xy.left += (formModelMeta.xMultiplier * xIndex);
       return (
         <View style={[styles.textWrapper, xy, meta.viewStyle || {}]} key={_key}>
           <Text style={[styles.text, meta.textStyle || {}]}>{val}</Text>
@@ -108,36 +105,33 @@ class FormView extends React.Component {
     }
 
     renderFishingEvents(allText){
-      const meta = this.state.form.meta.printMapping.fishingEvents;
-      const fe = this.state.form.fishingEvents;
+      const fe = this.props.viewingForm.fishingEvents;
       fe.forEach((f, i) => {
-        allText = allText.concat(this.renderObj(f, meta, i));
+        allText = allText.concat(this.renderObj(f, formModelMeta.printMapping.fishingEvents, i));
       });
       return allText;
     }
-    renderForm(allText){
-      return this.renderObj(this.state.form, this.state.form.meta.printMapping.form);
+    renderForm(){
+      return this.renderObj(this.props.viewingForm, formModelMeta.printMapping.form);
     }
     render() {
       let text = [];
 
-      if(this.state.form){
+      if(this.props.viewingForm){
         text = this.renderForm(text);
         text = this.renderFishingEvents(text);
       }
 
       let detailToolbar = (
         <DetailToolbar
-          left={{color: "red", text: "Delete", onPress: ()=>{}}}
-          right={{color: "#007aff", text: "End", onPress: ()=>{}}}
+          right={{color: "#007aff", text: "Sign", onPress: ()=>{}}}
           centerTop={null}
           centerBottom={null}
         />
       );
       let masterToolbar = (
         <MasterToolbar
-          left={{color: "#007aff", text: "Commit", onPress: ()=>{}}}
-          right={{color: "#007aff", text: "Plus", onPress: ()=>{}}}
+          left={{color: "#007aff", text: "Sign All", onPress: ()=>{}}}
         />
       );
 
@@ -145,7 +139,7 @@ class FormView extends React.Component {
         <MasterDetailView
           master={this.renderFormsListView()}
           detail={(
-            <View style={styles.col}>
+            <View style={[styles.col, styles.fill]}>
               <Image source={require('../images/TCER.png')} style={styles.bgImage}>
                 <View style={styles.form}>
                   {text}
@@ -165,7 +159,8 @@ const select = (State, dispatch) => {
     return {
       forms: createForms(state.fishingEvents.events),
       user: state.me.user,
-      vessel: state.me.vessel
+      vessel: state.me.vessel,
+      viewingForm: state.forms.viewingForm
     };
 }
 
@@ -173,12 +168,16 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row'
   },
+  fill: {
+    flex: 1,
+    alignSelf: 'stretch'
+  },
   col: {
     flexDirection: 'column'
   },
   form: {
-    height: 595,
-    width: 842,
+    height: 495,
+    width: 742,
   },
   textWrapper: {
     position: 'absolute',
@@ -209,8 +208,8 @@ const styles = StyleSheet.create({
   bgImage: {
       flex: 1,
       resizeMode: "stretch",
-      height: 595,
-      width: 842,
+      height: 525,
+      width: 722,
   },
 });
 

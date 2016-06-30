@@ -27,7 +27,7 @@ class DetailToolbar extends React.Component {
       return (
         <View style={[styles.toolbar]}>
           <View style={[styles.left]}>
-            {this.renderButton(this.props.left)}
+            {this.props.left ? this.renderButton(this.props.left) : null}
           </View>
           <View style={styles.center}>
             <View style={[styles.centerTop]}>
@@ -38,7 +38,7 @@ class DetailToolbar extends React.Component {
             </View>
           </View>
           <View style={[styles.right]}>
-            {this.renderButton(this.props.right)}
+            {this.props.right ? this.renderButton(this.props.right) : null}
           </View>
         </View>
       );

@@ -12,7 +12,7 @@ const meta = {
     return (daysMatch && wingSpreadsMatch && headlineHeightsMatch);
   },
   eventsPerForm: 4,
-  xMultiplier: 210 * 0.80,
+  xMultiplier: 214 * 0.67,
   printMapping: {
     form:{
       gearCode: {x: 190, y: 50},
@@ -28,10 +28,10 @@ const meta = {
     fishingEvents: {
       shotNumber: {x: 220, y: 85},
       targetSpecies: {x: 310, y: 85},
-      bottomDepth: {x: 215, y: 227},
-      groundropeDepth: {x: 275, y: 227, resolve: fe => isNaN(fe.groundropeDepth) ? "" : parseFloat(fe.groundropeDepth).toFixed(1)},
+      bottomDepth: {x: 218, y: 227, resolve: (fe) => isNaN(parseInt(fe.bottomDepth)) ? "" : fe.bottomDepth},
+      groundropeDepth: {x: 275, y: 227, resolve: fe => isNaN(parseInt(fe.groundropeDepth)) ? "" : fe.groundropeDepth},
       nonFishProtected: {x: 195, y: 312, resolve: fe => fe.nonFishProtected ? "X" : "           X"},
-      averageSpeed: {x: 180, y: 255, align: 'right', resolve: fe => isNaN(fe.averageSpeed) ? "" : parseFloat(fe.averageSpeed).toFixed(1)},
+      averageSpeed: {x: 173, y: 258, align: 'right', resolve: fe => isNaN(parseFloat(fe.averageSpeed)) ? "" : parseFloat(fe.averageSpeed).toFixed(1)},
       targetSpecies: {x: 310, y: 85},
       locationAtStart: {
         multiple: true,
@@ -40,7 +40,7 @@ const meta = {
             let lat = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
             return "42 34"//`${lat.latDegrees}${lat.latMinutes}`;
           }},
-          {id: 'lon', x: 190, y: 204, resolve: (fe) => {
+          {id: 'lon', x: 197, y: 204, resolve: (fe) => {
             let lon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
             return "172 31"//`${lon.lonDegrees}${lon.lonMinutes}`;
           }},
@@ -79,9 +79,9 @@ const meta = {
             resolve: (fe, i) => {
               return fe.products[i] ? fe.products[i].code : "";
             },
-            x: 168,
+            x: 172,
             y: 340,
-            ymultiple: 23
+            ymultiple: 19
           },
           {
             id: 'weight',

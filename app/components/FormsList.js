@@ -25,24 +25,21 @@ const formActions = new FormActions();
 class FormsList extends React.Component {
     constructor(props){
       super(props);
-      this.state = {
-        selectedListRow: null
-      }
     }
 
-    setViewingForm(id){
-      this.props.dispatch(formActions.setViewingForm(id));
+    setViewingForm(form){
+      this.props.dispatch(formActions.setViewingForm(form));
     }
+
     renderRow (form, sectionID, rowID) {
       let rowStyle = [styles.listRow];
-      if(rowID === this.state.selectedListRow){
+      if(this.props.viewingForm && form.id === this.props.viewingForm.id){
         rowStyle.push(styles.selectedListRow);
       }
       return (
         <TouchableHighlight
           onPress={() => {
-            this.setState({selectedListRow: rowID.toString()});
-            this.props.onSelect(form);
+            this.setViewingForm(form);
           }}
           underlayColor={colors.blue}
           activeOpacity={0.3}
@@ -69,6 +66,7 @@ class FormsList extends React.Component {
     render () {
       return (
         <ListView
+          style={styles.listView}
           enableEmptySections={true}
           dataSource={this.props.forms}
           renderRow={this.renderRow.bind(this)}

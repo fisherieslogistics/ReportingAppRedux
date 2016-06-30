@@ -21,7 +21,8 @@ class EditOnBlur extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      value: this.getRenderedValue(props.value),
+      value: props.value,
+      renderedValue: this.getRenderedValue(props.value),
       inputId: props.inputId
     }
   }
@@ -29,26 +30,28 @@ class EditOnBlur extends React.Component {
   componentWillReceiveProps(props){
     if(props.inputId !== this.state.inputId){
       this.setState({
-        value: this.getRenderedValue(props.value),
-        inputId: props.inputId
+        value: props.value,
+        inputId: props.inputId,
+        renderedValue: this.getRenderedValue(this.state.value)
       });
     }
   }
 
   onChangeText(text){
     this.setState({
-      value: text
+      value: text,
+      renderedValue: text
     })
   }
 
   onFocus(){
-    console.log(this)
+
   }
 
   onBlur(){
     this.props.callback(this.props.attribute.id, this.state.value);
     this.setState({
-      value: this.getRenderedValue(this.state.value)
+      renderedValue: this.getRenderedValue(this.state.value)
     });
   }
 
@@ -66,9 +69,9 @@ class EditOnBlur extends React.Component {
   getRenderedValue(value){
     switch (this.props.attribute.type) {
       case "number":
-        return isNaN(parseInt(value)) ? "0" : parseInt(value).toString() + (this.props.attribute.unit || "");
+        return isNaN(parseInt(value)) ? "0" : parseInt(value).toString() + (this.props.attribute.unit ? " " + this.props.attribute.unit : "");
       case "float":
-        return isNaN(parseFloat(value)) ? "0.00" : parseFloat(value).toFixed(2).toString() + (this.props.attribute.unit || "");
+        return isNaN(parseFloat(value)) ? "0.00" : parseFloat(value).toFixed(2).toString() + (this.props.attribute.unit ? " " + this.props.attribute.unit : "");
       default:
         return (value !== null && value !== undefined) ? value.toString() : "";
     }
@@ -80,7 +83,7 @@ class EditOnBlur extends React.Component {
         selectTextOnFocus={true}
         keyboardType={this.getKeypad.bind(this)()}
         placeholderText={this.props.attribute.label}
-        value={this.state.value}
+        value={this.state.renderedValue}
         style={inputStyle.textInput}
         onFocus={this.onFocus.bind(this)}
         onBlur={this.onBlur.bind(this)}

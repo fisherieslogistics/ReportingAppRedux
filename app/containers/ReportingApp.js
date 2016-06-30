@@ -13,9 +13,10 @@ import {connect} from 'react-redux';
 import AutoSuggestBar from '../components/AutoSuggestBar';
 import Orientation from 'react-native-orientation';
 import ViewActions from '../actions/ViewActions';
+import FormActions from '../actions/FormActions';
 
 const viewActions = new ViewActions();
-
+const formActions = new FormActions();
 const MAX_AUTOSUGGEST_RESULTS = 12;
 
 class ReportingApp extends Component {
@@ -47,7 +48,11 @@ class ReportingApp extends Component {
     const tabs = [
       {iconName: "anchor", title: "trip", selectedTab: "ship", render: this.renderTrip.bind(this)},
       {iconName: "ship", title: "fishing", selectedTab: "fishing", render: this.renderFishing.bind(this)},
-      {iconName: "tasks", title: "forms", selectedTab: "forms", render: this.renderForms.bind(this)},
+      {iconName: "tasks", title: "forms", selectedTab: "forms", render: this.renderForms.bind(this),
+        onPress: () => {
+          console.log("beast");
+         this.props.dispatch(formActions.setViewingForm(null));
+        }},
       {iconName: "user", title: "profile", selectedTab:"profile", render: this.renderFishing.bind(this)}
     ];
     return tabs.map((tab)=>{
@@ -104,7 +109,6 @@ class ReportingApp extends Component {
   }
 
   render(){
-    console.log(this.props);
     return (
       <View style={[styles.wrapper, {width: this.props.width, height: this.props.height}]}>
         <TabBarIOS
