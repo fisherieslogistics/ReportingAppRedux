@@ -15,6 +15,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Helper from '../utils/Helper';
 import FishingEventModel from '../models/FishingEventModel';
 import TCERFishingEventModel from '../models/TCERFishingEventModel';
+import colors from '../styles/colors';
+
 const helper = new Helper();
 const Lang = Strings.english;
 
@@ -44,9 +46,8 @@ class FormsList extends React.Component {
           }}
           underlayColor={colors.blue}
           activeOpacity={0.3}
-          style={rowStyle}
         >
-          <View>
+          <View style={rowStyle}>
             <Text style={[styles.listRowItem]}>
               {"TCER Form " + form.fishingEvents.length + " shots" }
             </Text>
@@ -58,8 +59,8 @@ class FormsList extends React.Component {
         <View
           key={`${sectionID}-${rowID}`}
           style={{
-            height: adjacentRowHighlighted ? 4 : 1,
-            backgroundColor: adjacentRowHighlighted ? '#3B5998' : '#CCCCCC',
+            height: 1,
+            backgroundColor: colors.midGray,
           }}
         />
       );
@@ -67,15 +68,13 @@ class FormsList extends React.Component {
 
     render () {
       return (
-        <View style={{height: 600, paddingTop: 25, paddingLeft: 20}}>
-          <ListView
-            enableEmptySections={true}
-            dataSource={this.props.forms}
-            renderRow={this.renderRow.bind(this)}
-            renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
-            renderSeparator={this.renderSeperator}
-          />
-        </View>
+        <ListView
+          enableEmptySections={true}
+          dataSource={this.props.forms}
+          renderRow={this.renderRow.bind(this)}
+          renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+          renderSeparator={this.renderSeperator}
+        />
       );
     }
 };
@@ -83,18 +82,29 @@ class FormsList extends React.Component {
 const styles = StyleSheet.create({
   listRow: {
     flexDirection: 'row',
-    paddingLeft: 20,
+    flex: 1,
     paddingTop: 10,
     paddingBottom: 10,
-    borderRightColor: '#ccc',
-    borderRightWidth: 1,
-    width: 165
+    backgroundColor: colors.white
   },
   selectedListRow: {
-    backgroundColor: '#eee',
+    backgroundColor: colors.blue,
   },
   listRowItem: {
-    paddingRight: 6
+    flex: 0.5
+  },
+  listRowItemNarrow: {
+    flex: 0.25,
+  },
+  listRowItemTiny:{
+    flex: 0.1,
+  },
+  listItemText: {
+    fontSize: 19,
+    color: colors.midGray
+  },
+  listView:{
+    marginTop: -20
   }
 });
 

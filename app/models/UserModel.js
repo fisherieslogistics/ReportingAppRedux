@@ -1,6 +1,6 @@
 
 const UserModel = [
-  {id: 'fisrtName', defaultValue: "Rick", label: "First Name"},
+  {id: 'firstName', defaultValue: "Rick", label: "First Name"},
   {id: 'lastName', defaultValue: "Burch", label: "Last Name"},
   {id: 'vesselName', defaultValue: "Nancy Glen 2", label: "Vessel Name"},
   {id: 'permitHolderName', defaultValue: "Gwen B Partnership", label: "Permit Holder Name"},

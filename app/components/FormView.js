@@ -14,6 +14,10 @@ import {connect} from 'react-redux';
 import Helper from '../utils/Helper';
 import {createForms} from '../utils/FormUtils';
 import FormsList from './FormsList';
+import colors from '../styles/colors';
+import MasterDetailView from './MasterDetailView';
+import DetailToolbar from './DetailToolbar';
+import MasterToolbar from './MasterToolbar';
 const helper = new Helper();
 
 class FormView extends React.Component {
@@ -28,15 +32,14 @@ class FormView extends React.Component {
 
     renderFormsListView(){
       return (
-        <View style={[styles.masterView]}>
-          <FormsList
-            dispatch={this.props.dispatch}
-            forms={this.state.ds.cloneWithRows([...this.props.forms])}
-            onSelect={this.setForm.bind(this)}
-          />
-        </View>
+        <FormsList
+          dispatch={this.props.dispatch}
+          forms={this.state.ds.cloneWithRows([...this.props.forms])}
+          onSelect={this.setForm.bind(this)}
+        />
       );
     }
+
     setForm(form){
       this.setState({form: form, xMulti: form.meta.xMultiplier});
     }
@@ -117,23 +120,42 @@ class FormView extends React.Component {
     }
     render() {
       let text = [];
+
       if(this.state.form){
         text = this.renderForm(text);
         text = this.renderFishingEvents(text);
       }
+
+      let detailToolbar = (
+        <DetailToolbar
+          left={{color: "red", text: "Delete", onPress: ()=>{}}}
+          right={{color: "#007aff", text: "End", onPress: ()=>{}}}
+          centerTop={null}
+          centerBottom={null}
+        />
+      );
+      let masterToolbar = (
+        <MasterToolbar
+          left={{color: "#007aff", text: "Commit", onPress: ()=>{}}}
+          right={{color: "#007aff", text: "Plus", onPress: ()=>{}}}
+        />
+      );
+
       return (
-        <View style={styles.row}>
-          <View style={styles.col}>
-            {this.renderFormsListView.bind(this)()}
-          </View>
-          <View style={styles.col}>
-            <Image source={require('../images/TCER.png')} style={styles.bgImage}>
-              <View style={styles.form}>
-                {text}
-              </View>
-            </Image>
-          </View>
-        </View>
+        <MasterDetailView
+          master={this.renderFormsListView()}
+          detail={(
+            <View style={styles.col}>
+              <Image source={require('../images/TCER.png')} style={styles.bgImage}>
+                <View style={styles.form}>
+                  {text}
+                </View>
+              </Image>
+            </View>
+          )}
+          detailToolbar={detailToolbar}
+          masterToolbar={masterToolbar}
+        />
       );
     }
 };

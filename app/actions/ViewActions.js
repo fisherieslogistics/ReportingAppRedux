@@ -22,6 +22,13 @@ class ViewActions{
       }
     }
 
+    uiOrientation(orientation){
+      return {
+        type: 'uiOrientation',
+        uiOrientation: orientation
+      }
+    }
+
     toggleAutoSuggestBar(visible){
       return {
         type: 'toggleAutoSuggestBar',

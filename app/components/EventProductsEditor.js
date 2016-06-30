@@ -108,13 +108,29 @@ class EventProductsEditor extends React.Component{
 
                 return {label: attr.label, editor: this.getEditor(attr, product[attr.id], index)};
             });
-            return this.renderCombinedEditors(editors.concat(addedEditors), attribute.id);
+            let allEditors = editors.concat(addedEditors);
+            if(allEditors.length < 4){
+              allEditors.push({label: "", editor: null});
+            }
+            return this.renderCombinedEditors(allEditors);
           default:
         }
       }
     }
 
+    getDetailWidth(){
+      switch (this.props.uiOrientation) {
+        case 'PORTRAIT':
+        case 'PORTRAITUPSIDEDOWN':
+          return 534;
+        case 'LANDSCAPE':
+        case 'LANDSCAPEUPSIDEDOWN':
+          return 714;
+      }
+    }
+
     render() {
+      console.log(this.getDetailWidth(), this.props.uiOrientation);
       if(!this.props.fishingEvent){
         return null;
       }
@@ -129,7 +145,7 @@ class EventProductsEditor extends React.Component{
           <ScrollView style={[styles.scroll]}>
             {this.props.fishingEvent.products.length ? inputs.reverse() : null}
           </ScrollView>
-          <View style={[styles.bottomRow]}>
+          <View style={[styles.bottomRow, {width: this.getDetailWidth()}]}>
             <TouchableOpacity
               style={[styles.undoDelete, undoStyle, styles.button]}
               activeOpacity={this.state.undoDeleteActive ? 1 : 0.7}>
@@ -156,7 +172,6 @@ const styles = StyleSheet.create({
   },
   bottomRow: {
     height: 100,
-    width: 716,
     paddingTop: 10,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -215,9 +230,17 @@ const styles = StyleSheet.create({
     color: colors.blue
   },
   quarter: {
-    width: 160
+    flex: 0.25
   }
 });
 
 
-export default EventProductsEditor;
+const select = (State, dispatch) => {
+    let state = State.default;
+    return {
+      width: state.view.width,
+      uiOrientation: state.view.uiOrientation,
+    };
+}
+
+export default connect(select)(EventProductsEditor);

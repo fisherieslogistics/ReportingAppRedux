@@ -7,23 +7,20 @@ const NUMBER_OF_PRODUCTS = 8;
 
 const model = [
   {label: 'Average Speed', id: 'averageSpeed', valid: valid.greaterThanZero, type: 'float', defaultValue: null,
-    editorDisplay: {editor: 'event', type: 'single'}
+    editorDisplay: {editor: 'event', type: 'single'}, unit: 'kt'
   },
   {label: 'Bottom Depth', id: 'bottomDepth', valid: valid.greaterThanZero, type: 'number', defaultValue: null,
     combinedValid: {attributes: ["bottomDepth", "groundropeDepth"], func: combined.orderedLessThanOrEqual},
-    editorDisplay: {editor: 'event', type: 'combined', siblings: ['groundropeDepth']}
+    editorDisplay: {editor: 'event', type: 'combined', siblings: ['groundropeDepth']}, unit: 'm'
   },
   {label: 'Groundrope Depth', id: 'groundropeDepth', valid: valid.greaterThanZero, type: 'number', defaultValue: null,
-    combinedValid: {attributes: ["groundropeDepth", "bottomDepth"], func: combined.orderedGreaterThanOrEqual},
+    combinedValid: {attributes: ["groundropeDepth", "bottomDepth"], func: combined.orderedGreaterThanOrEqual}, unit: 'm'
   },
   {label: 'Wing Spread', id: 'wingSpread', valid: valid.greaterThanZero, type: 'number', defaultValue: null,
-    editorDisplay: {editor: 'gear', type: 'single'}
+    editorDisplay: {editor: 'gear', type: 'single'}, unit: 'm'
   },
   {label: 'Headline Height', id: 'headlineHeight', valid: valid.greaterThanZero, type: 'float', defaultValue: null,
-    editorDisplay: {editor: 'gear', type: 'single'}
-  },
-  {label: 'Non Fish Protected Species',  id: 'nonFishProtected', valid: valid.alwaysValid, defaultValue: false, type: 'bool',
-    editorDisplay: {editor: 'event', type: 'single'}
+    editorDisplay: {editor: 'gear', type: 'single'}, unit: 'm'
   },
 ];
 

@@ -9,7 +9,6 @@ import {
   ScrollView,
   Switch,
   AlertIOS,
-  Dimensions,
   TextInput,
 } from 'react-native';
 

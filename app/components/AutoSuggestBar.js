@@ -9,7 +9,6 @@ import{
 } from 'react-native';
 
 import React from 'react';
-let {height, width} = Dimensions.get('window');
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import UserActions from '../actions/UserActions';
 import colors from '../styles/colors';
@@ -128,12 +127,14 @@ class AutoSuggestBar extends React.Component {
     }
 
     render () {
+      let {height, width} = Dimensions.get('window');
+
       if(!this.props.visible){
         return null;
       }
       return (
         <View style={styles.resultsBarWrapper}>
-          <View style={styles.resultsBar}>
+          <View style={[styles.resultsBar, {width: width}]}>
             {this.renderResults.bind(this)()}
           </View>
           <KeyboardSpacer />
@@ -153,7 +154,6 @@ const styles = StyleSheet.create({
   },
   resultsBar: {
     height: 80,
-    width: width,
     flex: 1,
     alignItems: 'flex-start',
     flexDirection: 'row',

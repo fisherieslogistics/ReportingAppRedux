@@ -8,8 +8,13 @@ import {
 import React, { Component } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Fishing from '../components/Fishing';
+import Forms from '../components/FormView';
 import {connect} from 'react-redux';
 import AutoSuggestBar from '../components/AutoSuggestBar';
+import Orientation from 'react-native-orientation';
+import ViewActions from '../actions/ViewActions';
+
+const viewActions = new ViewActions();
 
 const MAX_AUTOSUGGEST_RESULTS = 12;
 
@@ -18,8 +23,24 @@ class ReportingApp extends Component {
   constructor(props){
     super(props);
     this.state = {
-      selectedTab: "fishing",
+      selectedTab: "forms",
     }
+  }
+
+  _orientationDidChange(orientation) {
+    this.props.dispatch(viewActions.uiOrientation(orientation));
+  }
+
+  componentDidMount(){
+    this.props.dispatch(viewActions.uiOrientation(Orientation.getInitialOrientation()));
+    Orientation.addOrientationListener(this._orientationDidChange.bind(this));
+  }
+
+  componentWillUnmount() {
+    Orientation.getOrientation((err,orientation)=> {
+      console.log("Current Device Orientation: ", orientation);
+    });
+    Orientation.removeOrientationListener(this._orientationDidChange.bind(this));
   }
 
   renderTabs(){
@@ -71,7 +92,7 @@ class ReportingApp extends Component {
   renderForms(){
     return (
       <View style={[styles.col]}>
-            <Fishing />
+            <Forms />
       </View>
     )
   }
@@ -83,9 +104,9 @@ class ReportingApp extends Component {
   }
 
   render(){
-    var {height, width} = Dimensions.get('window');
+    console.log(this.props);
     return (
-      <View style={[styles.wrapper, {width: width, height: height}]}>
+      <View style={[styles.wrapper, {width: this.props.width, height: this.props.height}]}>
         <TabBarIOS
           unselectedTintColor="#bbbbbb"
           tintColor="#007aff"
@@ -113,7 +134,10 @@ const select = (State, dispatch) => {
     let state = State.default;
     return {
       autoSuggestBar: state.view.autoSuggestBar,
-      eventEmitter: state.uiEvents.eventEmitter
+      eventEmitter: state.uiEvents.eventEmitter,
+      uiOrientation: state.view.uiOrientation,
+      height: state.view.height,
+      width: state.view.width
     };
 }
 

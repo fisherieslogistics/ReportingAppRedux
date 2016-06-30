@@ -9,7 +9,6 @@ import {
   ScrollView,
   Switch,
   AlertIOS,
-  Dimensions,
   TextInput,
 } from 'react-native';
 import React from 'react';
@@ -22,7 +21,7 @@ class EditOnBlur extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      value: props.value || "",
+      value: this.getRenderedValue(props.value),
       inputId: props.inputId
     }
   }
@@ -67,9 +66,9 @@ class EditOnBlur extends React.Component {
   getRenderedValue(value){
     switch (this.props.attribute.type) {
       case "number":
-        return isNaN(parseInt(value)) ? "0" : parseInt(value).toString();
+        return isNaN(parseInt(value)) ? "0" : parseInt(value).toString() + (this.props.attribute.unit || "");
       case "float":
-        return isNaN(parseFloat(value)) ? "0.00" : parseFloat(value).toFixed(2).toString();
+        return isNaN(parseFloat(value)) ? "0.00" : parseFloat(value).toFixed(2).toString() + (this.props.attribute.unit || "");
       default:
         return (value !== null && value !== undefined) ? value.toString() : "";
     }
@@ -78,7 +77,7 @@ class EditOnBlur extends React.Component {
   render(){
     return (
       <TextInput
-        clearTextOnFocus={true}
+        selectTextOnFocus={true}
         keyboardType={this.getKeypad.bind(this)()}
         placeholderText={this.props.attribute.label}
         value={this.state.value}

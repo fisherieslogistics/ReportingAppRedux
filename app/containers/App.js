@@ -1,6 +1,6 @@
 'use strict';
 import React, { Component } from 'react';
-import { View, Dimensions, StatusBar } from 'react-native';
+import { View, StatusBar } from 'react-native';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
@@ -45,8 +45,6 @@ export default class App extends Component {
   }
 
   render() {
-    var width = Dimensions.get('window').width; //full width
-    var height = Dimensions.get('window').height; //full height
     if(!this.state.loaded){
       return (<View></View>);
     }

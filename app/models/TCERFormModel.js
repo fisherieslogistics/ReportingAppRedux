@@ -23,15 +23,15 @@ const meta = {
       vesselName: {x: 420, y: 625, resolveFrom: 'vessel', resolve: v => v.name},
       vesseNumber: {x: 545, y: 660, resolveFrom: 'vessel', resolve: v => v.number},
       permitHolderNumber: {x: 212, y: 660, resolveFrom: 'user', resolve: u => u.permitHolderNumber},
-      fisherName: {x: 245, y: 690, resolveFrom: 'user', resolve: u => u.fisrtName[0] + "." + u.lastName.slice(0, 4)},
+      fisherName: {x: 245, y: 690, resolveFrom: 'user', resolve: u => u.firstName[0] + "." + u.lastName.slice(0, 4)},
     },
     fishingEvents: {
       shotNumber: {x: 220, y: 85},
       targetSpecies: {x: 310, y: 85},
       bottomDepth: {x: 215, y: 227},
-      groundropeDepth: {x: 275, y: 227, resolve: fe => parseFloat(fe.groundropeDepth).toFixed(1)},
+      groundropeDepth: {x: 275, y: 227, resolve: fe => isNaN(fe.groundropeDepth) ? "" : parseFloat(fe.groundropeDepth).toFixed(1)},
       nonFishProtected: {x: 195, y: 312, resolve: fe => fe.nonFishProtected ? "X" : "           X"},
-      averageSpeed: {x: 180, y: 255, align: 'right', resolve: fe => parseFloat(fe.averageSpeed).toFixed(1)},
+      averageSpeed: {x: 180, y: 255, align: 'right', resolve: fe => isNaN(fe.averageSpeed) ? "" : parseFloat(fe.averageSpeed).toFixed(1)},
       targetSpecies: {x: 310, y: 85},
       locationAtStart: {
         multiple: true,
@@ -61,7 +61,12 @@ const meta = {
           }}
         ]
       },
-      datetimeAtEnd: {resolve: (fe) => datetimeAtEnd.format("HH   mm"), x: 180, y: 282},
+      datetimeAtEnd: {
+        resolve: (fe) => {
+          return fe.datetimeAtEnd ? fe.datetimeAtEnd.format("HH   mm") : "";
+        },
+        x: 180, y: 282
+      },
       products: {
         multiple: true,
         repeating: true,
@@ -69,8 +74,24 @@ const meta = {
           return helper.getTotals([...products]).slice(0, 8);
         },
         parts: [
-          {id: 'code', resolve: (fe, i) => fe.products[i].code, x: 168, y: 340, ymultiple: 23},
-          {id: 'weight', resolve: (fe, i) => fe.products[i].weight, x: 240, y:340 , ymultiple: 23},
+          {
+            id: 'code',
+            resolve: (fe, i) => {
+              return fe.products[i] ? fe.products[i].code : "";
+            },
+            x: 168,
+            y: 340,
+            ymultiple: 23
+          },
+          {
+            id: 'weight',
+            resolve: (fe, i) => {
+              return fe.products[i] ? fe.products[i].weight : "";
+            },
+            x: 240,
+            y:340 ,
+            ymultiple: 23
+          },
         ]
       },
       otherSpeciesWeight: {id: 'products', resolve: (fe) => {

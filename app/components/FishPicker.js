@@ -114,6 +114,7 @@ class FishPicker extends React.Component {
           onChangeText={this.onChangeText.bind(this)}
           value={this.state.value}
           maxLength={3}
+          selectTextOnFocus={true}
           autoCapitalize={'none'}
           autoCorrect={false}
           ref={'textInput'}

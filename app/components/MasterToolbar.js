@@ -11,11 +11,10 @@ import {
   TabBarIOS,
   TextInput,
   ListView,
-  Dimensions
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
-var {height, width} = Dimensions.get('window');
+
 class DetailToolbar extends React.Component {
     renderButton(button){
       return (
@@ -25,6 +24,7 @@ class DetailToolbar extends React.Component {
       );
     }
     render() {
+
       return (
         <View style={[styles.toolbar]}>
           <View style={[styles.left]}>

@@ -10,12 +10,11 @@ import {
   SegmentedControlIOS,
   TabBarIOS,
   TextInput,
-  ListView,
-  Dimensions
+  ListView
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
-var {height, width} = Dimensions.get('window');
+
 class DetailToolbar extends React.Component {
     renderButton(button){
       return (

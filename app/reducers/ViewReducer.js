@@ -1,13 +1,16 @@
 import moment from 'moment';
 import Helper from '../utils/Helper';
 import EventEmitter from 'EventEmitter';
-
+import Orientation from 'react-native-orientation';
 const helper = new Helper();
 const assign = helper.assign;
 
 let initialState = {
   viewingFishingEventId: 1,
   detailView: "catch",
+  uiOrientation: 'PORTRAIT',
+  width: 768,
+  height: 1024,
   autoSuggestBar: {
     choices: [],
     favourites: [],
@@ -39,6 +42,16 @@ export default (state = initialState, action) => {
           })});
         }
         return update(state, {autoSuggestBar: initialState.autoSuggestBar});
+      case 'uiOrientation':
+        console.log(action);
+        switch (action.uiOrientation) {
+          case 'PORTRAIT':
+          case 'PORTRAITUPSIDEDOWN':
+            return update(state, {width: 768, height: 1024, uiOrientation: action.uiOrientation});
+          case 'LANDSCAPE':
+          case 'LANDSCAPEUPSIDEDOWN':
+            return update(state, {width: 1024, height: 768, uiOrientation: action.uiOrientation});
+        }
     default:
         return state;
     }
