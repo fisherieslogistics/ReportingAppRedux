@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import colors from '../styles/colors';
 
 class DetailToolbar extends React.Component {
     renderButton(button){
@@ -26,23 +27,23 @@ class DetailToolbar extends React.Component {
     render() {
 
       return (
-        <View style={[styles.toolbar]}>
-          <View style={[styles.left]}>
-            {this.props.left ? this.renderButton(this.props.left) : null}
+          <View style={[styles.toolbar]}>
+            <View style={[styles.left]}>
+              {this.props.left ? this.renderButton(this.props.left) : null}
+            </View>
+            <View style={[styles.right]}>
+              {this.props.right ? this.renderButton(this.props.right) : null}
+            </View>
           </View>
-          <View style={[styles.right]}>
-            {this.props.right ? this.renderButton(this.props.right) : null}
-          </View>
-        </View>
       );
     }
 };
 
 const styles = StyleSheet.create({
    toolbar:{
-     backgroundColor: "#F9F9F9",
+     backgroundColor: colors.backgrounds.light,
      flexDirection: 'row',
-     flex: 0.1
+     height: 70
    },
    left: {
      alignSelf: 'stretch',

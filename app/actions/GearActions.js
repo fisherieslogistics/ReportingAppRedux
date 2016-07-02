@@ -2,26 +2,22 @@
 import moment from 'moment';
 
 class GearActions{
-    saveGearData(data) {
+
+    changeCurrentGear(key, value) {
         return {
-            type: 'saveGearData',
-            data: data,
-            timestamp: moment()
+            type: 'changeCurrentGear',
+            key: key,
+            value: value,
         };
     }
-    closeGearEditor(data) {
-        return {
-            type: 'closeGearEditor',
-            data: data,
-            timestamp: moment()
-        };
-    }
-    openGearEditor(data) {
-        return {
-            type: 'openGearEditor',
-            data: data,
-            timestamp: moment()
-        };
+
+    changeEventGear(fishingEventId, key, value){
+      return {
+          fishingEventId: fishingEventId,
+          type: 'changeEventGear',
+          key: key,
+          value: value,
+      };
     }
 }
 

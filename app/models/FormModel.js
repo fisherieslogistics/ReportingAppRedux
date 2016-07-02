@@ -7,6 +7,7 @@ const formModel = [
     {id: 'permitHolderNumber', type: 'number', resource: 'user'},
     {id: 'firstName', type: 'string', resource: 'user'},
     {id: 'lastName', type: 'string', resource: 'user'},
+    {id: 'submitted', type: 'bool', defaultValue: false, hidden: true}
 ];
 
 export default formModel;

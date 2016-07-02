@@ -14,7 +14,8 @@ import {
 import React from 'react';
 import FishPicker from '../components/FishPicker';
 import DatePicker from 'react-native-datepicker';
-import inputStyle from '../styles/inputStyle';
+import inputStyle from '../styles/input';
+import moment from 'moment';
 
 class EditOnBlur extends React.Component {
 
@@ -32,7 +33,7 @@ class EditOnBlur extends React.Component {
       this.setState({
         value: props.value,
         inputId: props.inputId,
-        renderedValue: this.getRenderedValue(this.state.value)
+        renderedValue: this.getRenderedValue(props.value)
       });
     }
   }
@@ -109,8 +110,9 @@ class Editor {
                 dateIcon: inputStyle.dateIcon
               }}
               onDateChange={(datetime) => {
-              callback(attribute.id, new moment(datetime));
-            }}
+                callback(attribute.id, new moment(datetime));
+              }}
+              {...extraProps}
           />);
         break;
       case "product":
@@ -128,7 +130,8 @@ class Editor {
       case "bool":
         return (<Switch
                   onValueChange={(bool) => callback(attribute.id, bool)}
-                  value={value || false} />);
+                  value={value || false}
+                  {...extraProps}/>);
       case "number":
       case "float":
       default:

@@ -3,11 +3,12 @@ import moment from 'moment';
 
 class FishingEventActions{
 
-    startFishingEvent() {
+    startFishingEvent(gear) {
         return (dispatch, getState) => {
             dispatch({
                 type: 'startFishingEvent',
                 location: getState().default.location.location,
+                gear: gear,
                 timestamp: moment()
             });
             let fishingEvents = getState().default.fishingEvents.events;

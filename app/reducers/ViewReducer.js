@@ -43,7 +43,6 @@ export default (state = initialState, action) => {
         }
         return update(state, {autoSuggestBar: initialState.autoSuggestBar});
       case 'uiOrientation':
-        console.log(action);
         switch (action.uiOrientation) {
           case 'PORTRAIT':
           case 'PORTRAITUPSIDEDOWN':

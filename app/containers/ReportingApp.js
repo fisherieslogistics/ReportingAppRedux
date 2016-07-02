@@ -19,12 +19,15 @@ const viewActions = new ViewActions();
 const formActions = new FormActions();
 const MAX_AUTOSUGGEST_RESULTS = 12;
 
+import ShadowStyle from '../styles/shadow';
+
+
 class ReportingApp extends Component {
 
   constructor(props){
     super(props);
     this.state = {
-      selectedTab: "forms",
+      selectedTab: "fishing",
     }
   }
 
@@ -80,7 +83,7 @@ class ReportingApp extends Component {
 
   renderProfile(){
     return (
-      <View style={[styles.col]}>
+      <View style={[styles.col, styles.fill]}>
             <Fishing />
       </View>
     )
@@ -88,7 +91,7 @@ class ReportingApp extends Component {
 
   renderTrip(){
     return (
-      <View style={[styles.col]}>
+      <View style={[styles.col, styles.fill]}>
             <Fishing />
       </View>
     )
@@ -96,7 +99,7 @@ class ReportingApp extends Component {
 
   renderForms(){
     return (
-      <View style={[styles.col]}>
+      <View style={[styles.col, styles.fill]}>
             <Forms />
       </View>
     )
@@ -104,7 +107,9 @@ class ReportingApp extends Component {
 
   renderFishing(){
     return (
-      <Fishing />
+      <View style={[styles.col, styles.fill]}>
+        <Fishing />
+      </View>
     )
   }
 
@@ -116,7 +121,7 @@ class ReportingApp extends Component {
           tintColor="#007aff"
           barTintColor="#F9F9F9"
         >
-          {this.renderTabs.bind(this)()}
+            {this.renderTabs.bind(this)()}
         </TabBarIOS>
         <AutoSuggestBar
           eventEmitter={this.props.eventEmitter}
@@ -155,6 +160,11 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
   },
+  fill:{
+    alignItems: 'flex-start',
+    alignSelf: 'stretch',
+    flex: 1
+  }
 });
 
 export default connect(select)(ReportingApp)

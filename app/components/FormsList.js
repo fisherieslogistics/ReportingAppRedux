@@ -15,97 +15,96 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Helper from '../utils/Helper';
 import FishingEventModel from '../models/FishingEventModel';
 import TCERFishingEventModel from '../models/TCERFishingEventModel';
+
 import colors from '../styles/colors';
+import styles from '../styles/listView';
 
 const helper = new Helper();
 const Lang = Strings.english;
 
 const fishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
 const formActions = new FormActions();
+
+import MasterListView from './MasterListView';
+
+const formDescs = {
+  started: {
+    icon: "pencil",
+    color: colors.orange,
+  },
+  signed: {
+    icon: "cloud-upload",
+    color: colors.white,
+  },
+  submitted:{
+    icon: "cloud",
+    color: colors.gray
+  },
+}
+
 class FormsList extends React.Component {
     constructor(props){
       super(props);
+      this.state = {
+        selectedRowId: false
+      }
     }
 
-    setViewingForm(form){
+    setViewingForm(form, rowId){
+      this.setState({
+        selectedRowId: rowId
+      });
       this.props.dispatch(formActions.setViewingForm(form));
     }
 
-    renderRow (form, sectionID, rowID) {
-      let rowStyle = [styles.listRow];
-      if(this.props.viewingForm && form.id === this.props.viewingForm.id){
-        rowStyle.push(styles.selectedListRow);
+    getFormStatus(form){
+      if(form.submitted){
+        return formModelMeta.submitted;
       }
-      return (
-        <TouchableHighlight
-          onPress={() => {
-            this.setViewingForm(form);
-          }}
-          underlayColor={colors.blue}
-          activeOpacity={0.3}
-        >
-          <View style={rowStyle}>
-            <Text style={[styles.listRowItem]}>
-              {"TCER Form " + form.fishingEvents.length + " shots" }
-            </Text>
-          </View>
-        </TouchableHighlight>);
+      if(form.signed){
+        return formDescs.signed;
+      }
+      return formDescs.started;
     }
-    renderSeperator(sectionID: number, rowID: number, adjacentRowHighlighted: bool) {
-      return (
-        <View
-          key={`${sectionID}-${rowID}`}
-          style={{
-            height: 1,
-            backgroundColor: colors.midGray,
-          }}
-        />
-      );
+
+    isSelected(form, rowId){
+      return (rowId === this.state.selectedRowId);
+    }
+
+    getIcon(form){
+      let status = this.getFormStatus(form);
+      return (<Icon name={status.icon} size={20} color={status.color} />);
+    }
+
+    renderDescription(form, sectionId, rowId) {
+      let formNum = parseInt(rowId) + 1;
+      let details = [
+        {text: "Form " + formNum, style: styles.blackText},
+        {text:" ", style: {}},
+        {text: form.fishingEvents.length + " Shots ", style: styles.lightText},
+      ];
+
+      return details.map((detail, i) => {
+        return (
+        <View style={styles.listRowItemNarrow} key={"eventDetail" + i}>
+          <Text style={[detail.style]}>
+            {detail.text}
+          </Text>
+        </View>);
+      });
     }
 
     render () {
       return (
-        <ListView
-          style={styles.listView}
-          enableEmptySections={true}
+        <MasterListView
+          renderDescription={this.renderDescription.bind(this)}
+          isSelected={this.isSelected.bind(this)}
+          onPress={this.setViewingForm.bind(this)}
           dataSource={this.props.forms}
-          renderRow={this.renderRow.bind(this)}
-          renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
-          renderSeparator={this.renderSeperator}
+          getIcon={this.getIcon.bind(this)}
         />
       );
     }
 };
-
-const styles = StyleSheet.create({
-  listRow: {
-    flexDirection: 'row',
-    flex: 1,
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: colors.white
-  },
-  selectedListRow: {
-    backgroundColor: colors.blue,
-  },
-  listRowItem: {
-    flex: 0.5
-  },
-  listRowItemNarrow: {
-    flex: 0.25,
-  },
-  listRowItemTiny:{
-    flex: 0.1,
-  },
-  listItemText: {
-    fontSize: 19,
-    color: colors.midGray
-  },
-  listView:{
-    marginTop: -20
-  }
-});
-
-
 
 export default FormsList;

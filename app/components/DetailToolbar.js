@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import ShadowStyle from '../styles/shadow';
 
 class DetailToolbar extends React.Component {
     renderButton(button){
@@ -25,7 +26,7 @@ class DetailToolbar extends React.Component {
     }
     render() {
       return (
-        <View style={[styles.toolbar]}>
+        <View style={[styles.toolbar, ShadowStyle.shadow]}>
           <View style={[styles.left]}>
             {this.props.left ? this.renderButton(this.props.left) : null}
           </View>
@@ -49,7 +50,8 @@ const styles = StyleSheet.create({
    toolbar:{
      backgroundColor: "#F9F9F9",
      flexDirection: 'row',
-     flex: 0.1
+     flex: 0.1,
+     height: 70
    },
    left: {
      alignSelf: 'stretch',

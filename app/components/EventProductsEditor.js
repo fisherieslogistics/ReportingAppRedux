@@ -4,23 +4,21 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TouchableHighlight,
   ScrollView,
-  Switch,
-  AlertIOS,
-  Dimensions,
-  TextInput,
 } from 'react-native';
 
 import React from 'react';
 import {connect} from 'react-redux';
 import ProductActions from '../actions/ProductActions';
-import inputStyle from '../styles/inputStyle';
+import inputStyle from '../styles/input';
 import colors from '../styles/colors';
 import ProductModel from '../models/ProductModel';
 import Editor from '../utils/Editor';
 const editor = new Editor();
 const productActions = new ProductActions();
+import eventEditorStyle from '../styles/eventEditor';
+
+import {renderCombinedEditors, getCombinedEditors} from '../utils/RenderingUtils';
 
 class EventProductsEditor extends React.Component{
     constructor (props){
@@ -34,8 +32,9 @@ class EventProductsEditor extends React.Component{
       this.props.dispatch(productActions.addProduct(this.props.fishingEvent.id));
     }
 
-    getEditor(attribute, value, index){
-      let inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index;
+    getEditor(attribute, product, index){
+      const value = product[attribute.id];
+      const inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index;
       return editor.editor(attribute,
                      value,
                      (name, v) => this.onChange(name, v, index),
@@ -72,50 +71,13 @@ class EventProductsEditor extends React.Component{
       );
     }
 
-    renderCombinedEditors(editors, key){
-      return (
-          <View style={[styles.col, styles.inputRow]} key={"combined" + key +  Math.random().toString()}>
-            <View style={[styles.row]}>
-              {editors.map((e) => {
-                return (
-                    <View style={[styles.quarter]} key={e.label +  Math.random().toString()}>
-                      <View style={[styles.labelRow]}>
-                        <Text style={styles.labelText}>{e.label}</Text>
-                      </View>
-                      <View style={[styles.editorRow]}>
-                        {e.editor}
-                      </View>
-                  </View>
-                );
-              })}
-            </View>
-        </View>
-      );
-    }
-
     renderEditor(attribute, product, index){
-      if(attribute.editorDisplay && attribute.editorDisplay.hideNull){
-        return null;
+      const getEditor = (attr) => this.getEditor(attr, product, index);
+      const combinedEditors = getCombinedEditors(attribute, ProductModel, getEditor);
+      if(combinedEditors.length < 4){
+        combinedEditors.push({label: "", editor: null});
       }
-      if(attribute.editorDisplay && attribute.editorDisplay.editor === this.props.editorType){
-        switch (attribute.editorDisplay.type) {
-          case "combined":
-            let editors = [{label: attribute.label, editor: this.getEditor(attribute, product[attribute.id], index)}];
-            let addedEditors = attribute.editorDisplay.siblings.map((s) => {
-                let attr = ProductModel.find((a) => {
-                             return a.id === s;
-                            });
-
-                return {label: attr.label, editor: this.getEditor(attr, product[attr.id], index)};
-            });
-            let allEditors = editors.concat(addedEditors);
-            if(allEditors.length < 4){
-              allEditors.push({label: "", editor: null});
-            }
-            return this.renderCombinedEditors(allEditors);
-          default:
-        }
-      }
+      return renderCombinedEditors(combinedEditors, styles);
     }
 
     getDetailWidth(){
@@ -130,7 +92,6 @@ class EventProductsEditor extends React.Component{
     }
 
     render() {
-      console.log(this.getDetailWidth(), this.props.uiOrientation);
       if(!this.props.fishingEvent){
         return null;
       }
@@ -140,29 +101,34 @@ class EventProductsEditor extends React.Component{
       });
       let undoStyle = this.state.undoDeleteActive ? styles.undoActive : {};
       let undoTextStyle = this.state.undoDeleteActive ? styles.activeText : styles.inactiveText;
+
+      let bottomRow = (
+        <View style={[styles.bottomRow, {width: this.getDetailWidth()}]}>
+          <TouchableOpacity
+            style={[styles.undoDelete, undoStyle, styles.button]}
+            activeOpacity={this.state.undoDeleteActive ? 1 : 0.7}>
+            <Text style={[undoTextStyle]}>Undo Delete</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.addProduct, styles.button]}
+            onPress={this.addProduct.bind(this)}>
+            <Text style={[styles.activeText]}>Add Catch</Text>
+          </TouchableOpacity>
+        </View>
+    );
+
       return (
         <View>
           <ScrollView style={[styles.scroll]}>
             {this.props.fishingEvent.products.length ? inputs.reverse() : null}
           </ScrollView>
-          <View style={[styles.bottomRow, {width: this.getDetailWidth()}]}>
-            <TouchableOpacity
-              style={[styles.undoDelete, undoStyle, styles.button]}
-              activeOpacity={this.state.undoDeleteActive ? 1 : 0.7}>
-              <Text style={[undoTextStyle]}>Undo Delete</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.addProduct, styles.button]}
-              onPress={this.addProduct.bind(this)}>
-              <Text style={[styles.activeText]}>Add Catch</Text>
-            </TouchableOpacity>
-          </View>
+          {bottomRow}
         </View>
       );
     }
 };
 
-const styles = StyleSheet.create({
+const productEditorStyle = {
   scroll: {
     backgroundColor: colors.lightGray
   },
@@ -197,42 +163,23 @@ const styles = StyleSheet.create({
   wrapper:{
     marginTop: 5,
     marginLeft: 5,
-    marginRight: 5,
+    marginRight: 2,
     backgroundColor: '#fff',
     borderRadius: 10,
     paddingTop: 2,
     paddingLeft: 30,
     paddingBottom: 8,
   },
-  col:{
-    flexDirection: 'column',
-  },
-  row:{
-    flexDirection: 'row',
-  },
-  inputRow: {
-    paddingTop: 5,
-    height: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.midGray
-  },
-  editorRow: {
-    flex: 0.7,
-    paddingBottom: 3
-  },
-  fill: {
-    flex: 1,
-  },
   labelRow: {
-    flex: 0.25,
+    flex: 0.20,
+    marginRight: 3
   },
-  labelText: {
-    color: colors.blue
-  },
-  quarter: {
-    flex: 0.25
+  rowSection: {
+    flex: 0.24
   }
-});
+}
+
+const styles = StyleSheet.create(Object.assign({}, eventEditorStyle, productEditorStyle));
 
 
 const select = (State, dispatch) => {

@@ -9,6 +9,7 @@ import TripReducer from './TripReducer';
 import FormReducer from './FormReducer';
 import Helper from '../utils/Helper';
 import EventsReducer from './EventsReducer';
+import GearReducer from './GearReducer';
 
 const helper = new Helper();
 var AsyncStorage = require('AsyncStorage');
@@ -21,7 +22,8 @@ const reducers = {
     location: LocationReducer,
     trip: TripReducer,
     forms: FormReducer,
-    uiEvents: EventsReducer
+    uiEvents: EventsReducer,
+    gear: GearReducer
 }
 
 let MainReducer = combineReducers(reducers);

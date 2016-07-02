@@ -12,26 +12,26 @@ const meta = {
     return (daysMatch && wingSpreadsMatch && headlineHeightsMatch);
   },
   eventsPerForm: 4,
-  xMultiplier: 214 * 0.67,
+  xMultiplier: 214 * 0.660,
   printMapping: {
     form:{
       gearCode: {x: 190, y: 50},
-      wingSpread: {x: 370, y: 50, resolve: form => form.fishingEvents[0].wingSpread},
-      headlineHeight: {x: 645, y: 50, resolve: form => form.fishingEvents[0].headlineHeight,
+      wingSpread: {x: 378, y: 50, resolve: form => form.fishingEvents[0].wingSpread || "WS"},
+      headlineHeight: {x: 650, y: 50, resolve: form => form.fishingEvents[0].headlineHeight || "HH",
                                                         textStyle: {textAlign: 'right'}},
-      permitHolderName: {x: 100, y: 625, resolveFrom: 'user', resolve: u => u.permitHolderName},
-      vesselName: {x: 420, y: 625, resolveFrom: 'vessel', resolve: v => v.name},
-      vesseNumber: {x: 545, y: 660, resolveFrom: 'vessel', resolve: v => v.number},
-      permitHolderNumber: {x: 212, y: 660, resolveFrom: 'user', resolve: u => u.permitHolderNumber},
-      fisherName: {x: 245, y: 690, resolveFrom: 'user', resolve: u => u.firstName[0] + "." + u.lastName.slice(0, 4)},
+      permitHolderName: {x: 100, y: 628, resolveFrom: 'user', resolve: u => u.permitHolderName},
+      vesselName: {x: 424, y: 628, resolveFrom: 'vessel', resolve: v => v.name},
+      vesseNumber: {x: 555, y: 662, resolveFrom: 'vessel', resolve: v => v.number},
+      permitHolderNumber: {x: 216, y: 662, resolveFrom: 'user', resolve: u => u.permitHolderNumber},
+      fisherName: {x: 249, y: 694, resolveFrom: 'user', resolve: u => u.firstName[0] + "." + u.lastName.slice(0, 4)},
     },
     fishingEvents: {
       shotNumber: {x: 220, y: 85},
       targetSpecies: {x: 310, y: 85},
       bottomDepth: {x: 218, y: 227, resolve: (fe) => isNaN(parseInt(fe.bottomDepth)) ? "" : fe.bottomDepth},
-      groundropeDepth: {x: 275, y: 227, resolve: fe => isNaN(parseInt(fe.groundropeDepth)) ? "" : fe.groundropeDepth},
+      groundropeDepth: {x: 282, y: 227, resolve: fe => isNaN(parseInt(fe.groundropeDepth)) ? "" : fe.groundropeDepth},
       nonFishProtected: {x: 195, y: 312, resolve: fe => fe.nonFishProtected ? "X" : "           X"},
-      averageSpeed: {x: 173, y: 258, align: 'right', resolve: fe => isNaN(parseFloat(fe.averageSpeed)) ? "" : parseFloat(fe.averageSpeed).toFixed(1)},
+      averageSpeed: {x: 187, y: 258, align: 'right', resolve: fe => isNaN(parseFloat(fe.averageSpeed)) ? "" : parseFloat(fe.averageSpeed).toFixed(1)},
       targetSpecies: {x: 310, y: 85},
       locationAtStart: {
         multiple: true,
@@ -80,23 +80,23 @@ const meta = {
               return fe.products[i] ? fe.products[i].code : "";
             },
             x: 172,
-            y: 340,
-            ymultiple: 19
+            y: 342,
+            ymultiple: 20
           },
           {
             id: 'weight',
             resolve: (fe, i) => {
               return fe.products[i] ? fe.products[i].weight : "";
             },
-            x: 240,
-            y:340 ,
-            ymultiple: 23
+            x: 244,
+            y: 342 ,
+            ymultiple: 20
           },
         ]
       },
       otherSpeciesWeight: {id: 'products', resolve: (fe) => {
         return helper.getUncountedWeight(fe.products, 8);
-      }, x: 240, y: 568}
+      }, x: 244, y: 572}
     }
   }
 }

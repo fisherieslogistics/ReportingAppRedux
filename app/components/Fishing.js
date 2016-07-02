@@ -11,7 +11,7 @@ import EventDetailEditor from './EventDetailEditor';
 import FishingEventList from './FishingEventList';
 import MasterDetailView from './MasterDetailView';
 import FishingEventActions from '../actions/FishingEventActions';
-import FishingEventCustomEditor from './FishingEventCustomEditor';
+import EventGearEditor from './EventGearEditor';
 import DetailToolbar from  './DetailToolbar';
 import MasterToolbar from './MasterToolbar';
 import EventProductsEditor from './EventProductsEditor';
@@ -19,7 +19,7 @@ import EventProductsEditor from './EventProductsEditor';
 import {connect} from 'react-redux';
 import moment from 'moment';
 
-const detailTabs = ["details", "catches", "custom"];
+const detailTabs = ["details", "catches", "gear"];
 const fishingEventActions = new FishingEventActions();
 
 class Fishing extends React.Component{
@@ -32,7 +32,7 @@ class Fishing extends React.Component{
   }
 
   startFishingEvent(){
-    this.props.dispatch(fishingEventActions.startFishingEvent());
+    this.props.dispatch(fishingEventActions.startFishingEvent(this.props.gear));
   }
 
   commitFishingEvents(){
@@ -84,28 +84,8 @@ class Fishing extends React.Component{
     );
   }
 
-  onChangeText(name, value) {
-      this.props.dispatch(
-        fishingEventActions.setfishingEventValue(this.props.fishingEvent.id, name, value));
-  }
-
   setViewingFishingEvent(fishingEvent){
     this.props.dispatch(fishingEventActions.setViewingFishingEvent(fishingEvent.id));
-  }
-
-  onNonFishChange(name, value){
-    if(value){
-      AlertIOS.alert(
-        'Non Fish are you sure?',
-        'You will need to fill out a Non Fish Protected Species Form in you form book',
-        [
-          {text: 'Cancel', onPress: () => {this.onChangeText(name, false)}, style: 'cancel'},
-          {text: 'OK', onPress: () => {this.onChangeText(name, true)}}
-        ]
-      );
-    }else{
-      this.onChangeText(name, false);
-    }
   }
 
   selectedDetailView(){
@@ -125,9 +105,11 @@ class Fishing extends React.Component{
                 />);
       break;
       case 2:
-        return (<FishingEventCustomEditor
+        return (<EventGearEditor
                  dispatch={this.props.dispatch}
                  fishingEvent={this.props.fishingEvent}
+                 isLatestEvent={this.props.isLatestEvent}
+                 gear={this.props.gear}
                 />);
       break;
     }
@@ -204,10 +186,12 @@ const styles = {
 
 const select = (State, dispatch) => {
     let state = State.default;
+    let isLatestEvent = state.viewingFishingEventId && (state.viewingFishingEventId === state.fishingEvents.length);
     return {
       fishingEvent: state.fishingEvents.events[state.view.viewingFishingEventId - 1],
       fishingEvents: state.fishingEvents.events,
-      fishingEventType: "tcer"
+      fishingEventType: "tcer",
+      gear: state.gear
     };
 }
 

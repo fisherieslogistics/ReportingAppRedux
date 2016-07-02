@@ -21,7 +21,7 @@ export default (state = initialState, action) => {
     }
     switch(action.type) {
         case 'startFishingEvent':
-          return newFishingEvent(state, action.location, action.trawl);
+          return newFishingEvent(state, action.location, action.gear);
         case 'endFishingEvent':
           return endFishingEvent(state, action.location, action.id);
         case 'cancelFishingEvent':
@@ -44,6 +44,13 @@ export default (state = initialState, action) => {
           return ChangeEvent(action.fishingEventId - 1, state, { fishyFishId: action.fishyFishId, lastSubmitted: action.lastSubmitted }, true);
         case 'addProduct':
           return addNewCatch(action.fishingEventId, state);
+        case 'changeEventGear':
+          let fishingEvent = state.events[action.fishingEventId -1];
+          const gearChange = {};
+          gearChange[action.key] = action.value;
+          let gear = Object.assign({}, fishingEvent.gear, gearChange);
+          fishingEvent = setFishingEventGear(fishingEvent, gear);
+          return replaceFishingEvent(state, fishingEvent);
         default:
             return state;
     }
@@ -62,14 +69,16 @@ const changeState = (state, change) => {
 const ChangeEvent = (index, state, changes) => {
   changes.lastChange = moment();
   updatedEvent = Object.assign({}, state.events[index], changes);
-  let errUpdate = updateErrors(updatedEvent, state);
+  return replaceFishingEvent(state, updatedEvent);
+}
+
+const replaceFishingEvent = (state, updatedEvent) => {
   return Object.assign({}, state,
     {events: [
-      ...state.events.slice(0, index),
+      ...state.events.slice(0, updatedEvent.id -1),
       updatedEvent,
-      ...state.events.slice(index + 1)
-    ],
-    errors: Object.assign({}, state.errors, errUpdate)
+      ...state.events.slice(updatedEvent.id)
+    ]
   });
 }
 
@@ -138,8 +147,17 @@ const calculateProductsValid = (Event) => {
   return hasAtLeastOne;
 };
 
+const setFishingEventGear = (fishingEvent, gear) => {
+  fishingEvent = Object.assign({}, fishingEvent, {gear: gear});
+  Object.keys(gear).forEach((k) => {
+    if(k in fishingEvent){
+      fishingEvent[k] = fishingEvent.gear[k];
+    }
+  });
+  return fishingEvent;
+}
 
-const newFishingEvent = (state, location, trawl) => {
+const newFishingEvent = (state, location, gear) => {
   let newEvent = ModelUtils.blankModel(fishingEventModel);
   let id = state.events.length + 1;
   newEvent.id = id;
@@ -150,12 +168,14 @@ const newFishingEvent = (state, location, trawl) => {
   let previousEvent = state.events.length ? Object.assign({}, state.events[state.events.length - 1]) : null;
   if(previousEvent){
     newEvent.targetSpecies = "" + previousEvent.targetSpecies;
-    newEvent.custom = Object.assign({}, previousEvent.custom);
     fishingMethodSpecificModel.forEach((attribute) => {
       let update = {};
       update[attribute.id] = previousEvent[attribute.id];
       newEvent = Object.assign({}, newEvent, update);
     });
+    newEvent = setFishingEventGear(newEvent, Object.assign({}, previousEvent.gear));
+  }else{
+    newEvent = setFishingEventGear(newEvent, Object.assign({}, gear));
   }
   return Object.assign({}, state, {
       events: [

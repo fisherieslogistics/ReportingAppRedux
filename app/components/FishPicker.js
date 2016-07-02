@@ -12,7 +12,7 @@ import Validator from '../utils/Validator';
 
 import React from 'react';
 import AutoSuggestBar from './AutoSuggestBar';
-import inputStyle from '../styles/inputStyle';
+import inputStyle from '../styles/input';
 import speciesCodes from '../constants/speciesCodes.json';
 import ViewActions from '../actions/ViewActions';
 import reactMixin from 'react-mixin';

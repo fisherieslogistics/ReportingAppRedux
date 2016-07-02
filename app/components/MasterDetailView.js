@@ -5,6 +5,8 @@ import {
   Text,
 } from 'react-native';
 
+import ShadowStyle from '../styles/shadow';
+import colors from '../styles/colors';
 import React from 'react';
 
 export class MasterDetailView extends React.Component {
@@ -13,11 +15,13 @@ export class MasterDetailView extends React.Component {
     return (
       <View style={[styles.wrapper]}>
         <View style={[styles.row]}>
-          <View style={[styles.master]}>
-            {this.props.masterToolbar}
-            <View style={[styles.col, styles.background]}>{this.props.master}</View>
+          <View style={[styles.master, ShadowStyle.shadow]}>
+              {this.props.masterToolbar}
+            <View style={[styles.col, styles.background]}>
+              {this.props.master}
+            </View>
           </View>
-          <View style={[styles.detail]}>
+          <View style={[styles.detail, ShadowStyle.shadow]}>
             {this.props.detailToolbar}
             <View style={[styles.col]}>
               {this.props.detail}
@@ -34,7 +38,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'stretch',
     alignSelf: 'stretch',
-    backgroundColor: '#efeff4'
+    backgroundColor: colors.backgrounds.dark,
   },
   col: {
     flexDirection: 'column',
@@ -45,23 +49,18 @@ const styles = StyleSheet.create({
     flex: 1
   },
   background:{
-    backgroundColor: '#efeff4',
+    backgroundColor: colors.backgrounds.dark,
   },
   master: {
     flex: 0.3,
     flexDirection: 'column',
-    borderRightColor: "#d9d9d9",
-    borderRightWidth: 1,
     alignSelf: 'stretch',
-    backgroundColor: '#efeff4',
+    backgroundColor: colors.backgrounds.dark,
   },
   detail:{
     flex: 0.7,
     flexDirection: 'column',
-    borderLeftColor: "#efefef",
-    borderLeftWidth: 1,
-    //backgroundColor: "#FFFFFF"
-  }
+  },
 });
 
 export default MasterDetailView
