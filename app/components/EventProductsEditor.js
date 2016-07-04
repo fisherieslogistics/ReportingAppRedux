@@ -8,17 +8,14 @@ import {
 } from 'react-native';
 
 import React from 'react';
-import {connect} from 'react-redux';
 import ProductActions from '../actions/ProductActions';
-import inputStyle from '../styles/input';
-import colors from '../styles/colors';
 import ProductModel from '../models/ProductModel';
-import Editor from '../utils/Editor';
-const editor = new Editor();
-const productActions = new ProductActions();
-import eventEditorStyle from '../styles/eventEditor';
 
-import {renderCombinedEditors, getCombinedEditors} from '../utils/RenderingUtils';
+import {connect} from 'react-redux';
+import {eventEditorStyles, inputStyle, colors, textStyles} from '../styles/styles';
+import {renderCombinedEditors, getCombinedEditors, AttributeEditor} from './AttributeEditor';
+
+const productActions = new ProductActions();
 
 class EventProductsEditor extends React.Component{
     constructor (props){
@@ -35,7 +32,7 @@ class EventProductsEditor extends React.Component{
     getEditor(attribute, product, index){
       const value = product[attribute.id];
       const inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index;
-      return editor.editor(attribute,
+      return AttributeEditor(attribute,
                      value,
                      (name, v) => this.onChange(name, v, index),
                      {fishingEvent: this.props.fishingEvent},
@@ -100,19 +97,19 @@ class EventProductsEditor extends React.Component{
         inputs.push(this.renderEditors(p, i));
       });
       let undoStyle = this.state.undoDeleteActive ? styles.undoActive : {};
-      let undoTextStyle = this.state.undoDeleteActive ? styles.activeText : styles.inactiveText;
+      let undoTextStyle = this.state.undoDeleteActive ? textStyles.active : styles.inactiveText;
 
       let bottomRow = (
         <View style={[styles.bottomRow, {width: this.getDetailWidth()}]}>
           <TouchableOpacity
             style={[styles.undoDelete, undoStyle, styles.button]}
             activeOpacity={this.state.undoDeleteActive ? 1 : 0.7}>
-            <Text style={[undoTextStyle]}>Undo Delete</Text>
+            <Text style={[textStyles.font,undoTextStyle]}>Undo Delete</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.addProduct, styles.button]}
             onPress={this.addProduct.bind(this)}>
-            <Text style={[styles.activeText]}>Add Catch</Text>
+            <Text style={[textStyles.font,textStyles.active]}>Add Catch</Text>
           </TouchableOpacity>
         </View>
     );
@@ -160,16 +157,6 @@ const productEditorStyle = {
   inactiveText: {
     color: colors.midGray
   },
-  wrapper:{
-    marginTop: 5,
-    marginLeft: 5,
-    marginRight: 2,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingTop: 2,
-    paddingLeft: 30,
-    paddingBottom: 8,
-  },
   labelRow: {
     flex: 0.20,
     marginRight: 3
@@ -179,7 +166,7 @@ const productEditorStyle = {
   }
 }
 
-const styles = StyleSheet.create(Object.assign({}, eventEditorStyle, productEditorStyle));
+const styles = StyleSheet.create(Object.assign({}, eventEditorStyles, productEditorStyle));
 
 
 const select = (State, dispatch) => {

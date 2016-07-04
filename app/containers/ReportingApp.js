@@ -6,15 +6,24 @@ import {
   Dimensions,
 } from 'react-native';
 import React, { Component } from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import Fishing from '../components/Fishing';
+import Profile from '../components/Profile';
 import Forms from '../components/FormView';
 import {connect} from 'react-redux';
 import AutoSuggestBar from '../components/AutoSuggestBar';
 import Orientation from 'react-native-orientation';
 import ViewActions from '../actions/ViewActions';
 import FormActions from '../actions/FormActions';
+import ApiActions from '../actions/ApiActions';
+import Trip from '../components/Trip';
+import {fishing,
+        fishingBlue,
+        waterTransportLight,
+        waterTransport,
+        form,
+        user} from '../icons/PngIcon';
 
+const apiActions = new ApiActions();
 const viewActions = new ViewActions();
 const formActions = new FormActions();
 const MAX_AUTOSUGGEST_RESULTS = 12;
@@ -29,6 +38,7 @@ class ReportingApp extends Component {
     this.state = {
       selectedTab: "fishing",
     }
+    apiActions.setUpClient(props.dispatch);
   }
 
   _orientationDidChange(orientation) {
@@ -41,42 +51,46 @@ class ReportingApp extends Component {
   }
 
   componentWillUnmount() {
-    Orientation.getOrientation((err,orientation)=> {
-      console.log("Current Device Orientation: ", orientation);
-    });
     Orientation.removeOrientationListener(this._orientationDidChange.bind(this));
   }
 
   renderTabs(){
-    const tabs = [
-      {iconName: "anchor", title: "trip", selectedTab: "ship", render: this.renderTrip.bind(this)},
-      {iconName: "ship", title: "fishing", selectedTab: "fishing", render: this.renderFishing.bind(this)},
-      {iconName: "tasks", title: "forms", selectedTab: "forms", render: this.renderForms.bind(this),
-        onPress: () => {
-          console.log("beast");
-         this.props.dispatch(formActions.setViewingForm(null));
-        }},
-      {iconName: "user", title: "profile", selectedTab:"profile", render: this.renderFishing.bind(this)}
-    ];
-    return tabs.map((tab)=>{
-      return (<Icon.TabBarItemIOS
-                style={styles.toEdges}
-                key={tab.selectedTab}
-                iconName={tab.iconName}
-                selectedIconName={tab.iconName}
-                title={tab.title}
-                iconSize={22}
-                selected={this.state.selectedTab === tab.selectedTab}
+
+    const tabs = {
+      "fishing": this.renderFishing.bind(this),
+      "trip": this.renderTrip.bind(this),
+      "forms": this.renderForms.bind(this),
+      "profile": this.renderProfile.bind(this),
+    }
+
+    return Object.keys(tabs).map((key)=>{
+      let selected = !!(this.state.selectedTab == key);
+      console.log(key, selected, this.state.selectedTab);
+      let render = tabs[key];
+      let icons = {
+        "fishing": fishing,
+        "trip": this.props.hasCatches ? waterTransport :  waterTransportLight,
+        "forms": form,
+        "profile": user,
+      }
+
+      return (<TabBarIOS.Item
+                key={key}
+                title={key.capitalize()}
+                selected={selected}
+                icon={icons[key]}
+                hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
+                style={{flex: 0.1}}
                 onPress={() => {
-                  if(tab.onPress){
-                    tab.onPress();
+                  if(key === "forms"){
+                    this.props.dispatch(formActions.setViewingForm(null));
                   }
                   this.setState({
-                    selectedTab: tab.selectedTab
+                    selectedTab: key
                   });
                 }}>
-                {tab.render()}
-              </Icon.TabBarItemIOS>);
+                {render()}
+              </TabBarIOS.Item>);
     });
   }
 
@@ -84,7 +98,11 @@ class ReportingApp extends Component {
   renderProfile(){
     return (
       <View style={[styles.col, styles.fill]}>
-            <Fishing />
+        <Profile
+          apiActions={apiActions}
+          dispatch={this.props.dispatch}
+          styles={styles}
+        />
       </View>
     )
   }
@@ -92,7 +110,7 @@ class ReportingApp extends Component {
   renderTrip(){
     return (
       <View style={[styles.col, styles.fill]}>
-            <Fishing />
+        <Trip />
       </View>
     )
   }
@@ -100,7 +118,7 @@ class ReportingApp extends Component {
   renderForms(){
     return (
       <View style={[styles.col, styles.fill]}>
-            <Forms />
+        <Forms />
       </View>
     )
   }
@@ -120,6 +138,7 @@ class ReportingApp extends Component {
           unselectedTintColor="#bbbbbb"
           tintColor="#007aff"
           barTintColor="#F9F9F9"
+          style={{flex: 1}}
         >
             {this.renderTabs.bind(this)()}
         </TabBarIOS>
@@ -141,12 +160,16 @@ class ReportingApp extends Component {
 
 const select = (State, dispatch) => {
     let state = State.default;
+    let hasCatches = !!state.fishingEvents.events.find((fe) => {
+      return fe.productsValid;
+    });
     return {
       autoSuggestBar: state.view.autoSuggestBar,
       eventEmitter: state.uiEvents.eventEmitter,
       uiOrientation: state.view.uiOrientation,
       height: state.view.height,
-      width: state.view.width
+      width: state.view.width,
+      hasCatches: hasCatches
     };
 }
 
@@ -164,7 +187,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     alignSelf: 'stretch',
     flex: 1
-  }
+  },
+  detailView: {
+    padding: 0,
+  },
+  col: {
+    flexDirection: 'column',
+    flex: 1
+  },
+  row: {
+    flexDirection: 'row',
+    flex: 1,
+  },
 });
 
 export default connect(select)(ReportingApp)

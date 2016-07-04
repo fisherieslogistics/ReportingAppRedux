@@ -51,6 +51,11 @@ export default (state = initialState, action) => {
           let gear = Object.assign({}, fishingEvent.gear, gearChange);
           fishingEvent = setFishingEventGear(fishingEvent, gear);
           return replaceFishingEvent(state, fishingEvent);
+        case 'formSigned':
+          action.fishingEvents.forEach((fe) => {
+            state = ChangeEvent(fe.id, state, {signature: action.signature, dateSigned: action.dateSigned});
+          });
+          return state;
         default:
             return state;
     }

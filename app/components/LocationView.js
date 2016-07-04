@@ -18,15 +18,15 @@ class LocationView extends React.Component {
       let location=helper.formatLocation(this.props.location.location);
       let timeAgo = helper.timeAgo(this.props.location.lastUpdated);
       return (
-        <View style={styles.wrapper}>
+        <View style={[textStyles.font, styles.wrapper]}>
           <View>
-            <Text style={styles.sexagesimal}>
+            <Text style={[textStyles.font, styles.sexagesimal]}>
               {`Lat - ${location.lat}`}
             </Text>
-            <Text tyle={styles.sexagesimal}>
+            <Text style={[textStyles.fontstyles.sexagesimal]}>
               {`Long - ${location.lon}`}
             </Text>
-            <Text>
+            <Text style={[textStyles.font]}>
               {`Updated - ${timeAgo}`}
             </Text>
           </View>

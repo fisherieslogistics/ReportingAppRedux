@@ -38,7 +38,7 @@ class FishingSummary extends React.Component {
         <View>
           {lines.map((text, i) => {
             return (<View key={"tripSum"+i} style={styles.textRow}>
-                      <Text style={styles.text}>{text}</Text>
+                      <Text style={[textStyles.font, styles.text]}>{text}</Text>
                     </View>);
            })}
         </View>
@@ -48,11 +48,11 @@ class FishingSummary extends React.Component {
       return (
         <View>
           <View style={styles.subTitleWrapper}>
-            <Text style={styles.subTitle}>Fishing</Text>
+            <Text style={[textStyles.font, styles.subTitle]}>Fishing</Text>
           </View>
           {this.renderFishing()}
           <View style={styles.subTitleWrapper}>
-            <Text style={styles.subTitle}>Totals</Text>
+            <Text style={[textStyles.font, styles.subTitle]}>Totals</Text>
           </View>
           <ScrollView>
           { this.props.trip.started ? this.renderTotals() : null}

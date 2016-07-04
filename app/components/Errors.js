@@ -27,7 +27,7 @@ class Errors {
     renderError(errMsg, index){
       return(
         <View style={styles.tableRow} key={errMsg + index}>
-          <Text style={styles.error}>{errMsg}</Text>
+          <Text style={[textStyles.font, styles.error]}>{errMsg}</Text>
         </View>
       );
     }

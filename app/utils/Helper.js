@@ -205,6 +205,19 @@ class Helper {
     isA(obj, typeStr){
       return typeof obj === string;
     }
+
+    updateAuth(oldAuth, newAuth){
+      let expiryTime = new moment();
+      expiryTime.add(newAuth.expires_in, 'second');
+      return Object.assign({}, oldAuth, {
+        accessToken: newAuth.access_token,
+        refreshToken : newAuth.refresh_token,
+        tokenType: newAuth.token_type,
+        expiresAt: expiryTime,
+        stormpathAccessTokenHref: newAuth.stormpath_access_token_href,
+        loggedIn: true});
+    }
+
 };
 
 export default Helper;

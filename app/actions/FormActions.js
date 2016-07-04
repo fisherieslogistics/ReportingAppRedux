@@ -10,10 +10,13 @@ class FormActions{
       form: form
     }
   }
-  showingForms(fishingEvents){
+  signForm(form, signature){
     return {
-      type: 'showingForms',
-      fishingEvents: fishingEvents
+      type: 'formSigned',
+      fishingEvents: form.fishingEvents,
+      form: form,
+      signature: signature,
+      dateSigned: new moment(),
     }
   }
 }

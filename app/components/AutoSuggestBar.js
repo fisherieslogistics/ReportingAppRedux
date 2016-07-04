@@ -11,7 +11,9 @@ import{
 import React from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import UserActions from '../actions/UserActions';
-import colors from '../styles/colors';
+
+import {colors, textStyles} from '../styles/styles';
+
 const userActions = new UserActions();
 
 class AutoSuggestBar extends React.Component {
@@ -106,10 +108,10 @@ class AutoSuggestBar extends React.Component {
           onPress={() => this.onResultPress(result.value)}
         >
           <View style={[styles.result, backgroundStyle]}>
-            <Text style={[resultTextStyle, styles.resultTextValue]}>
+            <Text style={[textStyles.font,resultTextStyle, styles.resultTextValue]}>
               {result.value.toUpperCase()}
             </Text>
-            <Text style={[resultTextStyle]}>
+            <Text style={[textStyles.font,resultTextStyle]}>
               {result.description}
             </Text>
           </View>
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
   },
   resultTextValue: {
     fontSize: 20,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   resultTextSelected: {
     color: colors.white

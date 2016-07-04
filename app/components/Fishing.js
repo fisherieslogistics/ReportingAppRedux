@@ -4,7 +4,9 @@ import {
   ListView,
   AlertIOS,
   SegmentedControlIOS,
-  Text
+  TouchableOpacity,
+  Text,
+  Image,
 } from 'react-native';
 import React, { Component } from 'react';
 import EventDetailEditor from './EventDetailEditor';
@@ -12,12 +14,16 @@ import FishingEventList from './FishingEventList';
 import MasterDetailView from './MasterDetailView';
 import FishingEventActions from '../actions/FishingEventActions';
 import EventGearEditor from './EventGearEditor';
-import DetailToolbar from  './DetailToolbar';
-import MasterToolbar from './MasterToolbar';
 import EventProductsEditor from './EventProductsEditor';
-
 import {connect} from 'react-redux';
 import moment from 'moment';
+
+import {MasterToolbar, DetailToolbar} from './Toolbar';
+import {colors, textStyles} from '../styles/styles';
+import {
+ plusBlue,
+ plusGray,
+} from '../icons/PngIcon';
 
 const detailTabs = ["details", "catches", "gear"];
 const fishingEventActions = new FishingEventActions();
@@ -27,12 +33,14 @@ class Fishing extends React.Component{
     super(props);
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
-      selectedDetail: 1
+      selectedDetail: 0
     };
   }
 
   startFishingEvent(){
-    this.props.dispatch(fishingEventActions.startFishingEvent(this.props.gear));
+    if(this.props.canStartEvent){
+      this.props.dispatch(fishingEventActions.startFishingEvent(this.props.gear));
+    }
   }
 
   commitFishingEvents(){
@@ -78,6 +86,7 @@ class Fishing extends React.Component{
         }, style: 'cancel'},
         {text: 'Yes', onPress: () => {
           let fe = this.props.fishingEvents[this.props.fishingEvents.length -1];
+          this.props.dispatch(fishingEventActions.setViewingFishingEvent(null));
           return this.props.dispatch(fishingEventActions.cancelFishingEvent(fe.id));
         }}
       ]
@@ -135,19 +144,37 @@ class Fishing extends React.Component{
           </View>);
   }
 
+  renderIconButton(icon, active, style, onPress){
+    return (
+      <TouchableOpacity
+        activeOpacity={active ? 1 : 0.5}
+        onPress={onPress} style={{}}>
+        <Image style={style} source={icon}/>
+      </TouchableOpacity>
+    );
+  }
+
   render(){
+    let startEventIcon = this.props.canStartEvent ? plusBlue : plusGray;
+    let startEventButton = this.renderIconButton(startEventIcon,
+                                  this.props.canStartEvent,
+                                  {width: 52, height: 52, marginTop: 10, marginRight: 0},
+                                  this.startFishingEvent.bind(this));
+
+    let haulColor = this.props.canStartEvent ? colors.midGray : colors.blue;
+    let cancelColor = this.props.canStartEvent ? colors.midGray : colors.red;
     let detailToolbar = (
       <DetailToolbar
-        left={{color: "red", text: "Delete", onPress: this.removeFishingEvent.bind(this)}}
-        right={{color: "#007aff", text: "End", onPress: this.endFishingEvent.bind(this)}}
-        centerTop={<Text>{this.props.fishingEvent ? this.props.fishingEvent.id : null}</Text>}
+        left={{color: cancelColor, text: "Cancel", onPress: this.removeFishingEvent.bind(this)}}
+        right={{color: haulColor, text: "Haul", onPress: this.removeFishingEvent.bind(this)}}
+        centerTop={<Text style={[textStyles.font, textStyles.darkLabel]}>{this.props.fishingEvent ? this.props.fishingEvent.id : null}</Text>}
         centerBottom={this.renderSegementedControl()}
       />
     );
     let masterToolbar = (
       <MasterToolbar
-        left={{color: "#007aff", text: "Commit", onPress: this.commitFishingEvents.bind(this)}}
-        right={{color: "#007aff", text: "Plus", onPress: this.startFishingEvent.bind(this)}}
+        center={<View style={{marginTop: 27}}><Text style={[textStyles.font, textStyles.darkLabel]}>Fishing</Text></View>}
+        right={{icon :startEventButton}}
       />
     )
     return (
@@ -186,12 +213,16 @@ const styles = {
 
 const select = (State, dispatch) => {
     let state = State.default;
+    let fEvents = state.fishingEvents.events;
     let isLatestEvent = state.viewingFishingEventId && (state.viewingFishingEventId === state.fishingEvents.length);
+    let canStartEvent = (fEvents.length === 0) || (fEvents[fEvents.length -1].datetimeAtEnd !== null);
     return {
-      fishingEvent: state.fishingEvents.events[state.view.viewingFishingEventId - 1],
-      fishingEvents: state.fishingEvents.events,
+      fishingEvent: fEvents[state.view.viewingFishingEventId - 1],
+      fishingEvents: fEvents,
       fishingEventType: "tcer",
-      gear: state.gear
+      gear: state.gear,
+      canStartEvent: canStartEvent,
+      isLatestEvent: isLatestEvent,
     };
 }
 

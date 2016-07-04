@@ -2,24 +2,17 @@
 import {
   StyleSheet,
   View,
-  Text,
   AlertIOS,
 } from 'react-native';
 
 import React from 'react';
 import FishingEventActions from '../actions/FishingEventActions';
-
 import FishingEventModel from '../models/FishingEventModel';
 import TCERFishingEventModel from '../models/TCERFishingEventModel';
-
 import Errors from './Errors';
-import Editor from '../utils/Editor';
-
-import EventEditor from './EventEditor';
-import eventEditorStyle from '../styles/eventEditor';
-
-import colors from '../styles/colors';
-const editor = new Editor();
+import {AttributeEditor} from './AttributeEditor';
+import EditorView from './EditorView';
+import {eventEditorStyles, colors} from '../styles/styles';
 const fishingEventActions = new FishingEventActions();
 
 const model = FishingEventModel.concat(TCERFishingEventModel);
@@ -58,7 +51,7 @@ class EventDetailEditor extends React.Component{
 
     getEditor(attribute){
       const inputId = attribute.id + "__event__" + this.props.fishingEvent.id;
-      return editor.editor(
+      return AttributeEditor(
         attribute,
         this.props.fishingEvent[attribute.id],
         this.onChange.bind(this),
@@ -77,7 +70,7 @@ class EventDetailEditor extends React.Component{
     }
 
     render() {
-      return (<EventEditor
+      return (<EditorView
                 styles={styles}
                 getCallback={this.getCallback.bind(this)}
                 getEditor={this.getEditor.bind(this)}
@@ -89,7 +82,7 @@ class EventDetailEditor extends React.Component{
     }
 };
 
-const styles = StyleSheet.create(eventEditorStyle);
+const styles = StyleSheet.create(eventEditorStyles);
 
 
 export default EventDetailEditor;

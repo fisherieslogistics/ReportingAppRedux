@@ -9,13 +9,13 @@ export default StyleSheet.create({
   listRow: {
     flexDirection: 'row',
     flex: 1,
+    paddingLeft: 15,
     paddingTop: 10,
     paddingBottom: 10,
-    paddingLeft: 10,
-    backgroundColor: colors.white
+    backgroundColor: colors.white,
   },
   selectedListRow: {
-    backgroundColor: colors.blue,
+    backgroundColor: colors.highlightBlue,
   },
   listRowItem: {
     flex: 0.5,
@@ -24,25 +24,18 @@ export default StyleSheet.create({
     flex: 0.1,
   },
   listRowItemNarrow:{
-    flex: 0.25,
-  },
-  lightText: {
-    fontSize: 19,
-    color: colors.midGray
-  },
-  darkText: {
-    fontSize: 19,
-    color: colors.darkGrey
-  },
-  blackText: {
-    fontSize: 19,
-    color: "black"
+    flex: 0.20,
+    justifyContent: 'flex-start'
   },
   alignRight: {
     alignItems: 'flex-end'
   },
   listView:{
-    marginTop: -20
+    marginTop: -18,
+    marginRight: 1,
+  },
+  detail: {
+    marginTop: 5
   },
   seperator: {
     height: 1,

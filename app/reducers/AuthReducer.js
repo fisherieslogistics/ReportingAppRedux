@@ -1,30 +1,24 @@
-import AsyncStorage from 'AsyncStorage';
+"use strict";
 
-export default (state = {loggedIn: false, loginMessage: "Hope you like it better than paper."}, action) => {
-    switch (action.type) {
-    case 'login':
-        return Object.assign({}, state, { loggedIn: true,
-                                          token: action.token,
-                                          refreshToken: action.refreshToken,
-                                          loginMessage: "Nice To See You!"});
-        return newState;
-    case 'loginError':
-        return Object.assign({}, state, { loggedIn: false,
-                                          token: null,
-                                          refreshToken: null,
-                                          loginMessage: action.message,
-                                          uiLokkaClient: null });
-        return newState;
+import Helper from '../utils/Helper';
+const helper = new Helper();
+
+const initialState = {
+  loggedIn: false,
+  token: null,
+  refreshToken: null,
+  message: ""
+}
+
+export default (state = initialState, action) => {
+  switch (action.type) {
+    case 'setAuth':
+      return helper.updateAuth(state, action.auth)
     case 'logout':
-      return Object.assign({}, state, { loggedIn: false,
-                                        token: null,
-                                        refreshToken: null,
-                                        loginMessage: "Hope you like it better than paper.",
-                                        uiLokkaClient: null });
-    case 'setLokka':
-        return Object.assign({}, state, { uiLokkaClient: action.uiLokkaClient });
-
+      return Object.assign({}, initialState);
+    case 'loginError':
+      return Object.assign({}, initialState, { message: action.message});
     default:
         return state;
-    }
+  }
 };

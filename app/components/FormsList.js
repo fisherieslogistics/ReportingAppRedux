@@ -1,11 +1,8 @@
 'use strict';
 import{
-  StyleSheet,
   View,
   Text,
-  TouchableHighlight,
-  ListView,
-  RecyclerViewBackedScrollView
+  Image,
 } from 'react-native';
 import React from 'react';
 import {connect} from 'react-redux';
@@ -15,9 +12,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Helper from '../utils/Helper';
 import FishingEventModel from '../models/FishingEventModel';
 import TCERFishingEventModel from '../models/TCERFishingEventModel';
+import MasterListView from './MasterListView';
 
-import colors from '../styles/colors';
-import styles from '../styles/listView';
+import {colors, listViewStyles, textStyles} from '../styles/styles';
+import {cloud, uploadCloudGreen, signUpOrange, signUpBlue, signUpGray, signUpWhite} from '../icons/PngIcon';
 
 const helper = new Helper();
 const Lang = Strings.english;
@@ -25,35 +23,25 @@ const Lang = Strings.english;
 const fishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
 const formActions = new FormActions();
 
-import MasterListView from './MasterListView';
 
 const formDescs = {
   started: {
-    icon: "pencil",
-    color: colors.orange,
+    icon: signUpOrange
+  },
+  incompleteEvents:{
+    icon: signUpGray
   },
   signed: {
-    icon: "cloud-upload",
-    color: colors.white,
+    icon: uploadCloudGreen
   },
   submitted:{
-    icon: "cloud",
-    color: colors.gray
+    icon: cloud
   },
 }
 
 class FormsList extends React.Component {
-    constructor(props){
-      super(props);
-      this.state = {
-        selectedRowId: false
-      }
-    }
 
     setViewingForm(form, rowId){
-      this.setState({
-        selectedRowId: rowId
-      });
       this.props.dispatch(formActions.setViewingForm(form));
     }
 
@@ -64,30 +52,34 @@ class FormsList extends React.Component {
       if(form.signed){
         return formDescs.signed;
       }
+      if(form.fishingEvents.find(f => !f.productsValid)){
+        return formDescs.incompleteEvents;
+      }
       return formDescs.started;
     }
 
     isSelected(form, rowId){
-      return (rowId === this.state.selectedRowId);
+      return this.props.viewingForm && (this.props.viewingForm.id === form.id);
     }
 
-    getIcon(form){
+    getIcon(form, isSelected){
       let status = this.getFormStatus(form);
-      return (<Icon name={status.icon} size={20} color={status.color} />);
+      let icon = isSelected ? signUpWhite : status.icon;
+      return (<Image source={icon} style={{opacity: 0.5}}/>);
     }
 
-    renderDescription(form, sectionId, rowId) {
-      let formNum = parseInt(rowId) + 1;
+    getDescription(form, sectionId, rowId, isSelected) {
+      let textStyle = isSelected ? textStyles.active : textStyles.dark;
       let details = [
-        {text: "Form " + formNum, style: styles.blackText},
-        {text:" ", style: {}},
-        {text: form.fishingEvents.length + " Shots ", style: styles.lightText},
+        {text: form.id, style: textStyles.black},
+        {text: form.fishingEvents[0].datetimeAtStart.format("HH:mm"), style:  textStyle},
+        {text: form.fishingEvents.length + " Shots ", style: textStyle},
       ];
 
       return details.map((detail, i) => {
         return (
-        <View style={styles.listRowItemNarrow} key={"eventDetail" + i}>
-          <Text style={[detail.style]}>
+        <View style={listViewStyles.listRowItemNarrow} key={"eventDetail" + i}>
+          <Text style={[textStyles.font, detail.style, textStyles.listView, listViewStyles.detail]}>
             {detail.text}
           </Text>
         </View>);
@@ -97,7 +89,7 @@ class FormsList extends React.Component {
     render () {
       return (
         <MasterListView
-          renderDescription={this.renderDescription.bind(this)}
+          getDescription={this.getDescription.bind(this)}
           isSelected={this.isSelected.bind(this)}
           onPress={this.setViewingForm.bind(this)}
           dataSource={this.props.forms}

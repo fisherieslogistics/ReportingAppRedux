@@ -4,32 +4,28 @@ import {
   View,
   Text,
 } from 'react-native';
-
-import ShadowStyle from '../styles/shadow';
-import colors from '../styles/colors';
 import React from 'react';
 
-export class MasterDetailView extends React.Component {
+import {shadowStyles, colors} from '../styles/styles';
 
-  render(){
-    return (
-      <View style={[styles.wrapper]}>
-        <View style={[styles.row]}>
-          <View style={[styles.master, ShadowStyle.shadow]}>
-              {this.props.masterToolbar}
-            <View style={[styles.col, styles.background]}>
-              {this.props.master}
-            </View>
-          </View>
-          <View style={[styles.detail, ShadowStyle.shadow]}>
-            {this.props.detailToolbar}
-            <View style={[styles.col]}>
-              {this.props.detail}
-            </View>
+const MasterDetail = (props) => {
+  return (
+    <View style={[styles.wrapper]}>
+      <View style={[styles.row]}>
+        <View style={[styles.master, shadowStyles.shadow]}>
+            {props.masterToolbar}
+          <View style={[styles.col, styles.background]}>
+            {props.master}
           </View>
         </View>
-    </View>);
-  }
+        <View style={[styles.detail, shadowStyles.shadow]}>
+          {props.detailToolbar}
+          <View style={[styles.col]}>
+            {props.detail}
+          </View>
+        </View>
+      </View>
+  </View>);
 };
 
 const styles = StyleSheet.create({
@@ -63,4 +59,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MasterDetailView
+export default MasterDetail

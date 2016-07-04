@@ -2,43 +2,46 @@
 import{
   View,
   Text,
-  TouchableHighlight,
   ListView,
-  RecyclerViewBackedScrollView
+  Image
 } from 'react-native';
 import React from 'react';
 import FishingEventActions from '../actions/FishingEventActions';
 const fishingEventActions = new FishingEventActions();
-import Icon from 'react-native-vector-icons/FontAwesome';
 import Helper from '../utils/Helper';
 import {findCombinedErrors, findErrors} from '../utils/ModelErrors';
 import FishingEventModel from '../models/FishingEventModel';
 import TCERFishingEventModel from '../models/TCERFishingEventModel';
-import colors from '../styles/colors.js';
 const helper = new Helper();
 import MasterListView from './MasterListView';
-import styles from '../styles/listView';
+
+import {colors, listViewStyles, iconStyles, textStyles} from '../styles/styles';
+
+import {fishingBlue,
+        fishingWhite,
+        errorOrange,
+        errorWhite,
+        checkedGreen,
+        checkedWhite,
+        cloud,
+        cloudWhite} from '../icons/PngIcon';
 
 const fishingEventDesc = {
   "started": {
-    icon: "ship",
+    icon: fishingWhite,
     color: colors.blue,
   },
-  "startedActive": {
-    icon: "ship",
-    color: colors.white,
-  },
   "ended":{
-    icon: "exclamation-triangle",
-    color: colors.orange,
+    icon: errorWhite,
+    color: colors.orange
   },
   "readyToSync": {
-    icon: "check-circle-o",
+    icon: checkedWhite,
     color: colors.green
   },
   "done":{
-    icon: "cloud",
-    color: colors.gray
+    icon: cloudWhite,
+    color: colors.midGray
   },
 }
 
@@ -48,8 +51,8 @@ class FishingEventList extends React.Component {
     }
 
     getFishingEventStatus(fishingEvent){
-      if(!fishingEvent.datetimeAtEnd && this.props.selectedFishingEvent.id == fishingEvent.id){
-        return "startedActive";
+      if(!fishingEvent.datetimeAtEnd){
+        return "started";
       }
       if(!fishingEvent.datetimeAtEnd){
         return "started";
@@ -60,25 +63,29 @@ class FishingEventList extends React.Component {
       if(helper.needsSync(fishingEvent)){
         return "readyToSync";
       }
-      return "done"
+      return "done";
     }
 
     getIcon(fishingEvent){
       let status = fishingEventDesc[this.getFishingEventStatus(fishingEvent)];
-      return (<Icon name={status.icon} size={20} color={status.color} />);
+      return (<View style={[{backgroundColor: status.color}, iconStyles]}>
+                <Image source={status.icon} />
+              </View>);
     }
 
-    renderDescription(fishingEvent, sectionID, rowID) {
+    getDescription(fishingEvent, sectionID, rowID) {
+      let tSpecies = (fishingEvent.targetSpecies || "").toUpperCase();
+      let textStyle = this.isSelected(fishingEvent) ? textStyles.active : textStyles.dark;
       let details = [
-        {text: fishingEvent.id, style: styles.blackText},
-        {text:fishingEvent.datetimeAtStart.format("HH:mm"),style: styles.darkText},
-        {text:fishingEvent.targetSpecies || "", style: styles.darkText}
+        {text: fishingEvent.id, style: [textStyles.black, listViewStyles.text, listViewStyles.detail, {marginLeft: 12}]},
+        {text: fishingEvent.datetimeAtStart.format("HH:mm"),style: [textStyle, listViewStyles.detail, listViewStyles.text]},
+        {text: tSpecies, style: [textStyle, listViewStyles.detail, listViewStyles.text]}
       ];
 
       return details.map((detail, i) => {
         return (
-        <View style={styles.listRowItemNarrow} key={"eventDetail" + i}>
-          <Text style={[detail.style]}>
+        <View style={listViewStyles.listRowItemNarrow} key={"eventDetail" + i}>
+          <Text style={[detail.style, textStyles.font, textStyles.listView]}>
             {detail.text}
           </Text>
         </View>);
@@ -86,13 +93,13 @@ class FishingEventList extends React.Component {
     }
 
     isSelected(fishingEvent){
-      return (fishingEvent.id == this.props.selectedFishingEvent.id)
+      return this.props.selectedFishingEvent && (fishingEvent.id == this.props.selectedFishingEvent.id)
     }
 
     render () {
       return (
         <MasterListView
-          renderDescription={this.renderDescription.bind(this)}
+          getDescription={this.getDescription.bind(this)}
           isSelected={this.isSelected.bind(this)}
           onPress={this.props.onPress}
           dataSource={this.props.fishingEvents}

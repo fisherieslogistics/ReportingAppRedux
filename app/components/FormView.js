@@ -5,24 +5,30 @@ import {
   ScrollView,
   StyleSheet,
   ListView,
-  Image
+  Image,
+  TouchableOpacity
 } from 'react-native';
 
 import React from 'react';
 import moment from 'moment';
-import {connect} from 'react-redux';
 import Helper from '../utils/Helper';
-import {createForms} from '../utils/FormUtils';
 import FormsList from './FormsList';
-import colors from '../styles/colors';
 import MasterDetailView from './MasterDetailView';
-import DetailToolbar from './DetailToolbar';
-import MasterToolbar from './MasterToolbar';
 import TCERFormModel from '../models/TCERFormModel';
 import ModelUtils from '../utils/ModelUtils';
 const formModelMeta = ModelUtils.blankModel(TCERFormModel).meta;
 import SignatureView from './SignatureView';
 import AsyncStorage from 'AsyncStorage';
+
+import {connect} from 'react-redux';
+import {createForms} from '../utils/FormUtils';
+import {MasterToolbar, DetailToolbar} from './Toolbar';
+import {colors, listViewStyles, textStyles} from '../styles/styles';
+import {signUpOrange,
+        signUpBlue,
+        signUpGray,
+        uploadCloudGreen,
+        cloud} from '../icons/PngIcon';
 
 const helper = new Helper();
 
@@ -52,7 +58,7 @@ class FormView extends React.Component {
   _onSaveEvent(result) {
     //result.encoded - for the base64 encoded png
     //result.pathName - for the file path name
-    console.log(result.pathName);
+
     this.setState({
       showSignature: false,
       signaturePath: result.pathName
@@ -69,7 +75,7 @@ class FormView extends React.Component {
     return (
       <FormsList
         dispatch={this.props.dispatch}
-        forms={this.state.ds.cloneWithRows([...this.props.forms])}
+        forms={this.state.ds.cloneWithRows([...this.props.forms].reverse())}
         viewingForm={this.props.viewingForm}
       />
     );
@@ -134,7 +140,7 @@ class FormView extends React.Component {
     xy.left += (formModelMeta.xMultiplier * xIndex);
     return (
       <View style={[styles.textWrapper, xy, meta.viewStyle || {}]} key={_key}>
-        <Text style={[styles.text, meta.textStyle || {}]}>{val}</Text>
+        <Text style={[textStyle.font,styles.text, meta.textStyle || {}]}>{val}</Text>
       </View>);
   }
 
@@ -148,6 +154,21 @@ class FormView extends React.Component {
   renderForm(){
     return this.renderObj(this.props.viewingForm, formModelMeta.printMapping.form);
   }
+
+  renderButton(icon, active, style, onPress){
+    return (
+      <TouchableOpacity
+        activeOpacity={active ? 1 : 0.5}
+        onPress={active ? onPress : ()=>{}} style={style}>
+        <Image source={icon}/>
+      </TouchableOpacity>
+    );
+  }
+
+  formReadyToSign(form){
+    return form && !form.fishingEvents.find(f => !f.productsValid);
+  }
+
   render() {
     let text = [];
 
@@ -156,16 +177,20 @@ class FormView extends React.Component {
       text = this.renderFishingEvents(text);
     }
 
+    let canSignAll = !this.props.forms.find(f => !this.formReadyToSign(f)) &! this.props.forms.every(f => f.signed);
+    let signAllColor = canSignAll ? colors.blue : colors.backgrounds.veryDark;
+    let signColor = this.formReadyToSign(this.props.viewingForm) ? colors.blue: colors.backgrounds.veryDark;
+
     let detailToolbar = (
       <DetailToolbar
-        right={{color: "#007aff", text: "Sign", onPress: this.toggleSignature.bind(this)}}
-        centerTop={null}
+        right={{color: signColor, text: "Sign", onPress: () => this.toggleSignature("single")}}
+        centerTop={<Text style={[textStyles.font]}>{this.props.viewingForm ? this.props.viewingForm.id : null}</Text>}
         centerBottom={<View style={styles.spacer}/>}
       />
     );
     let masterToolbar = (
       <MasterToolbar
-        left={{color: "#007aff", text: "Sign All",  onPress: this.toggleSignature.bind(this)}}
+        right={{color: signAllColor, text: "Sign all", onPress: () => this.toggleSignature("all")}}
       />
     );
 
@@ -188,8 +213,9 @@ class FormView extends React.Component {
       <MasterDetailView
         master={this.renderFormsListView()}
         detail={(
-          <View style={[styles.col, styles.fill, {alignSelf: 'flex-start'}, styles.wrapper]}>
-            <Image source={require('../images/TCER.png')} style={styles.bgImage}>
+          <View style={[styles.col, styles.fill, {alignSelf: 'flex-start'},
+                        styles.wrapper, {opacity:this.props.viewingForm ? 1 : 0}]}>
+            <Image source={require('../images/TCER.png')} style={[styles.bgImage]}>
               <View style={styles.form}>
                 {text}
               </View>
@@ -217,7 +243,7 @@ const select = (State, dispatch) => {
 
 const styles = StyleSheet.create({
   wrapper:{
-   backgroundColor: colors.backgrounds.dark,
+   backgroundColor: colors.backgrounds.veryDark,
    margin: 5,
    borderRadius: 10,
   },
@@ -230,12 +256,12 @@ const styles = StyleSheet.create({
   col: {
     flexDirection: 'column'
   },
+  text: {
+    color: "red"
+  },
   textWrapper: {
     position: 'absolute',
     backgroundColor: 'transparent'
-  },
-  text: {
-    color: 'red'
   },
   listRowItemNarrow: {
     width: 35,

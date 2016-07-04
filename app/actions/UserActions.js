@@ -2,17 +2,34 @@
 
 class UserActions{
 
-    editUser(change){
-      return {
-        'type': 'editUser',
-        'change': change
-      }
+  editUser(change){
+    return {
+      type: 'editUser',
+      change: change
     }
+  }
 
-    logout(){
-      return {
-        type: 'logout'
-      }
+  setUser(user){
+    return {
+      type: 'setUser',
+      user: user
     }
+  }
+
+  setVessels(vessels){
+    return {
+      type: 'setVessels',
+      vessels: vessels
+    }
+  }
+
+  setVessel(vessel){
+    return {
+      type: 'setVessel',
+      vessel: vessel
+    }
+  }
+
 }
+
 export default UserActions;

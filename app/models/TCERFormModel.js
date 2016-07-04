@@ -16,12 +16,12 @@ const meta = {
   printMapping: {
     form:{
       gearCode: {x: 190, y: 50},
-      wingSpread: {x: 378, y: 50, resolve: form => form.fishingEvents[0].wingSpread || "WS"},
-      headlineHeight: {x: 650, y: 50, resolve: form => form.fishingEvents[0].headlineHeight || "HH",
+      wingSpread: {x: 378, y: 50, resolve: form => form.fishingEvents[0].wingSpread || ""},
+      headlineHeight: {x: 650, y: 50, resolve: form => form.fishingEvents[0].headlineHeight || "",
                                                         textStyle: {textAlign: 'right'}},
       permitHolderName: {x: 100, y: 628, resolveFrom: 'user', resolve: u => u.permitHolderName},
       vesselName: {x: 424, y: 628, resolveFrom: 'vessel', resolve: v => v.name},
-      vesseNumber: {x: 555, y: 662, resolveFrom: 'vessel', resolve: v => v.number},
+      vesselNumber: {x: 555, y: 662, resolveFrom: 'vessel', resolve: v => v.registration},
       permitHolderNumber: {x: 216, y: 662, resolveFrom: 'user', resolve: u => u.permitHolderNumber},
       fisherName: {x: 249, y: 694, resolveFrom: 'user', resolve: u => u.firstName[0] + "." + u.lastName.slice(0, 4)},
     },
@@ -31,7 +31,7 @@ const meta = {
       bottomDepth: {x: 218, y: 227, resolve: (fe) => isNaN(parseInt(fe.bottomDepth)) ? "" : fe.bottomDepth},
       groundropeDepth: {x: 282, y: 227, resolve: fe => isNaN(parseInt(fe.groundropeDepth)) ? "" : fe.groundropeDepth},
       nonFishProtected: {x: 195, y: 312, resolve: fe => fe.nonFishProtected ? "X" : "           X"},
-      averageSpeed: {x: 187, y: 258, align: 'right', resolve: fe => isNaN(parseFloat(fe.averageSpeed)) ? "" : parseFloat(fe.averageSpeed).toFixed(1)},
+      averageSpeed: {x: 173, y: 258, align: 'right', resolve: fe => isNaN(parseFloat(fe.averageSpeed)) ? "" : parseFloat(fe.averageSpeed).toFixed(1)},
       targetSpecies: {x: 310, y: 85},
       locationAtStart: {
         multiple: true,

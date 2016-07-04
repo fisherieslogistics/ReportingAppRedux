@@ -1,67 +1,57 @@
 'use strict';
 import {
   StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  TouchableHighlight,
-  Modal,
-  ScrollView,
-  Switch,
-  AlertIOS,
-  TextInput,
 } from 'react-native';
 
 import React from 'react';
-
 import TrawlGearModel from '../models/TrawlGearModel';
-import Editor from '../utils/Editor';
-import EventEditor from './EventEditor';
-import eventEditorStyle from '../styles/eventEditor';
+import EditorView from './EditorView';
 import GearActions from '../actions/GearActions';
-const editor = new Editor();
-const gearActions = new GearActions();
 
+import {eventEditorStyles, textStyles} from '../styles/styles';
+
+const gearActions = new GearActions();
 const model = TrawlGearModel;
 
-class GearEditor extends React.Component{
+const onChange = (name, value, props) => {
 
-    onChange(name, value){
-      if( !this.props.fishingEvent || this.props.isLatestEvent){
-        this.props.dispatch(gearActions.changeCurrentGear(name, value));
-      }
-      if(this.props.fishingEvent){
-        this.props.dispatch(gearActions.changeEventGear(this.props.fishingEvent.id, name, value));
-      }
-    }
+  if( !props.fishingEvent || props.isLatestEvent){
+    props.dispatch(gearActions.changeCurrentGear(name, value));
+  }
+  if(props.fishingEvent){
+    props.dispatch(gearActions.changeEventGear(props.fishingEvent.id, name, value));
+  }
+}
 
-    getEditor(attribute){
-      let inputId = attribute.id + "__gear__";
-      let gear = this.props.gear;
-      if(this.props.fishingEvent){
-        inputId += this.props.fishingEvent.id;
-        gear = this.props.fishingEvent.gear;
-      };
-      return editor.editor(attribute,
-                     gear[attribute.id],
-                     this.onChange.bind(this),
-                     {fishingEvent: this.props.fishingEvent},
-                     inputId);
-    }
+const getEditor = (attribute, props) => {
 
-    render() {
-      return (<EventEditor
-                styles={styles}
-                getCallback={() => this.onChange.bind(this)}
-                getEditor={this.getEditor.bind(this)}
-                editorType={"gear"}
-                name={"eventGear"}
-                model={model}
-                obj={this.props.gear}
-              />);
-    }
-};
+  let inputId = attribute.id + "__gear__";
+  let gear = props.gear;
+  if(props.fishingEvent){
+    inputId += props.fishingEvent.id;
+    gear = props.fishingEvent.gear;
+  };
+  return AttributeEditor(attribute,
+                 gear[attribute.id],
+                 (name, value) => onChange(name, value, props),
+                 {fishingEvent: props.fishingEvent},
+                 inputId);
+}
 
-const styles = StyleSheet.create(eventEditorStyle);
+const EventGearEditor = (props) => {
+  return (
+    <EditorView
+      styles={styles}
+      getCallback={(name, value) => this.onChange(name, value, props)}
+      getEditor={(attribute) => getEditor(attribute, props)}
+      editorType={"gear"}
+      name={"eventGear"}
+      model={model}
+      obj={props.gear}
+    />
+  );
+}
 
-export default GearEditor;
+const styles = StyleSheet.create(eventEditorStyles);
+
+export default EventGearEditor;
