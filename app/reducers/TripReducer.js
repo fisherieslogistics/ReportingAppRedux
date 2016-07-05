@@ -11,6 +11,7 @@ const TripReducer = (state = initialState, action) => {
             return ModelUtils.blankModel(TripModel);
             break;
         case 'updateTrip':
+            console.log("Reducing", action.attr, action.update[action.attr]);
             return Object.assign({}, state, action.update, {lastChange: moment() });
             break;
         case 'setTripId':

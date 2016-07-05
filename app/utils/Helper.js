@@ -198,12 +198,8 @@ class Helper {
                    .reduce((n, b) => n + b, 0);
     }
 
-    needsSync(obj){
-      return !obj.lastSubmitted || obj.lastChange.isAfter(obj.lastSubmitted);
-    }
-
-    isA(obj, typeStr){
-      return typeof obj === string;
+    isA(typeStr, obj){
+      return typeof obj === typeStr && obj !== null;
     }
 
     updateAuth(oldAuth, newAuth){
@@ -216,6 +212,11 @@ class Helper {
         expiresAt: expiryTime,
         stormpathAccessTokenHref: newAuth.stormpath_access_token_href,
         loggedIn: true});
+    }
+
+    tripCanStart(trip){
+      let needed = ["portFrom", "sailingTime", "ETA", "portTo"];
+      return ! (trip.started || needed.find(n => !trip[n]));
     }
 
 };

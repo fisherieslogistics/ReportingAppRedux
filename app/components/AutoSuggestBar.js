@@ -56,7 +56,7 @@ class AutoSuggestBar extends React.Component {
     }
 
     regExp(term){
-      return new RegExp("\\b" + term, "gi");
+      return new RegExp("\\b" + term.replace(/[^\w\s]/gi, ''), "gi");
     }
 
     searchChoices(term){
@@ -80,6 +80,7 @@ class AutoSuggestBar extends React.Component {
     }
 
     onResultPress(value){
+      console.log("firing", value, this.state.name, this.props.inputId);
       this.props.eventEmitter.emit('AutoSuggestResultPress', {name: this.state.name, value: value, inputId: this.props.inputId});
     }
 
@@ -109,7 +110,7 @@ class AutoSuggestBar extends React.Component {
         >
           <View style={[styles.result, backgroundStyle]}>
             <Text style={[textStyles.font,resultTextStyle, styles.resultTextValue]}>
-              {result.value.toUpperCase()}
+              {result.value}
             </Text>
             <Text style={[textStyles.font,resultTextStyle]}>
               {result.description}
@@ -130,7 +131,6 @@ class AutoSuggestBar extends React.Component {
 
     render () {
       let {height, width} = Dimensions.get('window');
-
       if(!this.props.visible){
         return null;
       }

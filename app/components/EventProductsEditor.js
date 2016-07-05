@@ -5,24 +5,36 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from 'react-native';
 
 import React from 'react';
 import ProductActions from '../actions/ProductActions';
 import ProductModel from '../models/ProductModel';
+import BlankMessage from './BlankMessage';
 
 import {connect} from 'react-redux';
 import {eventEditorStyles, inputStyle, colors, textStyles} from '../styles/styles';
 import {renderCombinedEditors, getCombinedEditors, AttributeEditor} from './AttributeEditor';
+import {cancelWhite} from '../icons/PngIcon';
+import {LongButton} from './Buttons';
+import {addToKeyStore} from '../actions/SyncActions';
 
 const productActions = new ProductActions();
+
+const DeleteButton = (props) => {
+  return (
+    <TouchableOpacity onPress={() => props.onPress(props.index)} style={styles.deleteButtonWrapper}>
+      <View style={ styles.deleteView }>
+        <Image source={cancelWhite} style={styles.deleteView}/>
+      </View>
+    </TouchableOpacity>
+  );
+}
 
 class EventProductsEditor extends React.Component{
     constructor (props){
         super(props);
-        this.state = {
-          undoDeleteActive: false
-        }
     }
 
     addProduct(){
@@ -30,6 +42,9 @@ class EventProductsEditor extends React.Component{
     }
 
     getEditor(attribute, product, index){
+      if(product == null){
+        debugger;
+      }
       const value = product[attribute.id];
       const inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index;
       return AttributeEditor(attribute,
@@ -51,6 +66,7 @@ class EventProductsEditor extends React.Component{
           this.props.dispatch(productActions.changeCustom(name, this.props.fishingEvent.id, catchId, value));
           break;
       }
+      this.props.dispatch(addToKeyStore("fishingEvents", this.props.fishingEvent.guid));
     }
 
     renderEditors(product, index){
@@ -62,8 +78,12 @@ class EventProductsEditor extends React.Component{
           inputs.push(this.renderEditor(attribute, product, index));
       });
       return (
-        <View style={[styles.fill, styles.wrapper]} key={"product" + index + Math.random.toString()}>
+        <View style={[styles.innerWrapper, styles.outerWrapper]} key={"product" + index + Math.random.toString()}>
           {inputs}
+          <DeleteButton
+            onPress={this.deleteProduct.bind(this)}
+            index={index}
+          />
         </View>
       );
     }
@@ -72,7 +92,8 @@ class EventProductsEditor extends React.Component{
       const getEditor = (attr) => this.getEditor(attr, product, index);
       const combinedEditors = getCombinedEditors(attribute, ProductModel, getEditor);
       if(combinedEditors.length < 4){
-        combinedEditors.push({label: "", editor: null});
+        let num = index + 1;
+        combinedEditors.push({label: "Catch " + num, editor: null});
       }
       return renderCombinedEditors(combinedEditors, styles);
     }
@@ -88,44 +109,61 @@ class EventProductsEditor extends React.Component{
       }
     }
 
-    render() {
-      if(!this.props.fishingEvent){
-        return null;
+    deleteProduct(index){
+      this.props.dispatch(productActions.deleteProduct(index, this.props.fishingEvent.id));
+    }
+
+    undoDeleteProduct(){
+      if(this.props.deletedProducts.length){
+        this.props.dispatch(productActions.undoDeleteProduct(this.props.fishingEvent.id));
+      }
+    }
+
+    getBottomRow(){
+      return (
+        <View style={[styles.bottomRow]}>
+          <View style={styles.buttonWrapper}>
+            <LongButton
+               bgColor={colors.pink}
+               text={"Undo"}
+               onPress={this.undoDeleteProduct.bind(this)}
+               disabled={!this.props.deletedProducts.length}
+            />
+            <LongButton
+              bgColor={colors.blue}
+              text={"Add Catch"}
+              disabled={false}
+              onPress={this.addProduct.bind(this)}
+            />
+          </View>
+        </View>
+      )
+    }
+
+    getInputs(){
+      if(!this.props.products.length){
+        return this.props.renderMessage("No Catches");
       }
       let inputs = [];
-      this.props.fishingEvent.products.forEach((p, i) => {
+      this.props.products.forEach((p, i) => {
         inputs.push(this.renderEditors(p, i));
       });
-      let undoStyle = this.state.undoDeleteActive ? styles.undoActive : {};
-      let undoTextStyle = this.state.undoDeleteActive ? textStyles.active : styles.inactiveText;
+      return inputs.reverse();
+    }
 
-      let bottomRow = (
-        <View style={[styles.bottomRow, {width: this.getDetailWidth()}]}>
-          <TouchableOpacity
-            style={[styles.undoDelete, undoStyle, styles.button]}
-            activeOpacity={this.state.undoDeleteActive ? 1 : 0.7}>
-            <Text style={[textStyles.font,undoTextStyle]}>Undo Delete</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.addProduct, styles.button]}
-            onPress={this.addProduct.bind(this)}>
-            <Text style={[textStyles.font,textStyles.active]}>Add Catch</Text>
-          </TouchableOpacity>
-        </View>
-    );
-
+    render() {
       return (
-        <View>
+        <View style={[styles.col, styles.fill, {alignItems: 'stretch'}]}>
           <ScrollView style={[styles.scroll]}>
-            {this.props.fishingEvent.products.length ? inputs.reverse() : null}
+            {this.getInputs()}
           </ScrollView>
-          {bottomRow}
+            {this.getBottomRow()}
         </View>
       );
     }
 };
 
-const productEditorStyle = {
+const pStyle = {
   scroll: {
     backgroundColor: colors.lightGray
   },
@@ -139,23 +177,29 @@ const productEditorStyle = {
     flexDirection: 'row',
     justifyContent: 'center',
     backgroundColor: colors.white,
+    borderTopWidth: 1,
+    borderColor: colors.midGray
   },
-  button: {
-    width: 150,
-    height: 30,
-    paddingTop: 6,
-    paddingLeft: 30
+  buttonWrapper:{
+    width: 360,
+    flexDirection: 'row',
+    justifyContent: "space-between",
   },
   undoDelete:{
-    backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.midGray
   },
-  activeText: {
-    color: colors.white
+  deleteButtonWrapper:{
+    position: 'absolute',
+    right: 8,
+    top: 8
   },
-  inactiveText: {
-    color: colors.midGray
+  deleteView: {
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    backgroundColor: colors.red,
+    opacity: 0.6
   },
   labelRow: {
     flex: 0.20,
@@ -163,18 +207,21 @@ const productEditorStyle = {
   },
   rowSection: {
     flex: 0.24
-  }
+  },
+  innerWrapper:{
+   paddingTop: 5,
+   paddingLeft: 30,
+   paddingBottom: 5,
+  },
+  outerWrapper: {
+    marginTop: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    overflow: "hidden"
+  },
 }
 
-const styles = StyleSheet.create(Object.assign({}, eventEditorStyles, productEditorStyle));
-
-
-const select = (State, dispatch) => {
-    let state = State.default;
-    return {
-      width: state.view.width,
-      uiOrientation: state.view.uiOrientation,
-    };
-}
-
-export default connect(select)(EventProductsEditor);
+const styles = StyleSheet.create(Object.assign({}, eventEditorStyles, pStyle));
+export default EventProductsEditor;

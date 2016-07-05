@@ -1,16 +1,14 @@
 import ModelUtils from '../utils/ModelUtils';
 import UserModel from '../models/UserModel';
 import VesselModel from '../models/VesselModel';
-
+import ports from '../constants/ports';
 const initialUser = ModelUtils.blankModel(UserModel);
 const initialVessel = ModelUtils.blankModel(VesselModel);
 
 const initialState = {
-  ports: ['Port of Napier', 'Eastland Port Gisbourne', 'Viaduct Harbour Auckland', 'Port Motueka', 'Port Nelson Wharf',
-          'Careys bay Wharf', 'Port Chalmers', 'South Port Bluff', 'Westport Harbour Wharf',
-          'Port Lyttleton', 'Prime Port Timaru'],
+  ports: ports,
   vessel: initialVessel,
-  vessels: [initialVessel],
+  vessels: [],
   user: initialUser,
   autoSuggestFavourites: {
   }
@@ -26,9 +24,9 @@ export default (state = initialState, action) => {
     case 'editUser':
       let user = update(state.user, action.change);
       return update(state,  { user: user });
+    case 'logout':
+      return initialState;
     case 'setUser':
-      console.log(initialUser);
-      console.log(action);
       return update(state,  { user: action.user });
     case 'setVessel':
       return update(state, { vessel: action.vessel });

@@ -22,6 +22,7 @@ let initialState = {
 const FormReducer = (state = initialState, action) => {
   switch(action.type) {
     case 'endTrip':
+      return initialState;
       let forms = createForms(action.fishingEvents, formModel);
       let trip = update(action.trip, {forms: forms});
       return update(state, {pastTrips: [...state.pastTrips, trip], currentTrip: initialState.currentTrip});

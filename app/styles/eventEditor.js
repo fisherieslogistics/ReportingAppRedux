@@ -1,15 +1,22 @@
 import colors from './colors';
 
 export default {
-  wrapper:{
-   backgroundColor: '#fff',
-   marginTop: 10,
-   marginLeft: 10,
-   marginRight: 10,
-   borderRadius: 10,
+  innerWrapper:{
    paddingTop: 10,
    paddingLeft: 30,
    paddingBottom: 10,
+  },
+  outerWrapper: {
+    marginTop: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    overflow: "hidden"
+  },
+  topWrapper: {
+  },
+  bottomWrapper: {
   },
   col:{
     flexDirection: 'column',

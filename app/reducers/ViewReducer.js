@@ -6,7 +6,7 @@ const helper = new Helper();
 const assign = helper.assign;
 
 let initialState = {
-  viewingFishingEventId: 1,
+  viewingEventId: 1,
   detailView: "catch",
   uiOrientation: 'PORTRAIT',
   width: 768,
@@ -17,7 +17,7 @@ let initialState = {
     taken: [],
     text: "",
     name: null,
-    visible: false,
+    uivisible: false,
     inputId: null
   },
 }
@@ -26,7 +26,7 @@ let initialState = {
 export default (state = initialState, action) => {
     switch (action.type) {
       case 'setViewingFishingEvent':
-        return update(state, {viewingFishingEventId: action.fishingEventId});
+        return update(state, {viewingEventId: action.fishingEventId});
       case 'initAutoSuggestBarChoices':
         //use a name change to tell it to re initialise
         return update(state, {autoSuggestBar: update(state.autoSuggestBar, action)});
@@ -36,12 +36,9 @@ export default (state = initialState, action) => {
           name: action.name
         })});
       case 'toggleAutoSuggestBar':
-        if(action.visible){
-          return update(state, {autoSuggestBar: update(state.autoSuggestBar, {
-            visible: action.visible
-          })});
-        }
-        return update(state, {autoSuggestBar: initialState.autoSuggestBar});
+        let auto = state.autoSuggestBar;
+        let autoSuggest = update(state.autoSuggestBar, {uivisible: action.visible});
+        state = update(state, {autoSuggestBar: autoSuggest});
       case 'uiOrientation':
         switch (action.uiOrientation) {
           case 'PORTRAIT':

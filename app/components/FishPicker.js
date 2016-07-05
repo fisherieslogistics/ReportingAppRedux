@@ -13,16 +13,13 @@ import Validator from '../utils/Validator';
 import React from 'react';
 import AutoSuggestBar from './AutoSuggestBar';
 import {inputStyles} from '../styles/styles';
-import speciesCodes from '../constants/speciesCodes.json';
+import speciesCodesDesc from '../constants/speciesDesc.json';
 import ViewActions from '../actions/ViewActions';
 import reactMixin from 'react-mixin';
 import Subscribable from 'Subscribable';
 import {connect} from 'react-redux';
 
 const viewActions = new ViewActions();
-const speciesCodesDesc = speciesCodes.map((s) => {
-  return {value: s, description: s + " Description " + s};
-});
 
 class FishPicker extends React.Component {
 
@@ -61,7 +58,7 @@ class FishPicker extends React.Component {
   }
 
   autoSuggestEmitted(event){
-    if(event.name == event.name && event.inputId == this.props.inputId){
+    if(event.inputId == this.props.inputId){
       this.setState({
         changedByEvent: true
       });

@@ -178,19 +178,18 @@ class FormView extends React.Component {
     }
 
     let canSignAll = !this.props.forms.find(f => !this.formReadyToSign(f)) &! this.props.forms.every(f => f.signed);
-    let signAllColor = canSignAll ? colors.blue : colors.backgrounds.veryDark;
-    let signColor = this.formReadyToSign(this.props.viewingForm) ? colors.blue: colors.backgrounds.veryDark;
+    let canSignOne = this.formReadyToSign(this.props.viewingForm);
 
     let detailToolbar = (
       <DetailToolbar
-        right={{color: signColor, text: "Sign", onPress: () => this.toggleSignature("single")}}
+        right={{color: colors.blue, text: "Sign", onPress: () => this.toggleSignature("single", canSignOne), enabled: canSignOne}}
         centerTop={<Text style={[textStyles.font]}>{this.props.viewingForm ? this.props.viewingForm.id : null}</Text>}
         centerBottom={<View style={styles.spacer}/>}
       />
     );
     let masterToolbar = (
       <MasterToolbar
-        right={{color: signAllColor, text: "Sign all", onPress: () => this.toggleSignature("all")}}
+        right={{color: colors.blue, text: "Sign all", onPress: () => this.toggleSignature("all", canSignAll), enabled: canSignAll}}
       />
     );
 

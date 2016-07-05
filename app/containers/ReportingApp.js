@@ -16,6 +16,9 @@ import ViewActions from '../actions/ViewActions';
 import FormActions from '../actions/FormActions';
 import ApiActions from '../actions/ApiActions';
 import Trip from '../components/Trip';
+import SyncWorker from '../api/SyncWorker';
+import ShadowStyle from '../styles/shadow';
+
 import {fishing,
         fishingBlue,
         waterTransportLight,
@@ -27,18 +30,21 @@ const apiActions = new ApiActions();
 const viewActions = new ViewActions();
 const formActions = new FormActions();
 const MAX_AUTOSUGGEST_RESULTS = 12;
-
-import ShadowStyle from '../styles/shadow';
-
+const TIMEOUT = 15000;
 
 class ReportingApp extends Component {
 
   constructor(props){
     super(props);
     this.state = {
-      selectedTab: "fishing",
+      selectedTab: this.props.tripStarted ? "fishing" : "trip",
     }
-    apiActions.setUpClient(props.dispatch);
+    apiActions.setUpClient(props.dispatch, TIMEOUT);
+    this.SyncWorker = new SyncWorker(props.dispatch,
+                                     props.store.getState,
+                                     apiActions,
+                                     TIMEOUT,
+                                     props.sync);
   }
 
   _orientationDidChange(orientation) {
@@ -54,31 +60,26 @@ class ReportingApp extends Component {
     Orientation.removeOrientationListener(this._orientationDidChange.bind(this));
   }
 
+  componentWillReceiveProps(props){
+    this.SyncWorker.toSyncUpdated(props.sync);
+  }
+
   renderTabs(){
 
     const tabs = {
-      "fishing": this.renderFishing.bind(this),
-      "trip": this.renderTrip.bind(this),
-      "forms": this.renderForms.bind(this),
-      "profile": this.renderProfile.bind(this),
+      "trip": {render: this.renderTrip.bind(this), icon: waterTransportLight},
+      "fishing": {render: this.renderFishing.bind(this), icon: fishing},
+      "forms": {render: this.renderForms.bind(this), icon: form},
+      "profile": {render: this.renderProfile.bind(this), icon: user},
     }
 
     return Object.keys(tabs).map((key)=>{
       let selected = !!(this.state.selectedTab == key);
-      console.log(key, selected, this.state.selectedTab);
-      let render = tabs[key];
-      let icons = {
-        "fishing": fishing,
-        "trip": this.props.hasCatches ? waterTransport :  waterTransportLight,
-        "forms": form,
-        "profile": user,
-      }
-
       return (<TabBarIOS.Item
                 key={key}
                 title={key.capitalize()}
                 selected={selected}
-                icon={icons[key]}
+                icon={tabs[key].icon}
                 hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
                 style={{flex: 0.1}}
                 onPress={() => {
@@ -89,7 +90,7 @@ class ReportingApp extends Component {
                     selectedTab: key
                   });
                 }}>
-                {render()}
+                {tabs[key].render()}
               </TabBarIOS.Item>);
     });
   }
@@ -144,7 +145,7 @@ class ReportingApp extends Component {
         </TabBarIOS>
         <AutoSuggestBar
           eventEmitter={this.props.eventEmitter}
-          visible={this.props.autoSuggestBar.visible}
+          visible={this.props.autoSuggestBar.uivisible}
           favourites={this.props.autoSuggestBar.favourites}
           choices={this.props.autoSuggestBar.choices}
           favouritesChangedAt={this.props.autoSuggestBar.favouritesChangedAt}
@@ -163,13 +164,15 @@ const select = (State, dispatch) => {
     let hasCatches = !!state.fishingEvents.events.find((fe) => {
       return fe.productsValid;
     });
+    console.log("auto main ", + JSON.stringify(state.view.autoSuggestBar));
     return {
+      sync: state.sync,
       autoSuggestBar: state.view.autoSuggestBar,
       eventEmitter: state.uiEvents.eventEmitter,
       uiOrientation: state.view.uiOrientation,
       height: state.view.height,
       width: state.view.width,
-      hasCatches: hasCatches
+      tripStarted: state.trip.started
     };
 }
 

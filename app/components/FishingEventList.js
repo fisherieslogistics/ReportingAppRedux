@@ -16,6 +16,7 @@ const helper = new Helper();
 import MasterListView from './MasterListView';
 
 import {colors, listViewStyles, iconStyles, textStyles} from '../styles/styles';
+import {IconButton} from './Buttons';
 
 import {fishingBlue,
         fishingWhite,
@@ -26,59 +27,41 @@ import {fishingBlue,
         cloud,
         cloudWhite} from '../icons/PngIcon';
 
-const fishingEventDesc = {
-  "started": {
-    icon: fishingWhite,
-    color: colors.blue,
-  },
-  "ended":{
-    icon: errorWhite,
-    color: colors.orange
-  },
-  "readyToSync": {
-    icon: checkedWhite,
-    color: colors.green
-  },
-  "done":{
-    icon: cloudWhite,
-    color: colors.midGray
-  },
-}
-
 class FishingEventList extends React.Component {
     constructor(props){
       super(props)
     }
 
-    getFishingEventStatus(fishingEvent){
+    eventStatus(fishingEvent){
       if(!fishingEvent.datetimeAtEnd){
-        return "started";
-      }
-      if(!fishingEvent.datetimeAtEnd){
-        return "started";
+        return {icon: fishingWhite,
+                color: colors.blue}
       }
       if(fishingEvent.datetimeAtEnd && !fishingEvent.productsValid){
-        return "ended";
+        return {icon: errorWhite,
+                color: colors.orange}
       }
-      if(helper.needsSync(fishingEvent)){
-        return "readyToSync";
+      if(!fishingEvent.commited){
+        return {icon: checkedWhite,
+                color: colors.green}
       }
-      return "done";
+      return {icon: cloudWhite,
+              color: colors.midGray};
     }
 
     getIcon(fishingEvent){
-      let status = fishingEventDesc[this.getFishingEventStatus(fishingEvent)];
-      return (<View style={[{backgroundColor: status.color}, iconStyles]}>
-                <Image source={status.icon} />
-              </View>);
+      let status = this.eventStatus(fishingEvent);
+      return (<View style={[iconStyles, {backgroundColor: status.color}]}>
+                <Image source={status.icon} style={{}} />
+              </View>)
     }
 
     getDescription(fishingEvent, sectionID, rowID) {
       let tSpecies = (fishingEvent.targetSpecies || "").toUpperCase();
-      let textStyle = this.isSelected(fishingEvent) ? textStyles.active : textStyles.dark;
+      let textStyle = this.isSelected(fishingEvent) ? textStyles.white : textStyles.light;
       let details = [
         {text: fishingEvent.id, style: [textStyles.black, listViewStyles.text, listViewStyles.detail, {marginLeft: 12}]},
-        {text: fishingEvent.datetimeAtStart.format("HH:mm"),style: [textStyle, listViewStyles.detail, listViewStyles.text]},
+        {text: fishingEvent.datetimeAtStart.format("HH:mm"),style: [textStyle, listViewStyles.detail, textStyles.listView]},
         {text: tSpecies, style: [textStyle, listViewStyles.detail, listViewStyles.text]}
       ];
 

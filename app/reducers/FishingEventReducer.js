@@ -12,7 +12,8 @@ const fishingMethodSpecificModel = TCERFishingEventModel;
 
 let initialState = {
   events: [],
-  errors: {}
+  errors: {},
+  deletedProducts: {}
 }
 
 export default (state = initialState, action) => {
@@ -29,11 +30,11 @@ export default (state = initialState, action) => {
         case 'setFishingEventValue':
           let change = {};
           change[action.inputId] = action.value;
-          return ChangeEvent(action.fishingEventId - 1, state, change);
+          return changeEvent(action.fishingEventId - 1, state, change);
         case 'setLocationValue':
           //always negative whatever they put it for lat
           let negativeLatChanges = Object.assign({}, action.changes, {lat: (0 - Math.abs(parseFloat(action.changes.lat)))});
-          return ChangeEvent(action.id - 1, state, {locationAtStart: negativeLatChanges});
+          return changeEvent(action.id - 1, state, {locationAtStart: negativeLatChanges});
         case 'changeSpecies':
           return ChangeCatch(action, state, "code");
         case 'changeWeight':
@@ -41,11 +42,15 @@ export default (state = initialState, action) => {
         case 'changeCustom':
           return ChangeCatch(action, state, action.name);
         case 'setFishingEventId':
-          return ChangeEvent(action.fishingEventId - 1, state, { fishyFishId: action.fishyFishId, lastSubmitted: action.lastSubmitted }, true);
+          return changeEvent(action.fishingEventId - 1, state, { fishyFishId: action.fishyFishId, lastSubmitted: action.lastSubmitted }, true);
         case 'addProduct':
+          state = clearDeletedProducts(action.fishingEventId, state);
           return addNewCatch(action.fishingEventId, state);
+        case 'deleteProduct':
+          return stashDeletedProduct(state, action);
+        case 'undoDeleteProduct':
+          return undoDeleteProduct(state, action);
         case 'changeEventGear':
-          let fishingEvent = state.events[action.fishingEventId -1];
           const gearChange = {};
           gearChange[action.key] = action.value;
           let gear = Object.assign({}, fishingEvent.gear, gearChange);
@@ -53,12 +58,45 @@ export default (state = initialState, action) => {
           return replaceFishingEvent(state, fishingEvent);
         case 'formSigned':
           action.fishingEvents.forEach((fe) => {
-            state = ChangeEvent(fe.id, state, {signature: action.signature, dateSigned: action.dateSigned});
+            state = changeEvent(fe.id, state, {signature: action.signature, dateSigned: action.dateSigned});
           });
           return state;
         default:
             return state;
     }
+}
+
+const undoDeleteProduct = (state, {fishingEventId}) => {
+  let product = state.deletedProducts[fishingEventId].pop();
+  if(!product){
+    console.log(product);
+    debugger;
+  }
+  return addProductToEvent(fishingEventId, product, state);
+}
+
+const clearDeletedProducts = (fishingEventId, state) => {
+  let change = {};
+  change[fishingEventId] = [];
+  let deleted = Object.assign(state.deletedProducts, change);
+  return Object.assign(state, {deletedProducts: deleted});
+}
+
+const stashDeletedProduct = (state, {fishingEventId, productIndex}) => {
+  let fishingEvent = state.events[fishingEventId -1];
+  let product = fishingEvent.products[productIndex];
+  let deletedProducts = Object.assign({}, state.deletedProducts);
+  if(fishingEventId in deletedProducts){
+    deletedProducts[fishingEventId].push(product);
+  }else{
+    deletedProducts[fishingEventId] = [product];
+  }
+  let newProducts = [
+    ...fishingEvent.products.slice(0, productIndex),
+    ...fishingEvent.products.slice(productIndex + 1, fishingEvent.products.length)
+  ];
+  state = changeEvent(fishingEventId-1, state, {products: newProducts});
+  return changeState(state, {deletedProducts: deletedProducts});
 }
 
 const updateErrors = (fishingEvent, state) => {
@@ -71,7 +109,7 @@ const changeState = (state, change) => {
   return Object.assign({}, state, change);
 }
 
-const ChangeEvent = (index, state, changes) => {
+const changeEvent = (index, state, changes) => {
   changes.lastChange = moment();
   updatedEvent = Object.assign({}, state.events[index], changes);
   return replaceFishingEvent(state, updatedEvent);
@@ -91,7 +129,7 @@ const blankCatch = () => {
   return ModelUtils.blankModel(ProductModel);
 }
 
-const addNewCatch = (fishingEventId, state) => {
+const getNewProduct = (fishingEventId, state) => {
   let product = blankCatch();
   let fishingEvent = state.events[fishingEventId-1];
   if(fishingEventId > 1){
@@ -103,9 +141,18 @@ const addNewCatch = (fishingEventId, state) => {
       });
     }
   }
+  return product;
+}
+
+const addNewCatch = (fishingEventId, state) => {
+  let product = getNewProduct(fishingEventId, state);
+  return addProductToEvent(fishingEventId, product, state);
+}
+
+const addProductToEvent = (fishingEventId, product, state) => {
   let fishingEventProducts = [...state.events[fishingEventId -1].products];
   fishingEventProducts.push(product);
-  return ChangeEvent(fishingEventId -1, state, {products: fishingEventProducts});
+  return changeEvent(fishingEventId -1, state, {products: fishingEventProducts});
 }
 
 const ChangeCatch = (action, state, attr) => {
@@ -166,6 +213,9 @@ const newFishingEvent = (state, location, gear) => {
   let newEvent = ModelUtils.blankModel(fishingEventModel);
   let id = state.events.length + 1;
   newEvent.id = id;
+  let deletedProducts = Object.assign({}, state.deletedProducts);
+  deletedProducts[id] = [];
+  state = changeState(state, {deletedProducts: deletedProducts});
   newEvent.datetimeAtStart = moment();
   let Location = Object.assign({}, location);
   newEvent.locationAtStart = Location;

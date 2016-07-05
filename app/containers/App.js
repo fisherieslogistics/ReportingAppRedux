@@ -38,7 +38,6 @@ export default class App extends Component {
             store.dispatch(stateLoadActions.loadSavedState(savedState));
             setTimeout(() => {
               this.setState({loaded: true});
-              timedActions.startActions(store.dispatch, store.getState);
             });
           });
         break;

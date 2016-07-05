@@ -17,15 +17,17 @@ import EventGearEditor from './EventGearEditor';
 import EventProductsEditor from './EventProductsEditor';
 import {connect} from 'react-redux';
 import moment from 'moment';
+import BlankMessage from './BlankMessage';
 
+import {addToKeyStore, addToQueue} from '../actions/SyncActions';
+import {TextButton, IconButton} from './Buttons';
 import {MasterToolbar, DetailToolbar} from './Toolbar';
-import {colors, textStyles} from '../styles/styles';
+import {colors, textStyles, iconStyles} from '../styles/styles';
 import {
  plusBlue,
  plusGray,
 } from '../icons/PngIcon';
 
-const detailTabs = ["details", "catches", "gear"];
 const fishingEventActions = new FishingEventActions();
 
 class Fishing extends React.Component{
@@ -33,12 +35,12 @@ class Fishing extends React.Component{
     super(props);
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
-      selectedDetail: 0
+      selectedDetail: props.fishingEvents ? 0 : 2
     };
   }
 
   startFishingEvent(){
-    if(this.props.canStartEvent){
+    if(this.props.enableStartEvent){
       this.props.dispatch(fishingEventActions.startFishingEvent(this.props.gear));
     }
   }
@@ -55,8 +57,8 @@ class Fishing extends React.Component{
   }
 
   endFishingEvent(){
-    if(!this.props.fishingEvents.length){
-      return null;
+    if(!this.props.lastEvent){
+      return;
     }
     AlertIOS.alert(
       "Hauling",
@@ -66,17 +68,18 @@ class Fishing extends React.Component{
           return;
         }, style: 'cancel'},
         {text: 'Yes', onPress: () => {
-          let fe = this.props.fishingEvents[this.props.fishingEvents.length -1];
-          this.props.dispatch(fishingEventActions.endFishingEvent(fe.id));
+          this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id));
         }}
       ]
     );
   }
 
   removeFishingEvent(){
-    if(!this.props.fishingEvents.length){
-      return null;
+    if(!this.props.lastEvent){
+      return;
     }
+    //if longline remove the viewing event;
+
     AlertIOS.alert(
       "Cancel",
       'Cancel the latest shot?',
@@ -85,9 +88,8 @@ class Fishing extends React.Component{
           return;
         }, style: 'cancel'},
         {text: 'Yes', onPress: () => {
-          let fe = this.props.fishingEvents[this.props.fishingEvents.length -1];
           this.props.dispatch(fishingEventActions.setViewingFishingEvent(null));
-          return this.props.dispatch(fishingEventActions.cancelFishingEvent(fe.id));
+          return this.props.dispatch(fishingEventActions.cancelFishingEvent(this.props.lastEvent.id));
         }}
       ]
     );
@@ -98,26 +100,31 @@ class Fishing extends React.Component{
   }
 
   selectedDetailView(){
-    switch (this.state.selectedDetail) {
+    switch (this.state.selectedDetail){
       case 0:
         return (<EventDetailEditor
-                 fishingEvent={this.props.fishingEvent}
+                 fishingEvent={this.props.viewingEvent}
                  editorType={'event'}
                  dispatch={this.props.dispatch}
                  />);
-      break;
       case 1:
+        if(!this.props.viewingEvent || !this.props.viewingEvent.datetimeAtEnd){
+          return this.renderMessage("Haul before adding catch");
+        }
         return (<EventProductsEditor
-                 fishingEvent={this.props.fishingEvent}
+                 fishingEvent={this.props.viewingEvent}
+                 deletedProducts={this.props.deletedProducts}
+                 products={this.props.viewingEvent.products}
                  dispatch={this.props.dispatch}
                  editorType={'event'}
+                 uiOrientation={this.props.uiOrientation}
+                 renderMessage={this.renderMessage.bind(this)}
                 />);
-      break;
       case 2:
         return (<EventGearEditor
                  dispatch={this.props.dispatch}
-                 fishingEvent={this.props.fishingEvent}
-                 isLatestEvent={this.props.isLatestEvent}
+                 fishingEvent={this.props.viewingEvent}
+                 lastEvent={this.props.lastEvent}
                  gear={this.props.gear}
                 />);
       break;
@@ -127,8 +134,9 @@ class Fishing extends React.Component{
   renderSegementedControl(){
     return (
       <SegmentedControlIOS
-        values={detailTabs}
+        values={["details", "catches", "gear"]}
         selectedIndex={this.state.selectedDetail}
+        enabled={!!this.props.fishingEvents}
         style={styles.detailSelector}
         onChange={({nativeEvent}) => {
           this.setState({selectedDetail: nativeEvent.selectedSegmentIndex});
@@ -137,56 +145,65 @@ class Fishing extends React.Component{
   }
 
   renderDetailView(){
-    return(<View style={[styles.detailView, styles.col]}>
-              <View style={[styles.row]}>
-                  {this.selectedDetailView()}
-              </View>
-          </View>);
+    return(
+      <View style={[styles.detailView, styles.col]}>
+        <View style={[styles.row]}>
+          {this.selectedDetailView()}
+        </View>
+    </View>);
   }
 
-  renderIconButton(icon, active, style, onPress){
+  renderFishingEventLists(){
+    return (<FishingEventList
+      fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents].reverse())}
+      onPress={this.setViewingFishingEvent.bind(this)}
+      selectedFishingEvent={this.props.viewingEvent}
+    />);
+  }
+
+  renderMessage(message){
     return (
-      <TouchableOpacity
-        activeOpacity={active ? 1 : 0.5}
-        onPress={onPress} style={{}}>
-        <Image style={style} source={icon}/>
-      </TouchableOpacity>
-    );
+      <BlankMessage
+        text={message}
+        height={this.props.height}
+      />);
   }
 
-  render(){
-    let startEventIcon = this.props.canStartEvent ? plusBlue : plusGray;
-    let startEventButton = this.renderIconButton(startEventIcon,
-                                  this.props.canStartEvent,
-                                  {width: 52, height: 52, marginTop: 10, marginRight: 0},
-                                  this.startFishingEvent.bind(this));
-
-    let haulColor = this.props.canStartEvent ? colors.midGray : colors.blue;
-    let cancelColor = this.props.canStartEvent ? colors.midGray : colors.red;
-    let detailToolbar = (
+  getDetailToolbar(){
+    let deleteActive = (this.props.fishingEvents && this.props.fishingEvents.length);
+    return(
       <DetailToolbar
-        left={{color: cancelColor, text: "Cancel", onPress: this.removeFishingEvent.bind(this)}}
-        right={{color: haulColor, text: "Haul", onPress: this.removeFishingEvent.bind(this)}}
-        centerTop={<Text style={[textStyles.font, textStyles.darkLabel]}>{this.props.fishingEvent ? this.props.fishingEvent.id : null}</Text>}
+        left={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent.bind(this), enabled: deleteActive}}
+        right={{color: colors.blue, text: "Haul", onPress: this.endFishingEvent.bind(this), enabled: this.props.enableHaul}}
+        centerTop={<Text style={[textStyles.font, textStyles.midLabel]}>{this.props.viewingEvent ? this.props.viewingEvent.id : null}</Text>}
         centerBottom={this.renderSegementedControl()}
       />
     );
-    let masterToolbar = (
-      <MasterToolbar
-        center={<View style={{marginTop: 27}}><Text style={[textStyles.font, textStyles.darkLabel]}>Fishing</Text></View>}
-        right={{icon :startEventButton}}
-      />
-    )
+  }
+
+  getMasterToolbar(){
+    let icon = this.props.enableStartEvent ? plusBlue : plusGray;
+    let startEventButton = {
+        icon:icon,
+        onPress:this.startFishingEvent.bind(this),
+        enabled:this.props.enableStartEvent,
+    };
+    return(
+        <MasterToolbar
+          center={<View style={{marginTop: 27}}><Text style={[textStyles.font, textStyles.midLabel]}>Fishing</Text></View>}
+          right={startEventButton}
+        />
+      );
+  }
+
+  render(){
+
     return (
       <MasterDetailView
-        master={<FishingEventList
-                  fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents].reverse())}
-                  onPress={this.setViewingFishingEvent.bind(this)}
-                  selectedFishingEvent={this.props.fishingEvent}
-                />}
+        master={this.props.fishingEvents ? this.renderFishingEventLists() : this.renderMessage(this.props.tripStarted ? "Trip Started" : "Trip Hasn\'t Started")}
         detail={this.renderDetailView.bind(this)()}
-        detailToolbar={detailToolbar}
-        masterToolbar={masterToolbar}
+        detailToolbar={this.getDetailToolbar()}
+        masterToolbar={this.getMasterToolbar()}
       />
     );
   }
@@ -213,17 +230,26 @@ const styles = {
 
 const select = (State, dispatch) => {
     let state = State.default;
-    let fEvents = state.fishingEvents.events;
-    let isLatestEvent = state.viewingFishingEventId && (state.viewingFishingEventId === state.fishingEvents.length);
-    let canStartEvent = (fEvents.length === 0) || (fEvents[fEvents.length -1].datetimeAtEnd !== null);
-    return {
-      fishingEvent: fEvents[state.view.viewingFishingEventId - 1],
-      fishingEvents: fEvents,
+    let props = {
       fishingEventType: "tcer",
       gear: state.gear,
-      canStartEvent: canStartEvent,
-      isLatestEvent: isLatestEvent,
-    };
+      uiOrientation: state.view.uiOrientation,
+      height: state.view.height,
+      tripStarted: state.trip.started,
+      enableStartEvent: state.trip.started,
+    }
+    if(!state.fishingEvents.events.length){
+      return props;
+    }
+    let fEvents = state.fishingEvents.events;
+    let lastEvent = fEvents[fEvents.length -1];
+    props.lastEvent = lastEvent;
+    props.viewingEvent = fEvents[state.view.viewingEventId -1];
+    props.fishingEvents = fEvents;
+    props.deletedProducts = state.fishingEvents.deletedProducts[state.view.viewingEventId];
+    props.enableStartEvent = state.trip.started && ((!lastEvent) || lastEvent.datetimeAtEnd);
+    props.enableHaul = lastEvent && (!lastEvent.datetimeAtEnd);
+    return props;
 }
 
 export default connect(select)(Fishing);

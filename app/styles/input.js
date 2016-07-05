@@ -16,6 +16,11 @@ export default {
     flexDirection: 'row',
     flex: 1,
   },
+  dateInputInvisible:{
+    height: 0,
+    width: 0,
+    opacity: 0
+  },
   label:{
     fontWeight: "600",
     color: "#b0b0b0",

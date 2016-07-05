@@ -40,7 +40,6 @@ const renderRow = (item, sectionId, rowId, props) => {
 }
 
 const MasterListView = (props) => {
-  debugger;
   return (
     <ListView
       style={[listViewStyles.listView]}

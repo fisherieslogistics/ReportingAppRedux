@@ -1,7 +1,7 @@
 "use strict";
 import moment from 'moment';
 
-class CatchActions{
+class ProductActions{
     changeSpecies(id, catchId, value) {
         return {
             type: 'changeSpecies',
@@ -36,7 +36,20 @@ class CatchActions{
         fishingEventId: id
       }
     }
+    deleteProduct(productIndex, fishingEventId){
+      return {
+        type: 'deleteProduct',
+        fishingEventId: fishingEventId,
+        productIndex: productIndex
+      }
+    }
+    undoDeleteProduct(fishingEventId){
+      return {
+        type: 'undoDeleteProduct',
+        fishingEventId: fishingEventId
+      }
+    }
 
 }
 
-export default CatchActions;
+export default ProductActions;
