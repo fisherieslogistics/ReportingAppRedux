@@ -58,7 +58,7 @@ class FishPicker extends React.Component {
   }
 
   autoSuggestEmitted(event){
-    if(event.inputId == this.props.inputId){
+    /*(if(event.inputId == this.props.inputId){
       this.setState({
         changedByEvent: true
       });
@@ -69,6 +69,19 @@ class FishPicker extends React.Component {
       if(this.refs.textInput){
         this.refs.textInput.blur();
       }
+    }*/
+    if(event.inputId == this.props.inputId){
+      console.log("I go tthe event", event.inputId, this.props.inputId)
+      this.setState({
+        changedByEvent: true,
+        value: event.value
+      });
+      setTimeout(() => {
+        this.forceUpdate();
+        if(this.refs.textInput){
+          this.refs.textInput.blur();
+        }
+      });
     }
   }
 

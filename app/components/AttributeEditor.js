@@ -207,9 +207,8 @@ const AttributeEditor = (attribute, value, callback, extraProps = {}, inputId) =
             attribute={attribute}
             value={posText}
             callback={callback}
-            extraProps={extraProps}
+            extraProps={{editable: false}}
             inputId={inputId}
-            editable={false}
             />);
       break;
     case "bool":

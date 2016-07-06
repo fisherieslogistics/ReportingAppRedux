@@ -9,17 +9,19 @@ import React from 'react';
 import {shadowStyles, colors} from '../styles/styles';
 
 const MasterDetail = (props) => {
+  let masterFlex = props.sizes ? props.sizes.d : 0.3;
+  let detailFlex = props.sizes ? props.sizes.m : 0.7;
   return (
     <View style={[styles.wrapper]}>
       {props.modal}
       <View style={[styles.row]}>
-        <View style={[styles.master, shadowStyles.shadow]}>
+        <View style={[styles.master, shadowStyles.shadow,  {flex: masterFlex}]}>
             {props.masterToolbar}
           <View style={[styles.col, styles.background]}>
             {props.master}
           </View>
         </View>
-        <View style={[styles.detail, shadowStyles.shadow]}>
+        <View style={[styles.detail, shadowStyles.shadow, {flex: detailFlex}]}>
           {props.detailToolbar}
           <View style={[styles.col]}>
             {props.detail}
@@ -49,7 +51,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgrounds.dark,
   },
   master: {
-    flex: 0.3,
     flexDirection: 'column',
     alignSelf: 'stretch',
     backgroundColor: colors.backgrounds.dark,

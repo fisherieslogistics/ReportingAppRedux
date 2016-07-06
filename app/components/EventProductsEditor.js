@@ -42,7 +42,8 @@ class EventProductsEditor extends React.Component{
 
     getEditor(attribute, product, index){
       const value = product[attribute.id];
-      const inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index;
+      const random = Math.random.toString();
+      const inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index + random;
       return AttributeEditor(attribute,
                      value,
                      (name, v) => this.onChange(name, v, index),

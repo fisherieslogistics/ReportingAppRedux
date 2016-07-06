@@ -120,6 +120,7 @@ class Trip extends React.Component{
     return (
       <MasterDetailView
         master={this.renderMasterView()}
+        sizes={{m: 0.6, d: 0.4}}
         detailView={
           <View style={[]}>
             <View style={[]}>

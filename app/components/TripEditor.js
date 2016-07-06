@@ -108,7 +108,6 @@ class TripEditor extends React.Component {
                 bgColor={colors.blue}
                 onPress={this.startTrip.bind(this)}
                 disabled={!this.props.tripCanStart}
-                _style={{borderRightWidth: LANDSCAPE ? 1 : 0 }}
               />
             </View>
             <View style={[styles.halfway]}>
