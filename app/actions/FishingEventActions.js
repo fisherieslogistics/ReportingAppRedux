@@ -7,10 +7,12 @@ class FishingEventActions{
 
     startFishingEvent(gear) {
         return (dispatch, getState) => {
+            const state = getState().default;
             dispatch({
                 type: 'startFishingEvent',
-                location: getState().default.location.location,
+                location: state.location.location,
                 gear: gear,
+                tripId: state.trip.fishyFishId,
                 timestamp: moment()
             });
             let fishingEvents = getState().default.fishingEvents.events;
