@@ -26,11 +26,11 @@ class ApiActions {
             })
             .then((res) => {
               let viewer = res.data.viewer;
-              dispatch(userActions.setUser(parseUser(viewer)));
               dispatch(userActions.setVessels(viewer.vessels));
               if(viewer.vessels.length){
                 dispatch(userActions.setVessel(viewer.vessels[0]));
               }
+              dispatch(userActions.setUser(parseUser(viewer)));
             });
         });
      }

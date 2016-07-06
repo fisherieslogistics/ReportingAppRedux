@@ -61,13 +61,13 @@ const TextButton = ({text, color, style, onPress, disabled}) => {
   );
 }
 
-const LongButton = ({text, bgColor, onPress, disabled}) => {
+const LongButton = ({text, bgColor, onPress, disabled, _style={}}) => {
   let textStyle = {
     fontSize: 14,
     color: !disabled ? colors.white : colors.midGray,
   };
-  let vStyle = [styles.longButton];
-  vStyle.push(getLongButtonStyle(bgColor, disabled));
+  let vStyle = [styles.longButton, getLongButtonStyle(bgColor, disabled), _style];
+
   let content = (
     <View style={vStyle}>
       <Text style={[textStyle, textStyles.font]}>{text}</Text>
@@ -86,7 +86,7 @@ const LongButton = ({text, bgColor, onPress, disabled}) => {
 
 const styles = StyleSheet.create({
   longButton: {
-    width: 160,
+    width: 140,
     padding: 5,
     borderWidth: 1,
     flexDirection: 'row',

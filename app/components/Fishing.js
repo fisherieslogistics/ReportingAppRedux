@@ -17,9 +17,9 @@ import EventGearEditor from './EventGearEditor';
 import EventProductsEditor from './EventProductsEditor';
 import {connect} from 'react-redux';
 import moment from 'moment';
+import Sexagesimal from 'sexagesimal';
 import BlankMessage from './BlankMessage';
 
-import {addToKeyStore, addToQueue} from '../actions/SyncActions';
 import {TextButton, IconButton} from './Buttons';
 import {MasterToolbar, DetailToolbar} from './Toolbar';
 import {colors, textStyles, iconStyles} from '../styles/styles';
@@ -40,8 +40,9 @@ class Fishing extends React.Component{
   }
 
   startFishingEvent(){
-    if(this.props.enableStartEvent){
-      this.props.dispatch(fishingEventActions.startFishingEvent(this.props.gear));
+    if(this.props.enableStartEvent && this.props.position){
+      let pos = {lat: this.props.position.coords.latitude, lon: this.props.position.coords.longitude};
+      this.props.dispatch(fishingEventActions.startFishingEvent(this.props.gear, pos));
     }
   }
 
@@ -68,7 +69,8 @@ class Fishing extends React.Component{
           return;
         }, style: 'cancel'},
         {text: 'Yes', onPress: () => {
-          this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id));
+          let pos = {lat: this.props.position.coords.latitude, lon: this.props.position.coords.longitude};
+          this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, pos));
         }}
       ]
     );
@@ -103,6 +105,7 @@ class Fishing extends React.Component{
     switch (this.state.selectedDetail){
       case 0:
         return (<EventDetailEditor
+                 renderMessage={this.renderMessage.bind(this)}
                  fishingEvent={this.props.viewingEvent}
                  editorType={'event'}
                  dispatch={this.props.dispatch}
@@ -122,6 +125,7 @@ class Fishing extends React.Component{
                 />);
       case 2:
         return (<EventGearEditor
+                 renderMessage={this.renderMessage.bind(this)}
                  dispatch={this.props.dispatch}
                  fishingEvent={this.props.viewingEvent}
                  lastEvent={this.props.lastEvent}
@@ -136,7 +140,6 @@ class Fishing extends React.Component{
       <SegmentedControlIOS
         values={["details", "catches", "gear"]}
         selectedIndex={this.state.selectedDetail}
-        enabled={!!this.props.fishingEvents}
         style={styles.detailSelector}
         onChange={({nativeEvent}) => {
           this.setState({selectedDetail: nativeEvent.selectedSegmentIndex});
@@ -169,13 +172,21 @@ class Fishing extends React.Component{
       />);
   }
 
+  getPositionText(){
+    if(!this.props.position){
+      return "awaiting position";
+    }
+    let coords = this.props.position.coords;
+    return Sexagesimal.format(coords.latitude, 'lat') + "  " + Sexagesimal.format(coords.longitude, 'lon');
+  }
+
   getDetailToolbar(){
     let deleteActive = (this.props.fishingEvents && this.props.fishingEvents.length);
     return(
       <DetailToolbar
         left={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent.bind(this), enabled: deleteActive}}
         right={{color: colors.blue, text: "Haul", onPress: this.endFishingEvent.bind(this), enabled: this.props.enableHaul}}
-        centerTop={<Text style={[textStyles.font, textStyles.midLabel]}>{this.props.viewingEvent ? this.props.viewingEvent.id : null}</Text>}
+        centerTop={<Text style={[textStyles.font, {fontSize: 13}]}>{this.getPositionText()}</Text>}
         centerBottom={this.renderSegementedControl()}
       />
     );

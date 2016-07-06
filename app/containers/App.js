@@ -10,9 +10,9 @@ import ReportingApp from './ReportingApp';
 import * as reducers from '../reducers';
 import StateLoadActions from '../actions/StateLoadActions';
 import Helper from '../utils/Helper';
-import TimedActions from '../actions/TimedActions';
+import {getPosition, watchPositon, clearWatch} from '../providers/Position';
+import {positionUpdate} from '../actions/PositionActions';
 
-const timedActions = new TimedActions();
 const helper = new Helper();
 const stateLoadActions = new StateLoadActions();
 const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
@@ -26,25 +26,42 @@ String.prototype.capitalize = function() {
 export default class App extends Component {
   constructor(props) {
     super(props);
+    this.watchId = null;
     this.state = {
-      loaded: false
+      loaded: false,
+      position: null,
     }
   }
 
-  componentDidMount(){
-    switch ("a") {
-      case "a":
-          helper.loadSavedState((savedState)=>{
-            store.dispatch(stateLoadActions.loadSavedState(savedState));
-            setTimeout(() => {
-              this.setState({loaded: true});
-            });
-          });
-        break;
-      case "b":
-          helper.clearLocalStorage();
-        break;
+  positionUpdated(position){
+    this.setState({
+      position: position
+    });
+  }
+
+  initialPositionAquired(position){
+    this.positionUpdated(position);
+    this.watchId = watchPositon(this.positionUpdated.bind(this),
+      () => setTimeout(this.startPosition.bind(this), 5000));
+  }
+
+  startPosition(){
+    if(this.watchId !== null){
+      clearWatch(this.watchId);
+      this.watchId = null;
     }
+    getPosition(this.initialPositionAquired.bind(this),
+      setTimeout(this.startPosition.bind(this), 5000));
+  }
+
+  componentDidMount(){
+    helper.loadSavedState((savedState)=>{
+      store.dispatch(stateLoadActions.loadSavedState(savedState));
+      setTimeout(() => {
+        this.setState({loaded: true});
+        this.startPosition.bind(this)();
+      });
+    });
   }
 
   render() {
@@ -58,6 +75,7 @@ export default class App extends Component {
           barStyle="default"
         />
         <ReportingApp
+          position={this.state.position}
           store={store} />
         </View>
       </Provider>

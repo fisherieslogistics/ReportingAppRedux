@@ -51,9 +51,6 @@ class FishingSummary extends React.Component {
             <Text style={[textStyles.font, styles.subTitle]}>Fishing</Text>
           </View>
           {this.renderFishing()}
-          <View style={styles.subTitleWrapper}>
-            <Text style={[textStyles.font, styles.subTitle]}>Totals</Text>
-          </View>
           <ScrollView>
           { this.props.trip.started ? this.renderTotals() : null}
           </ScrollView>

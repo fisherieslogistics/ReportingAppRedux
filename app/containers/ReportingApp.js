@@ -111,7 +111,9 @@ class ReportingApp extends Component {
   renderTrip(){
     return (
       <View style={[styles.col, styles.fill]}>
-        <Trip />
+        <Trip
+          position = {this.props.position}
+        />
       </View>
     )
   }
@@ -127,7 +129,9 @@ class ReportingApp extends Component {
   renderFishing(){
     return (
       <View style={[styles.col, styles.fill]}>
-        <Fishing />
+        <Fishing
+          position={this.props.position}
+        />
       </View>
     )
   }
@@ -164,8 +168,8 @@ const select = (State, dispatch) => {
     let hasCatches = !!state.fishingEvents.events.find((fe) => {
       return fe.productsValid;
     });
-    console.log("auto main ", + JSON.stringify(state.view.autoSuggestBar));
     return {
+      trip: state.trip,
       sync: state.sync,
       autoSuggestBar: state.view.autoSuggestBar,
       eventEmitter: state.uiEvents.eventEmitter,

@@ -9,20 +9,23 @@ class TripActions{
     }
   }
 
-  endTrip(){
+  endTrip(trip, fishingEvents){
     return {
       type: 'endTrip',
-      timestamp: moment()
+      timestamp: moment(),
+      trip: trip,
+      fishingEvents: fishingEvents
     }
   }
 
-  updateTrip(attribute, value, trip){
+  updateTrip(attribute, value, started){
     let update = {}
     update[attribute] = value;
     return {
       type: 'updateTrip',
       update: update,
-      attr: attribute
+      attr: attribute,
+      started: started
     }
   }
 }

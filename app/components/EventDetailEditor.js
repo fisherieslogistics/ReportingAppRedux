@@ -70,6 +70,9 @@ class EventDetailEditor extends React.Component{
     }
 
     render() {
+      if(!this.props.fishingEvent){
+        return this.props.renderMessage("No shots to edit");
+      }
       return (<EditorView
                 styles={styles}
                 getCallback={this.getCallback.bind(this)}

@@ -1,18 +1,16 @@
 "use strict";
 import moment from 'moment';
 
-import {updateFishingEvent} from './SyncActions';
-
 class FishingEventActions{
 
-    startFishingEvent(gear) {
+    startFishingEvent(gear, position) {
         return (dispatch, getState) => {
             const state = getState().default;
             dispatch({
                 type: 'startFishingEvent',
-                location: state.location.location,
+                location: position,
                 gear: gear,
-                tripId: state.trip.fishyFishId,
+                tripId: state.trip.objectId,
                 timestamp: moment()
             });
             let fishingEvents = getState().default.fishingEvents.events;
@@ -20,19 +18,15 @@ class FishingEventActions{
                 let eventId = fishingEvents[fishingEvents.length - 1].id;
                 dispatch(this.setViewingFishingEvent(eventId));
             }
-            updateFishingEvent()
         };
     }
-    endFishingEvent(fishingEventId) {
-        return (dispatch, getState) => {
-            dispatch({
-                type: 'endFishingEvent',
-                location: getState().default.location.location,
-                timestamp: moment(),
-                id: fishingEventId
-            });
-
-        };
+    endFishingEvent(fishingEventId, pos) {
+      return {
+          type: 'endFishingEvent',
+          location: pos,
+          timestamp: moment(),
+          id: fishingEventId
+      };
     }
     cancelFishingEvent(id) {
       return(dispatch) => {
@@ -65,7 +59,7 @@ class FishingEventActions{
       return (dispatch, getState) => {
         dispatch({
           type: 'setFishingEventId',
-          fishyFishId: serverId,
+          objectId: serverId,
           lastSubmitted: lastSubmitted
         });
        }

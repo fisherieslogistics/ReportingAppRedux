@@ -2,81 +2,70 @@
 import moment from 'moment';
 
 const initialState = {
-  ports: [],
+  trip: null,
   fishingEvents: {},
-  trip: {},
-  pastTrips: [],
-  pastFishingEvents: [],
-  geopoints:[],
-  updatedAt: new moment(),
-  keysToSync: ["ports", "trip", "fishingEvents", "geopoints", "pastTrips", "pastFishingEvents"]
+  queues: {
+    pastTrips: [],
+    pastFishingEvents: [],
+    geopoints:[],
+    ports: [],
+  },
+  updatedAt: new moment()
 }
 
 export default (state = initialState, action) => {
+  return initialState;
   switch (action.type) {
+    case "fishingEventSynced":
+      let updatedAt = state.fishingEvents[action.objectId];
+      if(updatedAt && updatedAt.unix() < action.time.unix()){
+        delete state.fishingEvents[action.objectId];
+      }
+      return state;
+    case "tripSynced":
+      if(state.trip && state.trip.unix() < action.time.unix()){
+        state.trip = null;
+      }
+      return state;
     case 'addToQueue':
-      debugger;
-      state = updateTime(state);
-      return addToQueue(action, state)
+      state.queues[action.name].push(action.obj);
+      return state;
     case 'removeFromQueue':
-      return removeFromQueue(action, state);
-    case 'addToKeyStore':
-      state = updateTime(state);
-      return updateKeyStore(action, state);
-    case 'removeKey':
-      return removeKey(action, state);
+      state.queues[action.name].shift();
+      return state;
     case "clearQueue":
-      return clearQueue(action, state);
+      state.queues[action.name] = [];
+      return state;
+    case 'changeSpecies':
+    case 'changeWeight':
+    case 'changeCustom':
+    case 'setFishingEventId':
+    case 'addProduct':
+    case 'deleteProduct':
+    case 'undoDeleteProduct':
+    case 'changeEventGear':
+    case 'formSigned':
+      state.fishingEvents[action.objectId] = new moment();
+      return state;
+    case "startTrip":
+      state.trip = new moment();
+      return state;
+    case "updateTrip":
+      if(action.started){
+        state.trip = new moment();
+      }
+      return state;
     case "endTrip":
-      state = clearKeyStore("trip");
-      state = clearKeyStore("fishingEvents");
+      state.trip = null;
+      state.queues.pastTrips.push(action.trip);
+      state.queues.pastFishingEvents = state.queues.pastFishingEvents.concat(action.fishingEvents);
+      return state;
+    case "syncError":
+      state.updatedAt = new moment();
+      console.log(action.err);
       return state;
     default:
       return state;
   }
-};
-
-const updateTime = (state) => {
-  return update("updatedAt", new moment(), state);
-}
-
-const updateKeyStore = ({name, guid}, state) => {
-  let keyStore = Object.assign({}, state[name]);
-  keyStore = update(guid, new moment(), keyStore);
-  return update(name, keyStore, state);
-}
-
-const removeKey = ({name, guid}, state) => {
-  let keyStore = update({}, state[name]);
-  delete keyStore[id];
-  return update(name, keyStore, state);
-}
-
-const addToQueue = ({name, obj}, state) => {
-  let queue = [...state[name], obj];
-  state[name] = queue;
   return state;
-}
-
-const removeFromQueue = ({name}, state) => {
-  console.log(name);
-  let queue = [...state[name]];
-  let obj = queue.shift();
-  obj = null;
-  state[name] = queue;
-  return queue;
-}
-
-const clearQueue = ({name}, state) => {
-  return(update(name, [], state));
-}
-
-const clearKeyStore = ({name}, state) => {
-  return(update(name, {}, state));
-}
-
-const update = (key, value, obj) => {
-  const change = {};
-  change[key] = value;
-  return Object.assign({}, obj, change);
-}
+};

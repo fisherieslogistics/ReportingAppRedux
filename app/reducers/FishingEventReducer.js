@@ -21,6 +21,8 @@ export default (state = initialState, action) => {
         return initialState;
     }
     switch(action.type) {
+        case 'endTrip':
+          return initialState;
         case 'startFishingEvent':
           return newFishingEvent(state, action.location, action.gear);
         case 'endFishingEvent':
@@ -42,7 +44,7 @@ export default (state = initialState, action) => {
         case 'changeCustom':
           return ChangeCatch(action, state, action.name);
         case 'setFishingEventId':
-          return changeEvent(action.fishingEventId - 1, state, { fishyFishId: action.fishyFishId, lastSubmitted: action.lastSubmitted }, true);
+          return changeEvent(action.fishingEventId - 1, state, { objectId: action.objectId, lastSubmitted: action.lastSubmitted }, true);
         case 'addProduct':
           state = clearDeletedProducts(action.fishingEventId, state);
           return addNewCatch(action.fishingEventId, state);
@@ -68,10 +70,6 @@ export default (state = initialState, action) => {
 
 const undoDeleteProduct = (state, {fishingEventId}) => {
   let product = state.deletedProducts[fishingEventId].pop();
-  if(!product){
-    console.log(product);
-    debugger;
-  }
   return addProductToEvent(fishingEventId, product, state);
 }
 

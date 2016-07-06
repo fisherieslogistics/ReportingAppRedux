@@ -17,7 +17,6 @@ import {MasterToolbar, DetailToolbar} from './Toolbar';
 import TripEditor from './TripEditor';
 import TotalsList from './TotalsList';
 import textStyles from '../styles/text';
-import {addToKeyStore, addToQueue} from '../actions/SyncActions';
 import moment from 'moment';
 
 const helper = new Helper();
@@ -41,7 +40,7 @@ class Trip extends React.Component{
   }
 
   updateTrip(attribute, value){
-    this.props.dispatch(tripActions.updateTrip(attribute, value));
+    this.props.dispatch(tripActions.updateTrip(attribute, value, false));
   }
 
   totalSelected(total, rowId){
@@ -63,6 +62,7 @@ class Trip extends React.Component{
 
   endTrip(){
     if(this.props.tripCanEnd){
+
       AlertIOS.prompt(
         "Unloading " + this.props.trip.ETA.fromNow() + " at " + this.props.trip.portTo,
         "Leave a message for the truck ? ie where to meet ? How much ice you need ? ",
@@ -70,10 +70,7 @@ class Trip extends React.Component{
           {text: 'Cancel', onPress: (text) => { }, style: 'cancel'},
           {text: 'OK', onPress: (text) => {
             let trip = Object.assign({}, this.props.trip)
-            let fEvents = [...this.props.fishingEvents];
-            this.props.dispatch(addToQueue("pastTrips", trip));
-            fEvents.forEach(f => this.props.dispatch(addToQueue("pastFishingEvents", f)));
-            this.props.dispatch(tripActions.endTrip(text, this.props.fishingEvents.events));
+            this.props.dispatch(tripActions.endTrip(this.props.trip, this.props.fishingEvents.events));
           }}
         ]
       );
@@ -82,7 +79,6 @@ class Trip extends React.Component{
 
   startTrip(){
     this.props.dispatch(tripActions.startTrip());
-    this.props.dispatch(addToKeyStore("trip", this.props.trip.guid));
   }
 
   renderDetail(){
@@ -100,6 +96,7 @@ class Trip extends React.Component{
           endTrip={this.endTrip.bind(this)}
           ports={this.props.ports}
           startTrip={this.startTrip.bind(this)}
+          uiOrientation={this.props.uiOrientation}
         />
         <View style={{flexDirection: 'row',
                       flex: 1,
@@ -108,7 +105,6 @@ class Trip extends React.Component{
                       paddingLeft: 10,
                       paddingBottom: 5}}>
 
-          <Text style={[textStyles.font, textStyles.midLabel2]}>Totals</Text>
         </View>
         <TotalsList
           onPress={() => {}}
@@ -141,7 +137,6 @@ const select = (State, dispatch) => {
   let state = State.default;
   let allProducts = state.fishingEvents.events.map(fe => fe.products);
   let totals = helper.getTotals([].concat.apply(allProducts));
-  console.log(state.trip.started && (state.fishingEvents.events.find(f => !f.productsValid) === undefined));
   return {
     fishingEvents: state.fishingEvents.events,
     user: state.me.user,
@@ -152,7 +147,8 @@ const select = (State, dispatch) => {
     ports: state.me.ports,
     tripStarted: state.trip.started,
     tripCanStart: helper.tripCanStart(state.trip),
-    tripCanEnd: state.trip.started && (state.fishingEvents.events.find(f => !f.productsValid) === undefined)
+    tripCanEnd: state.trip.started && (state.fishingEvents.events.find(f => !f.productsValid) === undefined),
+    uiOrientation: state.view.uiOrientation,
   };
 }
 

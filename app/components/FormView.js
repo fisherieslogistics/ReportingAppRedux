@@ -140,7 +140,7 @@ class FormView extends React.Component {
     xy.left += (formModelMeta.xMultiplier * xIndex);
     return (
       <View style={[styles.textWrapper, xy, meta.viewStyle || {}]} key={_key}>
-        <Text style={[textStyle.font,styles.text, meta.textStyle || {}]}>{val}</Text>
+        <Text style={[textStyles.font,styles.text, meta.textStyle || {}]}>{val}</Text>
       </View>);
   }
 

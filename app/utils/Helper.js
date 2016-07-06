@@ -125,6 +125,7 @@ class Helper {
         case 'changeAutoSuggestBarText':
         case 'initAutoSuggestBarChoices':
         case 'toggleAutoSuggestBar':
+        case 'uiPositionUpdate':
           return;
       }
       if(actionType.indexOf('@@redux') !== -1){
@@ -206,8 +207,7 @@ class Helper {
     }
 
     tripCanStart(trip){
-      let needed = ["portFrom", "sailingTime", "ETA", "portTo"];
-      return ! (trip.started || needed.find(n => !trip[n]));
+      return (trip.portFrom && trip.sailingTime && trip.ETA && trip.portTo && (!trip.started))
     }
 
 };

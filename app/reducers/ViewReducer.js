@@ -24,6 +24,9 @@ let initialState = {
 
 
 export default (state = initialState, action) => {
+    if(!state.uiOrientation){
+      state = getOrientationDetail(state, Orientation.getInitialOrientation());
+    };
     switch (action.type) {
       case 'setViewingFishingEvent':
         return update(state, {viewingEventId: action.fishingEventId});
@@ -40,17 +43,23 @@ export default (state = initialState, action) => {
         let autoSuggest = update(state.autoSuggestBar, {uivisible: action.visible});
         state = update(state, {autoSuggestBar: autoSuggest});
       case 'uiOrientation':
-        switch (action.uiOrientation) {
-          case 'PORTRAIT':
-          case 'PORTRAITUPSIDEDOWN':
-            return update(state, {width: 768, height: 1024, uiOrientation: action.uiOrientation});
-          case 'LANDSCAPE':
-          case 'LANDSCAPEUPSIDEDOWN':
-            return update(state, {width: 1024, height: 768, uiOrientation: action.uiOrientation});
-        }
+        return getOrientationDetail(state, action.uiOrientation);
     default:
         return state;
     }
+};
+
+function getOrientationDetail(state, uiOrientation){
+  switch (uiOrientation) {
+    case 'PORTRAIT':
+    case 'PORTRAITUPSIDEDOWN':
+      return update(state, {width: 768, height: 1024, uiOrientation: uiOrientation});
+    case 'LANDSCAPE':
+    case 'LANDSCAPEUPSIDEDOWN':
+      return update(state, {width: 1024, height: 768, uiOrientation: uiOrientation});
+    default:
+      return update(state, {width: 1024, height: 768, uiOrientation: "LANDSCAPE"});
+  }
 };
 
 const update = (obj, change) => {

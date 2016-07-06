@@ -13,7 +13,7 @@ export default {
     model.forEach(value => {
       blankModel[value.id] = value.defaultValue;
     });
-    blankModel.fishyFishId = mongoObjectId();
+    blankModel.objectId = mongoObjectId();
     return blankModel;
   }
 };

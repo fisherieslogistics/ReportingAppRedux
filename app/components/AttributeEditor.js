@@ -10,6 +10,7 @@ import React from 'react';
 import FishPicker from '../components/FishPicker';
 import DatePicker from 'react-native-datepicker';
 import {inputStyles, textStyles} from '../styles/styles';
+import Sexagesimal from 'sexagesimal';
 import moment from 'moment';
 
 const renderEditors = (props) => {
@@ -201,6 +202,15 @@ const AttributeEditor = (attribute, value, callback, extraProps = {}, inputId) =
                 {...extraProps}
               />);
     case "location":
+        let posText = Sexagesimal.format(value.lat, 'lat') + "  " + Sexagesimal.format(value.lon, 'lon');
+        return(<EditOnBlur
+            attribute={attribute}
+            value={posText}
+            callback={callback}
+            extraProps={extraProps}
+            inputId={inputId}
+            editable={false}
+            />);
       break;
     case "bool":
       return (<Switch

@@ -102,7 +102,7 @@ class PortPicker extends React.Component {
   }
 
   render () {
-    let style = [{fontSize: 18, flex: 1, height: 30, color: colors.black},
+    let style = [{fontSize: 16, flex: 1, height: 30, color: colors.black},
                   textStyles.font, this.props.textStyle];
     return(
       <TextInput

@@ -3,7 +3,7 @@ const upsertFishingEvent = (fEvent, tripId) => {
   return `
     mutation {
       upsertFishingEvent(
-        ${ fEvent.fishyFishId ? 'Id: "' + fEvent.fishyFishId + '",' : '' }
+        ${ fEvent.objectId ? 'Id: "' + fEvent.objectId + '",' : '' }
         trip: "${ tripId }",
         numberOfInTrip: ${ fEvent.id },
         nonFishProtected: ${ fEvent.nonFishProtected ? true : false },

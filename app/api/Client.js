@@ -35,9 +35,6 @@ class Client {
   }
 
   performRefreshableRequest(func, auth){
-    if(!(auth && (auth.accessToken || auth.refreshToken))){
-      return this._reject("No Auth Credentials");
-    }
     this.setAuth(auth);
     let self = this;
     if(this.refreshNeeded()){
@@ -59,8 +56,7 @@ class Client {
   }
 
   promisifyRequestBody(req){
-    console.log(req);
-    return new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
       req.end((err, res) => {
         if(err){
           try{

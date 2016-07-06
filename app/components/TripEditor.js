@@ -20,6 +20,7 @@ import PortPicker from './PortPicker';
 const helper = new Helper();
 const tripActions = new TripActions();
 const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTime, disabled}) => {
+  time = time || new moment();
   let placeTimeStyle = StyleSheet.create({
     wrapper:{
       backgroundColor: colors.pastelGreen,
@@ -44,7 +45,7 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
     },
     disabled: disabled
   };
-  let dateStyle = [textStyles.font, {position: 'absolute', top: 12, left: -8, fontSize: 18, color: disabled ? colors.darkGray : colors.black}];
+  let dateStyle = [textStyles.font, {position: 'absolute', top: 12, left: 5, fontSize: 16, color: disabled ? colors.darkGray : colors.black}];
   let dateText = (
     <Text style={dateStyle}>
       { (!time || isNaN(time.unix()) ) ? "Select date" : time.fromNow() }
@@ -57,7 +58,7 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
         {dateText}
         {AttributeEditor(dateAttr, time, onChangeTime, dateProps)}
       </View>
-      <View style={[{width: 160}]}>
+      <View style={[{width: 160, left: 13}]}>
         <PortPicker
           name={portType + "__picker"}
           portType={portType}
@@ -89,14 +90,15 @@ class TripEditor extends React.Component {
     }
 
     onChangePort(id, value){
-      this.props.dispatch(tripActions.updateTrip(id, value, this.props.trip.started ? this.props.trip : null));
+      this.props.dispatch(tripActions.updateTrip(id, value, this.props.trip.started));
     }
 
     onChangeTime(id, value){
-      this.props.dispatch(tripActions.updateTrip(id, value, this.props.trip.started ? this.props.trip : null));
+      this.props.dispatch(tripActions.updateTrip(id, value, this.props.trip.started));
     }
 
     render() {
+      let LANDSCAPE = (this.props.uiOrientation.indexOf("LANDSCAPE") !== -1);
       return (
         <View style={[styles.wrapper]}>
           <View style={[styles.row, styles.topRow]}>
@@ -106,6 +108,7 @@ class TripEditor extends React.Component {
                 bgColor={colors.blue}
                 onPress={this.startTrip.bind(this)}
                 disabled={!this.props.tripCanStart}
+                _style={{borderRightWidth: LANDSCAPE ? 1 : 0 }}
               />
             </View>
             <View style={[styles.halfway]}>
@@ -114,6 +117,7 @@ class TripEditor extends React.Component {
                 bgColor={this.props.tripCanEnd ? colors.blue : colors.midGray}
                 onPress={this.endTrip.bind(this)}
                 disabled={!this.props.tripCanEnd}
+                _style={{borderLeftWidth: LANDSCAPE ? 1 : 0 }}
               />
             </View>
           </View>

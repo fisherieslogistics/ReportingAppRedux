@@ -18,7 +18,6 @@ import {eventEditorStyles, inputStyle, colors, textStyles} from '../styles/style
 import {renderCombinedEditors, getCombinedEditors, AttributeEditor} from './AttributeEditor';
 import {cancelWhite} from '../icons/PngIcon';
 import {LongButton} from './Buttons';
-import {addToKeyStore} from '../actions/SyncActions';
 
 const productActions = new ProductActions();
 
@@ -42,9 +41,6 @@ class EventProductsEditor extends React.Component{
     }
 
     getEditor(attribute, product, index){
-      if(product == null){
-        debugger;
-      }
       const value = product[attribute.id];
       const inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index;
       return AttributeEditor(attribute,
@@ -57,16 +53,15 @@ class EventProductsEditor extends React.Component{
     onChange(name, value, catchId){
       switch (name) {
         case "code":
-          this.props.dispatch(productActions.changeSpecies(this.props.fishingEvent.id, catchId, value));
+          this.props.dispatch(productActions.changeSpecies(this.props.fishingEvent.id, catchId, value, this.props.fishingEvent.objectId));
           break;
         case "weight":
-          this.props.dispatch(productActions.changeWeight(this.props.fishingEvent.id, catchId, value));
+          this.props.dispatch(productActions.changeWeight(this.props.fishingEvent.id, catchId, value, this.props.fishingEvent.objectId));
           break;
         default:
-          this.props.dispatch(productActions.changeCustom(name, this.props.fishingEvent.id, catchId, value));
+          this.props.dispatch(productActions.changeCustom(name, this.props.fishingEvent.id, catchId, value, this.props.fishingEvent.objectId));
           break;
       }
-      this.props.dispatch(addToKeyStore("fishingEvents", this.props.fishingEvent.guid));
     }
 
     renderEditors(product, index){

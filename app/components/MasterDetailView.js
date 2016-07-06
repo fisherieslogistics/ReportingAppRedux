@@ -49,13 +49,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgrounds.dark,
   },
   master: {
-    flex: 0.35,
+    flex: 0.3,
     flexDirection: 'column',
     alignSelf: 'stretch',
     backgroundColor: colors.backgrounds.dark,
   },
   detail:{
-    flex: 0.65,
+    flex: 0.7,
     flexDirection: 'column',
   },
 });

@@ -114,7 +114,7 @@ class TimedActions {
               let query = `
                 {
                   FishingEvent: upsertFishingEvent(
-                    ${ shoot.fishyFishId ? 'Id: "' + shoot.fishyFishId + '",' : '' }
+                    ${ shoot.objectId ? 'Id: "' + shoot.objectId + '",' : '' }
                     trip: "${ state.trip.id }",
                     numberOfInTrip: ${ shoot.id },
                     nonFishProtected: ${ shoot.nonFishProtected ? true : false },
@@ -142,7 +142,7 @@ class TimedActions {
                     dispatch({
                         type: 'setShootId',
                         shootId: shoot.id,
-                        fishyFishId: response.FishingEvent.id,
+                        objectId: response.FishingEvent.id,
                         lastSubmitted: startTime
                     });
                   }
