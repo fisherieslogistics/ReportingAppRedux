@@ -44,7 +44,6 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
     },
     disabled: disabled
   };
-  console.log(disabled, portType, time);
   let dateStyle = [textStyles.font, {position: 'absolute', top: 12, left: -8, fontSize: 18, color: disabled ? colors.darkGray : colors.black}];
   let dateText = (
     <Text style={dateStyle}>
@@ -68,7 +67,7 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
           style={{borderBottomWidth: 1, borderColor: colors.midGray }}
           onChange={(value) => onChangePort(portType, value)}
           inputId={"TripEditor__" + portType}
-          disabled={disabled}
+          disabled={false}
         />
       </View>
     </View>

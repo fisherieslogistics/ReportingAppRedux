@@ -18,17 +18,28 @@ import TripEditor from './TripEditor';
 import TotalsList from './TotalsList';
 import textStyles from '../styles/text';
 import {addToKeyStore, addToQueue} from '../actions/SyncActions';
+import moment from 'moment';
 
 const helper = new Helper();
 const tripActions = new TripActions();
 
-class Profile extends React.Component{
+class Trip extends React.Component{
   constructor (props){
     super(props);
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
     };
   }
+
+  componentDidMount(){
+    if(!this.props.trip.sailingTime){
+      this.updateTrip("sailingTime", new moment());
+    }
+    if(!this.props.trip.ETA){
+      this.updateTrip("ETA", new moment().add(2, 'day'));
+    }
+  }
+
   updateTrip(attribute, value){
     this.props.dispatch(tripActions.updateTrip(attribute, value));
   }
@@ -58,12 +69,12 @@ class Profile extends React.Component{
         [
           {text: 'Cancel', onPress: (text) => { }, style: 'cancel'},
           {text: 'OK', onPress: (text) => {
-            let trip = Object.assign({}, this.props.trip);
-            let fEvents = [...this.props.fishingEvents.events];
+            let trip = Object.assign({}, this.props.trip)
+            let fEvents = [...this.props.fishingEvents];
             this.props.dispatch(addToQueue("pastTrips", trip));
-            fEvents.forEach(f => this.props.dispatch(addToQueue("pastFishingEvents", f));
-            this.props.dispatch(tripActions.endTrip(text, this.props.fishingEvents.events))},
-          }
+            fEvents.forEach(f => this.props.dispatch(addToQueue("pastFishingEvents", f)));
+            this.props.dispatch(tripActions.endTrip(text, this.props.fishingEvents.events));
+          }}
         ]
       );
     }
@@ -88,6 +99,7 @@ class Profile extends React.Component{
           tripCanEnd={this.props.tripCanEnd}
           endTrip={this.endTrip.bind(this)}
           ports={this.props.ports}
+          startTrip={this.startTrip.bind(this)}
         />
         <View style={{flexDirection: 'row',
                       flex: 1,
@@ -144,4 +156,4 @@ const select = (State, dispatch) => {
   };
 }
 
-export default connect(select)(Profile);
+export default connect(select)(Trip);

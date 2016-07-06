@@ -5,7 +5,7 @@ import {
 import React from 'react';
 import {renderEditors} from './AttributeEditor';
 
-const EditorView = (props) => {
+function EditorView(props) {
   if(!props.obj){
     return <View />;
   }

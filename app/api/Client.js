@@ -23,7 +23,6 @@ class Client {
   }
 
   mutate(query, variables, auth){
-    console.log("mutate", query, variables, auth);
     return this.performRefreshableRequest(this._mutate.bind(this, query, variables), auth);
   }
 
@@ -36,13 +35,17 @@ class Client {
   }
 
   performRefreshableRequest(func, auth){
+    if(!(auth && (auth.accessToken || auth.refreshToken))){
+      return this._reject("No Auth Credentials");
+    }
     this.setAuth(auth);
     let self = this;
-    console.log(func, auth);
     if(this.refreshNeeded()){
+      console.log("need refresh");
       return this.promisifyRequestBody(this._refresh())
                .catch((err) => {
-                console.log(err);
+                 console.log(err);
+                 return err;
                })
                .then((newAuth) => {
                  self.setAuth(newAuth);
@@ -50,7 +53,7 @@ class Client {
                  return self.promisifyRequestBody(func());
                });
     }else{
-      console.log("not need refresh")
+      console.log("not need refresh");
       return this.promisifyRequestBody(func());
     }
   }
@@ -109,6 +112,11 @@ class Client {
              .send({'grant_type': 'refresh_token'})
              .send({'refresh_token': this.auth.refreshToken});
   }
+
+  _reject(msg){
+    return Promise.reject(msg);
+  }
+
 }
 
 export default Client;

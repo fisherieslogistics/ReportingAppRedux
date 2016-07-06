@@ -15,6 +15,7 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'addToQueue':
+      debugger;
       state = updateTime(state);
       return addToQueue(action, state)
     case 'removeFromQueue':
@@ -52,16 +53,18 @@ const removeKey = ({name, guid}, state) => {
 }
 
 const addToQueue = ({name, obj}, state) => {
-  obj = update(obj, "updatedAt", new moment());
   let queue = [...state[name], obj];
-  return update(name, queue, state);
+  state[name] = queue;
+  return state;
 }
 
 const removeFromQueue = ({name}, state) => {
+  console.log(name);
   let queue = [...state[name]];
   let obj = queue.shift();
   obj = null;
-  return update(name, queue, state);
+  state[name] = queue;
+  return queue;
 }
 
 const clearQueue = ({name}, state) => {

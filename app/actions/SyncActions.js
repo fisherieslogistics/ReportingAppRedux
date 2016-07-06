@@ -4,7 +4,7 @@ const addToQueue = (name, obj) => {
   return {
       type: 'addToQueue',
       name: name,
-      item: obj
+      obj: obj
   };
 };
 

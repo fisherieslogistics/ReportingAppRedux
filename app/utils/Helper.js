@@ -24,15 +24,6 @@ class Helper {
       return {lat: Sexagesimal.format(location.lat, 'lat'),
               lon: Sexagesimal.format(location.lon, 'lon')};
     }
-    createGuid() {
-      const s4 = () => {
-        return Math.floor((1 + Math.random()) * 0x10000)
-          .toString(16)
-          .substring(1);
-      }
-      return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-        s4() + '-' + s4() + s4() + s4();
-    }
     editLocation(changes, location) {
         let degMin = this.getDegreesMinutesFromLocation(location);
         degMin = Object.assign({}, degMin, changes);

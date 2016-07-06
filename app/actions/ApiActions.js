@@ -40,13 +40,8 @@ class ApiActions {
 
   }
 
-  mutate(mutation, variables, auth, callback){
-    return client.mutate(mutation, variables, auth)
-                 .catch((err) => {
-                   console.log(err);
-                   throw err;
-                 })
-                 .then(callback);
+  mutate(mutation, variables, auth){
+    return client.mutate(mutation, variables, auth);
   }
 
 }

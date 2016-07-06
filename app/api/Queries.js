@@ -41,7 +41,7 @@ const newTrip = (trip, vesselId) => {
         }
       }
   `
-  return query;
+  return {query: query, variables: {}};
 }
 
 const updateTrip = (trip) => {
@@ -59,7 +59,7 @@ const updateTrip = (trip) => {
     }
     `}
 
-export {newTrip, upsertFishingEvent, updateTrip, newTrip2};
+export {newTrip, upsertFishingEvent, updateTrip};
 
 export default {
   getMe: `
