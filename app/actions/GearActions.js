@@ -11,12 +11,13 @@ class GearActions{
         };
     }
 
-    changeEventGear(fishingEventId, key, value){
+    changeEventGear(fishingEventId, objectId, key, value){
       return {
           fishingEventId: fishingEventId,
           type: 'changeEventGear',
           key: key,
           value: value,
+          objectId: objectId
       };
     }
 }

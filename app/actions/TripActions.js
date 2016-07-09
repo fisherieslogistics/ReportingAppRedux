@@ -9,12 +9,13 @@ class TripActions{
     }
   }
 
-  endTrip(trip, fishingEvents){
+  endTrip(trip, fishingEvents, vesselId){
     return {
       type: 'endTrip',
       timestamp: moment(),
       trip: trip,
-      fishingEvents: fishingEvents
+      fishingEvents: fishingEvents,
+      vesselId: vesselId
     }
   }
 

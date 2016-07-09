@@ -30,7 +30,6 @@ class ViewActions{
     }
 
     toggleAutoSuggestBar(visible){
-      console.log(visible);
       return {
         type: 'toggleAutoSuggestBar',
         visible: visible
