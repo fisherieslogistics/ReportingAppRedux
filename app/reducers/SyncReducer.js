@@ -6,13 +6,12 @@ const initialState = {
   fishingEvents: {},
   queues: {
     pastTrips: [],
-    pastFishingEvents: [],
     geopoints:[],
     ports: [],
   },
   updatedAt: new moment()
 }
-
+this is boken - fix graphql server to upserttrips
 export default (state = initialState, action) => {
   switch (action.type) {
     case "fishingEventSynced":
@@ -43,7 +42,7 @@ export default (state = initialState, action) => {
     case 'undoDeleteProduct':
     case 'changeEventGear':
       if(!action.objectId){
-        debugger;
+        debugger
       }
       state.fishingEvents[action.objectId] = new moment();
       return state;
@@ -57,8 +56,11 @@ export default (state = initialState, action) => {
       return state;
     case "endTrip":
       state.trip = null;
-      state.queues.pastTrips.push(action.trip);
-      state.queues.pastFishingEvents = state.queues.pastFishingEvents.concat(action.fishingEvents);
+      state.queues.pastTrips.push({
+        trip: Object.assign({}, action.trip),
+        fishingEvents: action.fishingEvents.filter(fe => !!state.fishingEvents[action.objectId]),
+        vesselId: action.vesselId
+      });
       return state;
     case "syncError":
       state.updatedAt = new moment();
