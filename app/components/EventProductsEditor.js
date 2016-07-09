@@ -107,12 +107,12 @@ class EventProductsEditor extends React.Component{
     }
 
     deleteProduct(index){
-      this.props.dispatch(productActions.deleteProduct(index, this.props.fishingEvent.id));
+      this.props.dispatch(productActions.deleteProduct(index, this.props.fishingEvent.id, this.props.fishingEvent.objectId));
     }
 
     undoDeleteProduct(){
       if(this.props.deletedProducts.length){
-        this.props.dispatch(productActions.undoDeleteProduct(this.props.fishingEvent.id));
+        this.props.dispatch(productActions.undoDeleteProduct(this.props.fishingEvent.id, this.props.fishingEvent.objectId));
       }
     }
 

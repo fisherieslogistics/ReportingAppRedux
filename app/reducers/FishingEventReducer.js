@@ -55,6 +55,7 @@ export default (state = initialState, action) => {
         case 'changeEventGear':
           const gearChange = {};
           gearChange[action.key] = action.value;
+          let fishingEvent = state.events[action.fishingEventId -1];
           let gear = Object.assign({}, fishingEvent.gear, gearChange);
           fishingEvent = setFishingEventGear(fishingEvent, gear);
           return replaceFishingEvent(state, fishingEvent);

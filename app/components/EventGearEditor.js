@@ -7,7 +7,7 @@ import React from 'react';
 import TrawlGearModel from '../models/TrawlGearModel';
 import EditorView from './EditorView';
 import GearActions from '../actions/GearActions';
-import {AttributeEditor} from './AttributeEditor'; 
+import {AttributeEditor} from './AttributeEditor';
 import {eventEditorStyles, textStyles} from '../styles/styles';
 
 const gearActions = new GearActions();
@@ -19,7 +19,7 @@ const onChange = (name, value, props) => {
     props.dispatch(gearActions.changeCurrentGear(name, value));
   }
   if(props.fishingEvent){
-    props.dispatch(gearActions.changeEventGear(props.fishingEvent.id, name, value));
+    props.dispatch(gearActions.changeEventGear(props.fishingEvent.id, props.fishingEvent.objectId, name, value));
   }
 }
 

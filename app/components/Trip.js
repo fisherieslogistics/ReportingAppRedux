@@ -69,8 +69,9 @@ class Trip extends React.Component{
         [
           {text: 'Cancel', onPress: (text) => { }, style: 'cancel'},
           {text: 'OK', onPress: (text) => {
-            let trip = Object.assign({}, this.props.trip)
-            this.props.dispatch(tripActions.endTrip(this.props.trip, this.props.fishingEvents.events));
+            this.props.dispatch(tripActions.endTrip(this.props.trip,
+                                                    this.props.fishingEvents,
+                                                    this.props.vesselId));
           }}
         ]
       );
@@ -150,6 +151,7 @@ const select = (State, dispatch) => {
     tripCanStart: helper.tripCanStart(state.trip),
     tripCanEnd: state.trip.started && (state.fishingEvents.events.find(f => !f.productsValid) === undefined),
     uiOrientation: state.view.uiOrientation,
+    vesselId: state.me.vessel.id
   };
 }
 

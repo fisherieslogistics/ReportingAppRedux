@@ -57,7 +57,6 @@ class PortPicker extends React.Component {
 
   autoSuggestEmitted(event){
     if(event.inputId == this.props.inputId){
-      console.log("I go tthe event", event.inputId, this.props.inputId)
       this.setState({
         changedByEvent: true,
         value: event.value

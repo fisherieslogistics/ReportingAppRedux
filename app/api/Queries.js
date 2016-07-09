@@ -1,7 +1,6 @@
 import util from 'util';
 
 const upsertFishingEvent = (fEvent, tripId) => {
-  console.log(JSON.stringify(fEvent));
   const catches = fEvent.products.map((c) => {
     let prod = Object.assign(c, {weight: parseInt(c.weight || 0),
                                  numberOfContainers: parseInt(c.numberOfContainers | 0)});
@@ -28,7 +27,7 @@ const upsertFishingEvent = (fEvent, tripId) => {
         custom: ${ JSON.stringify(JSON.stringify(fEvent.gear)) },
         catches: ${ util.inspect(catches).replace(/\'/g, '"') }
       ) {
-        id,
+        _id,
       }
     }
   `

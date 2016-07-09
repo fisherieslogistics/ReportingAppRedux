@@ -80,7 +80,6 @@ class AutoSuggestBar extends React.Component {
     }
 
     onResultPress(value){
-      console.log("firing", value, this.state.name, this.props.inputId);
       this.props.eventEmitter.emit('AutoSuggestResultPress', {name: this.state.name, value: value, inputId: this.props.inputId});
     }
 
