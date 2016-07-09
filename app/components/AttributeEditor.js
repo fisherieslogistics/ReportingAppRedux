@@ -76,7 +76,7 @@ const renderCombinedEditors = (combinedEditors, styles) => {
 }
 
 const renderEditor = (attribute, props) => {
-  if(attribute.editorDisplay && attribute.editorDisplay.hideNull && props.obj[attribute.id] === null){
+  if(attribute.editorDisplay && attribute.editorDisplay.hideUndefined && props.obj[attribute.id] === undefined){
     return null;
   }
   if(attribute.editorDisplay && attribute.editorDisplay.editor === props.editorType){
@@ -104,6 +104,7 @@ class EditOnBlur extends React.Component {
   }
 
   componentWillReceiveProps(props){
+    console.log("edit on blur");
     if(props.inputId !== this.state.inputId){
       this.setState({
         value: props.value,
@@ -170,9 +171,9 @@ class EditOnBlur extends React.Component {
 }
 
 const AttributeEditor = (attribute, value, callback, extraProps = {}, inputId) => {
+  //return (<View style={{paddingTop: 6}}><Text style={textStyles.font, textStyles.midLabel}>{}</Text></View>);
   switch (attribute.type) {
     case "displayOnly":
-      return (<View style={{paddingTop: 6}}><Text style={textStyles.font, textStyles.midLabel}>{value.toString()}</Text></View>);
     case "datetime":
       return (
         <DatePicker

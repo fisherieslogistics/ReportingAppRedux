@@ -4,7 +4,6 @@ import AuthReducer from './AuthReducer';
 import FishingEventReducer from './FishingEventReducer';
 import MeReducer from './MeReducer';
 import ViewReducer from './ViewReducer';
-import LocationReducer from './LocationReducer';
 import TripReducer from './TripReducer';
 import FormReducer from './FormReducer';
 import Helper from '../utils/Helper';
@@ -20,12 +19,11 @@ const reducers = {
     fishingEvents: FishingEventReducer,
     me: MeReducer,
     view: ViewReducer,
-    location: LocationReducer,
     trip: TripReducer,
     forms: FormReducer,
     uiEvents: EventsReducer,
     gear: GearReducer,
-    sync: SyncReducer
+    sync: SyncReducer,
 }
 
 let MainReducer = combineReducers(reducers);

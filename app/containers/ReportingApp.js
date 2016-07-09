@@ -30,21 +30,22 @@ const apiActions = new ApiActions();
 const viewActions = new ViewActions();
 const formActions = new FormActions();
 const MAX_AUTOSUGGEST_RESULTS = 12;
-const TIMEOUT = 15000;
 
 class ReportingApp extends Component {
 
   constructor(props){
     super(props);
     this.state = {
-      selectedTab: this.props.tripStarted ? "fishing" : "trip",
-    }
-    apiActions.setUpClient(props.dispatch, TIMEOUT);
+      selectedTab: this.props.tripStarted ? "fishing" : "trip"
+    };
+    apiActions.setUpClient(props.dispatch);
     this.SyncWorker = new SyncWorker(props.dispatch,
                                      props.store.getState,
-                                     apiActions,
-                                     TIMEOUT,
-                                     props.sync);
+                                     apiActions);
+  }
+
+  componentWillReceiveProps(props){
+    console.log("reporting app", props);
   }
 
   _orientationDidChange(orientation) {
@@ -58,10 +59,6 @@ class ReportingApp extends Component {
 
   componentWillUnmount() {
     Orientation.removeOrientationListener(this._orientationDidChange.bind(this));
-  }
-
-  componentWillReceiveProps(props){
-    this.SyncWorker.toSyncUpdated(props.sync);
   }
 
   renderTabs(){
@@ -170,7 +167,6 @@ const select = (State, dispatch) => {
     });
     return {
       trip: state.trip,
-      sync: state.sync,
       autoSuggestBar: state.view.autoSuggestBar,
       eventEmitter: state.uiEvents.eventEmitter,
       uiOrientation: state.view.uiOrientation,

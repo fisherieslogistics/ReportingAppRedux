@@ -37,7 +37,7 @@ class EventProductsEditor extends React.Component{
     }
 
     addProduct(){
-      this.props.dispatch(productActions.addProduct(this.props.fishingEvent.id));
+      this.props.dispatch(productActions.addProduct(this.props.fishingEvent.id, this.props.fishingEvent.objectId));
     }
 
     getEditor(attribute, product, index){

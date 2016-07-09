@@ -10,8 +10,6 @@ import ReportingApp from './ReportingApp';
 import * as reducers from '../reducers';
 import StateLoadActions from '../actions/StateLoadActions';
 import Helper from '../utils/Helper';
-import {getPosition, watchPositon, clearWatch} from '../providers/Position';
-import {positionUpdate} from '../actions/PositionActions';
 
 const helper = new Helper();
 const stateLoadActions = new StateLoadActions();
@@ -29,29 +27,7 @@ export default class App extends Component {
     this.watchId = null;
     this.state = {
       loaded: false,
-      position: null,
     }
-  }
-
-  positionUpdated(position){
-    this.setState({
-      position: position
-    });
-  }
-
-  initialPositionAquired(position){
-    this.positionUpdated(position);
-    this.watchId = watchPositon(this.positionUpdated.bind(this),
-      () => setTimeout(this.startPosition.bind(this), 5000));
-  }
-
-  startPosition(){
-    if(this.watchId !== null){
-      clearWatch(this.watchId);
-      this.watchId = null;
-    }
-    getPosition(this.initialPositionAquired.bind(this),
-      setTimeout(this.startPosition.bind(this), 5000));
   }
 
   componentDidMount(){
@@ -59,7 +35,6 @@ export default class App extends Component {
       store.dispatch(stateLoadActions.loadSavedState(savedState));
       setTimeout(() => {
         this.setState({loaded: true});
-        this.startPosition.bind(this)();
       });
     });
   }
@@ -75,7 +50,6 @@ export default class App extends Component {
           barStyle="default"
         />
         <ReportingApp
-          position={this.state.position}
           store={store} />
         </View>
       </Provider>

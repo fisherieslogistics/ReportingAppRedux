@@ -1,25 +1,32 @@
+import util from 'util';
 
 const upsertFishingEvent = (fEvent, tripId) => {
+  console.log(JSON.stringify(fEvent));
+  const catches = fEvent.products.map((c) => {
+    let prod = Object.assign(c, {weight: parseInt(c.weight || 0),
+                                 numberOfContainers: parseInt(c.numberOfContainers | 0)});
+    delete prod["objectId"];
+    return prod;
+  });
   return `
     mutation {
       upsertFishingEvent(
-        ${ fEvent.objectId ? 'Id: "' + fEvent.objectId + '",' : '' }
+        _id: "${fEvent.objectId}",
         trip: "${ tripId }",
         numberOfInTrip: ${ fEvent.id },
         nonFishProtected: ${ fEvent.nonFishProtected ? true : false },
-        averageSpeed: ${ fEvent.averageSpeed },
-        bottomDepth: ${ fEvent.bottomDepth },
-        endDate: "${ fEvent.datetimeAtEnd.toISOString()  }",
+        averageSpeed: ${ parseFloat(fEvent.averageSpeed || 0) },
+        bottomDepth: ${ parseInt(fEvent.bottomDepth || 0)},
+        endDate: "${ fEvent.datetimeAtEnd ? fEvent.datetimeAtEnd.toISOString() : fEvent.datetimeAtStart.toISOString()  }",
         startDate: "${ fEvent.datetimeAtStart.toISOString() }",
         finished: true,
-        groundropeDepth: ${ fEvent.groundropeDepth },
+        groundropeDepth: ${ parseInt(fEvent.groundropeDepth || 0) },
         targetSpecies: "${ fEvent.targetSpecies }",
         committed: ${ !!fEvent.committed },
         locationStart: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtStart.lat, lon: fEvent.locationAtStart.lon})) },
         locationEnd: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtEnd.lat, lon: fEvent.locationAtEnd.lon})) },
-        tow: ${ JSON.stringify(JSON.stringify(fEvent.tow)) },
-        custom: ${ JSON.stringify(JSON.stringify(fEvent.trawl)) },
-        catches: ${ util.inspect(fEvent.products.filter(p => p.code && p.weight)).replace(/\'/g, '"') }
+        custom: ${ JSON.stringify(JSON.stringify(fEvent.gear)) },
+        catches: ${ util.inspect(catches).replace(/\'/g, '"') }
       ) {
         id,
       }

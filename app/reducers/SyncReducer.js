@@ -14,7 +14,6 @@ const initialState = {
 }
 
 export default (state = initialState, action) => {
-  return initialState;
   switch (action.type) {
     case "fishingEventSynced":
       let updatedAt = state.fishingEvents[action.objectId];
@@ -39,12 +38,13 @@ export default (state = initialState, action) => {
     case 'changeSpecies':
     case 'changeWeight':
     case 'changeCustom':
-    case 'setFishingEventId':
     case 'addProduct':
     case 'deleteProduct':
     case 'undoDeleteProduct':
     case 'changeEventGear':
-    case 'formSigned':
+      if(!action.objectId){
+        debugger;
+      }
       state.fishingEvents[action.objectId] = new moment();
       return state;
     case "startTrip":

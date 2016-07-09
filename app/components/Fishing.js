@@ -14,6 +14,7 @@ import FishingEventList from './FishingEventList';
 import MasterDetailView from './MasterDetailView';
 import FishingEventActions from '../actions/FishingEventActions';
 import EventGearEditor from './EventGearEditor';
+import PositionDisplay from './PositionDisplay';
 import EventProductsEditor from './EventProductsEditor';
 import {connect} from 'react-redux';
 import moment from 'moment';
@@ -28,6 +29,16 @@ import {
  plusGray,
 } from '../icons/PngIcon';
 
+import PositionProvider from '../utils/PositionProvider';
+const positionProvider = new PositionProvider();
+
+function getParsedPostion(){
+  const pos = positionProvider.getPosition();
+  if(!pos){
+    return {lat: 0.123, lon: 0.123};
+  }
+  return {lat: pos.coords.latitude, lon: pos.coords.longitude};
+}
 const fishingEventActions = new FishingEventActions();
 
 class Fishing extends React.Component{
@@ -40,9 +51,10 @@ class Fishing extends React.Component{
   }
 
   startFishingEvent(){
-    if(this.props.enableStartEvent && this.props.position){
-      let pos = {lat: this.props.position.coords.latitude, lon: this.props.position.coords.longitude};
-      this.props.dispatch(fishingEventActions.startFishingEvent(this.props.gear, pos));
+    let position = getParsedPostion();
+    //TODO alert if not position so you can type it in
+    if(this.props.enableStartEvent){
+      this.props.dispatch(fishingEventActions.startFishingEvent(this.props.gear, position));
     }
   }
 
@@ -69,8 +81,7 @@ class Fishing extends React.Component{
           return;
         }, style: 'cancel'},
         {text: 'Yes', onPress: () => {
-          let pos = {lat: this.props.position.coords.latitude, lon: this.props.position.coords.longitude};
-          this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, pos));
+          this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, getParsedPostion()));
         }}
       ]
     );
@@ -172,13 +183,7 @@ class Fishing extends React.Component{
       />);
   }
 
-  getPositionText(){
-    if(!this.props.position){
-      return "awaiting position";
-    }
-    let coords = this.props.position.coords;
-    return Sexagesimal.format(coords.latitude, 'lat') + "  " + Sexagesimal.format(coords.longitude, 'lon');
-  }
+
 
   getDetailToolbar(){
     let deleteActive = (this.props.fishingEvents && this.props.fishingEvents.length);
@@ -186,7 +191,7 @@ class Fishing extends React.Component{
       <DetailToolbar
         left={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent.bind(this), enabled: deleteActive}}
         right={{color: colors.blue, text: "Haul", onPress: this.endFishingEvent.bind(this), enabled: this.props.enableHaul}}
-        centerTop={<Text style={[textStyles.font, {fontSize: 13}]}>{this.getPositionText()}</Text>}
+        centerTop={<PositionDisplay provider={positionProvider} />}
         centerBottom={this.renderSegementedControl()}
       />
     );

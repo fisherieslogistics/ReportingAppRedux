@@ -12,10 +12,9 @@ const authActions = new AuthActions();
 
 class Client {
 
-  constructor(dispatch, timeoutMS) {
+  constructor(dispatch) {
     this.apiEndpoint = ApiEndpoint;
     this.dispatch = dispatch;
-    this.timeoutMS = timeoutMS;
   }
 
   setAuth(auth){
@@ -60,9 +59,11 @@ class Client {
       req.end((err, res) => {
         if(err){
           try{
+            debugger;
             reject(err.response.text);
           }catch(e){
             console.log(e);
+            debugger;
             reject(err);
           }
           return;

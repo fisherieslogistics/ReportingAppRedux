@@ -20,6 +20,10 @@ class ApiActions {
           dispatch(authActions.loginError(JSON.stringify(err)));
         })
         .then((auth) => {
+          if(!auth){
+            return dispatch(authActions.loginError("please try that again" + auth));
+          }
+
           client.query(queries.getMe, auth)
             .catch((err) => {
               console.log(err);
@@ -32,6 +36,7 @@ class ApiActions {
               }
               dispatch(userActions.setUser(parseUser(viewer)));
             });
+
         });
      }
   }
