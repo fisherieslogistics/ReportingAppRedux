@@ -13,7 +13,7 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'setAuth':
-      return helper.updateAuth(state, action.auth)
+      return helper.updateAuth(state, action.auth);
     case 'logout':
       return Object.assign({}, initialState);
     case 'loginError':

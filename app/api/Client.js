@@ -17,10 +17,6 @@ class Client {
     this.dispatch = dispatch;
   }
 
-  setAuth(auth){
-    this.auth = helper.updateAuth({}, auth);
-  }
-
   mutate(query, variables, auth){
     return this.performRefreshableRequest(this._mutate.bind(this, query, variables, auth), auth);
   }
@@ -34,9 +30,8 @@ class Client {
   }
 
   performRefreshableRequest(func, auth){
-    this.setAuth(auth);
     let self = this;
-    if(this.refreshNeeded()){
+    if(this.refreshNeeded(auth)){
       console.log("need refresh");
       return this.promisifyRequestBody(this._refresh(auth))
                .catch((err) => {
@@ -44,8 +39,7 @@ class Client {
                  return err;
                })
                .then((newAuth) => {
-                 self.setAuth(newAuth);
-                 self.dispatch(authActions.setAuth(helper.updateAuth({}, newAuth)));
+                 self.dispatch(authActions.setAuth(newAuth));
                  return self.promisifyRequestBody(func());
                });
     }else{
@@ -71,10 +65,13 @@ class Client {
     });
   }
 
-  refreshNeeded(){
+  refreshNeeded(auth){
+    if(!auth){
+      return true;
+    }
     let nearFuture = new moment();
     nearFuture.add(2, 'minute');
-    return (this.auth.expiresAt.unix() > nearFuture.unix())
+    return (auth.expiresAt.unix() > nearFuture.unix())
   }
 
   _mutate(query, variables, auth) {

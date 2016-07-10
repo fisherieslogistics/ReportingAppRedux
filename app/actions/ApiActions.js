@@ -26,6 +26,7 @@ class ApiActions {
           if(!auth){
             return dispatch(authActions.loginError("please try that again" + auth));
           }
+          dispatch(authActions.setAuth(auth));
           client.query(queries.getMe, helper.updateAuth({}, auth))
             .catch((err) => {
               console.log(err);
@@ -36,7 +37,6 @@ class ApiActions {
               if(viewer.vessels.length){
                 dispatch(userActions.setVessel(viewer.vessels[0]));
               }
-              dispatch(authActions.setAuth(helper.updateAuth({}, auth)));
               dispatch(userActions.setUser(parseUser(viewer)));
             });
 
