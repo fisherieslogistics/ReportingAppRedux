@@ -207,7 +207,7 @@ class Helper {
     }
 
     tripCanStart(trip){
-      return (trip.portFrom && trip.sailingTime && trip.ETA && trip.portTo && (!trip.started))
+      return (trip.leavingPort && trip.sailingTime && trip.ETA && trip.estimatedReturnPort && (!trip.started))
     }
 
 };

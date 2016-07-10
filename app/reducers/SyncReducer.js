@@ -11,7 +11,7 @@ const initialState = {
   },
   updatedAt: new moment()
 }
-this is boken - fix graphql server to upserttrips
+//this is boken - fix graphql server to upserttrips
 export default (state = initialState, action) => {
   switch (action.type) {
     case "fishingEventSynced":

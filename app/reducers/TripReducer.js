@@ -11,8 +11,9 @@ const TripReducer = (state = initialState, action) => {
             let t = ModelUtils.blankModel(TripModel);
             t.sailingTime = new moment();
             t.ETA = new moment().add(2, 'days');
-            t.portFrom = action.trip.portFrom;
-            t.portTo = action.trip.portTo;
+            t.leavingPort = action.trip.leavingPort;
+            t.estimatedReturnPort = action.trip.estimatedReturnPort;
+            t.message = action.message;
             return t;
         case 'updateTrip':
             return Object.assign({}, state, action.update, {lastChange: moment() });
@@ -20,7 +21,7 @@ const TripReducer = (state = initialState, action) => {
             return Object.assign({}, state,
               {lastSubmitted: action.lastSubmitted, id: action.id });
         case 'startTrip':
-            return Object.assign({}, state, {started: true });
+            return Object.assign({}, state, {started: true, vesselId: action.vesselId});
     }
     return Object.assign({}, state);
 };

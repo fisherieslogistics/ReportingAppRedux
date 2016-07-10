@@ -22,11 +22,11 @@ class Client {
   }
 
   mutate(query, variables, auth){
-    return this.performRefreshableRequest(this._mutate.bind(this, query, variables), auth);
+    return this.performRefreshableRequest(this._mutate.bind(this, query, variables, auth), auth);
   }
 
   query(query, auth){
-    return this.performRefreshableRequest(this._query.bind(this, query), auth);
+    return this.performRefreshableRequest(this._query.bind(this, query, auth), auth);
   }
 
   login(username, password){
@@ -38,14 +38,14 @@ class Client {
     let self = this;
     if(this.refreshNeeded()){
       console.log("need refresh");
-      return this.promisifyRequestBody(this._refresh())
+      return this.promisifyRequestBody(this._refresh(auth))
                .catch((err) => {
                  console.log(err);
                  return err;
                })
                .then((newAuth) => {
                  self.setAuth(newAuth);
-                 self.dispatch(authActions.setAuth(newAuth));
+                 self.dispatch(authActions.setAuth(helper.updateAuth({}, newAuth)));
                  return self.promisifyRequestBody(func());
                });
     }else{
@@ -79,20 +79,20 @@ class Client {
     return (this.auth.expiresAt.unix() > nearFuture.unix())
   }
 
-  _mutate(query, variables) {
+  _mutate(query, variables, auth) {
     return request.post(this.apiEndpoint + 'graphql')
       .type('application/json')
       .send(
         {query: query, variables: {data: variables}}
       )
-      .set("Authorization", "Bearer "  + this.auth.accessToken);
+      .set("Authorization", "Bearer "  + auth.accessToken);
   }
 
-  _query(query) {
+  _query(query, auth) {
     return request.post(this.apiEndpoint + 'graphql')
              .type('application/graphql')
              .send(query)
-             .set("Authorization", "Bearer " + this.auth.accessToken);
+             .set("Authorization", "Bearer " + auth.accessToken);
   }
 
   _login(username, password){
@@ -103,11 +103,11 @@ class Client {
              .send({ 'password': password });
   }
 
-  _refresh(){
+  _refresh(auth){
     return request.post(this.apiEndpoint + 'oauth/token')
              .type('form')
              .send({'grant_type': 'refresh_token'})
-             .send({'refresh_token': this.auth.refreshToken});
+             .send({'refresh_token': auth.refreshToken});
   }
 
   _reject(msg){

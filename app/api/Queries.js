@@ -33,15 +33,15 @@ const upsertFishingEvent = (fEvent, tripId) => {
   `
 }
 
-const newTrip = (trip, vesselId) => {
+const newTrip = (trip) => {
   let query = `
       mutation {
         createTrip(
-          leavingPort: "${trip.portFrom}",
-          estimatedReturnPort: "${trip.portTo}",
+          leavingPort: "${trip.leavingPort}",
+          estimatedReturnPort: "${trip.estimatedReturnPort}",
           sailingTime: "${trip.sailingTime.toISOString()}",
           ETA: "${trip.ETA.toISOString()}",
-          vessel: "${vesselId}"
+          vessel: "${trip.vesselId}"
         ){
           id
         }
@@ -57,7 +57,7 @@ const updateTrip = (trip) => {
         Id: "${trip.id}",
         binsOfIce:0,
         message: "${trip.message}",
-        unloadPort: "${trip.portTo}",
+        unloadPort: "${trip.estimatedReturnPort}",
         time: "${trip.ETA.toISOString()}",
       ) {
         id
@@ -65,7 +65,39 @@ const updateTrip = (trip) => {
     }
     `}
 
-export {newTrip, upsertFishingEvent, updateTrip};
+const upsertTrip = (trip) => {
+  let _trip = Object.assign({}, trip, {
+    _id: trip.objectId,
+    sailingTime: trip.sailingTime.toISOString(),
+    ETA: trip.ETA.toISOString(),
+    vessel: trip.vesselId,
+    completed: trip.completed,
+    message: trip.message || "",
+  });
+  delete _trip.started;
+  delete _trip.lastSubmitted;
+  delete _trip.lastChange;
+  delete _trip.objectId;
+  delete _trip.vesselId;
+  return {
+    query: `
+      mutation($data: UpsertTripMutationInput!){
+        upsertTripMutation(input: $data)
+          {
+            trip{
+              _id
+            }
+          }
+      }
+    `,
+    variables: {
+      trip: _trip,
+      clientMutationId: "tripData" + new Date().getTime()
+    }
+  };
+}
+
+export {upsertTrip, upsertFishingEvent};
 
 export default {
   getMe: `

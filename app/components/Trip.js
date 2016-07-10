@@ -64,14 +64,15 @@ class Trip extends React.Component{
     if(this.props.tripCanEnd){
 
       AlertIOS.prompt(
-        "Unloading " + this.props.trip.ETA.fromNow() + " at " + this.props.trip.portTo,
+        "Unloading " + this.props.trip.ETA.fromNow() + " at " + this.props.trip.estimatedReturnPort,
         "Leave a message for the truck ? ie where to meet ? How much ice you need ? ",
         [
           {text: 'Cancel', onPress: (text) => { }, style: 'cancel'},
           {text: 'OK', onPress: (text) => {
             this.props.dispatch(tripActions.endTrip(this.props.trip,
                                                     this.props.fishingEvents,
-                                                    this.props.vesselId));
+                                                    this.props.vesselId,
+                                                    text));
           }}
         ]
       );
@@ -79,7 +80,7 @@ class Trip extends React.Component{
   }
 
   startTrip(){
-    this.props.dispatch(tripActions.startTrip());
+    this.props.dispatch(tripActions.startTrip(this.props.vesselId));
   }
 
   renderDetail(){

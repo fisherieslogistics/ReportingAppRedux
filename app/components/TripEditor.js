@@ -123,9 +123,9 @@ class TripEditor extends React.Component {
           <View style={[styles.row, styles.bottomRow]}>
             <View style={[styles.halfway]}>
               <PlaceAndTime
-                portType={"portFrom"}
+                portType={"leavingPort"}
                 timeType={"sailingTime"}
-                port={this.props.trip.portFrom}
+                port={this.props.trip.leavingPort}
                 time={this.props.trip.sailingTime}
                 onChangePort={this.onChangePort.bind(this)}
                 onChangeTime={this.onChangeTime.bind(this)}
@@ -134,9 +134,9 @@ class TripEditor extends React.Component {
             </View>
             <View style={[styles.halfway]}>
               <PlaceAndTime
-                portType={"portTo"}
+                portType={"estimatedReturnPort"}
                 timeType={"ETA"}
-                port={this.props.trip.portTo}
+                port={this.props.trip.estimatedReturnPort}
                 time={this.props.trip.ETA}
                 onChangePort={this.onChangePort.bind(this)}
                 onChangeTime={this.onChangeTime.bind(this)}

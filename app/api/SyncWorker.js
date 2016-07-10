@@ -1,7 +1,6 @@
 'use strict';
 import Queries, {
-  newTrip,
-  updateTrip,
+  upsertTrip,
   upsertFishingEvent
 } from './Queries';
 
@@ -53,20 +52,23 @@ class SyncWorker {
     }
   }
 
-  mutateTrip(trip, vesselId){
-    console.log(trip, vesselId);
+  mutateTrip(trip){
     const state = this.getState().default;
-    let q = newTrip(trip, vesselId);
+    let mutation = upsertTrip(trip);
     let time = new moment();
     let callback = (res) => {
-      this.dispatch({
-        type: "tripSynced",
-        time: time,
-        objectId: trip.objectId
-      });
+      try{
+        this.dispatch({
+          type: "tripSynced",
+          time: time,
+          objectId: res.data.upsertTripMutation.trip._id
+        });
+      }catch(e) {
+        console.log(e);
+      }
       return {response: res};
     }
-    return this.performMutation(q, trip, callback.bind(this));
+    return this.performMutation(mutation.query, mutation.variables, callback.bind(this));
   }
 
   mutateFishingEvent(fishingEvent, tripId){

@@ -2,20 +2,22 @@
 import moment from 'moment';
 
 class TripActions{
-  startTrip(trip) {
+  startTrip(vesselId) {
     return{
       type: 'startTrip',
       timestamp: moment(),
+      vesselId: vesselId
     }
   }
 
-  endTrip(trip, fishingEvents, vesselId){
+  endTrip(trip, fishingEvents, vesselId, message){
     return {
       type: 'endTrip',
       timestamp: moment(),
       trip: trip,
       fishingEvents: fishingEvents,
-      vesselId: vesselId
+      vesselId: vesselId,
+      message: message
     }
   }
 
