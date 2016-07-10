@@ -33,11 +33,8 @@ export default (state = initialState, action) => {
     case 'setVessels':
       return update(state, { vessels: action.vessels });
     case 'addPort':
-      let ports = state.ports;
-      if(ports[action.region]){
-        ports[action.region].push(action.port);
-      }
-      return update(state, { ports: [...ports] });
+      state.ports[action.region].push(action.port);
+      return state;
     case 'addFavourite':
       switch (action.favouriteName) {
         case "targetSpecies":

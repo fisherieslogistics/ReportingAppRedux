@@ -21,13 +21,16 @@ import {LongButton} from './Buttons';
 import {AttributeEditor} from './AttributeEditor';
 import PortPicker from './PortPicker';
 import UserActions from '../actions/UserActions';
+import BlankMessage from './BlankMessage';
+import ViewActions from '../actions/ViewActions';
 
+const viewActions = new ViewActions();
 const userActions = new UserActions();
 const helper = new Helper();
 const tripActions = new TripActions();
 
 
-const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTime, disabled}) => {
+const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTime, disabled, choices}) => {
   time = time || new moment();
   let placeTimeStyle = StyleSheet.create({
     wrapper:{
@@ -69,6 +72,7 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
       <View style={[{width: 160, left: 13}]}>
         <PortPicker
           name={portType + "__picker"}
+          choices={choices}
           portType={portType}
           value={port || ""}
           placeholder={"Select a port"}
@@ -88,12 +92,27 @@ class TripEditor extends React.Component {
     constructor(props){
       super(props);
       let regions = Object.keys(this.props.ports);
+
       this.state = {
         showAddPort: false,
         regions: regions,
         selectedRegion: regions[0],
-        newPortName: ""
+        newPortName: "",
+        portChoices: this.getPortChoices(props),
       }
+    }
+
+    getPortChoices(props){
+      const choices = [];
+      Object.keys(props.ports).map((k) => {
+        return props.ports[k].forEach((p) => {
+          choices.push({value:p, description: k, render: () => {
+            return {value: k, description: p};
+          }});
+        });
+      });
+      console.log(choices);
+      return choices;
     }
 
     endTrip(){
@@ -116,6 +135,18 @@ class TripEditor extends React.Component {
       this.props.dispatch(tripActions.updateTrip(id, value, this.props.trip.started));
     }
 
+    renderMessage(){
+      let message = this.props.trip.started ?
+                      "Trip started" : (this.props.tripCanStart ?
+                        "Press start trip to start" :  "Select ports and times before starting trip");
+      return (
+        <BlankMessage
+          text={ message }
+          height={100}
+          />
+      );
+    }
+
     renderAddPort(){
       let items = this.state.regions.map((region, index) => {
         return (
@@ -127,46 +158,67 @@ class TripEditor extends React.Component {
         )
       });
       return (
-        <View>
-          <View><Text>Select a Region</Text></View>
-          <PickerIOS
-            selectedValue={this.state.selectedRegion}
-            onValueChange={(region) => {
-              this.setState({selectedRegion: region});
-            }}
-          >
-            {items}
-          </PickerIOS>
-          <TextInput
-            selectTextOnFocus={true}
-            placeholderText={"Port Name"}
-            value={this.state.newPortName}
-            style={inputStyles.textInput}
-            onChangeText={(text) => {
-              this.setState({
-                newPortName: text
-              })
-            }}
-          />
-
+        <View style={[{backgroundColor: "white", marginTop: 50,
+                      flex: 1, alignSelf: 'stretch'}]}>
+          <View>
+            <View><Text style={[textStyles.font, {fontSize: 18, }]}>Select a Region</Text></View>
+          </View>
+          <View style={[{height: 200}]}>
+            <PickerIOS
+              style={[{backgroundColor: "#ffffff"}]}
+              selectedValue={this.state.selectedRegion}
+              onValueChange={(region) => {
+                this.setState({selectedRegion: region});
+              }}
+            >
+              {items}
+            </PickerIOS>
+            <TextInput
+              selectTextOnFocus={true}
+              placeholder={"Port Name"}
+              autoCorrect={false}
+              autoCapitalize={false}
+              value={this.state.newPortName}
+              style={inputStyles.textInput, {backgroundColor: 'white', height: 50, alignSelf: 'stretch'}}
+              onChangeText={(text) => {
+                this.setState({
+                  newPortName: text
+                })
+              }}
+            />
           <LongButton
             text={"Save Port"}
             bgColor={colors.blue}
+            _style={{alignSelf: 'center', marginTop: 20}}
             onPress={() => {
-              AlertIOS()
               AlertIOS.alert(
-                "Add to port: " + this.state.newPortName + " to " + this.state.selectedRegion,
+                "Add: " + this.state.newPortName + " to " + this.state.selectedRegion,
                 "Is this correct? Click OK to save this port.",
                 [
-                  {text: 'Cancel', onPress: () => { }, style: 'cancel'},
+                  {text: 'Cancel', onPress: () => {
+                    this.setState({
+                      newPortName: "",
+                      showAddPort: false
+                    });
+                  }, style: 'cancel'},
                   {text: 'OK', onPress: () => {
-                    this.props.dispatch(userActions.addPort(this.state.selectedRegion, this.state.newPortName));
+                    const portName = "" + this.state.newPortName;
+                    let choices = this.state.portChoices;
+                    choices.push({value: portName, description: this.state.selectedRegion});
+                    this.setState({
+                      newPortName: "",
+                      showAddPort: false,
+                      portChoices: choices
+                    });
+                    this.props.dispatch(userActions.addPort(this.state.selectedRegion,
+                                        this.state.portName));
                   }}
                 ]
               );
             }}
           />
-        </View>);
+        </View>
+      </View>);
     }
 
     render() {
@@ -202,6 +254,7 @@ class TripEditor extends React.Component {
                 onChangePort={this.onChangePort.bind(this)}
                 onChangeTime={this.onChangeTime.bind(this)}
                 disabled={this.props.trip.started}
+                choices={this.state.portChoices}
               />
             </View>
             <View style={[styles.halfway]}>
@@ -213,6 +266,7 @@ class TripEditor extends React.Component {
                 onChangePort={this.onChangePort.bind(this)}
                 onChangeTime={this.onChangeTime.bind(this)}
                 disabled={false}
+                choices={this.state.portChoices}
               />
             </View>
           </View>
@@ -227,6 +281,7 @@ class TripEditor extends React.Component {
               }}
             />
           </View>
+          {this.state.showAddPort ? this.renderAddPort() : this.renderMessage()}
         </View>
       );
     }
