@@ -39,9 +39,10 @@ class SyncWorker {
       this.requests.push(this.mutateTrip(state.trip, state.me.vessel.id));
     }
 
-    state.sync.queues.pastTrips.forEach((t) => {
-      this.requests.push(this.mutateTrip(t.trip, t.vesselId));
-      t.fishingEvents.forEach(fe => this.requests.push(this.mutateFishingEvent(fe, t.trip.objectId)));
+    state.sync.queues.pastTrips.slice(0, 1).forEach((t) => {
+      let pastRequests = [];
+      t.fishingEvents.forEach(fe => pastRequests.push(this.mutateFishingEvent(fe, t.trip.objectId)));
+      return Promise.all(pastRequests).then(this.mutatePastTrip(t.trip));
     });
 
     if(this.requests.length){
@@ -50,6 +51,27 @@ class SyncWorker {
         console.log("done", responses);
       });
     }
+  }
+
+  mutatePastTrip(trip){
+    const state = this.getState().default;
+    let mutation = upsertTrip(trip);
+    let time = new moment();
+    let callback = (res) => {
+      console.log(trip.objectId);
+      console.log("pst", res.data.upsertTripMutation.trip._id);
+      try{
+        this.dispatch({
+          type: "removeFromQueue",
+          name: "pastTrips",
+          time: time
+        });
+      }catch(e) {
+        console.log(e);
+      }
+      return {response: res};
+    }
+    return this.performMutation(mutation.query, mutation.variables, callback.bind(this));
   }
 
   mutateTrip(trip){

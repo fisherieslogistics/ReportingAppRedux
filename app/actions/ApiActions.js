@@ -4,8 +4,11 @@ import Client from '../api/Client';
 import queries from '../api/Queries';
 import AuthActions from './AuthActions';
 import UserActions from './UserActions';
+import Helper from '../utils/Helper';
+
 const userActions = new UserActions();
 const authActions = new AuthActions();
+const helper = new Helper();
 let client;
 class ApiActions {
 
@@ -23,8 +26,7 @@ class ApiActions {
           if(!auth){
             return dispatch(authActions.loginError("please try that again" + auth));
           }
-
-          client.query(queries.getMe, auth)
+          client.query(queries.getMe, helper.updateAuth({}, auth))
             .catch((err) => {
               console.log(err);
             })
@@ -34,6 +36,7 @@ class ApiActions {
               if(viewer.vessels.length){
                 dispatch(userActions.setVessel(viewer.vessels[0]));
               }
+              dispatch(authActions.setAuth(helper.updateAuth({}, auth)));
               dispatch(userActions.setUser(parseUser(viewer)));
             });
 
