@@ -2,7 +2,7 @@ import Validator from '../utils/Validator';
 const valid = Validator.valid;
 
 const model = [
-  {label: 'Lengthener Orientation', id: 'lengthenerOrientation', valid: valid.alwaysValid, defaultValue: "T90",
+  /*{label: 'Lengthener Orientation', id: 'lengthenerOrientation', valid: valid.alwaysValid, defaultValue: "T90",
     editorDisplay: {editor: 'gear', type: 'combined', siblings: ['lengthenerMeshSize']}
   },
   {label: 'Lengther Mesh Size', id: 'lengthenerMeshSize', valid: valid.alwaysValid,  type: 'number', unit: 'mm'},
@@ -18,9 +18,6 @@ const model = [
   {label: 'Chaffing Mat', id: 'chaffingMat', valid: valid.alwaysValid, type: 'bool', defaultValue: true,
     editorDisplay: {editor: 'gear', type: 'single'}},
 
-  {label: 'Ground Rope', id: 'groundRope', valid: valid.alwaysValid, defaultValue: "null",
-    editorDisplay: {editor: 'gear', type: 'single'}},
-
   {label: 'Warps', id: 'warps', valid: valid.alwaysValid,
       editorDisplay: {editor: 'gear', type: 'single'}},
 
@@ -31,7 +28,7 @@ const model = [
   {label: 'Top Bridles', id: 'topBridles', valid: valid.alwaysValid,
     editorDisplay: {editor: 'gear', type: 'combined', siblings: ["bottomBridles"]}
   },
-  {label: 'Bottom Bridles', id: 'bottomBridles', valid: valid.alwaysValid},
+  {label: 'Bottom Bridles', id: 'bottomBridles', valid: valid.alwaysValid},*/
 
   {label: 'Wing Spread', id: 'wingSpread', valid: valid.greaterThanZero,
     editorDisplay: {editor: 'gear', type: 'single'},

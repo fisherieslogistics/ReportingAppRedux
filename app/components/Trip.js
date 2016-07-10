@@ -18,6 +18,8 @@ import TripEditor from './TripEditor';
 import TotalsList from './TotalsList';
 import textStyles from '../styles/text';
 import moment from 'moment';
+;
+let the user know why they cant start or end trip
 
 const helper = new Helper();
 const tripActions = new TripActions();
