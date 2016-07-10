@@ -22,10 +22,10 @@ class ViewActions{
       }
     }
 
-    uiOrientation(orientation){
+    orientation(orientation){
       return {
-        type: 'uiOrientation',
-        uiOrientation: orientation
+        type: 'orientation',
+        orientation: orientation
       }
     }
 

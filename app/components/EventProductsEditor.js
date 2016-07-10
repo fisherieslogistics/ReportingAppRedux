@@ -96,7 +96,7 @@ class EventProductsEditor extends React.Component{
     }
 
     getDetailWidth(){
-      switch (this.props.uiOrientation) {
+      switch (this.props.orientation) {
         case 'PORTRAIT':
         case 'PORTRAITUPSIDEDOWN':
           return 534;

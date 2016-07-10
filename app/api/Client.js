@@ -59,11 +59,9 @@ class Client {
       req.end((err, res) => {
         if(err){
           try{
-            debugger;
             reject(err.response.text);
           }catch(e){
             console.log(e);
-            debugger;
             reject(err);
           }
           return;

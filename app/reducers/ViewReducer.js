@@ -8,7 +8,7 @@ const assign = helper.assign;
 let initialState = {
   viewingEventId: 1,
   detailView: "catch",
-  uiOrientation: 'PORTRAIT',
+  orientation: 'PORTRAIT',
   width: 768,
   height: 1024,
   autoSuggestBar: {
@@ -24,7 +24,7 @@ let initialState = {
 
 
 export default (state = initialState, action) => {
-    if(!state.uiOrientation){
+    if(!state.orientation){
       state = getOrientationDetail(state, Orientation.getInitialOrientation());
     };
     switch (action.type) {
@@ -39,26 +39,26 @@ export default (state = initialState, action) => {
           name: action.name
         })});
       case 'toggleAutoSuggestBar':
-        let auto = state.autoSuggestBar;
-        let autoSuggest = update(state.autoSuggestBar, {uivisible: action.visible});
-        state = update(state, {autoSuggestBar: autoSuggest});
-      case 'uiOrientation':
-        return getOrientationDetail(state, action.uiOrientation);
+        state.autoSuggestBar.uivisible = action.visible;
+        return state;
+      case 'orientation':
+        return getOrientationDetail(state, action.orientation);
     default:
         return state;
     }
 };
 
-function getOrientationDetail(state, uiOrientation){
-  switch (uiOrientation) {
+function getOrientationDetail(state, orientation){
+  console.log("ORI", orientation);
+  switch (orientation) {
     case 'PORTRAIT':
     case 'PORTRAITUPSIDEDOWN':
-      return update(state, {width: 768, height: 1024, uiOrientation: uiOrientation});
+      return update(state, {width: 768, height: 1024, orientation: orientation});
     case 'LANDSCAPE':
     case 'LANDSCAPEUPSIDEDOWN':
-      return update(state, {width: 1024, height: 768, uiOrientation: uiOrientation});
+      return update(state, {width: 1024, height: 768, orientation: orientation});
     default:
-      return update(state, {width: 1024, height: 768, uiOrientation: "LANDSCAPE"});
+      return update(state, {width: 1024, height: 768, orientation: orientation});
   }
 };
 

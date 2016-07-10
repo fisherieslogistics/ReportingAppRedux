@@ -131,7 +131,7 @@ class Fishing extends React.Component{
                  products={this.props.viewingEvent.products}
                  dispatch={this.props.dispatch}
                  editorType={'event'}
-                 uiOrientation={this.props.uiOrientation}
+                 orientation={this.props.orientation}
                  renderMessage={this.renderMessage.bind(this)}
                 />);
       case 2:
@@ -249,7 +249,7 @@ const select = (State, dispatch) => {
     let props = {
       fishingEventType: "tcer",
       gear: state.gear,
-      uiOrientation: state.view.uiOrientation,
+      orientation: state.view.orientation,
       height: state.view.height,
       tripStarted: state.trip.started,
       enableStartEvent: state.trip.started,

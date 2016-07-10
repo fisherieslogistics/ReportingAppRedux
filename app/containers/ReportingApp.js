@@ -48,17 +48,17 @@ class ReportingApp extends Component {
     console.log("reporting app", props);
   }
 
-  _orientationDidChange(orientation) {
-    this.props.dispatch(viewActions.uiOrientation(orientation));
+  orientationDidChange(orientation) {
+    this.props.dispatch(viewActions.orientation(orientation));
   }
 
   componentDidMount(){
-    this.props.dispatch(viewActions.uiOrientation(Orientation.getInitialOrientation()));
-    Orientation.addOrientationListener(this._orientationDidChange.bind(this));
+    Orientation.addOrientationListener(this.orientationDidChange.bind(this));
+    this.props.dispatch(viewActions.orientation(Orientation.getInitialOrientation()));
   }
 
   componentWillUnmount() {
-    Orientation.removeOrientationListener(this._orientationDidChange.bind(this));
+    Orientation.removeOrientationListener(this.orientationDidChange.bind(this));
   }
 
   renderTabs(){
@@ -134,6 +134,7 @@ class ReportingApp extends Component {
   }
 
   render(){
+    console.log(this.props.width, this.props.height);
     return (
       <View style={[styles.wrapper, {width: this.props.width, height: this.props.height}]}>
         <TabBarIOS
@@ -154,6 +155,7 @@ class ReportingApp extends Component {
           text={this.props.autoSuggestBar.text}
           maxResults={MAX_AUTOSUGGEST_RESULTS}
           inputId={this.props.autoSuggestBar.inputId}
+          width={this.props.width}
         />
       </View>
     );
@@ -169,7 +171,7 @@ const select = (State, dispatch) => {
       trip: state.trip,
       autoSuggestBar: state.view.autoSuggestBar,
       eventEmitter: state.uiEvents.eventEmitter,
-      uiOrientation: state.view.uiOrientation,
+      orientation: state.view.orientation,
       height: state.view.height,
       width: state.view.width,
       tripStarted: state.trip.started

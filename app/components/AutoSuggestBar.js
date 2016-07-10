@@ -130,13 +130,12 @@ class AutoSuggestBar extends React.Component {
     }
 
     render () {
-      let {height, width} = Dimensions.get('window');
       if(!this.props.visible){
         return null;
       }
       return (
         <View style={styles.resultsBarWrapper}>
-          <View style={[styles.resultsBar, {width: width}]}>
+          <View style={[styles.resultsBar, {width: this.props.width}]}>
             {this.renderResults.bind(this)()}
           </View>
           <KeyboardSpacer />

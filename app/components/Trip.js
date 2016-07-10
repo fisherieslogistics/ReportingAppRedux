@@ -98,7 +98,7 @@ class Trip extends React.Component{
           endTrip={this.endTrip.bind(this)}
           ports={this.props.ports}
           startTrip={this.startTrip.bind(this)}
-          uiOrientation={this.props.uiOrientation}
+          orientation={this.props.orientation}
         />
         <View style={{flexDirection: 'row',
                       flex: 1,
@@ -151,7 +151,7 @@ const select = (State, dispatch) => {
     tripStarted: state.trip.started,
     tripCanStart: helper.tripCanStart(state.trip),
     tripCanEnd: state.trip.started && (state.fishingEvents.events.find(f => !f.productsValid) === undefined),
-    uiOrientation: state.view.uiOrientation,
+    orientation: state.view.orientation,
     vesselId: state.me.vessel.id
   };
 }
