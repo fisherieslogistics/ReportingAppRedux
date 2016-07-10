@@ -33,7 +33,7 @@ import {signUpOrange,
 const helper = new Helper();
 
 class FormView extends React.Component {
-  constructor(props){
+  constructor(props){ //icon ans sign form fix it
     super(props);
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),

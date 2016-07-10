@@ -2,6 +2,14 @@
 
 class UserActions{
 
+  addPort(region, port){
+    return {
+      type: 'addPort',
+      region: region,
+      port: port
+    }
+  }
+
   editUser(change){
     return {
       type: 'editUser',

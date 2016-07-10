@@ -5,6 +5,9 @@ import {
   Text,
   AlertIOS,
   TouchableOpacity,
+  TextInput,
+  PickerIOS,
+  PickerItemIOS
 } from 'react-native';
 
 import React from 'react';
@@ -17,8 +20,13 @@ import {textStyles, inputStyles} from '../styles/styles';
 import {LongButton} from './Buttons';
 import {AttributeEditor} from './AttributeEditor';
 import PortPicker from './PortPicker';
+import UserActions from '../actions/UserActions';
+
+const userActions = new UserActions();
 const helper = new Helper();
 const tripActions = new TripActions();
+
+
 const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTime, disabled}) => {
   time = time || new moment();
   let placeTimeStyle = StyleSheet.create({
@@ -43,9 +51,9 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
         flex: 1,
       },
     },
-    disabled: disabled
+    disabled: false
   };
-  let dateStyle = [textStyles.font, {position: 'absolute', top: 12, left: 5, fontSize: 16, color: disabled ? colors.darkGray : colors.black}];
+  let dateStyle = [textStyles.font, {position: 'absolute', top: 12, left: 5, fontSize: 16, color: colors.black}];
   let dateText = (
     <Text style={dateStyle}>
       { (!time || isNaN(time.unix()) ) ? "Select date" : time.fromNow() }
@@ -77,6 +85,17 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
 
 class TripEditor extends React.Component {
 
+    constructor(props){
+      super(props);
+      let regions = Object.keys(this.props.ports);
+      this.state = {
+        showAddPort: false,
+        regions: regions,
+        selectedRegion: regions[0],
+        newPortName: ""
+      }
+    }
+
     endTrip(){
       if(this.props.tripCanEnd){
         this.props.endTrip();
@@ -95,6 +114,59 @@ class TripEditor extends React.Component {
 
     onChangeTime(id, value){
       this.props.dispatch(tripActions.updateTrip(id, value, this.props.trip.started));
+    }
+
+    renderAddPort(){
+      let items = this.state.regions.map((region, index) => {
+        return (
+          <PickerItemIOS
+            key={this.state.regions[index]}
+            value={region}
+            label={region}
+          />
+        )
+      });
+      return (
+        <View>
+          <View><Text>Select a Region</Text></View>
+          <PickerIOS
+            selectedValue={this.state.selectedRegion}
+            onValueChange={(region) => {
+              this.setState({selectedRegion: region});
+            }}
+          >
+            {items}
+          </PickerIOS>
+          <TextInput
+            selectTextOnFocus={true}
+            placeholderText={"Port Name"}
+            value={this.state.newPortName}
+            style={inputStyles.textInput}
+            onChangeText={(text) => {
+              this.setState({
+                newPortName: text
+              })
+            }}
+          />
+
+          <LongButton
+            text={"Save Port"}
+            bgColor={colors.blue}
+            onPress={() => {
+              AlertIOS()
+              AlertIOS.alert(
+                "Add to port: " + this.state.newPortName + " to " + this.state.selectedRegion,
+                "Is this correct? Click OK to save this port.",
+                [
+                  {text: 'Cancel', onPress: () => { }, style: 'cancel'},
+                  {text: 'OK', onPress: () => {
+                    this.props.dispatch(userActions.addPort(this.state.selectedRegion, this.state.newPortName));
+                  }}
+                ]
+              );
+            }}
+          />
+        </View>);
     }
 
     render() {
@@ -144,6 +216,17 @@ class TripEditor extends React.Component {
               />
             </View>
           </View>
+          <View style={[styles.bottomRow, {flex: 1, alignItems: 'center', padding: 10}]}>
+            <LongButton
+              text={"Add New Port"}
+              bgColor={colors.blue}
+              onPress={() => {
+                this.setState({
+                  showAddPort: true
+                });
+              }}
+            />
+          </View>
         </View>
       );
     }
@@ -171,7 +254,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   wrapper: {
-    height: 150,
+    height: 220,
     flex: 1,
     paddingLeft: 5,
     paddingRight: 5,

@@ -17,9 +17,11 @@ import {MasterToolbar, DetailToolbar} from './Toolbar';
 import TripEditor from './TripEditor';
 import TotalsList from './TotalsList';
 import textStyles from '../styles/text';
+import BlankMessage from './BlankMessage';
 import moment from 'moment';
-;
-let the user know why they cant start or end trip
+
+//let user add a new port if the port is not there
+//let the user know why they cant start or end trip
 
 const helper = new Helper();
 const tripActions = new TripActions();
@@ -86,7 +88,15 @@ class Trip extends React.Component{
   }
 
   renderDetail(){
-
+    let message = this.props.trip.started ?
+                    "Trip started" : (this.props.tripCanStart ?
+                      "Press start trip to start" :  "Select ports and times before starting trip");
+    return (
+      <BlankMessage
+        text={ message }
+        height={100}
+        />
+    );
   }
 
   renderMasterView(){
@@ -108,13 +118,7 @@ class Trip extends React.Component{
                       alignItems: 'flex-end',
                       paddingLeft: 10,
                       paddingBottom: 5}}>
-
         </View>
-        <TotalsList
-          onPress={() => {}}
-          data={this.state.ds.cloneWithRows(this.props.totals)}
-          getIcon={() => null}
-        />
       </View>
     );
   }
@@ -125,12 +129,7 @@ class Trip extends React.Component{
       <MasterDetailView
         master={this.renderMasterView()}
         sizes={{m: 0.6, d: 0.4}}
-        detailView={
-          <View style={[]}>
-            <View style={[]}>
-              {this.renderDetail()}
-            </View>
-          </View>}
+        detailView={this.renderDetail()}
         detailToolbar={<DetailToolbar style={toolbarStyle} />}
         masterToolbar={<MasterToolbar style={toolbarStyle} />}
       />

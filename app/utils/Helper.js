@@ -207,6 +207,7 @@ class Helper {
     }
 
     tripCanStart(trip){
+      console.log(trip.leavingPort, trip.estimatedReturnPort);
       return (trip.leavingPort && trip.sailingTime && trip.ETA && trip.estimatedReturnPort && (!trip.started))
     }
 

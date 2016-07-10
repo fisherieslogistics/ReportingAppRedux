@@ -19,7 +19,7 @@ const renderButton = (button) => {
   }
   return (<TextButton
             text={button.text}
-            style={{marginTop: 25, marginRight: 16, marginLeft: 16, width: 70}}
+            style={{marginTop: 34, marginRight: 16, marginLeft: 16, width: 70}}
             color={button.color}
             onPress={button.onPress}
             disabled={!button.enabled}  />);
