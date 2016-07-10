@@ -44,7 +44,6 @@ class FishPicker extends React.Component {
   }
 
   componentWillReceiveProps(props){
-    console.log("fish pucker recieven props")
     if(this.state.fishingEventId !== props.fishingEvent.id || this.state.changedByEvent){
       this.setState({
         value: props.value
@@ -59,9 +58,7 @@ class FishPicker extends React.Component {
   }
 
   autoSuggestEmitted(event){
-    console.log("I event gotted event")
     if(event.inputId == this.props.inputId){
-      console.log("I go tthe event", event.inputId, this.props.inputId)
       this.setState({
         changedByEvent: true,
         value: event.value

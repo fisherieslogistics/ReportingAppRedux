@@ -20,6 +20,7 @@ export default (state = initialState, action) => {
     if (typeof state === 'undefined') {
         return initialState;
     }
+    console.log(state.events.map(e => e.objectId));
     switch(action.type) {
         case 'endTrip':
           return initialState;
@@ -43,8 +44,6 @@ export default (state = initialState, action) => {
           return ChangeCatch(action, state, "weight");
         case 'changeCustom':
           return ChangeCatch(action, state, action.name);
-        case 'setFishingEventId':
-          return changeEvent(action.fishingEventId - 1, state, { objectId: action.objectId, lastSubmitted: action.lastSubmitted }, true);
         case 'addProduct':
           state = clearDeletedProducts(action.fishingEventId, state);
           return addNewCatch(action.fishingEventId, state);
@@ -211,6 +210,7 @@ const setFishingEventGear = (fishingEvent, gear) => {
 const newFishingEvent = (state, location, gear) => {
   let newEvent = ModelUtils.blankModel(fishingEventModel);
   let id = state.events.length + 1;
+  const objectId = newEvent.objectId;
   newEvent.id = id;
   let deletedProducts = Object.assign({}, state.deletedProducts);
   deletedProducts[id] = [];
@@ -231,6 +231,7 @@ const newFishingEvent = (state, location, gear) => {
   }else{
     newEvent = setFishingEventGear(newEvent, Object.assign({}, gear));
   }
+  newEvent.objectId = objectId;
   return Object.assign({}, state, {
       events: [
           ...state.events,

@@ -36,7 +36,7 @@ class ReportingApp extends Component {
   constructor(props){
     super(props);
     this.state = {
-      selectedTab: this.props.tripStarted ? "fishing" : "trip"
+      selectedTab: this.props.loggedIn ? (this.props.tripStarted ? "fishing" : "trip") : "profile",
     };
     apiActions.setUpClient(props.dispatch);
     this.SyncWorker = new SyncWorker(props.dispatch,
@@ -44,9 +44,6 @@ class ReportingApp extends Component {
                                      apiActions);
   }
 
-  componentWillReceiveProps(props){
-    console.log("reporting app", props);
-  }
 
   orientationDidChange(orientation) {
     this.props.dispatch(viewActions.orientation(orientation));
@@ -80,12 +77,14 @@ class ReportingApp extends Component {
                 hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
                 style={{flex: 0.1}}
                 onPress={() => {
-                  if(key === "forms"){
-                    this.props.dispatch(formActions.setViewingForm(null));
+                  if(this.props.loggedIn){
+                    if(key === "forms"){
+                      this.props.dispatch(formActions.setViewingForm(null));
+                    }
+                    this.setState({
+                      selectedTab: key
+                    });
                   }
-                  this.setState({
-                    selectedTab: key
-                  });
                 }}>
                 {tabs[key].render()}
               </TabBarIOS.Item>);
@@ -134,7 +133,6 @@ class ReportingApp extends Component {
   }
 
   render(){
-    console.log(this.props.width, this.props.height);
     return (
       <View style={[styles.wrapper, {width: this.props.width, height: this.props.height}]}>
         <TabBarIOS
@@ -174,7 +172,8 @@ const select = (State, dispatch) => {
       orientation: state.view.orientation,
       height: state.view.height,
       width: state.view.width,
-      tripStarted: state.trip.started
+      tripStarted: state.trip.started,
+      loggedIn: state.auth.loggedIn
     };
 }
 

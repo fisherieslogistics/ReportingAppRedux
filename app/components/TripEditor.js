@@ -98,7 +98,6 @@ class TripEditor extends React.Component {
     }
 
     render() {
-      console.log(this.props.orientation);
       let LANDSCAPE = (this.props.orientation.indexOf("LANDSCAPE") !== -1);
       return (
         <View style={[styles.wrapper]}>

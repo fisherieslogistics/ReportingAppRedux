@@ -49,7 +49,6 @@ export default (state = initialState, action) => {
 };
 
 function getOrientationDetail(state, orientation){
-  console.log("ORI", orientation);
   switch (orientation) {
     case 'PORTRAIT':
     case 'PORTRAITUPSIDEDOWN':

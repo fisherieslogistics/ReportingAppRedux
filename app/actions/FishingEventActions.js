@@ -55,16 +55,6 @@ class FishingEventActions{
       }
     }
 
-    setFishingEventServerId(fishingEventId, serverId, lastSubmitted) {
-      return (dispatch, getState) => {
-        dispatch({
-          type: 'setFishingEventId',
-          objectId: serverId,
-          lastSubmitted: lastSubmitted
-        });
-       }
-    }
-
     setfishingEventLocationValue(fishingEventId, changes) {
         return {
             type: 'setLocationValue',

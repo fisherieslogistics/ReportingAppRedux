@@ -29,7 +29,7 @@ import {user, cloudWhite, userWhite, userOrange, sailBoatWhite, wharf, wharfWhit
 const authActions = new AuthActions();
 const editorStyles = StyleSheet.create(eventEditorStyles);
 
-const Login = ({onLoginPress, loggedIn}) => {
+const Login = ({onLoginPress, loggedIn, disabled}) => {
   const SyncModel = [
     {id: 'tripsToSync', defaultValue: 0, label: "Trips to Sync", type: "displayOnly",
       editorDisplay: {editor: "account", type: 'combined', siblings: ["eventsToSync", "formsToSync"]}},
@@ -63,7 +63,7 @@ const Login = ({onLoginPress, loggedIn}) => {
         text={loggedIn ? "logout" : "login"}
         bgColor={colors.pink}
         onPress={onLoginPress}
-        disabled={false}
+        disabled={disabled}
       />
     </View>
   );
@@ -195,6 +195,7 @@ class Profile extends React.Component{
         break;
       case "account":
         return (<Login
+                  disabled={this.props.loggedIn && this.props.tripStarted}
                   loggedIn={this.props.loggedIn}
                   onLoginPress={this.onLoginPress.bind(this)}
                 />);

@@ -71,7 +71,7 @@ class Client {
     }
     let nearFuture = new moment();
     nearFuture.add(2, 'minute');
-    return (auth.expiresAt.unix() > nearFuture.unix())
+    return (auth.expiresAt.unix() < nearFuture.unix())
   }
 
   _mutate(query, variables, auth) {

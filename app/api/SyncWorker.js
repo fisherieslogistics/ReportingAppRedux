@@ -15,7 +15,7 @@ class SyncWorker {
     this.dispatch = dispatch;
     this.api = api;
     this.getState = getState;
-    this.timeToSync = TIMEOUT + 3000;
+    this.timeToSync = 5000;
     this.requests = [];
     this.startSync();
   }
@@ -27,7 +27,6 @@ class SyncWorker {
   sync(){
     const state = this.getState().default;
     if(this.requests.length || (!state.auth.loggedIn)){
-      console.log("request length or not logged", this.requests.length, (!state.auth.loggedIn));
       return;
     }
 
@@ -48,7 +47,6 @@ class SyncWorker {
     if(this.requests.length){
       Promise.all(this.requests).then((responses) => {
         this.requests = [];
-        console.log("done", responses);
       });
     }
   }
@@ -58,8 +56,6 @@ class SyncWorker {
     let mutation = upsertTrip(trip);
     let time = new moment();
     let callback = (res) => {
-      console.log(trip.objectId);
-      console.log("pst", res.data.upsertTripMutation.trip._id);
       try{
         this.dispatch({
           type: "removeFromQueue",
@@ -94,8 +90,8 @@ class SyncWorker {
   }
 
   mutateFishingEvent(fishingEvent, tripId){
-    console.log(fishingEvent, tripId);
     let q = upsertFishingEvent(fishingEvent, tripId);
+    console.log(fishingEvent.objectId);
     let time = new moment();
     let callback = (res) => {
       this.dispatch({
@@ -109,7 +105,6 @@ class SyncWorker {
   }
 
   performMutation(query, variables, success, dispatch){
-    console.log(query);
     return this.api.mutate(query, variables, this.getState().default.auth)
       .then(success)
       .catch((err) => {
