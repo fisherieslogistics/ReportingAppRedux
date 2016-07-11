@@ -26,7 +26,7 @@ import {MasterToolbar, DetailToolbar} from './Toolbar';
 import {colors, listViewStyles, textStyles, iconStyles, eventEditorStyles} from '../styles/styles';
 import {connect} from 'react-redux';
 
-import {user, cloudWhite, userWhite, userOrange, sailBoatWhite, wharf, wharfWhite, wharfBlue, wharfGray, userGray, userGreen} from '../icons/PngIcon';
+import Icon8 from './Icon8';
 
 const authActions = new AuthActions();
 const editorStyles = StyleSheet.create(eventEditorStyles);
@@ -145,9 +145,9 @@ class Profile extends React.Component{
   renderListView(){
 
     let items = [
-      {name: "account", icon: cloudWhite, label: "Account", color: colors.green},
-      {name: "user", icon: userWhite, label: "Profile", color: this.props.loggedIn ? colors.blue : colors.midGray},
-      {name: "vessel", icon: sailBoatWhite, label: "Vessel", color: this.props.vessels.length ?  colors.blue : colors.midGray},
+      {name: "account", icon: 'cloud', label: "Account", color: colors.green},
+      {name: "user", icon: 'user', label: "Profile", color: this.props.loggedIn ? colors.blue : colors.midGray},
+      {name: "vessel", icon: 'fishing-boat', label: "Vessel", color: this.props.vessels.length ?  colors.blue : colors.midGray},
     ];
 
     const isSelected = (items) => {
@@ -155,7 +155,7 @@ class Profile extends React.Component{
     }
 
     const getIcon = (editor, active) => {
-      return (<Image source={editor.icon} style={[iconStyles, {backgroundColor: editor.color}]} />);
+      return (<Icon8 name={editor.icon} size={30} color="white"  style={[iconStyles, {backgroundColor: editor.color}]}/>);
     }
 
     const getDescription = (editor, sectionID, rowID) => {

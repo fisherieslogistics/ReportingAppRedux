@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     height: 20
   },
   error:{
-    color: colors.red,
+    color: '#444444',
     fontSize: 12
   }
 });

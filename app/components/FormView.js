@@ -26,11 +26,6 @@ import {connect} from 'react-redux';
 import {createForms} from '../utils/FormUtils';
 import {MasterToolbar, DetailToolbar} from './Toolbar';
 import {colors, listViewStyles, textStyles} from '../styles/styles';
-import {signUpOrange,
-        signUpBlue,
-        signUpGray,
-        uploadCloudGreen,
-        cloud} from '../icons/PngIcon';
 
 const helper = new Helper();
 
@@ -156,16 +151,6 @@ class FormView extends React.Component {
   }
   renderForm(){
     return this.renderObj(this.props.viewingForm, formModelMeta.printMapping.form);
-  }
-
-  renderButton(icon, active, style, onPress){
-    return (
-      <TouchableOpacity
-        activeOpacity={active ? 1 : 0.5}
-        onPress={active ? onPress : ()=>{}} style={style}>
-        <Image source={icon}/>
-      </TouchableOpacity>
-    );
   }
 
   formReadyToSign(form){

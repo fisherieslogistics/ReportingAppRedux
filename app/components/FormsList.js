@@ -15,7 +15,6 @@ import TCERFishingEventModel from '../models/TCERFishingEventModel';
 import MasterListView from './MasterListView';
 
 import {colors, listViewStyles, textStyles, iconStyles} from '../styles/styles';
-import {cloudWhite, uploadCloudWhite, signUpWhite, errorWhite} from '../icons/PngIcon';
 
 const helper = new Helper();
 const Lang = Strings.english;
@@ -23,6 +22,7 @@ const Lang = Strings.english;
 const fishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
 const formActions = new FormActions();
 
+import Icon8 from  './Icon8';
 
 class FormsList extends React.Component {
 
@@ -33,24 +33,24 @@ class FormsList extends React.Component {
     getFormStatus(form){
       if(!form.fishingEvents.find(f => !f.signature)){
         return {
-          icon: cloudWhite,
+          icon: 'cloud',
           color: colors.midGray
         }
       }
       if(form.signature){
         return {
-          icon: uploadCloudWhite,
+          icon: 'upload-to-cloud',
           color: colors.green
         }
       }
       if(form.fishingEvents.find(f => !f.productsValid)){
         return {
-          icon: errorWhite,
+          icon: 'error',
           color: colors.orange
         }
       }
       return {
-        icon: signUpWhite,
+        icon: 'sign-up',
         color: colors.blue
       }
     }
@@ -61,9 +61,7 @@ class FormsList extends React.Component {
 
     getIcon(form, isSelected){
       let status = this.getFormStatus(form, isSelected);
-      return (<View style={[iconStyles, {backgroundColor: status.color}]}>
-                <Image source={status.icon} style={{}} />
-              </View>)
+      return (<Icon8 name={status.icon} size={30} color="white"  style={[iconStyles, {backgroundColor: status.color}]}/>)
     }
 
     getDescription(form, sectionId, rowId, isSelected) {

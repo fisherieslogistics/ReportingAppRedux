@@ -16,8 +16,8 @@ import BlankMessage from './BlankMessage';
 import {connect} from 'react-redux';
 import {eventEditorStyles, inputStyle, colors, textStyles} from '../styles/styles';
 import {renderCombinedEditors, getCombinedEditors } from './AttributeEditor';
-import {cancelWhite} from '../icons/PngIcon';
 import {LongButton} from './Buttons';
+import Icon8 from './Icon8';
 
 const productActions = new ProductActions();
 
@@ -25,7 +25,7 @@ const DeleteButton = (props) => {
   return (
     <TouchableOpacity onPress={() => props.onPress(props.index)} style={styles.deleteButtonWrapper}>
       <View style={ styles.deleteView }>
-        <Image source={cancelWhite} style={styles.deleteView}/>
+      <Icon8 name="delete" size={20} color="white" />
       </View>
     </TouchableOpacity>
   );
