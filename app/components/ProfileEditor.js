@@ -9,7 +9,6 @@ import EditorView from './EditorView';
 import UserActions from '../actions/UserActions';
 
 import {eventEditorStyles} from '../styles/styles';
-import {AttributeEditor} from './AttributeEditor';
 
 
 
@@ -22,11 +21,13 @@ class ProfileEditor extends React.Component {
     }
 
     getEditor(attribute){
-      return AttributeEditor(attribute,
-                     this.props.user[attribute.id],
-                     this.onChange.bind(this),
-                     {editable: false},
-                     attribute.id + "__profile__");
+      return {
+        attribute,
+        value: this.props.user[attribute.id],
+        onChange: this.onChange.bind(this),
+        extraProps: {editable: false},
+        inputId: attribute.id + "__profile__"
+      };
     }
 
     render() {
@@ -39,6 +40,7 @@ class ProfileEditor extends React.Component {
           name={"profileEdit"}
           model={UserModel}
           obj={this.props.user}
+          values={this.props.user}
         />
     );
   }

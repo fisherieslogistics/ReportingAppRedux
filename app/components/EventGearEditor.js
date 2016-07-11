@@ -7,7 +7,6 @@ import React from 'react';
 import TrawlGearModel from '../models/TrawlGearModel';
 import EditorView from './EditorView';
 import GearActions from '../actions/GearActions';
-import {AttributeEditor} from './AttributeEditor';
 import {eventEditorStyles, textStyles} from '../styles/styles';
 
 const gearActions = new GearActions();
@@ -31,11 +30,13 @@ const getEditor = (attribute, props) => {
     inputId += props.fishingEvent.id;
     gear = props.fishingEvent.gear;
   };
-  return AttributeEditor(attribute,
-                 gear[attribute.id],
-                 (name, value) => onChange(name, value, props),
-                 {fishingEvent: props.fishingEvent},
-                 inputId);
+  return {
+    attribute,
+    value: gear[attribute.id],
+    onChange: (name, value) => onChange(name, value, props),
+    extraProps: {fishingEvent: props.fishingEvent},
+    inputId
+  }
 }
 
 const EventGearEditor = (props) => {
@@ -48,6 +49,7 @@ const EventGearEditor = (props) => {
       name={"eventGear"}
       model={model}
       obj={props.gear}
+      values={props.gear}
     />
   );
 }

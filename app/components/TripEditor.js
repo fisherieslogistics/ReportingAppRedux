@@ -67,7 +67,12 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
     <View style={[styles.halfway, styles.placeAndTime]}>
       <View style={[]}>
         {dateText}
-        {AttributeEditor(dateAttr, time, onChangeTime, dateProps)}
+        {AttributeEditor({ 
+          attribute: dateAttr,
+          value: time,
+          onChange: onChangeTime,
+          extraProps: dateProps
+        }, () => { console.warn('This should store that we are editing a field')})}
       </View>
       <View style={[{width: 160, left: 13}]}>
         <PortPicker

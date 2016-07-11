@@ -22,11 +22,13 @@ const onChange = (key, value, {dispatch}) => {
 }
 
 const getEditor = (attribute, props) => {
-  return AttributeEditor(attribute,
-    props.vessel[attribute.id],
-    (key, value) => onChange(key, value, props),
-    {editable: false},
-    attribute.id + "__vessel__" + props.vessel.id);
+  return {
+    attribute,
+    value: props.vessel[attribute.id],
+    onChange: (key, value) => onChange(key, value, props),
+    extraProps: {editable: false},
+    inputId: attribute.id + "__vessel__" + props.vessel.id
+  };
 }
 
 const VesselEditor = (props) => {
@@ -57,6 +59,7 @@ const VesselEditor = (props) => {
         name={"vesselEdit"}
         model={VesselModel}
         obj={props.vessel}
+        values={props.vessel}
       />
   );
 }

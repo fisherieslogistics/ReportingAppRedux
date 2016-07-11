@@ -3,10 +3,10 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {renderEditors} from './AttributeEditor';
+import { Editors } from './AttributeEditor';
 
 function EditorView(props) {
-  if(!props.obj){
+  if(!props.obj || !props.values){
     return <View />;
   }
   return (
@@ -15,7 +15,7 @@ function EditorView(props) {
         {props.top}
       </View>
       <View style={props.styles.innerWrapper}>
-        {renderEditors(props)}
+        <Editors {...props} />
       </View>
       <View style={[props.styles.bottomWrapper]}>
         {props.bottom}
@@ -24,4 +24,23 @@ function EditorView(props) {
   );
 };
 
-export default EditorView;
+
+class EditingState extends React.Component {
+    constructor() {
+      super();
+      this.state = { editing: '' };
+    }
+
+    render() {
+      const editingCallback = (attributeId, editing) => {
+        if(editing) {
+          this.setState({ editing: attributeId });
+        } else if(this.state.editing == attributeId) {
+          this.setState({ editing: '' });
+        }
+      }
+      return <EditorView {...this.props} editing={this.state.editing} editingCallback={editingCallback} />
+    }
+}
+
+export default EditingState;
