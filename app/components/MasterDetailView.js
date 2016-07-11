@@ -15,14 +15,18 @@ const MasterDetail = (props) => {
     <View style={[styles.wrapper]}>
       {props.modal}
       <View style={[styles.row]}>
-        <View style={[styles.master, shadowStyles.shadow,  {flex: masterFlex}]}>
+        <View style={[styles.master, {flex: masterFlex}, shadowStyles.shadowRight]}>
+          <View style={{}}>
             {props.masterToolbar}
-          <View style={[styles.col, styles.background]}>
+          </View>
+          <View style={[styles.col, styles.background, {borderTopWidth: 0.7, borderTopColor: colors.midGray}]}>
             {props.master}
           </View>
         </View>
-        <View style={[styles.detail, shadowStyles.shadow, {flex: detailFlex}]}>
-          {props.detailToolbar}
+        <View style={[styles.detail, {flex: detailFlex}]}>
+          <View style={[shadowStyles.shadowDown,{borderLeftWidth: 0.7, borderLeftColor: colors.midGray}]}>
+            {props.detailToolbar}
+          </View>
           <View style={[styles.col]}>
             {props.detail}
           </View>
@@ -53,7 +57,7 @@ const styles = StyleSheet.create({
   master: {
     flexDirection: 'column',
     alignSelf: 'stretch',
-    backgroundColor: colors.backgrounds.dark,
+    //backgroundColor: colors.backgrounds.dark,
   },
   detail:{
     flex: 0.7,
