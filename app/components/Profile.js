@@ -55,7 +55,7 @@ const Login = ({onLoginPress, loggedIn, disabled}) => {
   }
   let top = (
     <View style={topStyle}>
-      <Text style={[textStyles.logo1, textStyles.font]}>Fishery</Text>
+      <Text style={[textStyles.logo1, textStyles.font]}>Fishery </Text>
       <Text style={[textStyles.logo2, textStyles.font]}>Logistics</Text>
     </View>
   );
