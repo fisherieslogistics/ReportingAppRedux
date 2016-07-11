@@ -13,7 +13,7 @@ import {inputStyles, textStyles} from '../styles/styles';
 import Sexagesimal from 'sexagesimal';
 import moment from 'moment';
 
-const renderEditors = (props) => {
+const Editors = (props) => {
   let inputs = [];
   let labels = []
   props.model.forEach((attribute) => {
@@ -22,26 +22,33 @@ const renderEditors = (props) => {
       }
       inputs.push(renderEditor(attribute, props));
   });
-  return inputs;
+  return <View>{ inputs }</View>;
 }
 
-const renderSingleEditor = (attribute, styles, getEditor) => {
+const SingleEditor = ({ attribute, styles, getEditor, value, editing, editingCallback }) => {
+  if(!attribute.valid) {
+    throw new Error(`${attribute.id} doesn't have a validator`);
+  }
+  const isValid = attribute.valid.func(value);
   return (
     <View style={[styles.col, styles.inputRow]} key={attribute.id}>
         <View style={[styles.row, styles.labelRow]}>
           <Text style={styles.labelText}>
             {attribute.label}
           </Text>
+          { isValid ? null : (editing ? <Text style={[styles.labelError]}>
+            { attribute.valid.errorMessage }
+          </Text> : <View style={styles.errorDot} />)}
         </View>
         <View style={[styles.row, styles.editorRow]}>
-          {getEditor(attribute)}
+          {AttributeEditor(getEditor(attribute), editingCallback)}
         </View>
     </View>
   );
 }
 
 const getCombinedEditors = (attribute, model, getEditor) => {
-  let editors = [{label: attribute.label, editor: getEditor(attribute)}];
+  let editors = [{label: attribute.label, editor: getEditor(attribute) }];
   let addedEditors = attribute.editorDisplay.siblings.map((s) => {
       let attr = model.find((a) => {
                    return a.id === s;
@@ -51,21 +58,27 @@ const getCombinedEditors = (attribute, model, getEditor) => {
   return editors.concat(addedEditors);
 }
 
-const renderCombinedEditors = (combinedEditors, styles) => {
-  let getRandom = () => new Date().getTime() + Math.random();
+const renderCombinedEditors = (combinedEditors, styles, editingCallback, editing) => {
   return (
-    <View style={[styles.col, styles.inputRow]} key={"editor" + getRandom().toString() }>
+    <View style={[styles.col, styles.inputRow]} key={"editor" + combinedEditors.map(e => e.editor && e.editor.attribute.id).join('.')}>
       <View style={[styles.row]}>
-        {combinedEditors.map((e) => {
+        {combinedEditors.map((e, index) => {
+          if(e.editor && !e.editor.attribute.valid) {
+            throw new Error(`${e.editor.attribute.id} doesn't have a validator`);
+          }
+          const isValid = !e.editor || e.editor.attribute.valid.func(e.editor.value);
           return (
-              <View style={[styles.rowSection]} key={"editor__" + e.label + getRandom().toString()}>
+              <View style={[styles.rowSection]} key={"editor__" + e.label + index}>
                 <View style={[styles.labelRow]}>
                   <Text style={styles.labelText}>
                     {e.label}
                   </Text>
+                  { isValid ? null : (editing === e.editor.attribute.id ? <Text style={[styles.labelError]}>
+                    { e.editor.attribute.valid.errorMessage }
+                  </Text> : <View style={styles.errorDot} />)}
                 </View>
                 <View style={[styles.editorRow]}>
-                  {e.editor}
+                  {e.editor && AttributeEditor(e.editor, (editing) => editingCallback(e.editor.attribute.id, editing))}
                 </View>
             </View>
           );
@@ -79,14 +92,22 @@ const renderEditor = (attribute, props) => {
   if(attribute.editorDisplay && attribute.editorDisplay.hideUndefined && props.obj[attribute.id] === undefined){
     return null;
   }
+  const editing = (props.editing === attribute.id);
   if(attribute.editorDisplay && attribute.editorDisplay.editor === props.editorType){
     switch (attribute.editorDisplay.type) {
       case "single":
-        return renderSingleEditor(attribute, props.styles, props.getEditor);
-        break;
+        return <SingleEditor 
+          attribute={attribute}
+          styles={props.styles}
+          getEditor={props.getEditor}
+          value={props.values[attribute.id]}
+          editing={editing} 
+          key={attribute.id}
+          editingCallback={(editing) => props.editingCallback(attribute.id, editing)}
+        />
       case "combined":
         const combinedEditors = getCombinedEditors(attribute, props.model, props.getEditor);
-        return renderCombinedEditors(combinedEditors, props.styles);
+        return renderCombinedEditors(combinedEditors, props.styles, props.editingCallback, props.editing);
       default:
     }
   }
@@ -122,13 +143,14 @@ class EditOnBlur extends React.Component {
   }
 
   onFocus(){
-
+    this.props.editingCallback(true);
   }
 
   onBlur(){
     this.props.callback(this.props.attribute.id, this.state.value);
+    this.props.editingCallback(false);
     this.setState({
-      renderedValue: this.getRenderedValue(this.state.value)
+      renderedValue: this.getRenderedValue(this.state.value),
     });
   }
 
@@ -172,7 +194,10 @@ class EditOnBlur extends React.Component {
   }
 }
 
-const AttributeEditor = (attribute, value, callback, extraProps = {}, inputId) => {
+const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, editingCallback) => {
+  if(!extraProps) {
+    extraProps = {};
+  }
   //return (<View style={{paddingTop: 6}}><Text style={textStyles.font, textStyles.midLabel}>{}</Text></View>);
   switch (attribute.type) {
     case "displayOnly":
@@ -189,29 +214,32 @@ const AttributeEditor = (attribute, value, callback, extraProps = {}, inputId) =
             dateIcon: inputStyles.dateIcon
           }}
           onDateChange={(datetime) => {
-            callback(attribute.id, new moment(datetime));
+            onChange(attribute.id, new moment(datetime));
           }}
           {...extraProps}
+          editingCallback={editingCallback}
       />);
       break;
     case "product":
       return (<FishPicker
                 onChange={(value) => {
-                  callback(attribute.id, value);
+                  onChange(attribute.id, value);
                 }}
                 value={value}
                 name={attribute.id}
                 inputId={inputId}
                 {...extraProps}
+                editingCallback={editingCallback}
               />);
     case "location":
         let posText = Sexagesimal.format(value.lat, 'lat') + "  " + Sexagesimal.format(value.lon, 'lon');
         return(<EditOnBlur
             attribute={attribute}
             value={posText}
-            callback={callback}
+            callback={onChange}
             extraProps={{editable: false}}
             inputId={inputId}
+            editingCallback={editingCallback}
             />);
       break;
     case "bool":
@@ -226,13 +254,14 @@ const AttributeEditor = (attribute, value, callback, extraProps = {}, inputId) =
         <EditOnBlur
           attribute={attribute}
           value={value}
-          callback={callback}
+          callback={onChange}
           extraProps={extraProps}
           inputId={inputId}
           {...extraProps}
+          editingCallback={editingCallback}
         />
       );
   }
 }
 
-export {renderEditor, renderEditors, renderSingleEditor, renderCombinedEditors, getCombinedEditors, AttributeEditor}
+export {renderEditor, Editors, SingleEditor, renderCombinedEditors, getCombinedEditors, AttributeEditor}

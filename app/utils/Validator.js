@@ -13,7 +13,7 @@ export default {
     },
     targetProduct: {
       func: (value) => {
-          return speciesCodes.indexOf(value) === -1 ? false : true;
+          return speciesCodes.indexOf(value.toLowerCase()) !== -1;
       },
       errorMessage: strings.generic.invalidSpeciesCode
     },
@@ -22,7 +22,7 @@ export default {
         if(value.length === 0){
           return true;
         }
-        return speciesCodes.indexOf(value) !== -1 ? true : false;
+        return speciesCodes.indexOf(value.toLowerCase()) !== -1;
       },
       errorMessage: strings.generic.invalidSpeciesCode
     },

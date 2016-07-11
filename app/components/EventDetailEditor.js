@@ -3,6 +3,7 @@ import {
   StyleSheet,
   View,
   AlertIOS,
+  Text,
 } from 'react-native';
 
 import React from 'react';
@@ -10,7 +11,6 @@ import FishingEventActions from '../actions/FishingEventActions';
 import FishingEventModel from '../models/FishingEventModel';
 import TCERFishingEventModel from '../models/TCERFishingEventModel';
 import Errors from './Errors';
-import {AttributeEditor} from './AttributeEditor';
 import EditorView from './EditorView';
 import {eventEditorStyles, colors} from '../styles/styles';
 const fishingEventActions = new FishingEventActions();
@@ -18,7 +18,6 @@ const fishingEventActions = new FishingEventActions();
 const model = FishingEventModel.concat(TCERFishingEventModel);
 
 class EventDetailEditor extends React.Component{
-
     onChange(name, value){
       switch (name) {
         case "nonFishProtected":
@@ -51,19 +50,19 @@ class EventDetailEditor extends React.Component{
 
     getEditor(attribute){
       const inputId = attribute.id + "__event__" + this.props.fishingEvent.id;
-      return AttributeEditor(
+      return {
         attribute,
-        this.props.fishingEvent[attribute.id],
-        this.onChange.bind(this),
-        {fishingEvent: this.props.fishingEvent},
-        inputId);
+        value: this.props.fishingEvent[attribute.id],
+        onChange: this.onChange.bind(this),
+        extraProps: {fishingEvent: this.props.fishingEvent},
+        inputId,
+      };
     }
 
     getCallback(attr){
       switch (attr.type) {
         case "bool":
           return this.onNonFishChange
-          break;
         default:
           return this.onChangeText
       }
@@ -81,6 +80,7 @@ class EventDetailEditor extends React.Component{
                 name={"eventDetail"}
                 model={model}
                 obj={this.props.fishingEvent}
+                values={this.props.fishingEvent}
               />);
     }
 };

@@ -37,8 +37,19 @@ export default {
   labelText: {
     color: colors.blue
   },
+  labelError: {
+    marginLeft: 4,
+    color: colors.orange
+  },
   rowSection: {
     flex: 0.3
+  },
+  errorDot: {
+    width: 10,
+    height: 10,
+    backgroundColor: colors.orange,
+    borderRadius: 5,
+    margin: 4,
   },
   inputRow: {
     paddingTop: 5,

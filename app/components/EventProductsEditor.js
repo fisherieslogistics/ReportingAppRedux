@@ -15,7 +15,7 @@ import BlankMessage from './BlankMessage';
 
 import {connect} from 'react-redux';
 import {eventEditorStyles, inputStyle, colors, textStyles} from '../styles/styles';
-import {renderCombinedEditors, getCombinedEditors, AttributeEditor} from './AttributeEditor';
+import {renderCombinedEditors, getCombinedEditors } from './AttributeEditor';
 import {cancelWhite} from '../icons/PngIcon';
 import {LongButton} from './Buttons';
 
@@ -34,6 +34,7 @@ const DeleteButton = (props) => {
 class EventProductsEditor extends React.Component{
     constructor (props){
         super(props);
+        this.state = {};
     }
 
     addProduct(){
@@ -44,12 +45,13 @@ class EventProductsEditor extends React.Component{
       const value = product[attribute.id];
       const random = Math.random.toString();
       const inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index + random;
-      return AttributeEditor(
-                     attribute,
-                     value,
-                     (name, v) => this.onChange(name, v, index),
-                     {fishingEvent: this.props.fishingEvent},
-                     inputId);
+      return {
+        attribute,
+        value,
+        onChange: (name, v) => this.onChange(name, v, index),
+        extraProps: {fishingEvent: this.props.fishingEvent},
+        inputId
+      }
     }
 
     onChange(name, value, catchId){
@@ -92,7 +94,14 @@ class EventProductsEditor extends React.Component{
         let num = index + 1;
         combinedEditors.push({label: "Catch " + num, editor: null});
       }
-      return renderCombinedEditors(combinedEditors, styles);
+      const editingCallback = (attributeId, editing) => {
+        if(editing) {
+          this.setState({ editing: attributeId });
+        } else if(this.state.editing == attributeId) {
+          this.setState({ editing: '' });
+        }
+      }
+      return renderCombinedEditors(combinedEditors, styles, editingCallback, this.state.editing);
     }
 
     getDetailWidth(){

@@ -83,15 +83,18 @@ class FishPicker extends React.Component {
                                                               this.props.name,
                                                               this.props.inputId));
     this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
+    this.props.editingCallback(true);
   }
 
   onBlur(){
     this.props.onChange(this.state.value);
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
+    this.props.editingCallback(false);
   }
 
   componentWillUnmount(){
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
+    this.props.editingCallback(false);
   }
 
   onChangeText(text) {

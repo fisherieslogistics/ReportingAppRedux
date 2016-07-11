@@ -18,8 +18,10 @@ import AuthActions from '../actions/AuthActions';
 import MasterListView from './MasterListView';
 import EditorView from './EditorView';
 
+import Validator from '../utils/Validator';
+const valid = Validator.valid;
+
 import {LongButton} from './Buttons';
-import {AttributeEditor} from './AttributeEditor';
 import {MasterToolbar, DetailToolbar} from './Toolbar';
 import {colors, listViewStyles, textStyles, iconStyles, eventEditorStyles} from '../styles/styles';
 import {connect} from 'react-redux';
@@ -31,14 +33,14 @@ const editorStyles = StyleSheet.create(eventEditorStyles);
 
 const Login = ({onLoginPress, loggedIn, disabled}) => {
   const SyncModel = [
-    {id: 'tripsToSync', defaultValue: 0, label: "Trips to Sync", type: "displayOnly",
+    {id: 'tripsToSync', defaultValue: 0, label: "Trips to Sync", type: "displayOnly", valid: valid.alwaysValid,
       editorDisplay: {editor: "account", type: 'combined', siblings: ["eventsToSync", "formsToSync"]}},
-    {id: 'eventsToSync', defaultValue: 0, label: "Events to Sync",  type: "displayOnly"},
-    {id: 'formsToSync', defaultValue: 0, label: "Forms to Sync",  type: "displayOnly"},
+    {id: 'eventsToSync', defaultValue: 0, label: "Events to Sync",  type: "displayOnly", valid: valid.alwaysValid},
+    {id: 'formsToSync', defaultValue: 0, label: "Forms to Sync",  type: "displayOnly", valid: valid.alwaysValid},
   ];
   let syncData = {tripsToSync: 1, eventsToSync: 10, formsToSync: 1};
   const getEditor = (attribute) => {
-    return AttributeEditor(attribute, syncData[attribute.id]);
+    return { attribute, value: syncData[attribute.id] };
   }
   const topStyle = {
     backgroundColor: colors.darkBlue,
@@ -78,6 +80,7 @@ const Login = ({onLoginPress, loggedIn, disabled}) => {
       name={"account"}
       model={SyncModel}
       obj={syncData}
+      values={syncData}
     />
   );
 }
