@@ -24,9 +24,7 @@ const productActions = new ProductActions();
 const DeleteButton = (props) => {
   return (
     <TouchableOpacity onPress={() => props.onPress(props.index)} style={styles.deleteButtonWrapper}>
-      <View style={ styles.deleteView }>
-      <Icon8 name="delete" size={20} color="white" />
-      </View>
+      <Icon8 name="delete" size={20} color="white" style={styles.deleteView} />
     </TouchableOpacity>
   );
 }
@@ -210,7 +208,6 @@ const pStyle = {
     width: 20,
     height: 20,
     backgroundColor: colors.red,
-    opacity: 0.6
   },
   labelRow: {
     flex: 0.20,
