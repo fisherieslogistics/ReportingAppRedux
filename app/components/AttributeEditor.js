@@ -247,7 +247,9 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
       break;
     case "bool":
       return (<Switch
-                onValueChange={(bool) => callback(attribute.id, bool)}
+                onValueChange={(bool) => {
+                  onChange(attribute.id, bool)
+                }}
                 value={value || false}
                 {...extraProps}/>);
     case "number":

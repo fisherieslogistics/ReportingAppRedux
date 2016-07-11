@@ -35,7 +35,7 @@ const FishingEventModel = [
   {label: 'formType', id: 'formType', valid: valid.alwaysValid,
 
   },
-  {label: 'Non Fish Protected Species',  id: 'nonFishProtected', valid: valid.alwaysValid, defaultValue: false, type: 'bool',
+  {label: 'Non Fish Protected Species',  type: 'bool', id: 'nonFishProtected', valid: valid.alwaysValid, defaultValue: false, type: 'bool',
     editorDisplay: {editor: 'event', type: 'single'}
   },
   {id: 'signature', valid: valid.alwaysValid, defaultValue: false, hidden: true},

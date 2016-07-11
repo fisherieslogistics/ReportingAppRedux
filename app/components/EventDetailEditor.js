@@ -53,7 +53,7 @@ class EventDetailEditor extends React.Component{
       return {
         attribute,
         value: this.props.fishingEvent[attribute.id],
-        onChange: this.onChange.bind(this),
+        onChange: attribute.type === 'bool' ? this.onNonFishChange.bind(this) : this.onChange.bind(this),
         extraProps: {fishingEvent: this.props.fishingEvent},
         inputId,
       };
