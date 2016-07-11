@@ -67,9 +67,10 @@ class FormsList extends React.Component {
     }
 
     getDescription(form, sectionId, rowId, isSelected) {
-      let textStyle = isSelected ? textStyles.active : textStyles.dark;
+      let idStyle = isSelected ? {color: colors.white} : {color: colors.black};
+      let textStyle = isSelected ? {color: colors.white} : {};
       let details = [
-        {text: form.id, style: textStyles.black},
+        {text: form.id, style: textStyle},
         {text: form.fishingEvents[0].datetimeAtStart.format("HH:mm"), style:  textStyle},
         {text: form.fishingEvents.length + " Shots ", style: textStyle},
       ];

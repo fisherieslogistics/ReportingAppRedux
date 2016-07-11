@@ -187,15 +187,8 @@ const endFishingEvent = (state, location, id) => {
   ]});
 };
 
-const calculateProductsValid = (Event) => {
-  let products = Event.products;
-  let hasAtLeastOne = false;
-  for(let i = 0; i < products.length; i++) {
-      if(products[i].code != '' && products[i].weight != '' && products[i].weight != 0) {
-          hasAtLeastOne = true;
-      }
-  }
-  return hasAtLeastOne;
+const calculateProductsValid = (fEvent) => {
+  return !fEvent.products.find(p => !(p.weight && p.code));
 };
 
 const setFishingEventGear = (fishingEvent, gear) => {
