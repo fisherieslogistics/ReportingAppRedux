@@ -94,13 +94,13 @@ class Fishing extends React.Component{
     //if longline remove the viewing event;
 
     AlertIOS.alert(
-      "Cancel",
-      'Cancel the latest shot?',
+      "Delete",
+      'Delete the latest shot?',
       [
-        {text: 'No', onPress: () => {
+        {text: 'Cancel', onPress: () => {
           return;
         }, style: 'cancel'},
-        {text: 'Yes', onPress: () => {
+        {text: 'Delete', onPress: () => {
           this.props.dispatch(fishingEventActions.setViewingFishingEvent(null));
           return this.props.dispatch(fishingEventActions.cancelFishingEvent(this.props.lastEvent.id));
         }}
