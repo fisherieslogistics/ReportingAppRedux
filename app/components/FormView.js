@@ -181,7 +181,7 @@ class FormView extends React.Component {
               style={[styles.signImage, {width: 120, height: 40}]}
               key={"SignatureImage"} />),
       (<View style={[styles.dateSigned]} key={"DateSignedText"}>
-         <Text style={[{color: "red"}]}>{this.props.viewingForm.fishingEvents[0].dateSigned.format("DD       mm           gg")}</Text>
+         <Text style={[{color: colors.red}]}>{this.props.viewingForm.fishingEvents[0].dateSigned.format("DD       mm           gg")}</Text>
        </View>)
     ];
   }
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column'
   },
   text: {
-    color: "red"
+    color: colors.red
   },
   textWrapper: {
     position: 'absolute',
