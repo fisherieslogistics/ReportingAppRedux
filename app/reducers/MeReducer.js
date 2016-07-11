@@ -8,6 +8,17 @@ const initialVessel = ModelUtils.blankModel(VesselModel);
 const initialState = {
   ports: ports,
   vessel: initialVessel,
+  containers: [
+    {value: 'Tubs # 16', description: "t", weight: 26},
+    {value: "Iki Bins #10 Packed", description: "i", weight: 14},
+    {value: "Iki Bins flat packed", description: "u", weight: 20},
+    {value: "Individual fish", description: "f", weight: 2},
+    {value: "Fish in Slurry", description: "s", weight: 26},
+    {value: "Bulk Kgs", description: "k", weight: 1},
+    {value: "Dolav", description: "d", weight: 350},
+    {value: "Iki Bins export", description: "x", weight: 14},
+    {value: "Bins", description: "b", weight: 35},
+  ],
   vessels: [],
   user: initialUser,
   autoSuggestFavourites: {

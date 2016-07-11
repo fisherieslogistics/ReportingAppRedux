@@ -19,6 +19,8 @@ import ModelUtils from '../utils/ModelUtils';
 const formModelMeta = ModelUtils.blankModel(TCERFormModel).meta;
 import SignatureView from './SignatureView';
 import AsyncStorage from 'AsyncStorage';
+import FormActions from '../actions/FormActions';
+const formActions = new FormActions();
 
 import {connect} from 'react-redux';
 import {createForms} from '../utils/FormUtils';
@@ -37,7 +39,8 @@ class FormView extends React.Component {
     super(props);
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
-      showSignature: false
+      showSignature: false,
+      currentSignature: null
     };
   }
 
@@ -58,11 +61,11 @@ class FormView extends React.Component {
   _onSaveEvent(result) {
     //result.encoded - for the base64 encoded png
     //result.pathName - for the file path name
-
     this.setState({
       showSignature: false,
-      signaturePath: result.pathName
+      currentSignature: result.encoded
     });
+    this.props.dispatch(formActions.signForm(this.props.viewingForm, result.encoded));
     this.forceUpdate();
  }
 
@@ -169,6 +172,17 @@ class FormView extends React.Component {
     return form && !form.fishingEvents.find(f => !f.productsValid);
   }
 
+  renderSignatureAndDate(){
+    if(!(this.props.viewingForm && this.props.viewingForm.fishingEvents[0].signature)){
+      return null;
+    }
+    return [
+      (<Image source={{uri: "data:image/png;base64," + (this.state.currentSignature || this.props.viewingForm.fishingEvents[0].signature.toString())}}
+              style={[styles.signImage, {width: 120, height: 40}]} />),
+      (<View style={[styles.dateSigned]}><Text>{this.props.viewingForm.fishingEvents[0].dateSigned.format("DD mm     yy")}</Text></View>)
+    ];
+  }
+
   render() {
     let text = [];
 
@@ -194,7 +208,8 @@ class FormView extends React.Component {
     );
 
     let signatureView = this.state.showSignature ?
-      (<View style={styles.signatureViewContainer}>
+      (<View style={[styles.signatureViewContainer, {backgroundColor: "white"}]}>
+        <Text>Once you click sign then you can no longer edit the fishing events</Text>
         <SignatureView
           style={[{flex:1}, styles.signature]}
           ref="sign"
@@ -204,10 +219,7 @@ class FormView extends React.Component {
           showNativeButtons={false}
           viewMode={"landscape"}/>
         </View>) : null;
-
-    let signatureImage = this.state.signaturePath ?
-      (<Image source={{path: this.state.signaturePath, uri: this.state.signaturePath}} style={[styles.signImage, {width: 100, height: 50}]}>
-       </Image>) : null;
+    //console.log(this.props.viewingForm ? this.props.viewingForm.signature : "NOT NOT NOT");
     return (
       <MasterDetailView
         master={this.renderFormsListView()}
@@ -219,7 +231,7 @@ class FormView extends React.Component {
                 {text}
               </View>
             </Image>
-            {signatureImage}
+            {this.renderSignatureAndDate()}
             {signatureView}
           </View>
         )}
@@ -299,15 +311,19 @@ const styles = StyleSheet.create({
   signImage: {
     position: 'absolute',
     top: 420,
-    left: 570
+    left: 550
   },
   signatureViewContainer:{
     position: 'absolute',
     top: 100,
     left: 20,
-    height: 350,
-    paddingTop: 50,
+    height: 300,
     width: 400
+  },
+  dateSigned:{
+    position: 'absolute',
+    top: 460,
+    left: 570
   }
 });
 

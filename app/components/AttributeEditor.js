@@ -159,7 +159,7 @@ class EditOnBlur extends React.Component {
       <TextInput
         selectTextOnFocus={true}
         autoCorrect={false}
-        autoCapitalize={false}
+        autoCapitalize={'none'}
         keyboardType={this.getKeypad.bind(this)()}
         placeholderText={this.props.attribute.label}
         value={this.state.renderedValue}

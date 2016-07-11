@@ -14,7 +14,6 @@ class FormActions{
     return {
       type: 'formSigned',
       fishingEvents: form.fishingEvents,
-      form: form,
       signature: signature,
       dateSigned: new moment(),
     }

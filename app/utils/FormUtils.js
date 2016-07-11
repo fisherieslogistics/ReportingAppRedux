@@ -15,12 +15,14 @@ function firstEventValue(fishingEvents, id){
 const createForms = (fishingEvents) => {
   let forms = [];
   const newForm = (fe) => {
+    console.log(fe);
     let values = {
       id: forms.length + 1,
       created: new moment(fe.datetimeAtStart.unix()),
       fishingEvents: [helper.assign({}, fe)]
     }
     let form = helper.assign(ModelUtils.blankModel(FormModel.concat(TCERFormModel)), values);
+    newForm.signature = fe.signature;
     forms.push(form);
   }
   let addFishingEvent = (fe, shotNumber) => {
