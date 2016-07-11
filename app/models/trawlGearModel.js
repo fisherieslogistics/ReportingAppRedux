@@ -30,10 +30,10 @@ const model = [
   },
   {label: 'Bottom Bridles', id: 'bottomBridles', valid: valid.alwaysValid},*/
 
-  {label: 'Wing Spread', id: 'wingSpread', valid: valid.greaterThanZero,
+  {label: 'Wing Spread', id: 'wingSpread', type: 'number', valid: valid.greaterThanZero,
     editorDisplay: {editor: 'gear', type: 'single'},
   },
-  {label: 'Headline Height', id: 'headlineHeight', valid: valid.greaterThanZero,
+  {label: 'Headline Height', id: 'headlineHeight', type: 'number', valid: valid.greaterThanZero,
     editorDisplay: {editor: 'gear', type: 'single'},
   }
 ];
