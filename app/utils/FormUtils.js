@@ -15,7 +15,6 @@ function firstEventValue(fishingEvents, id){
 const createForms = (fishingEvents) => {
   let forms = [];
   const newForm = (fe) => {
-    console.log(fe);
     let values = {
       id: forms.length + 1,
       created: new moment(fe.datetimeAtStart.unix()),

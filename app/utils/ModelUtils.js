@@ -5,7 +5,6 @@ function mongoObjectId() {
     var _id = timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function() {
         return (Math.random() * 16 | 0).toString(16);
     }).toLowerCase();
-    console.log(_id);
     return _id;
 };
 

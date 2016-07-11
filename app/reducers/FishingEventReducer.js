@@ -20,7 +20,6 @@ export default (state = initialState, action) => {
     if (typeof state === 'undefined') {
         return initialState;
     }
-    console.log(state.events.map(e => e.objectId));
     switch(action.type) {
         case 'endTrip':
           return initialState;

@@ -75,7 +75,6 @@ class PortPicker extends React.Component {
     let favourites = userFavourites ? Object.keys(userFavourites).sort((k1, k2) => {
       return userFavourites[k1] - userFavourites[k2];
     }) : [];
-    console.log(this.props.choices);
     this.props.dispatch(viewActions.initAutoSuggestBarChoices(this.props.choices,
                                                               favourites,
                                                               this.props.value,

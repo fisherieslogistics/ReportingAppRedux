@@ -91,7 +91,6 @@ class SyncWorker {
 
   mutateFishingEvent(fishingEvent, tripId){
     let q = upsertFishingEvent(fishingEvent, tripId);
-    console.log(fishingEvent.objectId);
     let time = new moment();
     let callback = (res) => {
       this.dispatch({

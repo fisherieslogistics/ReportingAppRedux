@@ -13,7 +13,6 @@ const initialState = {
 }
 //this is boken - fix graphql server to upserttrips
 export default (state = initialState, action) => {
-  console.log(Object.keys(state.fishingEvents));
   switch (action.type) {
     case "fishingEventSynced":
       let updatedAt = state.fishingEvents[action.objectId];
@@ -42,7 +41,6 @@ export default (state = initialState, action) => {
     case 'deleteProduct':
     case 'undoDeleteProduct':
     case 'changeEventGear':
-      console.log("adding", action.objectId);
       state.fishingEvents[action.objectId] = new moment();
       return state;
     case "startTrip":
