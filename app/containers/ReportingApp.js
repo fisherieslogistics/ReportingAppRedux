@@ -24,7 +24,7 @@ import {fishing,
         waterTransportLight,
         waterTransport,
         form,
-        user} from '../icons/PngIcon';
+        settingsWhite} from '../icons/PngIcon';
 
 const apiActions = new ApiActions();
 const viewActions = new ViewActions();
@@ -36,7 +36,7 @@ class ReportingApp extends Component {
   constructor(props){
     super(props);
     this.state = {
-      selectedTab: this.props.loggedIn ? (this.props.tripStarted ? "fishing" : "trip") : "profile",
+      selectedTab: this.props.loggedIn ? (this.props.tripStarted ? "fishing" : "trip") : "settings",
     };
     apiActions.setUpClient(props.dispatch);
     this.SyncWorker = new SyncWorker(props.dispatch,
@@ -64,7 +64,7 @@ class ReportingApp extends Component {
       "trip": {render: this.renderTrip.bind(this), icon: waterTransportLight},
       "fishing": {render: this.renderFishing.bind(this), icon: fishing},
       "forms": {render: this.renderForms.bind(this), icon: form},
-      "profile": {render: this.renderProfile.bind(this), icon: user},
+      "settings": {render: this.renderProfile.bind(this), icon: settingsWhite},
     }
 
     return Object.keys(tabs).map((key)=>{

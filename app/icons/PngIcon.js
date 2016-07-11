@@ -29,6 +29,7 @@ const signUpWhite = require("./Sign-Up-white.png");
 const signUpBlue = require("./Sign-Up-blue.png");
 const signUpGray = require("./Sign-Up-gray.png");
 const sailBoatWhite = require("./Sail-Boat-Filled-white.png");
+const settingsWhite = require('./Settings-White.png');
 const error = require("./Error.png");
 const errorWhite = require("./Error-white.png");
 const errorOrange = require("./Error-orange.png");
@@ -102,6 +103,7 @@ export {
  signUpWhite,
  waterTransport,
  form,
+ settingsWhite,
  waterTransportLight
 }
 
