@@ -128,7 +128,6 @@ class Fishing extends React.Component{
         if(!this.props.viewingEvent.datetimeAtEnd){
           return this.renderMessage("Haul before adding catch");
         }
-        console.log(this.props.viewingEvent.objectId, this.props.viewingEvent.id);
         return (<EventProductsEditor
                  fishingEvent={this.props.viewingEvent}
                  deletedProducts={this.props.deletedProducts}

@@ -31,8 +31,8 @@ export default StyleSheet.create({
     alignItems: 'flex-end'
   },
   listView:{
-    marginTop: -18,
-    marginRight: 1,
+    marginTop: -20,
+    marginRight: 0,
   },
   detail: {
     marginTop: 5
