@@ -96,12 +96,12 @@ const renderEditor = (attribute, props) => {
   if(attribute.editorDisplay && attribute.editorDisplay.editor === props.editorType){
     switch (attribute.editorDisplay.type) {
       case "single":
-        return <SingleEditor 
+        return <SingleEditor
           attribute={attribute}
           styles={props.styles}
           getEditor={props.getEditor}
           value={props.values[attribute.id]}
-          editing={editing} 
+          editing={editing}
           key={attribute.id}
           editingCallback={(editing) => props.editingCallback(attribute.id, editing)}
         />
@@ -125,7 +125,6 @@ class EditOnBlur extends React.Component {
   }
 
   componentWillReceiveProps(props){
-    console.log("edit on blur");
     if(props.inputId !== this.state.inputId){
       this.setState({
         value: props.value,
@@ -147,7 +146,7 @@ class EditOnBlur extends React.Component {
   }
 
   onBlur(){
-    this.props.callback(this.props.attribute.id, this.state.value);
+    this.props.callback(this.props.attribute.id, this.getCorrectedValue(this.state.value));
     this.props.editingCallback(false);
     this.setState({
       renderedValue: this.getRenderedValue(this.state.value),
@@ -165,15 +164,19 @@ class EditOnBlur extends React.Component {
     }
   }
 
-  getRenderedValue(value){
+  getCorrectedValue(value){
     switch (this.props.attribute.type) {
       case "number":
-        return isNaN(parseInt(value)) ? "0" : parseInt(value).toString() + (this.props.attribute.unit ? " " + this.props.attribute.unit : "");
+        return isNaN(parseInt(value)) ? "0" : parseInt(value).toString();
       case "float":
-        return isNaN(parseFloat(value)) ? "0.00" : parseFloat(value).toFixed(2).toString() + (this.props.attribute.unit ? " " + this.props.attribute.unit : "");
+        return isNaN(parseFloat(value)) ? "0.00" : parseFloat(value).toFixed(2).toString();
       default:
         return (value !== null && value !== undefined) ? value.toString() : "";
     }
+  }
+
+  getRenderedValue(value){
+    return this.getCorrectedValue(value) + (this.props.attribute.unit ? " " + this.props.attribute.unit : "");
   }
 
   render(){
