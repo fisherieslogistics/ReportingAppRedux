@@ -85,7 +85,7 @@ class AutoSuggestBar extends React.Component {
 
     componentWillReceiveProps(props){
       //use a name change to tell it to re initialise
-      if(props.name !== this.state.name || props.choices.length !== this.state.choices.length){
+      if(props.name !== this.state.name || Object.keys(this.state.valueStore).length !== [...new Set(props.choices)].length){
         this.initSuggestions(props.choices, props.favourites);
         this.setState({
           name: props.name

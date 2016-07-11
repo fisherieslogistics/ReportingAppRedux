@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   TextInput,
   PickerIOS,
-  PickerItemIOS
 } from 'react-native';
 
 import React from 'react';
@@ -28,6 +27,7 @@ const viewActions = new ViewActions();
 const userActions = new UserActions();
 const helper = new Helper();
 const tripActions = new TripActions();
+const PickerItemIOS = PickerIOS.Item;
 
 
 const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTime, disabled, choices}) => {
@@ -66,7 +66,7 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
   return (
     <View style={[styles.halfway, styles.placeAndTime]}>
       <View>
-        <Text style={[textStyles.font, {fontSize: 16, left: -22}]}>{!time || isNaN(time.unix()) ? "" : time.format("DD MMM HH:mm") }</Text>
+        <Text style={[textStyles.font, {fontSize: 16, left: -22}]}>{!time || isNaN(time.unix()) ? "  " : time.format("DD MMM HH:mm") }</Text>
       </View>
       <View style={[]}>
         {dateText}
@@ -155,10 +155,11 @@ class TripEditor extends React.Component {
     }
 
     renderAddPort(){
+      let pickerItems = [];
       let items = this.state.regions.map((region, index) => {
         return (
           <PickerItemIOS
-            key={this.state.regions[index]}
+            key={"region_" + region}
             value={region}
             label={region}
           />
@@ -184,7 +185,7 @@ class TripEditor extends React.Component {
               selectTextOnFocus={true}
               placeholder={"Port Name"}
               autoCorrect={false}
-              autoCapitalize={false}
+              autoCapitalize={'none'}
               value={this.state.newPortName}
               style={inputStyles.textInput, {backgroundColor: 'white', height: 50, alignSelf: 'stretch'}}
               onChangeText={(text) => {
@@ -209,16 +210,18 @@ class TripEditor extends React.Component {
                     });
                   }, style: 'cancel'},
                   {text: 'OK', onPress: () => {
-                    const portName = "" + this.state.newPortName;
+                    let portName = this.state.newPortName ? this.state.newPortName : "";
                     let choices = this.state.portChoices;
-                    choices.push({value: portName, description: this.state.selectedRegion});
+                    if(portName.length){
+                      choices.push({value: portName, description: this.state.selectedRegion});
+                      this.props.dispatch(userActions.addPort(this.state.selectedRegion,
+                                          this.state.portName));
+                    }
                     this.setState({
                       newPortName: "",
                       showAddPort: false,
                       portChoices: choices
                     });
-                    this.props.dispatch(userActions.addPort(this.state.selectedRegion,
-                                        this.state.portName));
                   }}
                 ]
               );
