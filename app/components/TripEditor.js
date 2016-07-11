@@ -67,7 +67,7 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
     <View style={[styles.halfway, styles.placeAndTime]}>
       <View style={[]}>
         {dateText}
-        {AttributeEditor({ 
+        {AttributeEditor({
           attribute: dateAttr,
           value: time,
           onChange: onChangeTime,
@@ -116,7 +116,6 @@ class TripEditor extends React.Component {
           }});
         });
       });
-      console.log(choices);
       return choices;
     }
 
@@ -143,7 +142,7 @@ class TripEditor extends React.Component {
     renderMessage(){
       let message = this.props.trip.started ?
                       "Trip started" : (this.props.tripCanStart ?
-                        "Press start trip to start" :  "Select ports and times before starting trip");
+                        "Ready to start trip" :  "Select ports and times before starting trip");
       return (
         <BlankMessage
           text={ message }
