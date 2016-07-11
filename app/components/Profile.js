@@ -263,7 +263,7 @@ class Profile extends React.Component{
     );
     let masterToolbar = (
       <MasterToolbar
-        center={<View style={{marginTop: 27}}><Text style={[textStyles.font, textStyles.midLabel]}>Settings</Text></View>}
+        center={<View style={{marginTop: 36}}><Text style={[textStyles.font, textStyles.midLabel]}>Settings</Text></View>}
       />
     )
     return (

@@ -207,6 +207,7 @@ class FormView extends React.Component {
     let masterToolbar = (
       <MasterToolbar
         right={{color: colors.blue, text: "Sign all", onPress: () => this.toggleSignature("all", canSignAll), enabled: canSignAll}}
+        center={<View style={{marginTop: 36}}><Text style={[textStyles.font, textStyles.midLabel]}>Forms</Text></View>}
       />
     );
 

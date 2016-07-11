@@ -58,9 +58,10 @@ class FishingEventList extends React.Component {
 
     getDescription(fishingEvent, sectionID, rowID) {
       let tSpecies = (fishingEvent.targetSpecies || "").toUpperCase();
-      let textStyle = this.isSelected(fishingEvent) ? textStyles.white : textStyles.light;
+      const isSelected = this.isSelected(fishingEvent);
+      let textStyle = isSelected ? textStyles.white : textStyles.black;
       let details = [
-        {text: fishingEvent.id, style: [textStyles.black, listViewStyles.text, listViewStyles.detail, {marginLeft: 12}]},
+        {text: fishingEvent.id, style: [textStyle, listViewStyles.text, listViewStyles.detail, {marginLeft: 12}]},
         {text: fishingEvent.datetimeAtStart.format("HH:mm"),style: [textStyle, listViewStyles.detail, textStyles.listView]},
         {text: tSpecies, style: [textStyle, listViewStyles.detail, listViewStyles.text]}
       ];
