@@ -178,8 +178,11 @@ class FormView extends React.Component {
     }
     return [
       (<Image source={{uri: "data:image/png;base64," + (this.state.currentSignature || this.props.viewingForm.fishingEvents[0].signature.toString())}}
-              style={[styles.signImage, {width: 120, height: 40}]} />),
-      (<View style={[styles.dateSigned]}><Text style={[{color: "red"}]}>{this.props.viewingForm.fishingEvents[0].dateSigned.format("DD       mm           gg")}</Text></View>)
+              style={[styles.signImage, {width: 120, height: 40}]}
+              key={"SignatureImage"} />),
+      (<View style={[styles.dateSigned]} key={"DateSignedText"}>
+         <Text style={[{color: "red"}]}>{this.props.viewingForm.fishingEvents[0].dateSigned.format("DD       mm           gg")}</Text>
+       </View>)
     ];
   }
 
@@ -209,7 +212,9 @@ class FormView extends React.Component {
 
     let signatureView = this.state.showSignature ?
       (<View style={[styles.signatureViewContainer, {backgroundColor: "white"}]}>
-        <Text>Once you click sign then you can no longer edit the fishing events</Text>
+        <Text>Once you click save then you can no longer edit the shots onthis form.</Text>
+        <Text>Please note that signing this form will also submit the form directly to Fishserve.</Text>
+        <Text>This form has the same legal status as the paper TCER form</Text>
         <SignatureView
           style={[{flex:1}, styles.signature]}
           ref="sign"
@@ -310,15 +315,16 @@ const styles = StyleSheet.create({
   },
   signImage: {
     position: 'absolute',
-    top: 410,
+    top: 420,
     left: 550
   },
   signatureViewContainer:{
     position: 'absolute',
     top: 100,
-    left: 20,
-    height: 300,
-    width: 400
+    left: 0,
+    height: 310,
+    width: 450,
+    padding: 10
   },
   dateSigned:{
     position: 'absolute',

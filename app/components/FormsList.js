@@ -31,13 +31,13 @@ class FormsList extends React.Component {
     }
 
     getFormStatus(form){
-      if(form.submitted){
+      if(!form.fishingEvents.find(f => !f.signature)){
         return {
           icon: cloudWhite,
           color: colors.midGray
         }
       }
-      if(form.signed){
+      if(form.signature){
         return {
           icon: uploadCloudWhite,
           color: colors.green

@@ -28,8 +28,8 @@ const meta = {
     fishingEvents: {
       shotNumber: {x: 220, y: 85},
       targetSpecies: {x: 310, y: 85},
-      bottomDepth: {x: 218, y: 227, resolve: (fe) => isNaN(parseInt(fe.bottomDepth)) ? "" : fe.bottomDepth},
-      groundropeDepth: {x: 282, y: 227, resolve: fe => isNaN(parseInt(fe.groundropeDepth)) ? "" : fe.groundropeDepth},
+      bottomDepth: {x: 218, y: 227, resolve: (fe) => isNaN(parseInt(fe.bottomDepth)) ? "" : parseInt(fe.bottomDepth)},
+      groundropeDepth: {x: 282, y: 227, resolve: fe => isNaN(parseInt(fe.groundropeDepth)) ? "" : parseInt(fe.groundropeDepth)},
       nonFishProtected: {x: 195, y: 312, resolve: fe => fe.nonFishProtected ? "X" : "           X"},
       averageSpeed: {x: 173, y: 258, align: 'right', resolve: fe => isNaN(parseFloat(fe.averageSpeed)) ? "" : parseFloat(fe.averageSpeed).toFixed(1)},
       targetSpecies: {x: 310, y: 85},
@@ -53,7 +53,7 @@ const meta = {
       datetimeAtStart: {
         multiple: true,
         parts: [
-          {x: 185, y: 115, resolve: (fe) => {
+          {x: 188, y: 115, resolve: (fe) => {
             return fe.datetimeAtStart.format("DD   MM    YYYY");
           }},
           {x: 184, y: 140, resolve: (fe) => {
