@@ -14,7 +14,7 @@ const renderButton = (button) => {
     return (<IconButton
               icon={button.icon}
               onPress={button.onPress}
-              style={{width: 50, height: 50, marginTop: 20, marginRight: 0}}
+              style={{width: 50, marginTop:29, height: 50, marginRight: 0}}
               disabled={!button.enabled} />);
   }
   return (<TextButton
@@ -66,7 +66,7 @@ const masterStyles = StyleSheet.create({
    toolbar:{
      backgroundColor: colors.white,
      flexDirection: 'row',
-     height: 70
+     height: 70,
    },
    left: {
      alignSelf: 'stretch',
