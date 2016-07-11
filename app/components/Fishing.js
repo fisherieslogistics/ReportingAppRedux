@@ -207,7 +207,7 @@ class Fishing extends React.Component{
     };
     return(
         <MasterToolbar
-          center={<View style={{marginTop: 27}}><Text style={[textStyles.font, textStyles.midLabel]}>Fishing</Text></View>}
+          center={<View style={{marginTop: 36}}><Text style={[textStyles.font, textStyles.midLabel]}>Fishing</Text></View>}
           right={startEventButton}
         />
       );
