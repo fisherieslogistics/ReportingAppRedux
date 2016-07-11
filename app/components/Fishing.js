@@ -122,7 +122,10 @@ class Fishing extends React.Component{
                  dispatch={this.props.dispatch}
                  />);
       case 1:
-        if(!this.props.viewingEvent || !this.props.viewingEvent.datetimeAtEnd){
+        if(!this.props.viewingEvent){
+          return this.renderMessage("No shots to edit");
+        }
+        if(!this.props.viewingEvent.datetimeAtEnd){
           return this.renderMessage("Haul before adding catch");
         }
         console.log(this.props.viewingEvent.objectId, this.props.viewingEvent.id);
