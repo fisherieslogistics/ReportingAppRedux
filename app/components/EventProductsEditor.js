@@ -34,7 +34,7 @@ const DeleteButton = (props) => {
 class EventProductsEditor extends React.Component{
     constructor (props){
         super(props);
-        this.state = {};
+        this.state = { editing: ''};
     }
 
     addProduct(){
@@ -96,12 +96,17 @@ class EventProductsEditor extends React.Component{
       }
       const editingCallback = (attributeId, editing) => {
         if(editing) {
-          this.setState({ editing: attributeId });
-        } else if(this.state.editing == attributeId) {
+          this.setState({ editing: attributeId + '__' + index });
+        } else if(this.state.editing == attributeId + '__' + index) {
           this.setState({ editing: '' });
         }
       }
-      return renderCombinedEditors(combinedEditors, styles, editingCallback, this.state.editing);
+      const split = this.state.editing.split('__');
+      let editting = '';
+      if(split.length == 2 && split[1] == index) {
+        editting = split[0];
+      }
+      return renderCombinedEditors(combinedEditors, styles, editingCallback, editting);
     }
 
     getDetailWidth(){
