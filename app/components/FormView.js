@@ -179,7 +179,7 @@ class FormView extends React.Component {
     return [
       (<Image source={{uri: "data:image/png;base64," + (this.state.currentSignature || this.props.viewingForm.fishingEvents[0].signature.toString())}}
               style={[styles.signImage, {width: 120, height: 40}]} />),
-      (<View style={[styles.dateSigned]}><Text>{this.props.viewingForm.fishingEvents[0].dateSigned.format("DD mm     yy")}</Text></View>)
+      (<View style={[styles.dateSigned]}><Text style={[{color: "red"}]}>{this.props.viewingForm.fishingEvents[0].dateSigned.format("DD       mm           gg")}</Text></View>)
     ];
   }
 
@@ -198,7 +198,7 @@ class FormView extends React.Component {
       <DetailToolbar
         right={{color: colors.blue, text: "Sign", onPress: () => this.toggleSignature("single", canSignOne), enabled: canSignOne}}
         centerTop={<Text style={[textStyles.font]}>{this.props.viewingForm ? this.props.viewingForm.id : null}</Text>}
-        centerBottom={<View style={styles.spacer}/>}
+        centerBottom={<View style={styles.spacer} />}
       />
     );
     let masterToolbar = (
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   },
   signImage: {
     position: 'absolute',
-    top: 420,
+    top: 410,
     left: 550
   },
   signatureViewContainer:{
@@ -322,8 +322,9 @@ const styles = StyleSheet.create({
   },
   dateSigned:{
     position: 'absolute',
-    top: 460,
-    left: 570
+    top: 448,
+    left: 570,
+    backgroundColor: 'transparent',
   }
 });
 
