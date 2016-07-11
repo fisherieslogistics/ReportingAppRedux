@@ -8,6 +8,7 @@ import{
 } from 'react-native';
 import React from 'react';
 import {textStyles, iconStyles, colors} from '../styles/styles';
+import Icon8 from './Icon8';
 
 const getActiveOpacity = (disabled) => {
   return disabled ? 1 : 0.6;
@@ -35,11 +36,8 @@ const Button = ({onPress, content, disabled}) => {
   )
 }
 
-const IconButton = ({icon, onPress, style, disabled}) => {
-  let content =
-    (<View style={[style]}>
-      <Image source={icon} style={iconStyles} />
-    </View>);
+const IconButton = ({icon, onPress, style, disabled, color}) => {
+  let content = <Icon8 name={icon} size={30} color={color||'red'} style={style}/>
   return (
     <Button
       disabled={disabled}

@@ -18,13 +18,8 @@ import ApiActions from '../actions/ApiActions';
 import Trip from '../components/Trip';
 import SyncWorker from '../api/SyncWorker';
 import ShadowStyle from '../styles/shadow';
+import Icon8 from '../components/Icon8';
 
-import {fishing,
-        fishingBlue,
-        waterTransportLight,
-        waterTransport,
-        form,
-        settingsWhite} from '../icons/PngIcon';
 
 const apiActions = new ApiActions();
 const viewActions = new ViewActions();
@@ -61,33 +56,35 @@ class ReportingApp extends Component {
   renderTabs(){
 
     const tabs = {
-      "trip": {render: this.renderTrip.bind(this), icon: waterTransportLight},
-      "fishing": {render: this.renderFishing.bind(this), icon: fishing},
-      "forms": {render: this.renderForms.bind(this), icon: form},
-      "settings": {render: this.renderProfile.bind(this), icon: settingsWhite},
+      "trip": {render: this.renderTrip.bind(this), icon: 'fishing-boat'},
+      "fishing": {render: this.renderFishing.bind(this), icon: 'fishing'},
+      "forms": {render: this.renderForms.bind(this), icon: 'form'},
+      "settings": {render: this.renderProfile.bind(this), icon: 'settings'},
     }
 
     return Object.keys(tabs).map((key)=>{
       let selected = !!(this.state.selectedTab == key);
-      return (<TabBarIOS.Item
-                key={key}
-                title={key.capitalize()}
-                selected={selected}
-                icon={tabs[key].icon}
-                hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
-                style={{flex: 0.1}}
-                onPress={() => {
-                  if(this.props.loggedIn){
-                    if(key === "forms"){
-                      this.props.dispatch(formActions.setViewingForm(null));
-                    }
-                    this.setState({
-                      selectedTab: key
-                    });
-                  }
-                }}>
-                {tabs[key].render()}
-              </TabBarIOS.Item>);
+      return (
+        <Icon8.TabBarItemIOS
+          key={key}
+          title={key.capitalize()}
+          selected={selected}
+          iconName={tabs[key].icon}
+          selectedIconName={tabs[key].icon + '-filled'}
+          hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
+          style={{flex: 0.1}}
+          onPress={() => {
+            if(this.props.loggedIn){
+              if(key === "forms"){
+                this.props.dispatch(formActions.setViewingForm(null));
+              }
+              this.setState({
+                selectedTab: key
+              });
+            }
+          }}>
+        {tabs[key].render()}
+      </Icon8.TabBarItemIOS>);
     });
   }
 

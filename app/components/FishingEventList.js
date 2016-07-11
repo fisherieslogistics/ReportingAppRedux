@@ -14,18 +14,11 @@ import FishingEventModel from '../models/FishingEventModel';
 import TCERFishingEventModel from '../models/TCERFishingEventModel';
 const helper = new Helper();
 import MasterListView from './MasterListView';
+import Icon8 from './Icon8';
 
 import {colors, listViewStyles, iconStyles, textStyles} from '../styles/styles';
 import {IconButton} from './Buttons';
 
-import {fishingBlue,
-        fishingWhite,
-        errorOrange,
-        errorWhite,
-        checkedGreen,
-        checkedWhite,
-        cloud,
-        cloudWhite} from '../icons/PngIcon';
 
 class FishingEventList extends React.Component {
     constructor(props){
@@ -34,26 +27,24 @@ class FishingEventList extends React.Component {
 
     eventStatus(fishingEvent){
       if(!fishingEvent.datetimeAtEnd){
-        return {icon: fishingWhite,
+        return {icon: 'fishing',
                 color: colors.blue}
       }
       if(fishingEvent.datetimeAtEnd && !fishingEvent.productsValid){
-        return {icon: errorWhite,
+        return {icon: 'error',
                 color: colors.orange}
       }
       if(!fishingEvent.commited){
-        return {icon: checkedWhite,
+        return {icon: 'ok',
                 color: colors.green}
       }
-      return {icon: cloudWhite,
+      return {icon: 'cloud',
               color: colors.midGray};
     }
 
     getIcon(fishingEvent){
       let status = this.eventStatus(fishingEvent);
-      return (<View style={[iconStyles, {backgroundColor: status.color}]}>
-                <Image source={status.icon} style={{}} />
-              </View>)
+      return (<Icon8 name={status.icon} size={30} color="white"  style={[iconStyles, {backgroundColor: status.color}]}/>)
     }
 
     getDescription(fishingEvent, sectionID, rowID) {

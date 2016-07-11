@@ -24,10 +24,7 @@ import BlankMessage from './BlankMessage';
 import {TextButton, IconButton} from './Buttons';
 import {MasterToolbar, DetailToolbar} from './Toolbar';
 import {colors, textStyles, iconStyles} from '../styles/styles';
-import {
- plusBlue,
- plusGray,
-} from '../icons/PngIcon';
+import Icon8 from './Icon8';
 
 import PositionProvider from '../utils/PositionProvider';
 const positionProvider = new PositionProvider();
@@ -94,13 +91,13 @@ class Fishing extends React.Component{
     //if longline remove the viewing event;
 
     AlertIOS.alert(
-      "Cancel",
-      'Cancel the latest shot?',
+      "Delete",
+      'Delete the latest shot?',
       [
-        {text: 'No', onPress: () => {
+        {text: 'Cancel', onPress: () => {
           return;
         }, style: 'cancel'},
-        {text: 'Yes', onPress: () => {
+        {text: 'Delete', onPress: () => {
           this.props.dispatch(fishingEventActions.setViewingFishingEvent(null));
           return this.props.dispatch(fishingEventActions.cancelFishingEvent(this.props.lastEvent.id));
         }}
@@ -201,9 +198,9 @@ class Fishing extends React.Component{
   }
 
   getMasterToolbar(){
-    let icon = this.props.enableStartEvent ? plusBlue : plusGray;
     let startEventButton = {
-        icon:icon,
+        icon: 'plus-math',
+        color: this.props.enableStartEvent ? colors.blue : colors.gray,
         onPress:this.startFishingEvent.bind(this),
         enabled:this.props.enableStartEvent,
     };
