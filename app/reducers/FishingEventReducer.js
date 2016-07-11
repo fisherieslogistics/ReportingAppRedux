@@ -60,9 +60,11 @@ export default (state = initialState, action) => {
           return replaceFishingEvent(state, fishingEvent);
         case 'formSigned':
           action.fishingEvents.forEach((fe) => {
-            state = changeEvent(fe.id, state, {signature: action.signature, dateSigned: action.dateSigned});
+            state = changeEvent(fe.id - 1, state, {signature: action.signature,
+                                                   dateSigned: action.dateSigned,
+                                                   committed: true});
           });
-          return state;
+          return Object.assign({}, state);
         default:
             return state;
     }

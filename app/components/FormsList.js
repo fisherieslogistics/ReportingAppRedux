@@ -14,8 +14,8 @@ import FishingEventModel from '../models/FishingEventModel';
 import TCERFishingEventModel from '../models/TCERFishingEventModel';
 import MasterListView from './MasterListView';
 
-import {colors, listViewStyles, textStyles} from '../styles/styles';
-import {cloud, uploadCloudGreen, signUpOrange, signUpBlue, signUpGray, signUpWhite} from '../icons/PngIcon';
+import {colors, listViewStyles, textStyles, iconStyles} from '../styles/styles';
+import {cloudWhite, uploadCloudWhite, signUpWhite, errorWhite} from '../icons/PngIcon';
 
 const helper = new Helper();
 const Lang = Strings.english;
@@ -23,21 +23,6 @@ const Lang = Strings.english;
 const fishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
 const formActions = new FormActions();
 
-
-const formDescs = {
-  started: {
-    icon: signUpOrange
-  },
-  incompleteEvents:{
-    icon: signUpGray
-  },
-  signed: {
-    icon: uploadCloudGreen
-  },
-  submitted:{
-    icon: cloud
-  },
-}
 
 class FormsList extends React.Component {
 
@@ -47,15 +32,27 @@ class FormsList extends React.Component {
 
     getFormStatus(form){
       if(form.submitted){
-        return formModelMeta.submitted;
+        return {
+          icon: cloudWhite,
+          color: colors.midGray
+        }
       }
       if(form.signed){
-        return formDescs.signed;
+        return {
+          icon: uploadCloudWhite,
+          color: colors.green
+        }
       }
       if(form.fishingEvents.find(f => !f.productsValid)){
-        return formDescs.incompleteEvents;
+        return {
+          icon: errorWhite,
+          color: colors.orange
+        }
       }
-      return formDescs.started;
+      return {
+        icon: signUpWhite,
+        color: colors.blue
+      }
     }
 
     isSelected(form, rowId){
@@ -63,9 +60,10 @@ class FormsList extends React.Component {
     }
 
     getIcon(form, isSelected){
-      let status = this.getFormStatus(form);
-      let icon = isSelected ? signUpWhite : status.icon;
-      return (<Image source={icon} style={{opacity: 0.5}}/>);
+      let status = this.getFormStatus(form, isSelected);
+      return (<View style={[iconStyles, {backgroundColor: status.color}]}>
+                <Image source={status.icon} style={{}} />
+              </View>)
     }
 
     getDescription(form, sectionId, rowId, isSelected) {

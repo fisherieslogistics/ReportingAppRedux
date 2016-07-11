@@ -87,18 +87,6 @@ class Trip extends React.Component{
     this.props.dispatch(tripActions.startTrip(this.props.vesselId));
   }
 
-  renderDetail(){
-    let message = this.props.trip.started ?
-                    "Trip started" : (this.props.tripCanStart ?
-                      "Press start trip to start" :  "Select ports and times before starting trip");
-    return (
-      <BlankMessage
-        text={ message }
-        height={100}
-        />
-    );
-  }
-
   renderMasterView(){
     return (
       <View style={{top: 0, left: 0}}>
@@ -129,7 +117,7 @@ class Trip extends React.Component{
       <MasterDetailView
         master={this.renderMasterView()}
         sizes={{m: 0.6, d: 0.4}}
-        detailView={this.renderDetail()}
+        detailView={null}
         detailToolbar={<DetailToolbar style={toolbarStyle} />}
         masterToolbar={<MasterToolbar style={toolbarStyle} />}
       />

@@ -9,13 +9,13 @@ const FishingEventModel = [
     editorDisplay: {editor: 'event', type: 'single'}
   },
   {label: 'Date/Time at Start',  id: 'datetimeAtStart', valid: valid.anyValue,
-    type: 'datetime', 
+    type: 'datetime',
     combinedValid: {attributes: ["datetimeAtStart", "datetimeAtEnd"],
                     func: Validator.combined.orderedLessThan},
     editorDisplay: {editor: 'event', type: 'combined', siblings: ['locationAtStart']}
   },
   {label: 'Date/Time at End',    id: 'datetimeAtEnd',      valid: valid.anyValue,
-    type: 'datetime', 
+    type: 'datetime',
     combinedValid: {attributes: ["datetimeAtEnd", "datetimeAtStart"],
                     func: Validator.combined.orderedGreaterThan},
     editorDisplay: {editor: 'event', type: 'combined', siblings: ['locationAtEnd'], hideUndefined: true}
@@ -33,11 +33,14 @@ const FishingEventModel = [
    defaultValue: [],
   },
   {label: 'formType', id: 'formType', valid: valid.alwaysValid,
-   
+
   },
   {label: 'Non Fish Protected Species',  id: 'nonFishProtected', valid: valid.alwaysValid, defaultValue: false, type: 'bool',
     editorDisplay: {editor: 'event', type: 'single'}
   },
+  {id: 'signature', valid: valid.alwaysValid, defaultValue: false, hidden: true},
+  {id: 'dateSigned', valid: valid.alwaysValid, defaultValue: false, hidden: true},
+  {id: 'committed', valid: valid.alwaysValid, defaultValue: false, hidden: true},
 ];
 
 export default FishingEventModel;

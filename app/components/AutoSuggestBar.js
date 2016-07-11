@@ -85,7 +85,7 @@ class AutoSuggestBar extends React.Component {
 
     componentWillReceiveProps(props){
       //use a name change to tell it to re initialise
-      if(props.name !== this.state.name || props.favouritesChangedAt !== this.state.favouritesChangedAt){
+      if(props.name !== this.state.name || props.choices.length !== this.state.choices.length){
         this.initSuggestions(props.choices, props.favourites);
         this.setState({
           name: props.name
@@ -100,7 +100,11 @@ class AutoSuggestBar extends React.Component {
 
     renderResult(resultIndex){
       let result = this.state.choices[resultIndex];
-      let isSelected = (result.value.toUpperCase() === this.props.text.toUpperCase());
+      let text = this.props.text || "";
+      if(!result.value){
+        return null;
+      }
+      let isSelected = (result.value.toUpperCase() === text.toUpperCase());
       let resultTextStyle = isSelected ? styles.resultTextSelected : styles.resultText;
       let backgroundStyle = isSelected ? styles.resultBackgroundSelected : styles.resultBackground;
       return (

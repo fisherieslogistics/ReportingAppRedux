@@ -75,6 +75,7 @@ class PortPicker extends React.Component {
     let favourites = userFavourites ? Object.keys(userFavourites).sort((k1, k2) => {
       return userFavourites[k1] - userFavourites[k2];
     }) : [];
+    console.log(this.props.choices);
     this.props.dispatch(viewActions.initAutoSuggestBarChoices(this.props.choices,
                                                               favourites,
                                                               this.props.value,
@@ -112,7 +113,6 @@ class PortPicker extends React.Component {
         value={this.state.value}
         placeholder={this.props.placeholder}
         placeholderTextColor={colors.black}
-        maxLength={3}
         selectTextOnFocus={true}
         autoCapitalize={'none'}
         autoCorrect={false}
@@ -126,16 +126,7 @@ reactMixin(PortPicker.prototype, Subscribable.Mixin);
 
 const select = (State, dispatch) => {
   let state = State.default;
-  let choices = [];
-  const ports = Object.keys(state.me.ports).map((k) => {
-    return state.me.ports[k].forEach((p) => {
-        choices.push({value:p, description: k, render: () => {
-          return {value: k, description: p};
-        }});
-      });
-    });
   return {
-    choices: choices,
     eventEmitter: state.uiEvents.eventEmitter,
     favourites: state.me.autoSuggestFavourites
   };
