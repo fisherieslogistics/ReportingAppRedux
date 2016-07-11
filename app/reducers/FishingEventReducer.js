@@ -188,7 +188,7 @@ const endFishingEvent = (state, location, id) => {
 };
 
 const calculateProductsValid = (fEvent) => {
-  return !fEvent.products.find(p => !(p.weight && p.code));
+  return !(fEvent.products.find(p => !(p.weight && p.code)) && fEvent.products.length);
 };
 
 const setFishingEventGear = (fishingEvent, gear) => {

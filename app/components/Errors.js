@@ -7,6 +7,8 @@ import{
 import React from 'react';
 import {findErrors, findCombinedErrors} from '../utils/ModelErrors';
 
+import colors from '../styles/colors';
+
 class Errors {
 
     getErrorMessages(){

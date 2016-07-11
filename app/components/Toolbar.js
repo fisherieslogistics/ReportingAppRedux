@@ -9,7 +9,7 @@ import {
 import React from 'react';
 import {colors, shadowStyles, textStyles} from '../styles/styles';
 import {TextButton, IconButton} from './Buttons';
-const renderButton = (button) => {
+const renderButton = (button, textAlign) => {
   if(button.icon){
     return (<IconButton
               icon={button.icon}
@@ -19,8 +19,9 @@ const renderButton = (button) => {
   }
   return (<TextButton
             text={button.text}
-            style={{marginTop: 34, marginRight: 0, marginLeft: 22, width: 70}}
+            style={{marginTop: 34, marginRight: 15, marginLeft: 22, width: 70}}
             color={button.color}
+            textAlign={textAlign || "left"}
             onPress={button.onPress}
             disabled={!button.enabled}  />);
 }
@@ -29,13 +30,13 @@ const MasterToolbar = (props) => {
   return (
     <View style={[masterStyles.toolbar, props.style]}>
       <View style={[masterStyles.left]}>
-        {props.left ? renderButton(props.left) : null}
+        {props.left ? renderButton(props.left, "left") : null}
       </View>
       <View style={masterStyles.center}>
         {props.center}
       </View>
       <View style={[masterStyles.right]}>
-        {props.right ? renderButton(props.right) : null}
+        {props.right ? renderButton(props.right, "right") : null}
       </View>
     </View>
   );
