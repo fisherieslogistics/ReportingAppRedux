@@ -65,6 +65,9 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
 
   return (
     <View style={[styles.halfway, styles.placeAndTime]}>
+      <View>
+        <Text style={[textStyles.font, {fontSize: 16, left: -22}]}>{!time || isNaN(time.unix()) ? "" : time.format("DD MMM HH:mm") }</Text>
+      </View>
       <View style={[]}>
         {dateText}
         {AttributeEditor({
