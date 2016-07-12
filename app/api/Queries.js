@@ -3,10 +3,14 @@ import util from 'util';
 const upsertFishingEvent = (fEvent, tripId) => {
   const catches = fEvent.products.map((c) => {
     let prod = Object.assign({}, c, {weight: parseInt(c.weight || 0),
-                                 numberOfContainers: parseInt(c.numberOfContainers | 0)});
+                                     numberOfContainers: parseInt(c.numberOfContainers | 0)});
     delete prod["objectId"];
     return prod;
   });
+  let custom = {
+    headlineHeight: fEvent.headlineHeight || 0,
+    wingSpread: fEvent.wingSpread || 0
+  };
   return `
     mutation {
       upsertFishingEvent(
@@ -22,9 +26,9 @@ const upsertFishingEvent = (fEvent, tripId) => {
         groundropeDepth: ${ parseInt(fEvent.groundropeDepth || 0) },
         targetSpecies: "${ fEvent.targetSpecies }",
         committed: ${ !!fEvent.committed },
+        custom: ${ JSON.stringify(JSON.stringify(custom)) },
         locationStart: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtStart.lat, lon: fEvent.locationAtStart.lon})) },
         locationEnd: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtEnd.lat, lon: fEvent.locationAtEnd.lon})) },
-        custom: ${ JSON.stringify(JSON.stringify(fEvent.gear)) },
         catches: ${ util.inspect(catches).replace(/\'/g, '"') }
       ) {
         _id,
