@@ -15,7 +15,7 @@ const renderButton = (button, textAlign) => {
               icon={button.icon}
               color={button.color}
               onPress={button.onPress}
-              style={{width: 50, marginTop:29, height: 50, marginRight: 0}}
+              style={{width: 50, marginTop:29, height: 50, marginRight: 0, backgroundColor: 'transparent'}}
               disabled={!button.enabled} />);
   }
   return (<TextButton

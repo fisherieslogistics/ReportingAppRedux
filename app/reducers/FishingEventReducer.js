@@ -25,7 +25,6 @@ export default (state = initialState, action) => {
         case 'endTrip':
           return initialState;
         case 'startFishingEvent':
-          debugger;
           return newFishingEvent(state, action.location, action.gear);
         case 'endFishingEvent':
           return endFishingEvent(state, action.location, action.id);
@@ -53,7 +52,7 @@ export default (state = initialState, action) => {
         case 'undoDeleteProduct':
           return undoDeleteProduct(state, action);
         case 'changeEventGear':
-          const gearChange = {};
+          let gearChange = {};
           gearChange[action.key] = action.value;
           return changeEvent(action.fishingEventId - 1, state, gearChange)
         case 'formSigned':

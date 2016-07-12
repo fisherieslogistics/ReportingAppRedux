@@ -43,11 +43,16 @@ class EventProductsEditor extends React.Component{
       const value = product[attribute.id];
       const random = Math.random.toString();
       const inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index + random;
+      let extraProps = {fishingEvent: this.props.fishingEvent}
+      if(attribute.type == 'container'){
+        extraProps.choices = this.props.containerChoices;
+        extraProps.name = "__product" + "_" + index + "__container";
+      }
       return {
         attribute,
         value,
         onChange: (name, v) => this.onChange(name, v, index),
-        extraProps: {fishingEvent: this.props.fishingEvent},
+        extraProps: extraProps,
         inputId
       }
     }

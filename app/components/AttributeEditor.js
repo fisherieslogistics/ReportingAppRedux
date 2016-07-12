@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import FishPicker from '../components/FishPicker';
+import ContainerPicker from '../components/ContainerPicker';
 import DatePicker from 'react-native-datepicker';
 import {inputStyles, textStyles} from '../styles/styles';
 import Sexagesimal from 'sexagesimal';
@@ -30,6 +31,9 @@ const SingleEditor = ({ attribute, styles, getEditor, value, editing, editingCal
     throw new Error(`${attribute.id} doesn't have a validator`);
   }
   const isValid = attribute.valid.func(value);
+  if(!isValid){
+    console.log(attribute, value);
+  }
   return (
     <View style={[styles.col, styles.inputRow]} key={attribute.id}>
         <View style={[styles.row, styles.labelRow]}>
@@ -94,6 +98,7 @@ const renderEditor = (attribute, props) => {
   }
   const editing = (props.editing === attribute.id);
   if(attribute.editorDisplay && attribute.editorDisplay.editor === props.editorType){
+    console.log(props.values);
     switch (attribute.editorDisplay.type) {
       case "single":
         return <SingleEditor
@@ -225,6 +230,17 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
       break;
     case "product":
       return (<FishPicker
+                onChange={(value) => {
+                  onChange(attribute.id, value);
+                }}
+                value={value}
+                name={attribute.id}
+                inputId={inputId}
+                {...extraProps}
+                editingCallback={editingCallback}
+              />);
+    case "container":
+      return (<ContainerPicker
                 onChange={(value) => {
                   onChange(attribute.id, value);
                 }}

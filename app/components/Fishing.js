@@ -110,7 +110,10 @@ class Fishing extends React.Component{
   }
 
   selectedDetailView(){
-    if(this.props.viewingEvent && this.props.viewingEvent.signature){
+    if(!this.props.viewingEvent){
+      return this.renderMessage("No shots to edit");
+    }
+    if(this.props.viewingEvent.signature){
       return this.renderMessage("This shot has been signed and cannot be edited");
     }
     switch (this.state.selectedDetail){
@@ -122,9 +125,6 @@ class Fishing extends React.Component{
                  dispatch={this.props.dispatch}
                  />);
       case 1:
-        if(!this.props.viewingEvent){
-          return this.renderMessage("No shots to edit");
-        }
         if(!this.props.viewingEvent.datetimeAtEnd){
           return this.renderMessage("Haul before adding catch");
         }
@@ -136,6 +136,7 @@ class Fishing extends React.Component{
                  editorType={'event'}
                  orientation={this.props.orientation}
                  renderMessage={this.renderMessage.bind(this)}
+                 containerChoices={this.props.containerChoices}
                 />);
       case 2:
         return (<EventGearEditor
@@ -172,7 +173,7 @@ class Fishing extends React.Component{
 
   renderFishingEventLists(){
     return (<FishingEventList
-      fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents].reverse())}
+      fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents || []].reverse())}
       onPress={this.setViewingFishingEvent.bind(this)}
       selectedFishingEvent={this.props.viewingEvent}
     />);
@@ -185,8 +186,6 @@ class Fishing extends React.Component{
         height={this.props.height}
       />);
   }
-
-
 
   getDetailToolbar(){
     let deleteActive = (this.props.fishingEvents && this.props.fishingEvents.length);
@@ -219,7 +218,7 @@ class Fishing extends React.Component{
 
     return (
       <MasterDetailView
-        master={this.props.fishingEvents ? this.renderFishingEventLists() : this.renderMessage(this.props.tripStarted ? "Trip Started" : "Trip Hasn\'t Started")}
+        master={this.renderFishingEventLists()/* : this.renderMessage(this.props.tripStarted ? "Trip Started" : "Trip Hasn\'t Started")*/}
         detail={this.renderDetailView.bind(this)()}
         detailToolbar={this.getDetailToolbar()}
         masterToolbar={this.getMasterToolbar()}
@@ -256,6 +255,7 @@ const select = (State, dispatch) => {
       height: state.view.height,
       tripStarted: state.trip.started,
       enableStartEvent: state.trip.started,
+      containerChoices: state.me.containers
     }
     if(!state.fishingEvents.events.length){
       return props;

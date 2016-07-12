@@ -55,6 +55,19 @@ class AutoSuggestBar extends React.Component {
       });
     }
 
+    componentWillUpdate(newProps, newState){
+      if(newProps.name !== this.props.name){
+        return true;
+      }
+      if(newProps.inputId !== this.props.inputId){
+        return true;
+      }
+      if(newProps.choices.length !== this.props.choices.length){
+        return true;
+      }
+      return false;
+    }
+
     regExp(term){
       return new RegExp("\\b" + term.replace(/[^\w\s]/gi, ''), "gi");
     }
@@ -101,7 +114,7 @@ class AutoSuggestBar extends React.Component {
     renderResult(resultIndex){
       let result = this.state.choices[resultIndex];
       let text = this.props.text || "";
-      if(!result.value){
+      if(!(result && result.value)){
         return null;
       }
       let isSelected = (result.value.toUpperCase() === text.toUpperCase());

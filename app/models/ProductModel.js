@@ -8,8 +8,8 @@ const model = [
   {label: 'Weight', id: 'weight', valid: valid.greaterThanZero, type: 'number', defaultValue: "0", unit: 'kg'},
   {label: 'State', id: 'state', valid: valid.alwaysValid, defaultValue: "gre",
     editorDisplay: {editor: 'event', type: 'combined', siblings: ['containerType', 'grade', 'treatment']}},
-  {label: 'Container Type', id: 'containerType', valid: valid.alwaysValid, defaultValue: "bin"},
-  {label: 'Grade', id: 'grade', valid: valid.alwaysValid, defaultValue: "A"},
+  {label: 'Container Type', id: 'containerType', valid: valid.alwaysValid, defaultValue: "", type: 'container'},
+  {label: 'Grade', id: 'grade', valid: valid.alwaysValid, defaultValue: ""},
   {label: 'Treatment', id: 'treatment', valid: valid.alwaysValid, defaultValue: "iced"},
 ];
 
