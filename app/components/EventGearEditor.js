@@ -28,7 +28,7 @@ const onChange = (name, value, props, type) => {
 
 const getEditor = (attribute, props) => {
   let inputId = attribute.id + "__gear__";
-  let gear = props.gear;
+  ;
   if(props.fishingEvent){
     inputId += props.fishingEvent.id;
   };
@@ -42,7 +42,7 @@ const getEditor = (attribute, props) => {
 }
 
 const EventGearEditor = (props) => {
-
+  ;
   return (
     <EditorView
       styles={styles}

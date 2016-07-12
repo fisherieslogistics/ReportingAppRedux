@@ -23,6 +23,7 @@ const Editors = (props) => {
       }
       inputs.push(renderEditor(attribute, props));
   });
+  ;
   return <View>{ inputs }</View>;
 }
 
@@ -93,6 +94,7 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, editing
 }
 
 const renderEditor = (attribute, props) => {
+  ;
   if(attribute.editorDisplay && attribute.editorDisplay.hideUndefined && props.obj[attribute.id] === undefined){
     return null;
   }
@@ -101,16 +103,15 @@ const renderEditor = (attribute, props) => {
     console.log(props.values);
     switch (attribute.editorDisplay.type) {
       case "single":
-        return
-          <SingleEditor
-            attribute={attribute}
-            styles={props.styles}
-            getEditor={props.getEditor}
-            value={props.values[attribute.id]}
-            editing={editing}
-            key={attribute.id}
-            editingCallback={(editing) => props.editingCallback(attribute.id, editing)}
-          />
+        return (<SingleEditor
+        attribute={attribute}
+        styles={props.styles}
+        getEditor={props.getEditor}
+        value={props.values[attribute.id]}
+        editing={editing}
+        key={attribute.id}
+        editingCallback={(editing) => props.editingCallback(attribute.id, editing)}
+      />);
       case "combined":
         const combinedEditors = getCombinedEditors(attribute, props.model, props.getEditor);
         return renderCombinedEditors(combinedEditors, props.styles, props.editingCallback, props.editing);
