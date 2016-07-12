@@ -75,7 +75,7 @@ class EventProductsEditor extends React.Component{
           inputs.push(this.renderEditor(attribute, product, index));
       });
       return (
-        <View style={[styles.innerWrapper, styles.outerWrapper]} key={"product" + index + Math.random.toString()}>
+        <View style={[styles.innerWrapper, styles.outerWrapper]} key={"product" + product.objectId}>
           {inputs}
           <DeleteButton
             onPress={this.deleteProduct.bind(this)}
