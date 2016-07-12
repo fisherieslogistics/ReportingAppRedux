@@ -8,7 +8,6 @@ import ProductModel from '../models/ProductModel';
 const helper = new Helper();
 const NUMBER_OF_PRODUCTS = 12;
 const fishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
-
 const allFishingEventAttrs = Object.keys(fishingEventModel);
 
 let initialState = {
@@ -54,7 +53,9 @@ export default (state = initialState, action) => {
         case 'changeEventGear':
           let gearChange = {};
           gearChange[action.key] = action.value;
-          return changeEvent(action.fishingEventId - 1, state, gearChange)
+          state = changeEvent(action.fishingEventId - 1, state, gearChange);
+          debugger;
+          return state;
         case 'formSigned':
           action.fishingEvents.forEach((fe) => {
             state = changeEvent(fe.id - 1, state, {signature: action.signature,

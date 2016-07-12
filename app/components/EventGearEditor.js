@@ -12,9 +12,17 @@ import {eventEditorStyles, textStyles} from '../styles/styles';
 const gearActions = new GearActions();
 const model = TrawlGearModel;
 
-const onChange = (name, value, props) => {
+const onChange = (name, value, props, type) => {
   if(props.fishingEvent){
-    props.dispatch(gearActions.changeEventGear(props.fishingEvent.id, props.fishingEvent.objectId, name, value));
+    if(type === 'number'){
+      value = parseInt(value);
+    }
+    if(type === 'float'){
+      value = parseFloat(value);
+    }
+    props.dispatch(gearActions.changeEventGear(props.fishingEvent.id,
+                                               props.fishingEvent.objectId,
+                                               name, value));
   }
 }
 
@@ -27,13 +35,14 @@ const getEditor = (attribute, props) => {
   return {
     attribute,
     value: props.fishingEvent[attribute.id],
-    onChange: (name, value) => onChange(name, value, props),
+    onChange: (name, value) => onChange(name, value, props, attribute.type),
     extraProps: {fishingEvent: props.fishingEvent},
     inputId
   }
 }
 
 const EventGearEditor = (props) => {
+
   return (
     <EditorView
       styles={styles}
@@ -42,8 +51,8 @@ const EventGearEditor = (props) => {
       editorType={"gear"}
       name={"eventGear"}
       model={model}
-      obj={props.gear}
-      values={props.gear}
+      obj={props.fishingEvent}
+      values={props.fishingEvent}
     />
   );
 }
