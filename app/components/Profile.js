@@ -31,14 +31,16 @@ import Icon8 from './Icon8';
 const authActions = new AuthActions();
 const editorStyles = StyleSheet.create(eventEditorStyles);
 
-const Login = ({onLoginPress, loggedIn, disabled}) => {
+const Login = ({onLoginPress, loggedIn, disabled, sync}) => {
+  console.log(sync);
+  const tripsToSync = sync.queues.pastTrips.length + (sync.trip ? 1 : 0);
+  const eventsToSync = Object.keys(sync.fishingEvents).length;
   const SyncModel = [
-    {id: 'tripsToSync', defaultValue: 0, label: "Trips to Sync", type: "displayOnly", valid: valid.alwaysValid,
-      editorDisplay: {editor: "account", type: 'combined', siblings: ["eventsToSync", "formsToSync"]}},
-    {id: 'eventsToSync', defaultValue: 0, label: "Events to Sync",  type: "displayOnly", valid: valid.alwaysValid},
-    {id: 'formsToSync', defaultValue: 0, label: "Forms to Sync",  type: "displayOnly", valid: valid.alwaysValid},
+    {id: 'tripsToSync', defaultValue: 0, label: "Trips to Sync", type: "labelOnly", valid: valid.alwaysValid,
+      editorDisplay: {editor: "account", type: 'combined', siblings: ["eventsToSync"]}},
+    {id: 'eventsToSync', defaultValue: 0, label: "Events to Sync",  type: "labelOnly", valid: valid.alwaysValid}
   ];
-  let syncData = {tripsToSync: 1, eventsToSync: 10, formsToSync: 1};
+  let syncData = {tripsToSync: tripsToSync, eventsToSync: eventsToSync};
   const getEditor = (attribute) => {
     return { attribute, value: syncData[attribute.id] };
   }
@@ -202,6 +204,7 @@ class Profile extends React.Component{
                   disabled={this.props.loggedIn && this.props.tripStarted}
                   loggedIn={this.props.loggedIn}
                   onLoginPress={this.onLoginPress.bind(this)}
+                  sync={this.props.sync}
                 />);
       default:
     }
@@ -304,7 +307,8 @@ const select = (State, dispatch) => {
     loggedIn: state.auth.loggedIn,
     vessels: state.me.vessels,
     vessel: state.me.vessel,
-    tripStarted: state.trip.started
+    tripStarted: state.trip.started,
+    sync: state.sync
   };
 }
 
