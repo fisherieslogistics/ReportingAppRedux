@@ -1,6 +1,9 @@
 "use strict";
 
 import Helper from '../utils/Helper';
+import {
+  AlertIOS,
+} from 'react-native';
 const helper = new Helper();
 
 const initialState = {
@@ -17,6 +20,15 @@ export default (state = initialState, action) => {
     case 'logout':
       return Object.assign({}, initialState);
     case 'loginError':
+    AlertIOS.alert(
+      "Login Error",
+      'Cannot login, check email/password',
+      [
+        {text: 'Ok', onPress: () => {
+          return;
+        }, style: 'cancel'},
+      ]
+    );
       return Object.assign({}, initialState, { message: action.message});
     default:
         return state;

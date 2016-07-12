@@ -20,7 +20,9 @@ class ApiActions {
     return (dispatch, getState) => {
       client.login(username, password)
         .catch((err) => {
-          dispatch(authActions.loginError(JSON.stringify(err)));
+          //dispatch(authActions.loginError(JSON.stringify(err)));
+
+          //TODO: USE SERVER ERROR IN FUTURE
         })
         .then((auth) => {
           if(!auth){
