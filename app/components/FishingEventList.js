@@ -30,7 +30,7 @@ class FishingEventList extends React.Component {
         return {icon: 'fishing',
                 color: colors.blue}
       }
-      if(fishingEvent.datetimeAtEnd && !fishingEvent.productsValid){
+      if(fishingEvent.datetimeAtEnd && !fishingEvent.eventValid){
         return {icon: 'error',
                 color: colors.orange}
       }

@@ -11,7 +11,7 @@ const SignatureBox = requireNativeComponent('RSSignatureView', null);
 
 var styles = {
   signatureBox: {
-    flex: 1
+    flex: 1,
   },
   container: {
     flex: 1,

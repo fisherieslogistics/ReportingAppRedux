@@ -33,7 +33,7 @@ const model = [
   {label: 'Wing Spread', id: 'wingSpread', type: 'number', valid: valid.greaterThanZero,
     editorDisplay: {editor: 'gear', type: 'single'},
   },
-  {label: 'Headline Height', id: 'headlineHeight', type: 'number', valid: valid.greaterThanZero,
+  {label: 'Headline Height', id: 'headlineHeight', type: 'float', valid: valid.greaterThanZero,
     editorDisplay: {editor: 'gear', type: 'single'},
   }
 ];

@@ -110,6 +110,9 @@ class Fishing extends React.Component{
   }
 
   selectedDetailView(){
+    if(this.props.viewingEvent && this.props.viewingEvent.signature){
+      return this.renderMessage("This shot has been signed and cannot be edited");
+    }
     switch (this.state.selectedDetail){
       case 0:
         return (<EventDetailEditor

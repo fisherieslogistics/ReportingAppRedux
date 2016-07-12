@@ -9,7 +9,8 @@ const meta = {
     let daysMatch = (event1.datetimeAtStart.diff(event2.datetimeAtStart, 'days') === 0);
     let wingSpreadsMatch = (event2.wingSpread == event1.wingSpread);
     let headlineHeightsMatch = (event2.headlineHeight == event1.headlineHeight);
-    return (daysMatch && wingSpreadsMatch && headlineHeightsMatch);
+    let signaturesMatch =(event2.signature === event1.signature);
+    return (daysMatch && wingSpreadsMatch && headlineHeightsMatch && signaturesMatch);
   },
   eventsPerForm: 4,
   xMultiplier: 214 * 0.660,

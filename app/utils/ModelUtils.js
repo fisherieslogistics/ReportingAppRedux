@@ -16,5 +16,12 @@ export default {
     });
     blankModel.objectId = mongoObjectId();
     return blankModel;
+  },
+  blankModelWithoutObjectId: (model) => {
+    const blankModel = {};
+    model.forEach(value => {
+      blankModel[value.id] = value.defaultValue;
+    });
+    return blankModel;
   }
 };

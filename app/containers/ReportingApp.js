@@ -160,7 +160,7 @@ class ReportingApp extends Component {
 const select = (State, dispatch) => {
     let state = State.default;
     let hasCatches = !!state.fishingEvents.events.find((fe) => {
-      return fe.productsValid;
+      return fe.eventValid;
     });
     return {
       trip: state.trip,

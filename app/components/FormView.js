@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   ListView,
+  AlertIOS,
   Image,
   TouchableOpacity
 } from 'react-native';
@@ -35,14 +36,17 @@ class FormView extends React.Component {
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
       showSignature: false,
-      currentSignature: null
     };
   }
 
-  toggleSignature(){
-    this.setState({
-      showSignature: true
-    });
+  toggleSignature(canSign){
+    if(canSign){
+      this.setState({
+        showSignature: true
+      });
+    }else{
+      this.cantSignFormAlert(this.props.viewingForm);
+    }
   }
 
   saveSign() {
@@ -53,15 +57,37 @@ class FormView extends React.Component {
     this.refs["sign"].resetImage();
   }
 
+  cantSignFormAlert(form){
+    const title = "Cannot sign form";
+    let message = "Form is already signed";
+    if(!form){
+      message = "Please select a form to sign";
+    }else if(form.fishingEvents.find(f => !f.eventValid)){
+      message = "Incomplete shots on form";
+    }else{
+      message = "form is already signed";
+    }
+    AlertIOS.alert(
+      title,
+      message,
+      [
+        {text: 'OK', onPress: () => {}}
+      ]
+    );
+  }
+
   _onSaveEvent(result) {
     //result.encoded - for the base64 encoded png
     //result.pathName - for the file path name
+    this.props.dispatch(formActions.signForm(this.props.viewingForm, result.encoded));
     this.setState({
       showSignature: false,
-      currentSignature: result.encoded
     });
-    this.props.dispatch(formActions.signForm(this.props.viewingForm, result.encoded));
-    this.forceUpdate();
+    const form = this.props.viewingForm;
+    //TODO something better when using events
+    setTimeout(() => {
+      this.props.dispatch(formActions.setViewingForm(null));
+    }, 300);
  }
 
  _onDragEvent() {
@@ -154,7 +180,7 @@ class FormView extends React.Component {
   }
 
   formReadyToSign(form){
-    return form && !form.fishingEvents.find(f => !f.productsValid);
+    return (!!form && (!form.fishingEvents.find(f => !f.eventValid)) && (!form.fishingEvents.find(f => f.signature)));
   }
 
   renderSignatureAndDate(){
@@ -162,7 +188,7 @@ class FormView extends React.Component {
       return null;
     }
     return [
-      (<Image source={{uri: "data:image/png;base64," + (this.state.currentSignature || this.props.viewingForm.fishingEvents[0].signature.toString())}}
+      (<Image source={{uri: "data:image/png;base64," + this.props.viewingForm.fishingEvents[0].signature.toString()}}
               style={[styles.signImage, {width: 120, height: 40}]}
               key={"SignatureImage"} />),
       (<View style={[styles.dateSigned]} key={"DateSignedText"}>
@@ -179,27 +205,32 @@ class FormView extends React.Component {
       text = this.renderFishingEvents(text);
     }
 
-    let canSignAll = !this.props.forms.find(f => !this.formReadyToSign(f)) &! this.props.forms.every(f => f.signed);
+    //let canSignAll = !this.props.forms.find(f => !this.formReadyToSign(f)) &! this.props.forms.every(f => f.signed);
     let canSignOne = this.formReadyToSign(this.props.viewingForm);
-
+    let signColor = canSignOne ? colors.blue : colors.midGray;
     let detailToolbar = (
       <DetailToolbar
-        right={{color: colors.blue, text: "Sign", onPress: () => this.toggleSignature("single", canSignOne), enabled: canSignOne}}
+        right={{color: signColor, text: "Sign", onPress: () => this.toggleSignature(canSignOne), enabled: true}}
         centerTop={<Text style={[textStyles.font]}>{this.props.viewingForm ? this.props.viewingForm.id : null}</Text>}
         centerBottom={<View style={styles.spacer} />}
       />
     );
+    //right={{color: colors.blue, text: "Sign all", onPress: () => this.toggleSignature("all", canSignAll), enabled: canSignAll}}
     let masterToolbar = (
       <MasterToolbar
-        right={{color: colors.blue, text: "Sign all", onPress: () => this.toggleSignature("all", canSignAll), enabled: canSignAll}}
-        center={<View style={{marginTop: 36}}><Text style={[textStyles.font, textStyles.midLabel]}>Forms</Text></View>}
+        center={
+          <View style={{marginTop: 36}}>
+            <Text style={[textStyles.font, textStyles.midLabel]}>
+              Forms
+            </Text>
+          </View>
+        }
       />
     );
 
     let signatureView = this.state.showSignature ?
       (<View style={[styles.signatureViewContainer, {backgroundColor: "white"}]}>
-        <Text>Once you click save then you can no longer edit the shots onthis form.</Text>
-        <Text>Please note that signing this form will also submit the form directly to Fishserve.</Text>
+        <Text>Once you click save then you can no longer edit the shots on this form.</Text>
         <Text>This form has the same legal status as the paper TCER form</Text>
         <SignatureView
           style={[{flex:1}, styles.signature]}
@@ -301,15 +332,17 @@ const styles = StyleSheet.create({
   },
   signImage: {
     position: 'absolute',
-    top: 420,
-    left: 550
+    top: 410,
+    left: 550,
+    height: 40,
+    width: 120,
   },
   signatureViewContainer:{
     position: 'absolute',
     top: 100,
     left: 0,
-    height: 310,
-    width: 450,
+    height: 350,
+    width: 470,
     padding: 10
   },
   dateSigned:{

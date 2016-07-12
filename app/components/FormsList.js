@@ -43,7 +43,7 @@ class FormsList extends React.Component {
           color: colors.green
         }
       }
-      if(form.fishingEvents.find(f => !f.productsValid)){
+      if(form.fishingEvents.find(f => !f.eventValid)){
         return {
           icon: 'error',
           color: colors.orange

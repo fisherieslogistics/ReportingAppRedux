@@ -13,26 +13,20 @@ const gearActions = new GearActions();
 const model = TrawlGearModel;
 
 const onChange = (name, value, props) => {
-
-  if( !props.fishingEvent || props.fishingEvent.id === props.lastEvent.id){
-    props.dispatch(gearActions.changeCurrentGear(name, value));
-  }
   if(props.fishingEvent){
     props.dispatch(gearActions.changeEventGear(props.fishingEvent.id, props.fishingEvent.objectId, name, value));
   }
 }
 
 const getEditor = (attribute, props) => {
-
   let inputId = attribute.id + "__gear__";
   let gear = props.gear;
   if(props.fishingEvent){
     inputId += props.fishingEvent.id;
-    gear = props.fishingEvent.gear;
   };
   return {
     attribute,
-    value: gear[attribute.id],
+    value: props.fishingEvent[attribute.id],
     onChange: (name, value) => onChange(name, value, props),
     extraProps: {fishingEvent: props.fishingEvent},
     inputId

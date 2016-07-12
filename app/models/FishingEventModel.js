@@ -26,7 +26,7 @@ const FishingEventModel = [
   {label: 'Location at End', id: 'locationAtEnd', valid: valid.anyValue,
    type: 'location', readOnly: true, defaultValue: {},
   },
-  {label: 'Products Valid', id: 'productsValid', valid: valid.alwaysValid,
+  {label: 'Products Valid', id: 'eventValid', valid: valid.alwaysValid,
    defaultValue: false,
   },
   {label: 'products', id: 'products', valid: valid.alwaysValid,

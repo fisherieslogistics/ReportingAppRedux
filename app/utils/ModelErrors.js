@@ -31,7 +31,7 @@ function findCombinedErrors(model, obj) {
 }
 
 function incompleteFishingEvents(fEvents, model){
-  return fEvents.filter((f) => findErrors(model, f).length || !f.productsValid);
+  return fEvents.filter((f) => findErrors(model, f).length || !f.eventValid);
 }
 
 export {findErrors, findCombinedErrors, incompleteFishingEvents}

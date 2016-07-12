@@ -3,8 +3,8 @@ import moment from 'moment';
 import ModelUtils from '../utils/ModelUtils';
 import TrawlGearModel from '../models/TrawlGearModel';
 import Helper from '../utils/Helper';
-
-const initialState = ModelUtils.blankModel(TrawlGearModel);
+//TODO jjeeesssus look at the line below
+const initialState = ModelUtils.blankModelWithoutObjectId(TrawlGearModel);
 
 export default (state = initialState, action) => {
   switch(action.type) {
