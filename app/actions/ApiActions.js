@@ -5,6 +5,9 @@ import queries from '../api/Queries';
 import AuthActions from './AuthActions';
 import UserActions from './UserActions';
 import Helper from '../utils/Helper';
+import {
+  AlertIOS,
+} from 'react-native';
 
 const userActions = new UserActions();
 const authActions = new AuthActions();
@@ -27,6 +30,18 @@ class ApiActions {
         .then((auth) => {
           if(!auth){
             return dispatch(authActions.loginError("please try that again" + auth));
+          }else{
+            //TODO: This needs to be in a popup dispatcher and not in the logic here
+            AlertIOS.alert(
+              "Login Succes!",
+              'Press Ok to continue',
+              [
+                {text: 'Ok', onPress: () => {
+                  return;
+                }, style: 'cancel'},
+              ]
+            );
+
           }
           dispatch(authActions.setAuth(auth));
           client.query(queries.getMe, helper.updateAuth({}, auth))
