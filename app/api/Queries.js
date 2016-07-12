@@ -2,7 +2,7 @@ import util from 'util';
 
 const upsertFishingEvent = (fEvent, tripId) => {
   const catches = fEvent.products.map((c) => {
-    let prod = Object.assign(c, {weight: parseInt(c.weight || 0),
+    let prod = Object.assign({}, c, {weight: parseInt(c.weight || 0),
                                  numberOfContainers: parseInt(c.numberOfContainers | 0)});
     delete prod["objectId"];
     return prod;

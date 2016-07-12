@@ -149,8 +149,7 @@ const addNewCatch = (fishingEventId, state) => {
 }
 
 const addProductToEvent = (fishingEventId, product, state) => {
-  let fishingEventProducts = [...state.events[fishingEventId -1].products];
-  fishingEventProducts.push(product);
+  let fishingEventProducts = [...state.events[fishingEventId -1].products, product];
   return changeEvent(fishingEventId -1, state, {products: fishingEventProducts});
 }
 
