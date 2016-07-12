@@ -25,7 +25,7 @@ const formActions = new FormActions();
 import {connect} from 'react-redux';
 import {createForms} from '../utils/FormUtils';
 import {MasterToolbar, DetailToolbar} from './Toolbar';
-import {colors, listViewStyles, textStyles} from '../styles/styles';
+import {colors, listViewStyles, textStyles, shadowStyles} from '../styles/styles';
 
 const helper = new Helper();
 
@@ -35,13 +35,14 @@ class FormView extends React.Component {
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
       showSignature: false,
+      showSignatureWarning: false,
       currentSignature: null
     };
   }
 
   toggleSignature(){
     this.setState({
-      showSignature: true
+      showSignatureWarning: true
     });
   }
 
@@ -197,10 +198,7 @@ class FormView extends React.Component {
     );
 
     let signatureView = this.state.showSignature ?
-      (<View style={[styles.signatureViewContainer, {backgroundColor: "white"}]}>
-        <Text>Once you click save then you can no longer edit the shots onthis form.</Text>
-        <Text>Please note that signing this form will also submit the form directly to Fishserve.</Text>
-        <Text>This form has the same legal status as the paper TCER form</Text>
+      (<View style={[styles.signatureViewContainer, {backgroundColor: "white"}, shadowStyles.shadowDown]}>
         <SignatureView
           style={[{flex:1}, styles.signature]}
           ref="sign"
@@ -209,6 +207,26 @@ class FormView extends React.Component {
           saveImageFileInExtStorage={false}
           showNativeButtons={false}
           viewMode={"landscape"}/>
+        </View>) : null;
+//<View style={[styles.greyBackground]}></View>
+    let greyBackground = (this.state.showSignature || this.state.showSignatureWarning) ?
+      (<View style={[styles.greyBackground]}></View>):null;
+
+
+    let signatureWarningView = this.state.showSignatureWarning ?
+      (<View style={[styles.signatureWarningViewContainer, {backgroundColor: "white"}, shadowStyles.shadowDown, ]}>
+        <Text style={{color: 'red', textAlign: 'center', fontSize: 17, padding: 10}}>WARNING</Text>
+        <Text>Once you tap save, you will no longer be able to edit the shots on this form.</Text>
+        <Text>Please note: Signing this form will submit the form directly to FishServe.</Text>
+        <Text>This Form has the same legal status as the paper TCER form.</Text>
+        <View style={{flexDirection: 'row', display: 'flex',  marginTop: 30, margin: 0}}>
+        <TouchableOpacity key={"Cancel"} style={{ flex: 1}}
+            onPress={() => this.setState({showSignatureWarning: false, showSignature: false})}
+          ><Text style={{textAlign: 'left', fontSize: 18, padding: 10}}>Cancel</Text></TouchableOpacity>
+        <TouchableOpacity key={"Continue"} style={{flex: 1}}
+            onPress={() => this.setState({showSignatureWarning: false, showSignature: true})}
+          ><Text style={{color: colors.orange, textAlign: 'right', fontSize: 18, padding: 10}}>Continue</Text></TouchableOpacity>
+        </View>
         </View>) : null;
     //console.log(this.props.viewingForm ? this.props.viewingForm.signature : "NOT NOT NOT");
     return (
@@ -223,7 +241,9 @@ class FormView extends React.Component {
               </View>
             </Image>
             {this.renderSignatureAndDate()}
+            {greyBackground}
             {signatureView}
+            {signatureWarningView}
           </View>
         )}
         detailToolbar={detailToolbar}
@@ -310,7 +330,25 @@ const styles = StyleSheet.create({
     left: 0,
     height: 310,
     width: 450,
-    padding: 10
+    padding: 10,
+    borderRadius: 6,
+  },
+  signatureWarningViewContainer:{
+    position: 'absolute',
+    top: 150,
+    left: 0,
+    height: 210,
+    width: 450,
+    padding: 10,
+    borderRadius: 6,
+  },
+  greyBackground:{
+    position: 'absolute',
+    top: -1000,
+    left: -1000,
+    height: 2200,
+    width: 2200,
+    backgroundColor: colors.backgrounds.shadow,
   },
   dateSigned:{
     position: 'absolute',

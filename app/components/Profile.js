@@ -1,4 +1,4 @@
-'use strict';
+ 'use strict';
 import {
   View,
   ListView,
@@ -116,6 +116,7 @@ class Profile extends React.Component{
     })
     this.props.dispatch(this.props.apiActions.login(
       this.state.email, this.state.password));
+
   }
 
   logout(){

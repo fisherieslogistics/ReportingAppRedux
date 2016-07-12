@@ -3,6 +3,7 @@ export default {
   lightestGray: "#DEDEDE",
   midGray: "#CED1D5",
   gray: "#CECED2",
+  grey: "#CECED2",
   red: "#FF2D55",
   blue: "#426BF2",
   highlightBlue: "#3E95FF",
@@ -19,5 +20,6 @@ export default {
     light: "#F9F9F9",
     veryLight: '#F5FBFD',
     veryDark: "#999999",
+    shadow: 'rgba(0, 0, 0, 0.5)',
   }
 }
