@@ -150,15 +150,15 @@ class FormView extends React.Component {
       </View>);
   }
 
-  renderFishingEvents(allText){
-    const fe = this.props.viewingForm.fishingEvents;
+  renderFishingEvents(allText, form){
+    const fe = form.fishingEvents;
     fe.forEach((f, i) => {
       allText = allText.concat(this.renderObj(f, formModelMeta.printMapping.fishingEvents, i));
     });
     return allText;
   }
-  renderForm(){
-    return this.renderObj(this.props.viewingForm, formModelMeta.printMapping.form);
+  renderForm(form){
+    return this.renderObj(form, formModelMeta.printMapping.form);
   }
 
   formReadyToSign(form){
@@ -181,14 +181,14 @@ class FormView extends React.Component {
 
   render() {
     let text = [];
-
-    if(this.props.viewingForm){
-      text = this.renderForm(text);
-      text = this.renderFishingEvents(text);
+    let form = this.props.viewingForm;
+    if(form){
+      text = this.renderForm(form);
+      text = this.renderFishingEvents(text, form);
     }
 
     //let canSignAll = !this.props.forms.find(f => !this.formReadyToSign(f)) &! this.props.forms.every(f => f.signed);
-    let canSignOne = this.formReadyToSign(this.props.viewingForm);
+    let canSignOne = this.formReadyToSign(form);
     let signColor = canSignOne ? colors.blue : colors.midGray;
     let detailToolbar = (
       <DetailToolbar
@@ -269,7 +269,6 @@ class FormView extends React.Component {
 const select = (State, dispatch) => {
     let state = State.default;
     return {
-      forms: createForms(state.fishingEvents.events),
       user: state.me.user,
       vessel: state.me.vessel,
       viewingForm: state.forms.viewingForm

@@ -19,7 +19,7 @@ import Trip from '../components/Trip';
 import SyncWorker from '../api/SyncWorker';
 import ShadowStyle from '../styles/shadow';
 import Icon8 from '../components/Icon8';
-
+import {createForms} from '../utils/FormUtils';
 
 const apiActions = new ApiActions();
 const viewActions = new ViewActions();
@@ -76,7 +76,11 @@ class ReportingApp extends Component {
           onPress={() => {
             if(this.props.loggedIn){
               if(key === "forms"){
-                this.props.dispatch(formActions.setViewingForm(null));
+                let forms = createForms(this.props.fishingEvents);
+                this.setState({
+                  forms: forms
+                })
+                this.props.dispatch(formActions.setViewingForm(forms[forms.length-1] || null));
               }
               this.setState({
                 selectedTab: key
@@ -112,9 +116,12 @@ class ReportingApp extends Component {
   }
 
   renderForms(){
+
     return (
       <View style={[styles.col, styles.fill]}>
-        <Forms />
+        <Forms
+          forms={this.state.forms}
+        />
       </View>
     )
   }
@@ -170,7 +177,9 @@ const select = (State, dispatch) => {
       height: state.view.height,
       width: state.view.width,
       tripStarted: state.trip.started,
-      loggedIn: state.auth.loggedIn
+      loggedIn: state.auth.loggedIn,
+      fishingEvents: state.fishingEvents.events,
+      viewingForm: state.view.viewingForm
     };
 }
 
