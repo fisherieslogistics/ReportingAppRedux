@@ -71,6 +71,7 @@ const Login = ({onLoginPress, loggedIn, disabled, sync}) => {
         onPress={onLoginPress}
         disabled={disabled}
       />
+    {disabled &&(<Text style={{color: colors.orange, paddingLeft: 20, paddingTop: 5}}>Cannot logout during active trip.</Text>)}
     </View>
   );
   return (
