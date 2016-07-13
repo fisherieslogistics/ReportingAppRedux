@@ -167,7 +167,7 @@ class EventProductsEditor extends React.Component{
 
     render() {
       return (
-        <View style={[styles.col, styles.fill, {alignItems: 'stretch'}]}>
+        <View style={[styles.col, styles.fill, {alignItems: 'stretch', marginTop: 3}]}>
           <ScrollView style={[styles.scroll]}>
             {this.getInputs()}
           </ScrollView>
