@@ -4,6 +4,7 @@ import {
   View,
   AlertIOS,
   Text,
+  ScrollView,
 } from 'react-native';
 
 import React from 'react';
@@ -72,16 +73,19 @@ class EventDetailEditor extends React.Component{
       if(!this.props.fishingEvent){
         return this.props.renderMessage("No shots to edit");
       }
-      return (<EditorView
-                styles={styles}
-                getCallback={this.getCallback.bind(this)}
-                getEditor={this.getEditor.bind(this)}
-                editorType={"event"}
-                name={"eventDetail"}
-                model={model}
-                obj={this.props.fishingEvent}
-                values={this.props.fishingEvent}
-              />);
+      return (<ScrollView style={{marginTop: 3}}>
+                <EditorView
+                  styles={styles}
+                  getCallback={this.getCallback.bind(this)}
+                  getEditor={this.getEditor.bind(this)}
+                  editorType={"event"}
+                  name={"eventDetail"}
+                  model={model}
+                  obj={this.props.fishingEvent}
+                  values={this.props.fishingEvent}
+                />
+              <View style={{height: 600}}></View>
+              </ScrollView>);
     }
 };
 

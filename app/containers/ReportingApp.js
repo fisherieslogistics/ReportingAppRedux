@@ -77,14 +77,13 @@ class ReportingApp extends Component {
             if(this.props.loggedIn){
               if(key === "forms"){
                 let forms = createForms(this.props.fishingEvents);
-                this.setState({
-                  forms: forms
-                })
-                this.props.dispatch(formActions.setViewingForm(forms[forms.length-1] || null));
+                this.props.dispatch(formActions.setViewingForm(forms[forms.length-1]));
               }
-              this.setState({
-                selectedTab: key
-              });
+              setTimeout(() => {
+                this.setState({
+                  selectedTab: key
+                });
+              }, 100);
             }
           }}>
         {tabs[key].render()}
@@ -116,11 +115,11 @@ class ReportingApp extends Component {
   }
 
   renderForms(){
-
+    let forms = createForms(this.props.fishingEvents);
     return (
       <View style={[styles.col, styles.fill]}>
         <Forms
-          forms={this.state.forms}
+          forms={forms}
         />
       </View>
     )

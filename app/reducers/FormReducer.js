@@ -16,7 +16,8 @@ let initialState = {
   },
   pastTrips: [],
   viewingForm: null,
-  viewingTripId: null
+  viewingTripId: null,
+  viewingFormIndex: null
 }
 
 const FormReducer = (state = initialState, action) => {
@@ -28,7 +29,7 @@ const FormReducer = (state = initialState, action) => {
       return update(state, {pastTrips: [...state.pastTrips, trip], currentTrip: initialState.currentTrip});
       break;
     case 'setViewingForm':
-      return update(state, {viewingForm: action.form});
+      return update(state, {viewingForm: action.form, viewingFormIndex: action.index});
     }
     return state;
 };

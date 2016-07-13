@@ -27,7 +27,7 @@ import Icon8 from  './Icon8';
 class FormsList extends React.Component {
 
     setViewingForm(form, rowId){
-      this.props.dispatch(formActions.setViewingForm(form));
+      this.props.dispatch(formActions.setViewingForm(form, rowId));
     }
 
     getFormStatus(form){

@@ -72,7 +72,8 @@ const meta = {
         multiple: true,
         repeating: true,
         prep: (products) => {
-          return helper.getTotals([...products]).slice(0, 8);
+          let totals = helper.getTotals([...products]).slice(0, 8);
+          return totals;
         },
         parts: [
           {
