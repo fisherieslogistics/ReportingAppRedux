@@ -4,10 +4,11 @@ import Helper from '../utils/Helper';
 const helper = new Helper();
 
 class FormActions{
-  setViewingForm(form){
+  setViewingForm(form, index){
     return {
       type: 'setViewingForm',
-      form: form
+      form: form,
+      index: index
     }
   }
   signForm(form, signature){

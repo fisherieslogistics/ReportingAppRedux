@@ -37,8 +37,15 @@ class FormView extends React.Component {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
       showSignature: false,
       showSignatureWarning: false,
-      forms: props.forms
+      forms: props.forms,
+      selectedIndex: 0
     };
+  }
+
+  componentWillReceiveProps(props){
+    this.setState({
+      forms: props.forms
+    })
   }
 
   toggleSignature(canSignOne){
@@ -66,14 +73,13 @@ class FormView extends React.Component {
     this.setState({
       showSignature: false,
     });
-
-    let forms =
     //TODO something better when using events
     setTimeout(() => {
-      this.props.dispatch(formActions.setViewingForm(null));
+      let forms = createForms(this.props.fishingEvents);
       this.setState({
-        forms: createForms(this.props.fishingEvents)
+        forms: forms
       })
+      this.props.dispatch(formActions.setViewingForm(null));
     }, 300);
  }
 
@@ -94,6 +100,7 @@ class FormView extends React.Component {
 
   renderRepeating(obj, parts, k, allText, meta, eventIndex){
     let items = meta.prep ? meta.prep(obj[k]) : obj[k];
+    obj[k] = items;
     items.forEach((v, i) => {
       this.renderMultiple(obj, parts, k, allText, eventIndex, i);
     });
@@ -237,7 +244,7 @@ class FormView extends React.Component {
         <Text>Once you tap continue, you will no longer be able to edit the shots on this form.</Text>
         <Text>Please note: Signing this form will submit the form directly to FishServe.</Text>
         <Text>This Form has the same legal status as the paper TCER form.</Text>
-        <View style={{flexDirection: 'row', display: 'flex',  marginTop: 30, margin: 0}}>
+        <View style={{flexDirection: 'row', marginTop: 30, margin: 0}}>
         <TouchableOpacity key={"Cancel"} style={{ flex: 1}}
             onPress={() => this.setState({showSignatureWarning: false, showSignature: false})}
           ><Text style={{textAlign: 'left', fontSize: 18, padding: 10}}>Cancel</Text></TouchableOpacity>
@@ -277,7 +284,8 @@ const select = (State, dispatch) => {
       user: state.me.user,
       vessel: state.me.vessel,
       viewingForm: state.forms.viewingForm,
-      fishingEvents: state.fishingEvents.events
+      fishingEvents: state.fishingEvents.events,
+      selectedIndex: state.forms.viewingFormIndex
     };
 }
 
