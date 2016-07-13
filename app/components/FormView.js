@@ -36,7 +36,8 @@ class FormView extends React.Component {
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
       showSignature: false,
-      showSignatureWarning: false
+      showSignatureWarning: false,
+      forms: props.forms
     };
   }
 
@@ -65,10 +66,14 @@ class FormView extends React.Component {
     this.setState({
       showSignature: false,
     });
-    const form = this.props.viewingForm;
+
+    let forms =
     //TODO something better when using events
     setTimeout(() => {
       this.props.dispatch(formActions.setViewingForm(null));
+      this.setState({
+        forms: createForms(this.props.fishingEvents)
+      })
     }, 300);
  }
 
@@ -81,7 +86,7 @@ class FormView extends React.Component {
     return (
       <FormsList
         dispatch={this.props.dispatch}
-        forms={this.state.ds.cloneWithRows([...this.props.forms].reverse())}
+        forms={this.state.ds.cloneWithRows([...this.state.forms].reverse())}
         viewingForm={this.props.viewingForm}
       />
     );
@@ -271,7 +276,8 @@ const select = (State, dispatch) => {
     return {
       user: state.me.user,
       vessel: state.me.vessel,
-      viewingForm: state.forms.viewingForm
+      viewingForm: state.forms.viewingForm,
+      fishingEvents: state.fishingEvents.events
     };
 }
 
