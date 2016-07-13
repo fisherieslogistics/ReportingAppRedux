@@ -49,7 +49,7 @@ const SingleEditor = ({ attribute, styles, getEditor, value, editing, editingCal
           </Text> : <View style={styles.errorDot} />)}
         </View>
         <View style={[styles.row, styles.editorRow]}>
-          {AttributeEditor(getEditor(attribute), editingCallback)}
+          {AttributeEditor(getEditor(attribute), editingCallback, editing)}
         </View>
     </View>
   );
@@ -86,7 +86,7 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, editing
                   </Text> : <View style={styles.errorDot} />)}
                 </View>
                 <View style={[styles.editorRow]}>
-                  {e.editor && AttributeEditor(e.editor, (editing) => editingCallback(e.editor.attribute.id, editing))}
+                  {e.editor && AttributeEditor(e.editor, (editing) => editingCallback(e.editor.attribute.id, editing), editing)}
                 </View>
             </View>
           );
@@ -212,7 +212,6 @@ class LocationEditor extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      editing: false,
       location: {
       },
       latPositive: false,
@@ -223,8 +222,8 @@ class LocationEditor extends React.Component {
 
   onFocus(){
     let location = helper.getDegreesMinutesFromLocation(this.props.value);
+    this.props.editingCallback(true);
     this.setState({
-      editing: true,
       location: location,
       lonPositive: this.props.value.lon > 0,
       latPositive: this.props.value.lat > 0
@@ -329,7 +328,7 @@ class LocationEditor extends React.Component {
         <LongButton
           text={"Cancel"}
           bgColor={colors.red}
-          onPress={() => { this.setState({editing: false}) }}
+          onPress={() => {this.props.editingCallback(false);}}
           disabled={false}
           _style={{marginTop: 5}}
         />
@@ -350,9 +349,7 @@ class LocationEditor extends React.Component {
         style={inputStyles.textInput}
         onFocus={this.onFocus.bind(this)}
         onBlur={() => {
-          this.setState({
-            editing: false
-          });
+          this.props.editingCallback(false);
           console.log(helper.parseLocation(this.state.location));
         }}
         onChangeText={() => {}}
@@ -366,11 +363,11 @@ class LocationEditor extends React.Component {
                                         this.state.lonPositive,
                                         this.state.latPositive);
     this.props.onChange(location);
-    this.setState({editing: false});
+    this.props.editingCallback(false);
   }
 
   render(){
-    if(!this.state.editing){
+    if(this.props.editing !== this.props.attribute.id){
       return this.renderLocation();
     }else{
       return (
@@ -383,7 +380,7 @@ class LocationEditor extends React.Component {
   }
 }
 
-const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, editingCallback) => {
+const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, editingCallback, editing) => {
   if(!extraProps) {
     extraProps = {};
   }
@@ -441,6 +438,7 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
             onChange={(value) => {
               onChange(attribute.id, value);
             }}
+            editing={editing}
             extraProps={{editable: false}}
             inputId={inputId}
             editingCallback={editingCallback}
