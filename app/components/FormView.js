@@ -40,7 +40,10 @@ class FormView extends React.Component {
     };
   }
 
-  toggleSignature(){
+  toggleSignature(canSignOne){
+    if(!canSignOne) {
+      return;
+    }
     this.setState({
       showSignatureWarning: true
     });
@@ -54,24 +57,6 @@ class FormView extends React.Component {
     this.refs["sign"].resetImage();
   }
 
-  cantSignFormAlert(form){
-    const title = "Cannot sign form";
-    let message = "Form is already signed";
-    if(!form){
-      message = "Please select a form to sign";
-    }else if(form.fishingEvents.find(f => !f.eventValid)){
-      message = "Incomplete shots on form";
-    }else{
-      message = "form is already signed";
-    }
-    AlertIOS.alert(
-      title,
-      message,
-      [
-        {text: 'OK', onPress: () => {}}
-      ]
-    );
-  }
 
   _onSaveEvent(result) {
     //result.encoded - for the base64 encoded png
@@ -244,7 +229,7 @@ class FormView extends React.Component {
     let signatureWarningView = this.state.showSignatureWarning ?
       (<View style={[styles.signatureWarningViewContainer, {backgroundColor: "white"}, shadowStyles.shadowDown, ]}>
         <Text style={{color: 'red', textAlign: 'center', fontSize: 17, padding: 10}}>WARNING</Text>
-        <Text>Once you tap save, you will no longer be able to edit the shots on this form.</Text>
+        <Text>Once you tap continue, you will no longer be able to edit the shots on this form.</Text>
         <Text>Please note: Signing this form will submit the form directly to FishServe.</Text>
         <Text>This Form has the same legal status as the paper TCER form.</Text>
         <View style={{flexDirection: 'row', display: 'flex',  marginTop: 30, margin: 0}}>
