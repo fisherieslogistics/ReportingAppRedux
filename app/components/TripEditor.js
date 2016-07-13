@@ -56,43 +56,46 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
     },
     disabled: false
   };
-  let dateStyle = [textStyles.font, {position: 'absolute', top: 12, left: 5, fontSize: 16, color: colors.black}];
-  let dateText = (
-    <Text style={dateStyle}>
-      { (!time || isNaN(time.unix()) ) ? "Select date" : time.fromNow() }
-    </Text>
-  );
+    let dateStyle = [textStyles.font];
+
 
   return (
     <View style={[styles.halfway, styles.placeAndTime]}>
-      <View>
-        <Text style={[textStyles.font, {fontSize: 16, left: -22}]}>{!time || isNaN(time.unix()) ? "  " : time.format("DD MMM HH:mm") }</Text>
-      </View>
-      <View style={[]}>
-        {dateText}
+      <View style={{left: -22,}}>
+        <View>
+           <Text style={{color: colors.blue}}>
+            {timeType === 'sailingTime'? 'Start Time' : 'End Time'}
+          </Text>
+            <Text style={[textStyles.font, {fontSize: 16}]}>{!time || isNaN(time.unix()) ? "  " : time.format("DD MMM HH:mm") }</Text>
+            <Text style={[dateStyle, {color: colors.darkGray, fontSize: 12, top: 2}]}>{ (!time || isNaN(time.unix()) ) ? "Select date" : time.fromNow() }</Text>
+        </View>
+       <View style={{ position: 'absolute', top: 14, borderBottomWidth: 1, borderColor: colors.gray}}>
         {AttributeEditor({
           attribute: dateAttr,
           value: time,
           onChange: onChangeTime,
           extraProps: dateProps
         }, () => { console.warn('This should store that we are editing a field')})}
+        </View>
       </View>
-      <View style={[{width: 160, left: 13}]}>
+      <View style={[{width: 160, left: 13, marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderColor: colors.gray }]}>
+             <Text style={{color: colors.blue}}>
+            {timeType === 'sailingTime'? 'Start Port' : 'End Port'}
+          </Text>
         <PortPicker
           name={portType + "__picker"}
           choices={choices}
           portType={portType}
           value={port || ""}
           placeholder={"Select a port"}
-          textStyle={{color: disabled ? colors.darkGray : colors.black}}
+          textStyle={{color: colors.black}}
           style={{borderBottomWidth: 1, borderColor: colors.midGray }}
           onChange={(value) => onChangePort(portType, value)}
           inputId={"TripEditor__" + portType}
           disabled={false}
         />
       </View>
-    </View>
-  );
+    </View>);
 }
 
 class TripEditor extends React.Component {
@@ -147,10 +150,10 @@ class TripEditor extends React.Component {
                       "Trip started" : (this.props.tripCanStart ?
                         "Ready to start trip" :  "Select ports and times before starting trip");
       return (
-        <BlankMessage
-          text={ message }
-          height={100}
-          />
+        <View style={{padding: 10}}>
+        <Text style={{ color: colors.blue}}>Trip Status:</Text>
+        <Text style={{ fontSize: 20, paddingTop: 4}}>{message}</Text>
+          </View>
       );
     }
 
@@ -169,9 +172,9 @@ class TripEditor extends React.Component {
         <View style={[{backgroundColor: "white", marginTop: 50,
                       flex: 1, alignSelf: 'stretch'}]}>
           <View>
-            <View><Text style={[textStyles.font, {fontSize: 18, }]}>Select a Region</Text></View>
+            <View><Text style={[textStyles.font, {color: colors.blue }]}>Region</Text></View>
           </View>
-          <View style={[{height: 200}]}>
+          <View style={[]}>
             <PickerIOS
               style={[{backgroundColor: "#ffffff"}]}
               selectedValue={this.state.selectedRegion}
@@ -181,6 +184,7 @@ class TripEditor extends React.Component {
             >
               {items}
             </PickerIOS>
+            <Text style={[textStyles.font, {color: colors.blue }]}>Port</Text>
             <TextInput
               selectTextOnFocus={true}
               placeholder={"Port Name"}
@@ -235,25 +239,6 @@ class TripEditor extends React.Component {
       let LANDSCAPE = (this.props.orientation.indexOf("LANDSCAPE") !== -1);
       return (
         <View style={[styles.wrapper]}>
-          <View style={[styles.row, styles.topRow]}>
-            <View style={[styles.halfway]}>
-              <LongButton
-                text={"Start Trip"}
-                bgColor={colors.blue}
-                onPress={this.startTrip.bind(this)}
-                disabled={!this.props.tripCanStart}
-              />
-            </View>
-            <View style={[styles.halfway]}>
-              <LongButton
-                text={"Return To Port"}
-                bgColor={this.props.tripCanEnd ? colors.blue : colors.midGray}
-                onPress={this.endTrip.bind(this)}
-                disabled={!this.props.tripCanEnd}
-                _style={{borderLeftWidth: LANDSCAPE ? 1 : 0 }}
-              />
-            </View>
-          </View>
           <View style={[styles.row, styles.bottomRow]}>
             <View style={[styles.halfway]}>
               <PlaceAndTime
@@ -280,7 +265,26 @@ class TripEditor extends React.Component {
               />
             </View>
           </View>
-          <View style={[styles.bottomRow, {flex: 1, alignItems: 'center', padding: 10}]}>
+                    <View style={[styles.row, styles.topRow]}>
+            <View style={[styles.halfway]}>
+              <LongButton
+                text={"Start Trip"}
+                bgColor={colors.blue}
+                onPress={this.startTrip.bind(this)}
+                disabled={!this.props.tripCanStart}
+              />
+            </View>
+            <View style={[styles.halfway]}>
+              <LongButton
+                text={"Return To Port"}
+                bgColor={this.props.tripCanEnd ? colors.blue : colors.midGray}
+                onPress={this.endTrip.bind(this)}
+                disabled={!this.props.tripCanEnd}
+                _style={{borderLeftWidth: LANDSCAPE ? 1 : 0 }}
+              />
+            </View>
+          </View>
+          <View style={[styles.bottomRow, {alignItems: 'center', padding: 10, marginTop: 20}]}>
             <LongButton
               text={"Add New Port"}
               bgColor={colors.blue}
@@ -306,20 +310,17 @@ const styles = StyleSheet.create({
   },
   topRow: {
     alignSelf: 'stretch',
-    height: 50,
-    paddingTop: 20
+     paddingTop: 20
   },
   borderBottom: {
     borderBottomWidth: 0.4,
     borderColor: colors.midGray
   },
   bottomRow: {
-    height: 100,
     paddingTop: 15,
     alignItems: 'flex-start',
   },
   wrapper: {
-    height: 220,
     flex: 1,
     paddingLeft: 5,
     paddingRight: 5,
