@@ -6,7 +6,11 @@ class Helper {
     getDegreesMinutesFromLocation(location) {
         const lat = Sexagesimal.format(location.lat, 'lat').split(" ");
         const lon = Sexagesimal.format(location.lon, 'lon').split(" ");
-        let ew = "w";
+        let ew = "W";
+        let ns = "N";
+        if(location.lat < 0){
+          ns = "S";
+        }
         if(location.lon > 0){
             ew = "E";
         }
@@ -17,7 +21,8 @@ class Helper {
             lonDegrees: parseInt(lon[0].replace(/\D/g,'')),
             lonMinutes: lon.length >= 3 ? parseInt(lon[1].replace(/\D/g,'')) : 0,
             lonSeconds: lon.length >= 4 ? parseInt(lon[2].replace(/\D/g,'')) : 0,
-            ew: ew
+            ew: ew,
+            ns: ns
         };
     }
     formatLocation(location){
@@ -29,9 +34,13 @@ class Helper {
         degMin = Object.assign({}, degMin, changes);
         return this.parseLocation(degMin);
     }
-    parseLocation(degMin){
-        return {lat: parseInt(degMin.latDegrees) + (parseFloat(parseInt(degMin.latMinutes) / 60) + (parseFloat(parseInt(degMin.latSeconds) / 3600))),
-                lon: parseInt(degMin.lonDegrees) + (parseFloat(parseInt(degMin.lonMinutes) / 60) + (parseFloat(parseInt(degMin.lonSeconds) / 3600)))};
+    parseLocation(degMin, lonPositive, latPositive){
+        let lat = parseInt(degMin.latDegrees) + (parseFloat(parseInt(degMin.latMinutes) / 60) + (parseFloat(parseInt(degMin.latSeconds) / 3600)));
+        let lon = parseInt(degMin.lonDegrees) + (parseFloat(parseInt(degMin.lonMinutes) / 60) + (parseFloat(parseInt(degMin.lonSeconds) / 3600)));
+        return {
+          lat: latPositive ? lat : (0-lat),
+          lon: lonPositive ? lon : (0-lon)
+        };
     }
     capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);

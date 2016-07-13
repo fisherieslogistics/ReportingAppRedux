@@ -6,7 +6,7 @@ import React from 'react';
 import { Editors } from './AttributeEditor';
 
 function EditorView(props) {
-  ;
+ 
   if(!props.obj || !props.values){
     return <View />;
   }

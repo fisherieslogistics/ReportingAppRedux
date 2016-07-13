@@ -10,9 +10,12 @@ import React from 'react';
 import FishPicker from '../components/FishPicker';
 import ContainerPicker from '../components/ContainerPicker';
 import DatePicker from 'react-native-datepicker';
-import {inputStyles, textStyles} from '../styles/styles';
+import {inputStyles, textStyles, colors} from '../styles/styles';
 import Sexagesimal from 'sexagesimal';
 import moment from 'moment';
+import {LongButton} from './Buttons';
+import Helper from '../utils/Helper';
+const helper = new Helper();
 
 const Editors = (props) => {
   let inputs = [];
@@ -23,7 +26,7 @@ const Editors = (props) => {
       }
       inputs.push(renderEditor(attribute, props));
   });
-  ;
+
   return <View>{ inputs }</View>;
 }
 
@@ -94,7 +97,7 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, editing
 }
 
 const renderEditor = (attribute, props) => {
-  ;
+
   if(attribute.editorDisplay && attribute.editorDisplay.hideUndefined && props.obj[attribute.id] === undefined){
     return null;
   }
@@ -204,6 +207,182 @@ class EditOnBlur extends React.Component {
   }
 }
 
+class LocationEditor extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.state = {
+      editing: false,
+      location: {
+      },
+      latPositive: false,
+      lonPositive: true,
+      canSave: true
+    }
+  }
+
+  onFocus(){
+    let location = helper.getDegreesMinutesFromLocation(this.props.value);
+    this.setState({
+      editing: true,
+      location: location,
+      lonPositive: this.props.value.lon > 0,
+      latPositive: this.props.value.lat > 0
+    });
+  }
+
+  getInput(name, label, maxLength, maxVal){
+    let value = this.state.location[name];
+    return (
+      <View
+        key={name + "__location"}
+        style={[{ flexDirection: 'row', marginLeft: 10}]}>
+        <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 5}]}>
+          {label}
+        </Text>
+        <TextInput
+          selectTextOnFocus={true}
+          autoCorrect={false}
+          autoCapitalize={'none'}
+          value={value.toString()}
+          style={{width: 40, height: 30, alignSelf: 'flex-start', marginLeft:5}}
+          maxLength={maxLength}
+          onChangeText={(text) => {
+            let change = {};
+            change[name] = text;
+            this.setState({
+              location: Object.assign({}, this.state.location, change),
+              canSave: (isNaN(parseInt(text)) === false) && (parseInt(text) <= maxVal)
+            });
+          }}
+        />
+        </View>);
+  }
+
+  renderEditingView(){
+    let latInputs = [["latDegrees", "degrees", 3, 90],
+                     ["latMinutes", "minutes", 2, 60],
+                     ["latSeconds", "seconds", 2, 60]].map((part) => {
+                       return this.getInput(part[0], part[1], part[2], part[3]);
+                  });
+    let lonInputs = [["lonDegrees", "degrees", 3, 180],
+                     ["lonMinutes", "minutes", 2, 60],
+                     ["lonSeconds", "seconds", 2, 60]].map((part) => {
+                       return this.getInput(part[0], part[1], part[2], part[3]);
+                  });
+    return (
+      <View>
+        <View>
+          <Text style={[inputStyles.labelText, {color: colors.blue}]}>
+            Latitude
+          </Text>
+          {latInputs}
+          <View style={{flexDirection: 'row'}}>
+            <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 5, marginRight: 10, marginLeft: 10}]}>
+              South
+            </Text>
+            <Switch
+              onValueChange={(bool) => {
+                console.log("latPositive", bool);
+                this.setState({
+                  latPositive: bool
+                });
+              }}
+              value={this.state.latPositive}
+            />
+            <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 5, marginRight: 10, marginLeft: 10}]}>
+              North
+            </Text>
+          </View>
+        </View>
+
+        <View>
+          <Text style={[inputStyles.labelText, {color: colors.blue}]}>
+            Longitude
+          </Text>
+          {lonInputs}
+          <View style={{flexDirection: 'row'}}>
+            <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 5, marginRight: 10, marginLeft: 10}]}>
+              West
+            </Text>
+            <Switch
+              onValueChange={(bool) => {
+                console.log("lonPositive", bool);
+                this.setState({
+                lonPositive: bool});
+              }}
+              value={!!this.state.lonPositive}
+            />
+            <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 5, marginLeft: 10, marginRight: 10}]}>
+              East
+            </Text>
+
+          </View>
+        </View>
+        <LongButton
+          text={"Save"}
+          bgColor={colors.blue}
+          onPress={this.saveLocation.bind(this)}
+          disabled={!this.state.canSave}
+          _style={{marginTop: 5}}
+        />
+        <LongButton
+          text={"Cancel"}
+          bgColor={colors.red}
+          onPress={() => { this.setState({editing: false}) }}
+          disabled={false}
+          _style={{marginTop: 5}}
+        />
+      </View>
+    );
+  }
+
+  renderLocation(){
+    let posText = Sexagesimal.format(this.props.value.lat, 'lat') + "  " + Sexagesimal.format(this.props.value.lon, 'lon');
+    return (
+      <TextInput
+        selectTextOnFocus={true}
+        autoCorrect={false}
+        autoCapitalize={'none'}
+        keyboardType={'number-pad'}
+        placeholderText={this.props.attribute.label}
+        value={posText}
+        style={inputStyles.textInput}
+        onFocus={this.onFocus.bind(this)}
+        onBlur={() => {
+          this.setState({
+            editing: false
+          });
+          console.log(helper.parseLocation(this.state.location));
+        }}
+        onChangeText={() => {}}
+      />
+    );
+  }
+
+  saveLocation(){
+    let stateLoc = Object.assign({}, this.state.location);
+    let location = helper.parseLocation(stateLoc,
+                                        this.state.lonPositive,
+                                        this.state.latPositive);
+    this.props.onChange(location);
+    this.setState({editing: false});
+  }
+
+  render(){
+    if(!this.state.editing){
+      return this.renderLocation();
+    }else{
+      return (
+        <View>
+          {this.renderLocation()}
+          {this.renderEditingView()}
+        </View>
+      );
+    }
+  }
+}
+
 const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, editingCallback) => {
   if(!extraProps) {
     extraProps = {};
@@ -246,6 +425,7 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
     case "container":
       return (<ContainerPicker
                 onChange={(value) => {
+
                   onChange(attribute.id, value);
                 }}
                 value={value}
@@ -255,11 +435,12 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
                 editingCallback={editingCallback}
               />);
     case "location":
-        let posText = Sexagesimal.format(value.lat, 'lat') + "  " + Sexagesimal.format(value.lon, 'lon');
-        return(<EditOnBlur
+        return(<LocationEditor
             attribute={attribute}
-            value={posText}
-            callback={onChange}
+            value={value}
+            onChange={(value) => {
+              onChange(attribute.id, value);
+            }}
             extraProps={{editable: false}}
             inputId={inputId}
             editingCallback={editingCallback}

@@ -54,7 +54,7 @@ export default (state = initialState, action) => {
           let gearChange = {};
           gearChange[action.key] = action.value;
           state = changeEvent(action.fishingEventId - 1, state, gearChange);
-          ;
+         
           return state;
         case 'formSigned':
           action.fishingEvents.forEach((fe) => {

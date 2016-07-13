@@ -34,6 +34,7 @@ const editorStyles = StyleSheet.create(eventEditorStyles);
 const Login = ({onLoginPress, loggedIn, disabled, sync}) => {
   console.log(sync);
   const tripsToSync = sync.queues.pastTrips.length + (sync.trip ? 1 : 0);
+
   const eventsToSync = Object.keys(sync.fishingEvents).length;
   const SyncModel = [
     {id: 'tripsToSync', defaultValue: 0, label: "Trips to Sync", type: "labelOnly", valid: valid.alwaysValid,
