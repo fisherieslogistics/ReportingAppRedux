@@ -7,6 +7,7 @@ export default {
    paddingBottom: 10,
   },
   outerWrapper: {
+    width: 690,
     marginTop: 10,
     marginLeft: 10,
     marginRight: 10,
