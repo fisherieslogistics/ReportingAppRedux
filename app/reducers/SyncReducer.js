@@ -53,10 +53,18 @@ export default (state = initialState, action) => {
       return state;
     case "endTrip":
       state.trip = null;
+      let _trip = Object.assign({}, action.trip);
+      _trip.message = action.message;
+      _trip.completed = true;
       state.queues.pastTrips.push({
-        trip: Object.assign({}, action.trip),
+        trip: _trip,
         fishingEvents: action.fishingEvents.filter(fe => !!state.fishingEvents[action.objectId]),
         vesselId: action.vesselId
+      });
+      return state;
+    case 'formSigned':
+      action.fishingEvents.forEach((fe) => {
+        state.fishingEvents[fe.objectId] = new moment();
       });
       return state;
     case "syncError":
