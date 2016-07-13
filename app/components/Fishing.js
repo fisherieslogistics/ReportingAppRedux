@@ -72,7 +72,7 @@ class Fishing extends React.Component{
     }
     AlertIOS.alert(
       "Hauling",
-      'Touch yes to confirm',
+      'Touch yes to confirm - you cannot delete a shot after you haul it.',
       [
         {text: 'No', onPress: () => {
           return;
@@ -188,7 +188,7 @@ class Fishing extends React.Component{
   }
 
   getDetailToolbar(){
-    let deleteActive = (this.props.fishingEvents && this.props.fishingEvents.length);
+    let deleteActive = this.props.lastEvent && (!this.props.lastEvent.datetimeAtEnd);
     return(
       <DetailToolbar
         left={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent.bind(this), enabled: deleteActive}}

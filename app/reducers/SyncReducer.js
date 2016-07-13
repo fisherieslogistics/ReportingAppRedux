@@ -41,7 +41,9 @@ export default (state = initialState, action) => {
     case 'deleteProduct':
     case 'undoDeleteProduct':
     case 'changeEventGear':
-      state.fishingEvents[action.objectId] = new moment();
+      if(action.objectId){
+        state.fishingEvents[action.objectId] = new moment();
+      }
       return state;
     case "startTrip":
       state.trip = new moment();
