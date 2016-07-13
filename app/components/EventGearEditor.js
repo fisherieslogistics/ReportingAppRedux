@@ -1,6 +1,7 @@
 'use strict';
 import {
   StyleSheet,
+  ScrollView,
 } from 'react-native';
 
 import React from 'react';
@@ -42,8 +43,9 @@ const getEditor = (attribute, props) => {
 }
 
 const EventGearEditor = (props) => {
- 
+
   return (
+    <ScrollView>
     <EditorView
       styles={styles}
       getCallback={(name, value) => this.onChange(name, value, props)}
@@ -54,6 +56,7 @@ const EventGearEditor = (props) => {
       obj={props.fishingEvent}
       values={props.fishingEvent}
     />
+  </ ScrollView>
   );
 }
 

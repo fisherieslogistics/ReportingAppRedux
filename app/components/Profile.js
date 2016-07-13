@@ -7,6 +7,7 @@ import {
   Image,
   StyleSheet,
   Modal,
+  ScrollView,
   TextInput
 } from 'react-native';
 import React from 'react';
@@ -276,11 +277,14 @@ class Profile extends React.Component{
           modal={this.getModal()}
           master={this.renderListView()}
           detail={
-            <View style={[this.props.styles.detailView, this.props.styles.col]}>
+            <ScrollView>
+              <View style={[this.props.styles.detailView, this.props.styles.col]}>
               <View style={[this.props.styles.row]}>
                 {this.renderDetail()}
               </View>
-            </View>}
+            </View>
+          </ScrollView>
+          }
           detailToolbar={detailToolbar}
           masterToolbar={masterToolbar}
         />
