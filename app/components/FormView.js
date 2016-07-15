@@ -99,17 +99,22 @@ class FormView extends React.Component {
   }
 
   renderRepeating(obj, parts, k, allText, meta, eventIndex){
-    let items = meta.prep ? meta.prep(obj[k]) : obj[k];
-    obj[k] = items;
+    let key  = "" + k;
+    let items = obj[k];
+    if(meta.prep){
+      items = meta.prep(obj[k]);
+      key = key + "__prepped"; 
+      obj[key] = items;
+    }
     items.forEach((v, i) => {
-      this.renderMultiple(obj, parts, k, allText, eventIndex, i);
+      this.renderMultiple(obj, parts, key, allText, eventIndex, i);
     });
   }
 
   renderMultiple(obj, parts, key, allText, eventIndex, itemIndex){
     parts.forEach((p) => {
-      let val = p.resolve(obj, itemIndex);
-      allText.push(this.renderText(val, p, eventIndex, itemIndex));
+      let val = p.resolve(obj, itemIndex, key);
+      allText.push(this.renderText(val, p, eventIndex, itemIndex, key));
     });
   }
 
@@ -137,7 +142,7 @@ class FormView extends React.Component {
       this.renderMultiple(obj, meta.parts, k, allText, eventIndex);
     }
     else{
-      allText.push(this.renderText(this.getValue(obj, meta, k), meta, eventIndex));
+      allText.push(this.renderText(this.getValue(obj, meta, k), meta, eventIndex, 0, k));
     }
   }
 
@@ -149,8 +154,9 @@ class FormView extends React.Component {
     return allText;
   }
 
-  renderText(val, meta, xIndex=0, yIndex=0){
-    let _key = Math.random().toString() + new Date().getTime().toString();
+  renderText(val, meta, xIndex=0, yIndex=0, key){
+    let _key = val + " " + xIndex + " "  + yIndex  + " " + key;
+    console.log(_key);
     let xy = {left: meta.x * 0.657, top: meta.y * 0.658};
     if(meta.ymultiple){
       xy.top += (meta.ymultiple * yIndex);

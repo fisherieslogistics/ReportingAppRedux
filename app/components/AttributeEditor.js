@@ -35,9 +35,6 @@ const SingleEditor = ({ attribute, styles, getEditor, value, editing, editingCal
     throw new Error(`${attribute.id} doesn't have a validator`);
   }
   const isValid = attribute.valid.func(value);
-  if(!isValid){
-    console.log(attribute, value);
-  }
   return (
     <View style={[styles.col, styles.inputRow]} key={attribute.id}>
         <View style={[styles.row, styles.labelRow]}>
@@ -103,7 +100,6 @@ const renderEditor = (attribute, props) => {
   }
   const editing = (props.editing === attribute.id);
   if(attribute.editorDisplay && attribute.editorDisplay.editor === props.editorType){
-    console.log(props.values);
     switch (attribute.editorDisplay.type) {
       case "single":
         return (<SingleEditor
@@ -282,7 +278,6 @@ class LocationEditor extends React.Component {
             </Text>
             <Switch
               onValueChange={(bool) => {
-                console.log("latPositive", bool);
                 this.setState({
                   latPositive: bool
                 });
@@ -306,7 +301,6 @@ class LocationEditor extends React.Component {
             </Text>
             <Switch
               onValueChange={(bool) => {
-                console.log("lonPositive", bool);
                 this.setState({
                 lonPositive: bool});
               }}
@@ -350,7 +344,6 @@ class LocationEditor extends React.Component {
         onFocus={this.onFocus.bind(this)}
         onBlur={() => {
           this.props.editingCallback(false);
-          console.log(helper.parseLocation(this.state.location));
         }}
         onChangeText={() => {}}
       />

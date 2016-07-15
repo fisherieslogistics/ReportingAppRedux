@@ -188,7 +188,6 @@ const calculateEventValid = (fEvent) => {
     if(attr.valid){
       if(attr.valid && !attr.valid.func(fEvent[attr.id])){
         valid = false;
-        console.log(attr.id, fEvent[attr.id]);
       }
     }
   });

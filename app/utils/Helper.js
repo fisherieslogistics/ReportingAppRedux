@@ -187,16 +187,17 @@ class Helper {
         }
       });
       return Object.keys(totals).map((k) => {
-        return {code: k, weight: totals[k]};
+        return {code: k, weight: parseInt(totals[k])};
       });
     }
 
     getUncountedWeight(products, numberOfCounted){
       let totals = this.getTotals(products);
-      return totals.sort((c1, c2) => (c1.weight < c2.weight))
+      //sort highest to lowest - take the sum of the lowest remaining past the numberOfCounted
+      return totals.sort((c1, c2) => parseInt(c2.weight) - parseInt(c1.weight))
                    .map(t => t.weight)
                    .slice(numberOfCounted, totals.length)
-                   .reduce((n, b) => n + b, 0);
+                   .reduce((n, b) => { return parseInt(n) + parseInt(b)}, 0);
     }
 
     isA(typeStr, obj){
@@ -216,7 +217,6 @@ class Helper {
     }
 
     tripCanStart(trip){
-      console.log(trip.leavingPort, trip.estimatedReturnPort);
       return (trip.leavingPort && trip.sailingTime && trip.ETA && trip.estimatedReturnPort && (!trip.started))
     }
 

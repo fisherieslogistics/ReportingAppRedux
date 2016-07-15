@@ -72,31 +72,34 @@ const meta = {
         multiple: true,
         repeating: true,
         prep: (products) => {
-          let totals = helper.getTotals([...products]).slice(0, 8);
+          //sort highest to lowest take the highest 8 by weight
+          debugger;
+          let totals = helper.getTotals([...products]).sort((c1, c2) => c2.weight - c1.weight).slice(0, 8);
           return totals;
         },
         parts: [
           {
             id: 'code',
-            resolve: (fe, i) => {
-              return fe.products[i] ? fe.products[i].code : "";
+            resolve: (fe, i, key) => {
+              return fe[key][i] ? fe[key][i].code : "";
             },
             x: 172,
             y: 342,
-            ymultiple: 20
+            ymultiple: 19
           },
           {
             id: 'weight',
-            resolve: (fe, i) => {
-              return fe.products[i] ? fe.products[i].weight : "";
+            resolve: (fe, i, key) => {
+              return fe[key][i] ? fe[key][i].weight : "";
             },
             x: 244,
             y: 342 ,
-            ymultiple: 20
+            ymultiple: 19
           },
         ]
       },
       otherSpeciesWeight: {id: 'products', resolve: (fe) => {
+        debugger;
         return helper.getUncountedWeight(fe.products, 8);
       }, x: 244, y: 572}
     }
