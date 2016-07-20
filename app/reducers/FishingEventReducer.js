@@ -1,14 +1,9 @@
 import moment from 'moment';
 import ModelUtils from '../utils/ModelUtils';
 import Helper from '../utils/Helper';
-import FishingEventModel from '../models/FishingEventModel';
-import TCERFishingEventModel from '../models/TCERFishingEventModel';
-import {findCombinedErrors, findErrors} from '../utils/ModelErrors';
 import ProductModel from '../models/ProductModel';
+
 const helper = new Helper();
-const NUMBER_OF_PRODUCTS = 12;
-const fishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
-const allFishingEventAttrs = Object.keys(fishingEventModel);
 
 let initialState = {
   events: [],
@@ -204,7 +199,10 @@ const setFishingEventGear = (fishingEvent, gear) => {
 }
 
 const newFishingEvent = (state, location, gear) => {
+  //TODO MODEL
   let newEvent = ModelUtils.blankModel(fishingEventModel);
+
+
   let id = state.events.length + 1;
   const objectId = newEvent.objectId;
   newEvent.id = id;
@@ -218,11 +216,16 @@ const newFishingEvent = (state, location, gear) => {
   let previousEvent = state.events.length ? Object.assign({}, state.events[state.events.length - 1]) : null;
   if(previousEvent){
     newEvent.targetSpecies = "" + previousEvent.targetSpecies;
+
+    //TODO MODEL
+    
     TCERFishingEventModel.forEach((attribute) => {
       let update = {};
       update[attribute.id] = previousEvent[attribute.id];
       newEvent = Object.assign({}, newEvent, update);
     });
+
+
   }
   newEvent.objectId = objectId;
   return Object.assign({}, state, {

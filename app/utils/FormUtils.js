@@ -1,8 +1,31 @@
-import FormModel from '../models/FormModel';
-import TCERFormModel from '../models/TCERFormModel';
 import Helper from './Helper';
 import moment from 'moment';
 import ModelUtils from './ModelUtils';
+
+import FormModel from '../models/FormModel';
+import TCERFormModel from '../models/TCERFormModel';
+import LCERFormModel from '../models/LCERFormModel';
+
+import FishingEventModel from '../models/FishingEventModel';
+import TCERFishingEventModel from '../models/TCERFishingEventModel';
+import LCERFishingEventModel from '../models/LCERFishingEventModel';
+
+const lcerModel = FormModel.concat(LCERFormModel);
+const tcerModel = FormModel.concat(LCERFormModel);
+
+const tcerFishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
+const lcerFishingEventModel = FishingEventModel.concat(LCERFishingEventModel);
+
+const formModels = {
+  tcer: tcerModel,
+  lcer: lcerModel,
+}
+
+const fishingEventModels = {
+  tcer: tcerFishingEventModel,
+  lcer: lcerFishingEventModel,
+}
+
 const helper = new Helper();
 
 function firstEventValue(fishingEvents, id){
@@ -12,7 +35,7 @@ function firstEventValue(fishingEvents, id){
   return fishingEvents[0][id];
 };
 
-const createForms = (fishingEvents) => {
+function createForms(fishingEvents, formModel) {
   let forms = [];
   const newForm = (fe) => {
     let values = {
@@ -20,7 +43,7 @@ const createForms = (fishingEvents) => {
       created: new moment(fe.datetimeAtStart.unix()),
       fishingEvents: [helper.assign({}, fe)]
     }
-    let form = helper.assign(ModelUtils.blankModel(FormModel.concat(TCERFormModel)), values);
+    let form = helper.assign(ModelUtils.blankModel(formModel), values);
     newForm.signature = fe.signature;
     forms.push(form);
   }
@@ -40,4 +63,18 @@ const createForms = (fishingEvents) => {
   return forms;
 }
 
-export {firstEventValue, createForms}
+function getFormModelByTypeCode(typeCode){
+  if(! typeCode in formModels){
+    throw new Error("invalid type code for form model");
+  }
+  return formModels[typeCode];
+}
+
+function getFishingEventModelByTypeCode(typeCode){
+  if(! typeCode in fishingEventModels){
+    throw new Error("invalid type code for fishing event model");
+  }
+  return fishingEventModels[typeCode];
+}
+
+export {firstEventValue, createForms, getFormByTypeCode, getFishingEventModelByTypeCode}

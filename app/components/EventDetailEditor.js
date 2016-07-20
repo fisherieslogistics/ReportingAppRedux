@@ -8,15 +8,10 @@ import {
 } from 'react-native';
 
 import React from 'react';
-import FishingEventActions from '../actions/FishingEventActions';
-import FishingEventModel from '../models/FishingEventModel';
-import TCERFishingEventModel from '../models/TCERFishingEventModel';
 import Errors from './Errors';
 import EditorView from './EditorView';
 import {eventEditorStyles, colors} from '../styles/styles';
 const fishingEventActions = new FishingEventActions();
-
-const model = FishingEventModel.concat(TCERFishingEventModel);
 
 class EventDetailEditor extends React.Component{
     onChange(name, value){

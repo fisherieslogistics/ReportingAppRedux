@@ -5,21 +5,15 @@ import{
   Image,
 } from 'react-native';
 import React from 'react';
-import {connect} from 'react-redux';
 import FormActions from '../actions/FormActions';
-import Strings from '../constants/Strings.js';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Helper from '../utils/Helper';
-import FishingEventModel from '../models/FishingEventModel';
-import TCERFishingEventModel from '../models/TCERFishingEventModel';
 import MasterListView from './MasterListView';
 
+import {connect} from 'react-redux';
 import {colors, listViewStyles, textStyles, iconStyles} from '../styles/styles';
 
 const helper = new Helper();
-const Lang = Strings.english;
-
-const fishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
 const formActions = new FormActions();
 
 import Icon8 from  './Icon8';

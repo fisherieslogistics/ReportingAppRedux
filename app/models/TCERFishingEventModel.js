@@ -3,7 +3,6 @@ import Helper from '../utils/Helper';
 const combined = Validator.combined;
 const valid = Validator.valid;
 const helper = new Helper();
-const NUMBER_OF_PRODUCTS = 8;
 
 const model = [
   {label: 'Average Speed', id: 'averageSpeed', valid: valid.greaterThanZero, type: 'float',

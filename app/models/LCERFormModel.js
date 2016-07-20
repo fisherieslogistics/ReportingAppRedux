@@ -1,24 +1,21 @@
-"user strict";
+import {firstEventValue} from '../utils/FormUtils';
+import LCERFishingEventModel from './LCERFishingEventModel';
 import Helper from '../utils/Helper';
 const helper = new Helper();
 
 const meta = {
-  formCode: 'tcer',
+  formCode: 'lcer',
   compatible: (event1, event2) => {
     let daysMatch = (event1.datetimeAtStart.diff(event2.datetimeAtStart, 'days') === 0);
-    let wingSpreadsMatch = (event2.wingSpread == event1.wingSpread);
-    let headlineHeightsMatch = (event2.headlineHeight == event1.headlineHeight);
     let signaturesMatch =(event2.signature === event1.signature);
-    return (daysMatch && wingSpreadsMatch && headlineHeightsMatch && signaturesMatch);
+    return (daysMatch && signaturesMatch);
   },
-  eventsPerForm: 4,
-  xMultiplier: 214 * 0.660,
+  eventsPerForm: 5,
+  xMultiplier: 170 * 0.660,
   printMapping: {
     form:{
       gearCode: {x: 190, y: 50},
-      wingSpread: {x: 378, y: 50, resolve: form => form.fishingEvents[0].wingSpread || ""},
-      headlineHeight: {x: 650, y: 50, resolve: form => form.fishingEvents[0].headlineHeight || "",
-                                                        textStyle: {textAlign: 'right'}},
+      hookSpacing: {x: 650, y: 50, resolve: form => form.fishingEvents[0].hookSpacing || ""},
       permitHolderName: {x: 100, y: 628, resolveFrom: 'user', resolve: u => u.permitHolderName},
       vesselName: {x: 424, y: 628, resolveFrom: 'vessel', resolve: v => v.name},
       vesselNumber: {x: 555, y: 662, resolveFrom: 'vessel', resolve: v => v.registration},
@@ -28,10 +25,9 @@ const meta = {
     fishingEvents: {
       shotNumber: {x: 220, y: 85},
       targetSpecies: {x: 310, y: 85},
+      numberOfHooks: {x: 220, y: 50, resolve: (fe) => isNaN(parseFloat(fe.numberOfHooks)) ? "" : parseFloat(fe.numberOfHooks)},
       bottomDepth: {x: 218, y: 227, resolve: (fe) => isNaN(parseInt(fe.bottomDepth)) ? "" : parseInt(fe.bottomDepth)},
-      groundropeDepth: {x: 282, y: 227, resolve: fe => isNaN(parseInt(fe.groundropeDepth)) ? "" : parseInt(fe.groundropeDepth)},
       nonFishProtected: {x: 195, y: 312, resolve: fe => fe.nonFishProtected ? "X" : "           X"},
-      averageSpeed: {x: 173, y: 258, align: 'right', resolve: fe => isNaN(parseFloat(fe.averageSpeed)) ? "" : parseFloat(fe.averageSpeed).toFixed(1)},
       locationAtStart: {
         multiple: true,
         parts:[
@@ -104,19 +100,18 @@ const meta = {
   }
 }
 
-const TCERFormModel = [
+const LCERFormModel = [
     {id: 'meta', defaultValue: meta},
-    {id: 'wingSpread', type: 'number'},
-    {id: 'headlineHeight', type: 'number'},
+    {id: 'numberOfHooks', type: 'number'},
+    {id: 'hookSpacing', type: 'float'},
     {id: 'fisherName'},
     {id: 'firstName'},
     {id: 'lastName'},
-    {id: 'gearCode', defaultValue: 'BT'},
+    {id: 'gearCode', defaultValue: 'BLL'},
     {id: 'permitHolderName'},
     {id: 'vesselName'},
     {id: 'vesseNumber'},
-    {id: 'permitHolderNumber'},
-    {id: 'fisherName'},
-];
+    {id: 'permitHolderNumber'}
+]
 export {meta}
-export default TCERFormModel;
+export default LCERFormModel;

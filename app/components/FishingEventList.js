@@ -7,18 +7,15 @@ import{
 } from 'react-native';
 import React from 'react';
 import FishingEventActions from '../actions/FishingEventActions';
-const fishingEventActions = new FishingEventActions();
 import Helper from '../utils/Helper';
-import {findCombinedErrors, findErrors} from '../utils/ModelErrors';
-import FishingEventModel from '../models/FishingEventModel';
-import TCERFishingEventModel from '../models/TCERFishingEventModel';
-const helper = new Helper();
 import MasterListView from './MasterListView';
 import Icon8 from './Icon8';
 
 import {colors, listViewStyles, iconStyles, textStyles} from '../styles/styles';
 import {IconButton} from './Buttons';
 
+const fishingEventActions = new FishingEventActions();
+const helper = new Helper();
 
 class FishingEventList extends React.Component {
     constructor(props){
