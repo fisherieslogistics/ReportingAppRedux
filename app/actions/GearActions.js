@@ -12,13 +12,16 @@ class GearActions{
     }
 
     changeEventGear(fishingEventId, objectId, key, value){
-      return {
+      return (dispatch, getState) => {
+        dispatch({
           fishingEventId: fishingEventId,
           type: 'changeEventGear',
           key: key,
           value: value,
-          objectId: objectId
-      };
+          objectId: objectId,
+          formType: getState().default.me.formType
+        });
+      }
     }
 }
 

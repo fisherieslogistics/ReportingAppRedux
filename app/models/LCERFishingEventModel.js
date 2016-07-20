@@ -4,10 +4,10 @@ const valid = Validator.valid;
 let model = [];
 
 model = [
-  {label: 'Bottom Depth', id: 'bottom_depth', valid: valid.greaterThanZero, type: 'number',
+  {label: 'Bottom Depth', id: 'bottomDepth', valid: valid.greaterThanZero, type: 'number',
     editorDisplay: {editor: 'event', type: 'single'}, unit: 'm'
   },
-  {label: 'Number of Hooks',     id: 'numberOfHooks', valid: valid.greaterThanZero, type: 'number',
+  {label: 'Number of Hooks', id: 'numberOfHooks', valid: valid.greaterThanZero, type: 'number',
     editorDisplay: {editor: 'gear', type: 'single'}
   },
   {label: 'Hook Spacing', id: 'hookSpacing', valid: valid.greaterThanZero, type: 'float',

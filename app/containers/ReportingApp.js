@@ -76,7 +76,7 @@ class ReportingApp extends Component {
           onPress={() => {
             if(this.props.loggedIn){
               if(key === "forms"){
-                let forms = createForms(this.props.fishingEvents);
+                let forms = createForms(this.props.fishingEvents, this.props.formType);
                 this.props.dispatch(formActions.setViewingForm(forms[forms.length-1]));
               }
               setTimeout(() => {
@@ -115,7 +115,7 @@ class ReportingApp extends Component {
   }
 
   renderForms(){
-    let forms = createForms(this.props.fishingEvents);
+    let forms = createForms(this.props.fishingEvents, this.props.formType);
     return (
       <View style={[styles.col, styles.fill]}>
         <Forms
@@ -130,6 +130,7 @@ class ReportingApp extends Component {
       <View style={[styles.col, styles.fill]}>
         <Fishing
           position={this.props.position}
+          formType={this.props.formType}
         />
       </View>
     )
@@ -178,7 +179,8 @@ const select = (State, dispatch) => {
       tripStarted: state.trip.started,
       loggedIn: state.auth.loggedIn,
       fishingEvents: state.fishingEvents.events,
-      viewingForm: state.view.viewingForm
+      viewingForm: state.view.viewingForm,
+      formType: state.me.formType,
     };
 }
 

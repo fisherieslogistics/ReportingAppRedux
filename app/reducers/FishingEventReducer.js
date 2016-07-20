@@ -3,6 +3,8 @@ import ModelUtils from '../utils/ModelUtils';
 import Helper from '../utils/Helper';
 import ProductModel from '../models/ProductModel';
 
+import  {getFormModelByTypeCode, getFishingEventModelByTypeCode} from '../utils/FormUtils';
+
 const helper = new Helper();
 
 let initialState = {
@@ -19,28 +21,28 @@ export default (state = initialState, action) => {
         case 'endTrip':
           return initialState;
         case 'startFishingEvent':
-          return newFishingEvent(state, action.location, action.gear);
+          return newFishingEvent(state, action.location, action.gear, action.formType);
         case 'endFishingEvent':
-          return endFishingEvent(state, action.location, action.id);
+          return endFishingEvent(state, action.location, action.id, action.formType);
         case 'cancelFishingEvent':
           return changeState(state, {events: [...state.events.slice(0, state.events.length - 1)]});
         case 'setFishingEventValue':
           let change = {};
           change[action.inputId] = action.value;
-          return changeEvent(action.fishingEventId - 1, state, change);
+          return changeEvent(action.fishingEventId - 1, state, change, action.formType);
         case 'setLocationValue':
           //always negative whatever they put it for lat
           let negativeLatChanges = Object.assign({}, action.changes, {lat: (0 - Math.abs(parseFloat(action.changes.lat)))});
-          return changeEvent(action.id - 1, state, {locationAtStart: negativeLatChanges});
+          return changeEvent(action.id - 1, state, {locationAtStart: negativeLatChanges}, action.formType);
         case 'changeSpecies':
-          return ChangeCatch(action, state, "code");
+          return ChangeCatch(action, state, "code", action.formType);
         case 'changeWeight':
-          return ChangeCatch(action, state, "weight");
+          return ChangeCatch(action, state, "weight", action.formType);
         case 'changeCustom':
-          return ChangeCatch(action, state, action.name);
+          return ChangeCatch(action, state, action.name, action.formType);
         case 'addProduct':
           state = clearDeletedProducts(action.fishingEventId, state);
-          return addNewCatch(action.fishingEventId, state);
+          return addNewCatch(action.fishingEventId, state, action.formType);
         case 'deleteProduct':
           return stashDeletedProduct(state, action);
         case 'undoDeleteProduct':
@@ -48,14 +50,14 @@ export default (state = initialState, action) => {
         case 'changeEventGear':
           let gearChange = {};
           gearChange[action.key] = action.value;
-          state = changeEvent(action.fishingEventId - 1, state, gearChange);
+          state = changeEvent(action.fishingEventId - 1, state, gearChange, action.formType);
          
           return state;
         case 'formSigned':
           action.fishingEvents.forEach((fe) => {
             state = changeEvent(fe.id - 1, state, {signature: action.signature,
                                                    dateSigned: action.dateSigned,
-                                                   committed: true});
+                                                   committed: true}, action.formType);
           });
           return Object.assign({}, state);
         default:
@@ -96,10 +98,10 @@ const changeState = (state, change) => {
   return Object.assign({}, state, change);
 }
 
-const changeEvent = (index, state, changes) => {
+const changeEvent = (index, state, changes, formType) => {
   changes.lastChange = moment();
   updatedEvent = Object.assign({}, state.events[index], changes);
-  updatedEvent.eventValid = calculateEventValid(updatedEvent);
+  updatedEvent.eventValid = calculateEventValid(updatedEvent, formType);
   return replaceFishingEvent(state, updatedEvent);
 }
 
@@ -132,17 +134,17 @@ const getNewProduct = (fishingEventId, state) => {
   return product;
 }
 
-const addNewCatch = (fishingEventId, state) => {
+const addNewCatch = (fishingEventId, state, formType) => {
   let product = getNewProduct(fishingEventId, state);
-  return addProductToEvent(fishingEventId, product, state);
+  return addProductToEvent(fishingEventId, product, state, formType);
 }
 
-const addProductToEvent = (fishingEventId, product, state) => {
+const addProductToEvent = (fishingEventId, product, state, formType) => {
   let fishingEventProducts = [...state.events[fishingEventId -1].products, product];
-  return changeEvent(fishingEventId -1, state, {products: fishingEventProducts});
+  return changeEvent(fishingEventId -1, state, {products: fishingEventProducts}, formType);
 }
 
-const ChangeCatch = (action, state, attr) => {
+const ChangeCatch = (action, state, attr, formType) => {
   let fishingEventIndex = action.fishingEventId - 1;
   let change = {}
   change[attr] = action.value;
@@ -155,7 +157,7 @@ const ChangeCatch = (action, state, attr) => {
   ];
   updatedEvent = Object.assign({}, state.events[fishingEventIndex], fishingEventChange);
   updatedEvent.lastChange = moment();
-  updatedEvent.eventValid = calculateEventValid(updatedEvent);
+  updatedEvent.eventValid = calculateEventValid(updatedEvent, formType);
   return Object.assign({}, state, {events: [
       ...state.events.slice(0, fishingEventIndex),
       updatedEvent,
@@ -163,12 +165,12 @@ const ChangeCatch = (action, state, attr) => {
   ]});
 }
 
-const endFishingEvent = (state, location, id) => {
+const endFishingEvent = (state, location, id, formType) => {
   let change = {};
   change.datetimeAtEnd = moment();
   change.locationAtEnd = location;
   let fishingEventToUpdate = Object.assign({}, state.events[id - 1], change);
-  fishingEventToUpdate.eventValid = calculateEventValid(fishingEventToUpdate);
+  fishingEventToUpdate.eventValid = calculateEventValid(fishingEventToUpdate, formType);
   return Object.assign({}, state, {events: [
       ...state.events.slice(0, id - 1),
       fishingEventToUpdate,
@@ -176,10 +178,11 @@ const endFishingEvent = (state, location, id) => {
   ]});
 };
 
-const calculateEventValid = (fEvent) => {
+const calculateEventValid = (fEvent, formType) => {
+  const fishingEventModel = getFishingEventModelByTypeCode(formType);
   let valid = true;
   let productsValid = !fEvent.products.find(p => !(p.weight && p.code)) && fEvent.products.length;
-  fishingEventModel.forEach((attr) => {
+  fishingEventModel.specific.forEach((attr) => {
     if(attr.valid){
       if(attr.valid && !attr.valid.func(fEvent[attr.id])){
         valid = false;
@@ -198,11 +201,9 @@ const setFishingEventGear = (fishingEvent, gear) => {
   return fishingEvent;
 }
 
-const newFishingEvent = (state, location, gear) => {
-  //TODO MODEL
-  let newEvent = ModelUtils.blankModel(fishingEventModel);
-
-
+const newFishingEvent = (state, location, gear, formType) => {
+  const fishingEventModel = getFishingEventModelByTypeCode(formType);
+  let newEvent = ModelUtils.blankModel(fishingEventModel.complete);
   let id = state.events.length + 1;
   const objectId = newEvent.objectId;
   newEvent.id = id;
@@ -216,10 +217,7 @@ const newFishingEvent = (state, location, gear) => {
   let previousEvent = state.events.length ? Object.assign({}, state.events[state.events.length - 1]) : null;
   if(previousEvent){
     newEvent.targetSpecies = "" + previousEvent.targetSpecies;
-
-    //TODO MODEL
-    
-    TCERFishingEventModel.forEach((attribute) => {
+    fishingEventModel.specific.forEach((attribute) => {
       let update = {};
       update[attribute.id] = previousEvent[attribute.id];
       newEvent = Object.assign({}, newEvent, update);

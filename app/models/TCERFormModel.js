@@ -37,15 +37,15 @@ const meta = {
         parts:[
           {id: 'lat', x: 190, y: 175, resolve: (fe) => {
             let lat = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
-            return "42 34"//`${lat.latDegrees}${lat.latMinutes}`;
+            return `${lat.latDegrees}${lat.latMinutes}`;
           }},
           {id: 'lon', x: 197, y: 204, resolve: (fe) => {
             let lon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
-            return "172 31"//`${lon.lonDegrees}${lon.lonMinutes}`;
+            return `${lon.lonDegrees}${lon.lonMinutes}`;
           }},
           {id: 'ew', x: 310, y: 204, resolve: (fe) => {
             let latLon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
-            return "E"//latLon.ew;
+            return latLon.ew;
           }}
         ]
       },
@@ -71,7 +71,6 @@ const meta = {
         repeating: true,
         prep: (products) => {
           //sort highest to lowest take the highest 8 by weight
-          debugger;
           let totals = helper.getTotals([...products]).sort((c1, c2) => c2.weight - c1.weight).slice(0, 8);
           return totals;
         },
@@ -97,7 +96,6 @@ const meta = {
         ]
       },
       otherSpeciesWeight: {id: 'products', resolve: (fe) => {
-        debugger;
         return helper.getUncountedWeight(fe.products, 8);
       }, x: 244, y: 572}
     }

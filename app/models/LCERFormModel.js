@@ -11,63 +11,66 @@ const meta = {
     return (daysMatch && signaturesMatch);
   },
   eventsPerForm: 5,
-  xMultiplier: 170 * 0.660,
+  textStyle: {
+    letterSpacing: 2,
+    fontSize: 13.5
+  },
+  xMultiplier: 114,
   printMapping: {
     form:{
-      gearCode: {x: 190, y: 50},
-      hookSpacing: {x: 650, y: 50, resolve: form => form.fishingEvents[0].hookSpacing || ""},
-      permitHolderName: {x: 100, y: 628, resolveFrom: 'user', resolve: u => u.permitHolderName},
-      vesselName: {x: 424, y: 628, resolveFrom: 'vessel', resolve: v => v.name},
-      vesselNumber: {x: 555, y: 662, resolveFrom: 'vessel', resolve: v => v.registration},
-      permitHolderNumber: {x: 216, y: 662, resolveFrom: 'user', resolve: u => u.permitHolderNumber},
-      fisherName: {x: 249, y: 694, resolveFrom: 'user', resolve: u => u.firstName[0] + "." + u.lastName.slice(0, 4)},
+      gearCode: {x: 460, y: 62},
+      hookSpacing: {x: 640, y: 62, resolve: form => form.fishingEvents[0].hookSpacing || ""},
+      permitHolderName: {x: 130, y: 667, resolveFrom: 'user', resolve: u => u.permitHolderName, textStyle: {letterSpacing: 0.6, fontSize: 13}},
+      vesselName: {x: 440, y: 667, resolveFrom: 'vessel', resolve: v => v.name, textStyle: {letterSpacing: 0.6, fontSize: 15}},
+      vesselNumber: {x: 568, y: 702, resolveFrom: 'vessel', resolve: v => v.registration},
+      permitHolderNumber: {x: 243, y: 702, resolveFrom: 'user', resolve: u => u.permitHolderNumber},
+      fisherName: {x: 943, y: 62, resolveFrom: 'user', resolve: u => (u.firstName[0] + "." + u.lastName.slice(0, 4))},
+      startDate: { x: 240, y :65, resolve: form => form.fishingEvents[0].datetimeAtStart.format("DD MM YY")}
     },
     fishingEvents: {
-      shotNumber: {x: 220, y: 85},
-      targetSpecies: {x: 310, y: 85},
-      numberOfHooks: {x: 220, y: 50, resolve: (fe) => isNaN(parseFloat(fe.numberOfHooks)) ? "" : parseFloat(fe.numberOfHooks)},
-      bottomDepth: {x: 218, y: 227, resolve: (fe) => isNaN(parseInt(fe.bottomDepth)) ? "" : parseInt(fe.bottomDepth)},
-      nonFishProtected: {x: 195, y: 312, resolve: fe => fe.nonFishProtected ? "X" : "           X"},
+      shotNumber: {x: 200, y: 100},
+      targetSpecies: {x: 285, y: 100},
+      numberOfHooks: {x:200, y: 250, resolve: (fe) => isNaN(parseFloat(fe.numberOfHooks)) ? "" : parseFloat(fe.numberOfHooks)},
+      bottomDepth: {x: 200, y: 220, resolve: (fe) => isNaN(parseInt(fe.bottomDepth)) ? "" : parseInt(fe.bottomDepth)},
+      nonFishProtected: {x: 235, y: 335, resolve: fe => fe.nonFishProtected ? "X" : "      X"},
       locationAtStart: {
         multiple: true,
         parts:[
-          {id: 'lat', x: 190, y: 175, resolve: (fe) => {
+          {id: 'lat', x: 207, y: 160, resolve: (fe) => {
             let lat = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
-            return "42 34"//`${lat.latDegrees}${lat.latMinutes}`;
+            return `${lat.latDegrees} ${lat.latMinutes}`;
           }},
-          {id: 'lon', x: 197, y: 204, resolve: (fe) => {
+          {id: 'lon', x: 190, y: 190, resolve: (fe) => {
             let lon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
-            return "172 31"//`${lon.lonDegrees}${lon.lonMinutes}`;
+            return `${lon.lonDegrees} ${lon.lonMinutes}`;
           }},
-          {id: 'ew', x: 310, y: 204, resolve: (fe) => {
+          {id: 'w', x: 306, y: 177, resolve: (fe) => {
             let latLon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
-            return "E"//latLon.ew;
+            return latLon.ew  == "W" ? "x" : "";
+          }},
+          {id: 'e', x: 306, y: 184, resolve: (fe) => {
+            let latLon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
+            return latLon.ew == "E" ? "x" : "";
           }}
         ]
       },
-      datetimeAtStart: {
+      datetimeAtStart: {x: 200, y: 130, resolve: (fe) => { return fe.datetimeAtStart.format("HH:mm")}},
+      datetimeAtEnd: {
         multiple: true,
         parts: [
-          {x: 188, y: 115, resolve: (fe) => {
-            return fe.datetimeAtStart.format("DD   MM    YYYY");
+          {x: 212, y: 275, resolve: (fe) => {
+            return fe.datetimeAtEnd.format("DD MM YY");
           }},
-          {x: 184, y: 140, resolve: (fe) => {
-            return fe.datetimeAtStart.format("HH   mm");
+          {x: 212, y: 305, resolve: (fe) => {
+            return fe.datetimeAtEnd.format("HH:mm");
           }}
         ]
-      },
-      datetimeAtEnd: {
-        resolve: (fe) => {
-          return fe.datetimeAtEnd ? fe.datetimeAtEnd.format("HH   mm") : "";
-        },
-        x: 180, y: 282
       },
       products: {
         multiple: true,
         repeating: true,
         prep: (products) => {
           //sort highest to lowest take the highest 8 by weight
-          debugger;
           let totals = helper.getTotals([...products]).sort((c1, c2) => c2.weight - c1.weight).slice(0, 8);
           return totals;
         },
@@ -77,25 +80,25 @@ const meta = {
             resolve: (fe, i, key) => {
               return fe[key][i] ? fe[key][i].code : "";
             },
-            x: 172,
-            y: 342,
-            ymultiple: 19
+            x: 185,
+            y: 364,
+            ymultiple: 20
           },
           {
             id: 'weight',
             resolve: (fe, i, key) => {
               return fe[key][i] ? fe[key][i].weight : "";
             },
-            x: 244,
-            y: 342 ,
-            ymultiple: 19
+            x: 250,
+            y: 364 ,
+            textStyle: {fontSize: 12, letterSpacing: 1, marginTop: 3},
+            ymultiple: 20
           },
         ]
       },
       otherSpeciesWeight: {id: 'products', resolve: (fe) => {
-        debugger;
-        return helper.getUncountedWeight(fe.products, 8);
-      }, x: 244, y: 572}
+        return helper.getUncountedWeight(fe.products, 8) + "";
+      }, x: 252, y: 605}
     }
   }
 }
@@ -111,7 +114,8 @@ const LCERFormModel = [
     {id: 'permitHolderName'},
     {id: 'vesselName'},
     {id: 'vesseNumber'},
-    {id: 'permitHolderNumber'}
+    {id: 'permitHolderNumber'},
+    {id: 'startDate'}
 ]
 export {meta}
 export default LCERFormModel;

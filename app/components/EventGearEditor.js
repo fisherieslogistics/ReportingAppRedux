@@ -5,13 +5,12 @@ import {
 } from 'react-native';
 
 import React from 'react';
-import TrawlGearModel from '../models/TrawlGearModel';
 import EditorView from './EditorView';
 import GearActions from '../actions/GearActions';
 import {eventEditorStyles, textStyles} from '../styles/styles';
+import {getFishingEventModelByTypeCode} from '../utils/FormUtils';
 
 const gearActions = new GearActions();
-const model = TrawlGearModel;
 
 const onChange = (name, value, props, type) => {
   if(props.fishingEvent){
@@ -43,7 +42,7 @@ const getEditor = (attribute, props) => {
 }
 
 const EventGearEditor = (props) => {
-
+  const model = getFishingEventModelByTypeCode(props.formType).complete;
   return (
     <ScrollView>
     <EditorView

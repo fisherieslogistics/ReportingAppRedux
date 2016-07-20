@@ -11,9 +11,10 @@ class FishingEventActions{
                 location: position,
                 gear: gear,
                 tripId: state.trip.objectId,
-                timestamp: moment()
+                timestamp: moment(),
+                formType: state.me.formType
             });
-            let fishingEvents = getState().default.fishingEvents.events;
+            let fishingEvents = state.fishingEvents.events;
             if(fishingEvents.length){
                 let eventId = fishingEvents[fishingEvents.length - 1].id;
                 dispatch(this.setViewingFishingEvent(eventId));
@@ -21,12 +22,15 @@ class FishingEventActions{
         };
     }
     endFishingEvent(fishingEventId, pos) {
-      return {
+      return (dispatch, getState) => {
+        dispatch({
           type: 'endFishingEvent',
           location: pos,
           timestamp: moment(),
-          id: fishingEventId
-      };
+          id: fishingEventId,
+          formType: getState().default.me.formType
+        });
+      }
     }
     cancelFishingEvent(id) {
       return(dispatch) => {
@@ -45,6 +49,7 @@ class FishingEventActions{
             inputId: inputId,
             fishingEventId: fishingEventId,
             value: value,
+            formType: getState().default.me.formType,
             timestamp: moment()
         });
         dispatch({
@@ -60,7 +65,8 @@ class FishingEventActions{
             type: 'setLocationValue',
             changes: changes,
             timestamp: moment(),
-            id: fishingEventId
+            id: fishingEventId,
+            formType: getState().default.me.formType,
         };
     }
     setViewingFishingEvent(id) {

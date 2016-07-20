@@ -21,6 +21,7 @@ const initialState = {
   ],
   vessels: [],
   user: initialUser,
+  formType: 'lcer',
   autoSuggestFavourites: {
   }
 }
@@ -55,7 +56,6 @@ export default (state = initialState, action) => {
           change[action.value] = (change[action.value] || 0) + 1;
           faves[action.favouriteName] = change;
           return update(state, {autoSuggestFavourites: faves});
-          break;
         default:
       }
     default:

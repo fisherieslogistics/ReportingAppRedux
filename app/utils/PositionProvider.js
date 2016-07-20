@@ -17,7 +17,7 @@ class PositionProvider {
   initialPositionAquired(position){
     this.positionUpdated(position);
     this.watchId = watchPositon(this.positionUpdated.bind(this),
-      (err) => console.log("watch position", err));
+      (err) => {});
   }
 
   startPosition(){
@@ -27,7 +27,6 @@ class PositionProvider {
     }
     getPosition(this.initialPositionAquired.bind(this),
       (err) => {
-        console.log("get positon", err);
         setTimeout(this.startPosition.bind(this), 5000)
       });
   }

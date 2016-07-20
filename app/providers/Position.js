@@ -6,7 +6,6 @@ function getPosition(successCallback, onError){
       successCallback(position);
     },
     (err) => {
-       console.log(err);
        onError(err);
     },
     {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
@@ -19,7 +18,6 @@ function watchPositon(successCallback, onError){
       successCallback(position);
     },
     (err) => {
-       console.log(err);
        onError(err);
     },
     {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}

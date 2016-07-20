@@ -25,6 +25,7 @@ import {connect} from 'react-redux';
 import {createForms} from '../utils/FormUtils';
 import {MasterToolbar, DetailToolbar} from './Toolbar';
 import {colors, listViewStyles, textStyles, shadowStyles} from '../styles/styles';
+import {getFormModelByTypeCode, renderForm} from '../utils/FormUtils';
 
 const helper = new Helper();
 
@@ -73,7 +74,7 @@ class FormView extends React.Component {
     });
     //TODO something better when using events
     setTimeout(() => {
-      let forms = createForms(this.props.fishingEvents);
+      let forms = createForms(this.props.fishingEvents, this.props.formType);
       this.setState({
         forms: forms
       })
@@ -154,27 +155,26 @@ class FormView extends React.Component {
 
   renderText(val, meta, xIndex=0, yIndex=0, key){
     let _key = val + " " + xIndex + " "  + yIndex  + " " + key;
-    console.log(_key);
     let xy = {left: meta.x * 0.657, top: meta.y * 0.658};
     if(meta.ymultiple){
       xy.top += (meta.ymultiple * yIndex);
     }
-    xy.left += (formModelMeta.xMultiplier * xIndex);
+    xy.left += (this.props.formModelMeta.xMultiplier * xIndex);
     return (
       <View style={[styles.textWrapper, xy, meta.viewStyle || {}]} key={_key}>
-        <Text style={[textStyles.font,styles.text, meta.textStyle || {}]}>{val}</Text>
+        <Text style={[textStyles.font,styles.text, this.props.formModelMeta.textStyle || {}, meta.textStyle || {} ]}>{val}</Text>
       </View>);
   }
 
   renderFishingEvents(allText, form){
     const fe = form.fishingEvents;
     fe.forEach((f, i) => {
-      allText = allText.concat(this.renderObj(f, formModelMeta.printMapping.fishingEvents, i));
+      allText = allText.concat(this.renderObj(f, this.props.formModelMeta.printMapping.fishingEvents, i));
     });
     return allText;
   }
   renderForm(form){
-    return this.renderObj(form, formModelMeta.printMapping.form);
+    return this.renderObj(form, this.props.formModelMeta.printMapping.form);
   }
 
   formReadyToSign(form){
@@ -257,23 +257,30 @@ class FormView extends React.Component {
           ><Text style={{color: colors.orange, textAlign: 'right', fontSize: 18, padding: 10}}>Continue</Text></TouchableOpacity>
         </View>
         </View>) : null;
-    //console.log(this.props.viewingForm ? this.props.viewingForm.signature : "NOT NOT NOT");
+
+    let renderedForm = renderForm(this.props.formType, text, styles);
+    
     return (
       <MasterDetailView
         master={this.renderFormsListView()}
         detail={(
+          <TouchableOpacity 
+            onPress={(event) => {
+                    console.log(arguments);
+                    AlertIOS.alert(
+                      "position",
+                      `${event.locationX}  ${event.locationY}`
+                    )
+                  }}>
           <View style={[styles.col, styles.fill, {alignSelf: 'flex-start'},
                         styles.wrapper, {opacity:this.props.viewingForm ? 1 : 0}]}>
-            <Image source={require('../images/TCER.png')} style={[styles.bgImage]}>
-              <View style={styles.form}>
-                {text}
-              </View>
-            </Image>
+            {renderedForm}
             {this.renderSignatureAndDate()}
             {greyBackground}
             {signatureView}
             {signatureWarningView}
           </View>
+           </TouchableOpacity>
         )}
         detailToolbar={detailToolbar}
         masterToolbar={masterToolbar}
@@ -289,7 +296,9 @@ const select = (State, dispatch) => {
       vessel: state.me.vessel,
       viewingForm: state.forms.viewingForm,
       fishingEvents: state.fishingEvents.events,
-      selectedIndex: state.forms.viewingFormIndex
+      selectedIndex: state.forms.viewingFormIndex,
+      formType: state.me.formType,
+      formModelMeta: ModelUtils.blankModel(getFormModelByTypeCode(state.me.formType)).meta,
     };
 }
 

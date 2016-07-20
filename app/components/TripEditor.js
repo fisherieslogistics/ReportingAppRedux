@@ -78,7 +78,7 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
         }, () => { console.warn('This should store that we are editing a field')})}
         </View>
       </View>
-      <View style={[{width: 160, left: 13, marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderColor: colors.gray }]}>
+      <View style={[{width: 120, left: 13, marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderColor: colors.gray }]}>
              <Text style={{color: colors.blue}}>
             {timeType === 'sailingTime'? 'Start Port' : 'End Port'}
           </Text>
@@ -280,7 +280,6 @@ class TripEditor extends React.Component {
                 bgColor={this.props.tripCanEnd ? colors.blue : colors.midGray}
                 onPress={this.endTrip.bind(this)}
                 disabled={!this.props.tripCanEnd}
-                _style={{borderLeftWidth: LANDSCAPE ? 1 : 0 }}
               />
             </View>
           </View>

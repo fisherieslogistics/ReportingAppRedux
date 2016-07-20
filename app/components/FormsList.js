@@ -62,9 +62,9 @@ class FormsList extends React.Component {
       let idStyle = isSelected ? {color: colors.white} : {color: colors.black};
       let textStyle = isSelected ? {color: colors.white} : {};
       let details = [
-        {text: form.id, style: textStyle},
-        {text: form.fishingEvents[0].datetimeAtStart.format("HH:mm"), style:  textStyle},
-        {text: form.fishingEvents.length + " Shots ", style: textStyle},
+        {text: form.id, style: [textStyle, {marginLeft: 12}]},
+        {text: form.fishingEvents[0].datetimeAtStart.format("HH:mm"), style:  [textStyle, {marginLeft: -20}]},
+        {text: form.fishingEvents.length + " Shots ", style: [textStyle, {marginLeft: -20}]},
       ];
 
       return details.map((detail, i) => {

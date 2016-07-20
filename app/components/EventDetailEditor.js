@@ -10,7 +10,9 @@ import {
 import React from 'react';
 import Errors from './Errors';
 import EditorView from './EditorView';
+import FishingEventActions from '../actions/FishingEventActions';
 import {eventEditorStyles, colors} from '../styles/styles';
+import {getFishingEventModelByTypeCode} from '../utils/FormUtils';
 const fishingEventActions = new FishingEventActions();
 
 class EventDetailEditor extends React.Component{
@@ -68,6 +70,7 @@ class EventDetailEditor extends React.Component{
       if(!this.props.fishingEvent){
         return this.props.renderMessage("No shots to edit");
       }
+      const model = getFishingEventModelByTypeCode(this.props.formType).complete;
       return (<ScrollView style={{marginTop: 3}}>
                 <EditorView
                   styles={styles}

@@ -123,6 +123,7 @@ class Fishing extends React.Component{
                  fishingEvent={this.props.viewingEvent}
                  editorType={'event'}
                  dispatch={this.props.dispatch}
+                 formType={this.props.formType}
                  />);
       case 1:
         if(!this.props.viewingEvent.datetimeAtEnd){
@@ -143,10 +144,8 @@ class Fishing extends React.Component{
                  renderMessage={this.renderMessage.bind(this)}
                  dispatch={this.props.dispatch}
                  fishingEvent={this.props.viewingEvent}
-                 lastEvent={this.props.lastEvent}
-                 gear={this.props.gear}
+                 formType={this.props.formType}
                 />);
-      break;
     }
   }
 
@@ -250,7 +249,6 @@ const select = (State, dispatch) => {
     let state = State.default;
     let props = {
       fishingEventType: "tcer",
-      gear: state.gear,
       orientation: state.view.orientation,
       height: state.view.height,
       tripStarted: state.trip.started,

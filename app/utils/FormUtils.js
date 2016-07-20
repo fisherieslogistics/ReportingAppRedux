@@ -1,3 +1,10 @@
+'use strict';
+import {
+  Image,
+  View,
+} from 'react-native';
+import React from 'react';
+
 import Helper from './Helper';
 import moment from 'moment';
 import ModelUtils from './ModelUtils';
@@ -16,14 +23,43 @@ const tcerModel = FormModel.concat(LCERFormModel);
 const tcerFishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
 const lcerFishingEventModel = FishingEventModel.concat(LCERFishingEventModel);
 
+function renderForm(formType, text, styles){
+  switch(formType){
+    case 'tcer':
+      return (
+        <Image source={require('../images/TCER.png')} style={[styles.bgImage]}>
+          <View style={styles.form}>
+            {text}
+          </View>
+        </Image>
+      );
+    case 'lcer':
+      return (
+        <Image source={require('../images/LCER.png')} style={[{resizeMode: "stretch",
+                                                               height: 485,
+                                                               width: 700} ]}>
+          <View style={styles.form}>
+            {text}
+          </View>
+        </Image>
+      );
+  }
+}
+
 const formModels = {
   tcer: tcerModel,
   lcer: lcerModel,
 }
 
 const fishingEventModels = {
-  tcer: tcerFishingEventModel,
-  lcer: lcerFishingEventModel,
+  tcer: {
+    complete: tcerFishingEventModel,
+    specific: TCERFishingEventModel,
+  },
+  lcer: {
+    complete: lcerFishingEventModel,
+    specific: LCERFishingEventModel,
+  }
 }
 
 const helper = new Helper();
@@ -35,7 +71,8 @@ function firstEventValue(fishingEvents, id){
   return fishingEvents[0][id];
 };
 
-function createForms(fishingEvents, formModel) {
+function createForms(fishingEvents, formType) {
+  let formModel = formModels[formType];
   let forms = [];
   const newForm = (fe) => {
     let values = {
@@ -77,4 +114,4 @@ function getFishingEventModelByTypeCode(typeCode){
   return fishingEventModels[typeCode];
 }
 
-export {firstEventValue, createForms, getFormByTypeCode, getFishingEventModelByTypeCode}
+export {firstEventValue, createForms, getFormModelByTypeCode, getFishingEventModelByTypeCode, renderForm}
