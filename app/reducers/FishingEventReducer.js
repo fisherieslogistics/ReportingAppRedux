@@ -65,9 +65,9 @@ export default (state = initialState, action) => {
     }
 }
 
-const undoDeleteProduct = (state, {fishingEventId}) => {
+const undoDeleteProduct = (state, {fishingEventId, formType}) => {
   let product = state.deletedProducts[fishingEventId].pop();
-  return addProductToEvent(fishingEventId, product, state);
+  return addProductToEvent(fishingEventId, product, state, formType);
 }
 
 const clearDeletedProducts = (fishingEventId, state) => {
@@ -77,7 +77,7 @@ const clearDeletedProducts = (fishingEventId, state) => {
   return Object.assign(state, {deletedProducts: deleted});
 }
 
-const stashDeletedProduct = (state, {fishingEventId, productIndex}) => {
+const stashDeletedProduct = (state, {fishingEventId, productIndex, formType}) => {
   let fishingEvent = state.events[fishingEventId -1];
   let product = fishingEvent.products[productIndex];
   let deletedProducts = Object.assign({}, state.deletedProducts);
@@ -90,7 +90,7 @@ const stashDeletedProduct = (state, {fishingEventId, productIndex}) => {
     ...fishingEvent.products.slice(0, productIndex),
     ...fishingEvent.products.slice(productIndex + 1, fishingEvent.products.length)
   ];
-  state = changeEvent(fishingEventId-1, state, {products: newProducts});
+  state = changeEvent(fishingEventId-1, state, {products: newProducts}, formType);
   return changeState(state, {deletedProducts: deletedProducts});
 }
 

@@ -193,15 +193,14 @@ class Profile extends React.Component{
                   dispatch={this.props.dispatch}
                   user={this.props.user}
                 />);
-        break;
       case "vessel":
         return (<VesselEditor
                   dispatch={this.props.dispatch}
                   vessels={this.props.vessels}
                   vessel={this.props.vessel}
                   tripStarted={this.props.tripStarted}
+                  formType={this.props.formType}
                 />);
-        break;
       case "account":
         return (<Login
                   disabled={this.props.loggedIn && this.props.tripStarted}

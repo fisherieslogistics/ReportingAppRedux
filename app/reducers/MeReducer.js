@@ -42,6 +42,8 @@ export default (state = initialState, action) => {
       return update(state,  { user: action.user });
     case 'setVessel':
       return update(state, { vessel: action.vessel });
+    case 'setFormType':
+      return update(state, { formType: action.formType });
     case 'setVessels':
       return update(state, { vessels: action.vessels });
     case 'addPort':

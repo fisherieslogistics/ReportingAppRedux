@@ -185,12 +185,14 @@ class FormView extends React.Component {
     if(!(this.props.viewingForm && this.props.viewingForm.fishingEvents[0].signature)){
       return null;
     }
+    let signStyle = this.props.formType == 'tcer' ? styles.signImageTCER : styles.signImageLCER;
+    let dateStyle = this.props.formType == 'tcer' ? styles.dateSignedTCER : styles.dateSignedLCER;
     return [
       (<Image source={{uri: "data:image/png;base64," + this.props.viewingForm.fishingEvents[0].signature.toString()}}
-              style={[styles.signImage, {width: 120, height: 40}]}
+              style={[signStyle, {width: 120, height: 40}]}
               key={"SignatureImage"} />),
-      (<View style={[styles.dateSigned]} key={"DateSignedText"}>
-         <Text style={[{color: colors.red}]}>{this.props.viewingForm.fishingEvents[0].dateSigned.format("DD       mm           gg")}</Text>
+      (<View style={[dateStyle]} key={"DateSignedText"}>
+         <Text style={[{color: colors.red}]}>{this.props.viewingForm.fishingEvents[0].dateSigned.format("DD  MM   YYYY")}</Text>
        </View>)
     ];
   }
@@ -264,14 +266,6 @@ class FormView extends React.Component {
       <MasterDetailView
         master={this.renderFormsListView()}
         detail={(
-          <TouchableOpacity 
-            onPress={(event) => {
-                    console.log(arguments);
-                    AlertIOS.alert(
-                      "position",
-                      `${event.locationX}  ${event.locationY}`
-                    )
-                  }}>
           <View style={[styles.col, styles.fill, {alignSelf: 'flex-start'},
                         styles.wrapper, {opacity:this.props.viewingForm ? 1 : 0}]}>
             {renderedForm}
@@ -280,7 +274,6 @@ class FormView extends React.Component {
             {signatureView}
             {signatureWarningView}
           </View>
-           </TouchableOpacity>
         )}
         detailToolbar={detailToolbar}
         masterToolbar={masterToolbar}
@@ -358,13 +351,6 @@ const styles = StyleSheet.create({
    backgroundColor: "#eeeeee",
    margin: 10
   },
-  signImage: {
-    position: 'absolute',
-    top: 410,
-    left: 550,
-    height: 40,
-    width: 120,
-  },
   signatureViewContainer:{
     position: 'absolute',
     top: 100,
@@ -391,9 +377,29 @@ const styles = StyleSheet.create({
     width: 2200,
     backgroundColor: colors.backgrounds.shadow,
   },
-  dateSigned:{
+  signImageTCER: {
+    position: 'absolute',
+    top: 410,
+    left: 550,
+    height: 40,
+    width: 120,
+  },
+  dateSignedTCER:{
     position: 'absolute',
     top: 448,
+    left: 570,
+    backgroundColor: 'transparent',
+  },
+  signImageLCER: {
+    position: 'absolute',
+    top: 420,
+    left: 550,
+    height: 20,
+    width: 150,
+  },
+  dateSignedLCER:{
+    position: 'absolute',
+    top: 466,
     left: 570,
     backgroundColor: 'transparent',
   }

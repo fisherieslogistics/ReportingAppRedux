@@ -33,25 +33,49 @@ const getEditor = (attribute, props) => {
 
 const VesselEditor = (props) => {
 
-  let items = props.vessels.map((v) => (
+  let formTypeItems = ["tcer", "lcer"].map(ft => (
+     <PickerItemIOS
+      key={ft + "__formTypeChoice"}
+      value={ft}
+      label={ft.toUpperCase()}
+    />
+  ));
+
+  let formTypePicker = (
+    <PickerIOS
+      selectedValue={props.formType}
+      onValueChange={(formType) => props.dispatch(userActions.setFormType(formType))}
+    >
+      {formTypeItems}
+    </PickerIOS>
+  );
+
+  let vesselItems = props.vessels.map((v) => (
     <PickerItemIOS
       key={v.id}
       value={v.id}
       label={v.name}
     />));
 
-  let picker = (
+  let vesselPicker = (
     <PickerIOS
       selectedValue={props.vessel.id}
       onValueChange={(vesselId, i) => props.dispatch(userActions.setVessel(props.vessels[i]))}
     >
-      {items}
+      {vesselItems}
     </PickerIOS>
+  );
+
+  let top = (
+    <View>
+      {vesselPicker}
+      {formTypePicker}
+    </View>
   );
 
   return (
       <EditorView
-        top={props.tripStarted ? null : picker}
+        top={props.tripStarted ? null : top}
         styles={styles}
         getCallback={(key, value) => onChange(key, value, props)}
         getEditor={(attribute) => getEditor(attribute, props)}

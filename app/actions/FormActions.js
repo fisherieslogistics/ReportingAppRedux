@@ -12,11 +12,14 @@ class FormActions{
     }
   }
   signForm(form, signature){
-    return {
-      type: 'formSigned',
-      fishingEvents: form.fishingEvents,
-      signature: signature,
-      dateSigned: new moment(),
+    return (dispatch, getState) => {
+      dispatch({
+        type: 'formSigned',
+        fishingEvents: form.fishingEvents,
+        signature: signature,
+        dateSigned: new moment(),
+        formType: getState().default.me.formType,
+      });
     }
   }
 }

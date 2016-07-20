@@ -38,6 +38,13 @@ class UserActions{
     }
   }
 
+  setFormType(formType){
+    return {
+      type: 'setFormType',
+      formType: formType,
+    }
+  }
+
 }
 
 export default UserActions;

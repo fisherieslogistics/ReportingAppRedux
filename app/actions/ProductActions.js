@@ -53,18 +53,24 @@ class ProductActions{
     }
   }
   deleteProduct(productIndex, fishingEventId, objectId){
-    return {
-      type: 'deleteProduct',
-      fishingEventId: fishingEventId,
-      productIndex: productIndex,
-      objectId: objectId,
+    return (dispatch, getState) => {
+      dispatch({
+        type: 'deleteProduct',
+        fishingEventId: fishingEventId,
+        productIndex: productIndex,
+        objectId: objectId,
+        formType: getState().default.me.formType,
+      });
     }
   }
   undoDeleteProduct(fishingEventId, objectId){
-    return {
-      type: 'undoDeleteProduct',
-      fishingEventId: fishingEventId,
-      objectId: objectId,
+    return (dispatch, getState) => {
+      dispatch({
+        type: 'undoDeleteProduct',
+        fishingEventId: fishingEventId,
+        objectId: objectId,
+        formType: getState().default.me.formType,
+      });
     }
   }
 }

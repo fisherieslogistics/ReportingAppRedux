@@ -99,6 +99,7 @@ class ReportingApp extends Component {
           apiActions={apiActions}
           dispatch={this.props.dispatch}
           styles={styles}
+          formType={this.props.formType}
         />
       </View>
     )

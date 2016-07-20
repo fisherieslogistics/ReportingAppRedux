@@ -11,7 +11,7 @@ model = [
     editorDisplay: {editor: 'gear', type: 'single'}
   },
   {label: 'Hook Spacing', id: 'hookSpacing', valid: valid.greaterThanZero, type: 'float',
-    editorDisplay: {editor: 'gear', type: 'single'}, unit: 'm'
+    editorDisplay: {editor: 'event', type: 'single'}, unit: 'm'
   }
 ];
 

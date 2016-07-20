@@ -48,12 +48,34 @@ class Fishing extends React.Component{
   }
 
   startFishingEvent(){
+    if(this.props.formType == 'tcer'){
+      this.startEvent();
+    }else{
+      this.startLCEREvent();
+    }
+  }
+
+  startEvent(){
     let position = getParsedPostion();
     //TODO alert if not position so you can type it in
     if(this.props.enableStartEvent){
       this.props.dispatch(fishingEventActions.startFishingEvent(this.props.gear, position));
     }
   }
+
+  startLCEREvent(){
+    AlertIOS.alert(
+      'Start new Set',
+      'Click OK to confirm that you are starting a new set',
+      [
+        {text: 'Cancel', onPress: () => {}, style: 'cancel'},
+        {text: 'OK', onPress: () => {
+          this.startEvent();
+        }}
+      ]
+    );
+  }
+
 
   commitFishingEvents(){
     AlertIOS.alert(
@@ -66,22 +88,45 @@ class Fishing extends React.Component{
     );
   }
 
+  endTCEREvent(){
+    AlertIOS.alert(
+          "Hauling",
+          'Touch yes to confirm - you cannot delete a shot after you haul it.',
+          [
+            {text: 'No', onPress: () => {
+              return;
+            }, style: 'cancel'},
+            {text: 'Yes', onPress: () => {
+              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, getParsedPostion()));
+            }}
+          ]
+        );
+  }
+
+  endLCEREvent(){
+    AlertIOS.alert(
+          "Hauling Set " + this.props.viewingEvent.id,
+          "Touch yes to confirm - you are hauling set " + this.props.viewingEvent.id,
+          [
+            {text: 'No', onPress: () => {
+              return;
+            }, style: 'cancel'},
+            {text: 'Yes', onPress: () => {
+              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.viewingEvent.id, getParsedPostion()));
+            }}
+          ]
+        );
+  }
+
   endFishingEvent(){
     if(!this.props.lastEvent){
       return;
     }
-    AlertIOS.alert(
-      "Hauling",
-      'Touch yes to confirm - you cannot delete a shot after you haul it.',
-      [
-        {text: 'No', onPress: () => {
-          return;
-        }, style: 'cancel'},
-        {text: 'Yes', onPress: () => {
-          this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, getParsedPostion()));
-        }}
-      ]
-    );
+    if(this.props.formType == 'tcer'){
+      this.endTCEREvent();
+    }else{
+      this.endLCEREvent();
+    }
   }
 
   removeFishingEvent(){
@@ -264,8 +309,13 @@ const select = (State, dispatch) => {
     props.viewingEvent = fEvents[state.view.viewingEventId -1];
     props.fishingEvents = fEvents;
     props.deletedProducts = state.fishingEvents.deletedProducts[state.view.viewingEventId];
-    props.enableStartEvent = state.trip.started && ((!lastEvent) || lastEvent.datetimeAtEnd);
-    props.enableHaul = lastEvent && (!lastEvent.datetimeAtEnd);
+    if(state.me.formType == 'tcer'){
+      props.enableStartEvent = state.trip.started && ((!lastEvent) || lastEvent.datetimeAtEnd);
+      props.enableHaul = lastEvent && (!lastEvent.datetimeAtEnd);
+    }else{
+      props.enableHaul = props.viewingEvent && (!props.viewingEvent.datetimeAtEnd);
+    }
+    
     return props;
 }
 
