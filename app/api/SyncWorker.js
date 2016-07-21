@@ -1,7 +1,8 @@
 'use strict';
 import Queries, {
   upsertTrip,
-  upsertFishingEvent
+  upsertFishingEvent,
+  upsertLCERFishingEvent,
 } from './Queries';
 
 import Helper from '../utils/Helper';
@@ -30,9 +31,10 @@ class SyncWorker {
       return;
     }
 
+    const formType = state.me.formType;
     const fEventIds = Object.keys(state.sync.fishingEvents);
     this.requests = state.fishingEvents.events.filter(fe => (fEventIds.indexOf(fe.objectId) !== -1))
-                                              .map(fe => this.mutateFishingEvent(fe, state.trip.objectId));
+                                              .map(fe => this.mutateFishingEvent(fe, state.trip.objectId, formType));
 
     if(state.sync.trip){
       this.requests.push(this.mutateTrip(state.trip, state.me.vessel.id));
@@ -40,7 +42,7 @@ class SyncWorker {
 
     state.sync.queues.pastTrips.slice(0, 1).forEach((t) => {
       let pastRequests = [];
-      t.fishingEvents.forEach(fe => pastRequests.push(this.mutateFishingEvent(fe, t.trip.objectId)));
+      t.fishingEvents.forEach(fe => pastRequests.push(this.mutateFishingEvent(fe, t.trip.objectId, t.formType)));
       return Promise.all(pastRequests).then(this.mutatePastTrip(t.trip));
     });
 
@@ -89,8 +91,13 @@ class SyncWorker {
     return this.performMutation(mutation.query, mutation.variables, callback.bind(this));
   }
 
-  mutateFishingEvent(fishingEvent, tripId){
-    let q = upsertFishingEvent(fishingEvent, tripId);
+  mutateFishingEvent(fishingEvent, tripId, formType){
+    let q;
+    if(formType == 'tcer'){
+      q = upsertFishingEvent(fishingEvent, tripId);
+    }else{
+      q = upsertLCERFishingEvent(fishingEvent, tripId);
+    }
     let time = new moment();
     let callback = (res) => {
       this.dispatch({

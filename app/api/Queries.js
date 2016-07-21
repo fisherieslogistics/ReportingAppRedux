@@ -37,6 +37,41 @@ const upsertFishingEvent = (fEvent, tripId) => {
   `
 }
 
+const upsertLCERFishingEvent = (fEvent, tripId) => {
+  const catches = fEvent.products.map((c) => {
+    let prod = Object.assign({}, c, {weight: parseInt(c.weight || 0),
+                                     numberOfContainers: parseInt(c.numberOfContainers | 0)});
+    delete prod["objectId"];
+    return prod;
+  });
+  let custom = {
+    numberOfHooks: fEvent.numberOfHooks || 0,
+    hookSpacing: fEvent.hookSpacing || 0
+  };
+  return `
+    mutation {
+      upsertFishingEvent(
+        _id: "${fEvent.objectId}",
+        trip: "${ tripId }",
+        numberOfInTrip: ${ fEvent.id },
+        nonFishProtected: ${ fEvent.nonFishProtected ? true : false },
+        endDate: "${ fEvent.datetimeAtEnd ? fEvent.datetimeAtEnd.toISOString() : fEvent.datetimeAtStart.toISOString()  }",
+        startDate: "${ fEvent.datetimeAtStart.toISOString() }",
+        finished: true,
+        targetSpecies: "${ fEvent.targetSpecies }",
+        committed: ${ !!fEvent.committed },
+        bottomDepth: ${ parseInt(fEvent.bottomDepth || 0)},
+        custom: ${ JSON.stringify(JSON.stringify(custom)) },
+        locationStart: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtStart.lat, lon: fEvent.locationAtStart.lon})) },
+        locationEnd: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtEnd.lat, lon: fEvent.locationAtEnd.lon})) },
+        catches: ${ util.inspect(catches).replace(/\'/g, '"') }
+      ) {
+        _id,
+      }
+    }
+  `
+}
+
 const newTrip = (trip) => {
   let query = `
       mutation {
@@ -101,7 +136,7 @@ const upsertTrip = (trip) => {
   };
 }
 
-export {upsertTrip, upsertFishingEvent};
+export {upsertTrip, upsertFishingEvent, upsertLCERFishingEvent};
 
 export default {
   getMe: `

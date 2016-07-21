@@ -1,7 +1,8 @@
 'use strict';
+import request from 'superagent';
 
 function getPosition(successCallback, onError){
-  navigator.geolocation.getCurrentPosition(
+  return navigator.geolocation.getCurrentPosition(
     (position) => {
       successCallback(position);
     },
@@ -13,7 +14,7 @@ function getPosition(successCallback, onError){
 }
 
 function watchPositon(successCallback, onError){
-  navigator.geolocation.watchPosition(
+  return navigator.geolocation.watchPosition(
     (position) => {
       successCallback(position);
     },
@@ -28,4 +29,25 @@ function clearWatch(watchId){
   navigator.geolocation.clearWatch(watchId);
 }
 
-export {getPosition, watchPositon, clearWatch}
+function requestPosition(url, successCallback, onError){
+  return request.get(url).end((err, res) => {
+        if(err){
+          onError(err);
+        }else{
+          try{
+            successCallback(res.body);
+          }catch(e){
+            onError(e)
+          }
+  }});
+}
+
+function pollHttpPosition(url, successCallback, onError) {
+
+  return setInterval(() => {
+    requestPosition(url, successCallback, onError);
+  }, 3000);
+
+}
+
+export {getPosition, watchPositon, clearWatch, pollHttpPosition, requestPosition}

@@ -61,7 +61,8 @@ export default (state = initialState, action) => {
       state.queues.pastTrips.push({
         trip: _trip,
         fishingEvents: action.fishingEvents.filter(fe => !!state.fishingEvents[action.objectId]),
-        vesselId: action.vesselId
+        vesselId: action.vesselId,
+        formType: action.formType
       });
       return state;
     case 'formSigned':
@@ -76,5 +77,4 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-  return state;
 };

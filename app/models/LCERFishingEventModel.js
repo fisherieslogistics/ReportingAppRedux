@@ -8,10 +8,10 @@ model = [
     editorDisplay: {editor: 'event', type: 'single'}, unit: 'm'
   },
   {label: 'Number of Hooks', id: 'numberOfHooks', valid: valid.greaterThanZero, type: 'number',
-    editorDisplay: {editor: 'gear', type: 'single'}
+    editorDisplay: {editor: 'event', type: 'single'}
   },
   {label: 'Hook Spacing', id: 'hookSpacing', valid: valid.greaterThanZero, type: 'float',
-    editorDisplay: {editor: 'event', type: 'single'}, unit: 'm'
+    editorDisplay: {editor: 'gear', type: 'single'}, unit: 'm'
   }
 ];
 
