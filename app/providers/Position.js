@@ -35,7 +35,7 @@ function requestPosition(url, successCallback, onError){
           onError(err);
         }else{
           try{
-            successCallback(res.body);
+            successCallback(JSON.parse(res.text));
           }catch(e){
             onError(e)
           }
@@ -43,7 +43,6 @@ function requestPosition(url, successCallback, onError){
 }
 
 function pollHttpPosition(url, successCallback, onError) {
-
   return setInterval(() => {
     requestPosition(url, successCallback, onError);
   }, 3000);

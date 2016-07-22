@@ -15,15 +15,15 @@ const helper = new Helper();
 var AsyncStorage = require('AsyncStorage');
 
 const reducers = {
-    auth: AuthReducer,
-    fishingEvents: FishingEventReducer,
-    me: MeReducer,
-    view: ViewReducer,
-    trip: TripReducer,
-    forms: FormReducer,
-    uiEvents: EventsReducer,
-    gear: GearReducer,
-    sync: SyncReducer,
+  auth: AuthReducer,
+  fishingEvents: FishingEventReducer,
+  me: MeReducer,
+  view: ViewReducer,
+  trip: TripReducer,
+  forms: FormReducer,
+  uiEvents: EventsReducer,
+  gear: GearReducer,
+  sync: SyncReducer,
 }
 
 let MainReducer = combineReducers(reducers);

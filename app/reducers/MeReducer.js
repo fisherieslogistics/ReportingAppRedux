@@ -22,12 +22,32 @@ const initialState = {
   vessels: [],
   user: initialUser,
   formType: 'lcer',
+  gpsUrl: null,
+  gpsPort: null,
+  gpsBaud: null,
+  applyGpsSettings: null,
+  positionType: 'native',
   autoSuggestFavourites: {
   }
 }
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case "setGpsUrl":
+      state.gpsUrl = action.url;
+      return state;
+    case "setGpsPort":
+      state.gpsPort = action.port;
+      return state;
+    case "setGpsBaud":
+      state.gpsBaud = action.baud;
+      return state;
+    case "nativeGPSOn":
+      state.positionType = 'native';
+      return state;
+    case "ipGpsOn":
+      state.positionType = 'IP';
+      return state;
     case 'setMe':
       if(!action.user){
         return state;

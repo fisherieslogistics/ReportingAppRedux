@@ -10,12 +10,23 @@ import Sexagesimal from 'sexagesimal';
 import {textStyles} from '../styles/styles';
 
 class PositionDisplay extends React.Component{
+  constructor(props){
+    super(props);
+    this.state={
+      position: null,
+    }
+    setInterval(() => {
+      this.setState({
+        position: this.props.provider.getPosition()
+      });
+    }, 3000);
+  }
+  
   getPositionText(){
-    const position = this.props.provider.getPosition();
-    if(!position){
+    if(!this.state.position){
       return "awaiting position";
     }
-    let coords = position.coords;
+    let coords = this.state.position.coords;
     return Sexagesimal.format(coords.latitude, 'lat') + "  " + Sexagesimal.format(coords.longitude, 'lon');
   }
 

@@ -26,16 +26,11 @@ import {MasterToolbar, DetailToolbar} from './Toolbar';
 import {colors, textStyles, iconStyles} from '../styles/styles';
 import Icon8 from './Icon8';
 
-import PositionProvider from '../utils/PositionProvider';
-const positionProvider = new PositionProvider();
-
-function getParsedPostion(){
-  const pos = positionProvider.getPosition();
-  if(!pos){
-    return {lat: 0.123, lon: 0.123};
-  }
+function getParsedPostion(provider){
+  const pos = provider.getPosition();
   return {lat: pos.coords.latitude, lon: pos.coords.longitude};
 }
+
 const fishingEventActions = new FishingEventActions();
 
 class Fishing extends React.Component{
@@ -97,7 +92,8 @@ class Fishing extends React.Component{
               return;
             }, style: 'cancel'},
             {text: 'Yes', onPress: () => {
-              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, getParsedPostion()));
+              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, 
+                                                                      getParsedPostion(this.props.positionProvider)));
             }}
           ]
         );
@@ -112,7 +108,8 @@ class Fishing extends React.Component{
               return;
             }, style: 'cancel'},
             {text: 'Yes', onPress: () => {
-              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.viewingEvent.id, getParsedPostion()));
+              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.viewingEvent.id, 
+                                                      getParsedPostion(this.props.positionProvider)));
             }}
           ]
         );
@@ -237,7 +234,7 @@ class Fishing extends React.Component{
       <DetailToolbar
         left={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent.bind(this), enabled: deleteActive}}
         right={{color: colors.blue, text: "Haul", onPress: this.endFishingEvent.bind(this), enabled: this.props.enableHaul}}
-        centerTop={<PositionDisplay provider={positionProvider} />}
+        centerTop={<PositionDisplay provider={this.props.positionProvider} />}
         centerBottom={this.renderSegementedControl()}
       />
     );
@@ -298,7 +295,8 @@ const select = (State, dispatch) => {
       height: state.view.height,
       tripStarted: state.trip.started,
       enableStartEvent: state.trip.started,
-      containerChoices: state.me.containers
+      containerChoices: state.me.containers,
+      positionProvider: state.uiEvents.uipositionProvider,
     }
     if(!state.fishingEvents.events.length){
       return props;

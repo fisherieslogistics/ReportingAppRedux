@@ -20,7 +20,9 @@ import SyncWorker from '../api/SyncWorker';
 import ShadowStyle from '../styles/shadow';
 import Icon8 from '../components/Icon8';
 import {createForms} from '../utils/FormUtils';
+import GPSControlActions from '../actions/GPSControlActions';
 
+const gpsControlActions = new GPSControlActions();
 const apiActions = new ApiActions();
 const viewActions = new ViewActions();
 const formActions = new FormActions();
@@ -37,6 +39,14 @@ class ReportingApp extends Component {
     this.SyncWorker = new SyncWorker(props.dispatch,
                                      props.store.getState,
                                      apiActions);
+    if(this.props.positionType == 'native'){
+      this.props.dispatch(gpsControlActions.nativeGPSOn());
+    }else{
+      this.props.dispatch(gpsControlActions.applyGpsSettings(this.props.gpsUrl, this.props.gpsPort, this.props.gpsBaud));
+      setTimeout(() => {
+        this.props.dispatch(gpsControlActions.ipGpsOn());
+      }, 2000);
+    }
   }
 
 
@@ -182,6 +192,10 @@ const select = (State, dispatch) => {
       fishingEvents: state.fishingEvents.events,
       viewingForm: state.view.viewingForm,
       formType: state.me.formType,
+      positionType: state.me.positionType,
+      gpsUrl: state.me.gpsUrl,
+      gpsPort: state.me.gpsPort,
+      gpsBaud: state.me.gpsBaud,
     };
 }
 

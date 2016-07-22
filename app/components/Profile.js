@@ -8,7 +8,8 @@ import {
   StyleSheet,
   Modal,
   ScrollView,
-  TextInput
+  TextInput,
+  Switch
 } from 'react-native';
 import React from 'react';
 
@@ -18,6 +19,7 @@ import MasterDetailView from './MasterDetailView';
 import AuthActions from '../actions/AuthActions';
 import MasterListView from './MasterListView';
 import EditorView from './EditorView';
+import GPSControlActions from '../actions/GPSControlActions';
 
 import Validator from '../utils/Validator';
 const valid = Validator.valid;
@@ -31,9 +33,102 @@ import Icon8 from './Icon8';
 
 const authActions = new AuthActions();
 const editorStyles = StyleSheet.create(eventEditorStyles);
+const gpsControlActions = new GPSControlActions();
+
+
+const GPSSettings = ({currentPosition, positionType, gpsUrl, gpsPort, gpsBaud, dispatch} ) => {
+  let textInputStyle = {width: 360,
+                          marginTop: 10,
+                          height: 30,
+                          backgroundColor: colors.white,
+                          borderColor: colors.darkGray,
+                          borderWidth: 1,
+                        }
+  let styles = eventEditorStyles;
+  let lastUpdated = (<Text>No Position updated</Text>);
+  console.log("current", currentPosition);
+  if(currentPosition && currentPosition.timestamp)
+  lastUpdated = (
+     <View>
+       <Text>{ currentPosition.timestamp.toString() }</Text>
+       <Text>{ new Date(currentPosition.timestamp).toString() }</Text>
+    </View>
+  );
+
+  let ipGPSSettings = (
+   <View>
+    <View>
+        <Text>IP GPS URL</Text>
+        <TextInput 
+          value={gpsUrl}
+          style={textInputStyle}
+          autoCapitalize={"none"}
+          autoCorrect={false}
+          onChangeText={(url) => {
+          dispatch(gpsControlActions.setGpsUrl(url))
+        }} />
+      </View>
+      <View>
+        <Text>IP GPS HTTP Port</Text>
+        <TextInput 
+          style={textInputStyle}
+          autoCapitalize={"none"}
+          autoCorrect={false}
+          value={gpsPort}
+          onChangeText={(text) => {
+          dispatch(gpsControlActions.setGpsPort(text))
+        }} />
+      </View>
+      <View>
+        <Text>IP GPS Baud rate</Text>
+        <TextInput 
+          style={textInputStyle}
+          autoCapitalize={"none"}
+          autoCorrect={false}
+          value={gpsBaud}
+          onChangeText={(text) => {
+          dispatch(gpsControlActions.setGpsBaud(text))
+        }} />
+      </View>
+      <View>
+        <LongButton
+          text={"Apply changes"}
+          bgColor={colors.pink}
+          onPress={() => {
+            dispatch(gpsControlActions.applyGpsSettings(gpsUrl, gpsPort, gpsBaud));
+          }}
+        />
+      </View>
+    </View>
+  )
+
+  return (
+    <View style={[styles.col, styles.fill, styles.outerWrapper, {alignSelf: 'flex-start'}]}>
+      <View style={styles.innerWrapper}>
+        <Text>last updated</Text>
+        {lastUpdated}
+          <View style={{flexDirection: "row"}}>
+          <Text>IP GPS - custom</Text>
+          <Switch
+            onValueChange={(bool) => {
+              if(bool){
+                dispatch(gpsControlActions.nativeGPSOn());
+              }else{
+                dispatch(gpsControlActions.ipGpsOn());
+              }
+            }}
+            value={(positionType=='native')}
+          />
+          <Text>Native GPS - standard ios</Text>
+        </View>
+        {positionType == 'IP' ? ipGPSSettings : null }
+      </View>
+  </View>
+  );
+}
+
 
 const Login = ({onLoginPress, loggedIn, disabled, sync}) => {
-  console.log(sync);
   const tripsToSync = sync.queues.pastTrips.length + (sync.trip ? 1 : 0);
 
   const eventsToSync = Object.keys(sync.fishingEvents).length;
@@ -154,6 +249,7 @@ class Profile extends React.Component{
       {name: "account", icon: 'cloud', label: "Account", color: colors.green},
       {name: "user", icon: 'user', label: "Profile", color: this.props.loggedIn ? colors.blue : colors.midGray},
       {name: "vessel", icon: 'fishing-boat', label: "Vessel", color: this.props.vessels.length ?  colors.blue : colors.midGray},
+      {name: "gps", icon: 'settings', label: "GPS Settings", color: colors.blue},
     ];
 
     const isSelected = (items) => {
@@ -208,6 +304,8 @@ class Profile extends React.Component{
                   onLoginPress={this.onLoginPress.bind(this)}
                   sync={this.props.sync}
                 />);
+      case "gps":
+        return (<GPSSettings {...this.props} />);
       default:
     }
   }
@@ -313,7 +411,12 @@ const select = (State, dispatch) => {
     vessels: state.me.vessels,
     vessel: state.me.vessel,
     tripStarted: state.trip.started,
-    sync: state.sync
+    sync: state.sync,
+    positionType: state.me.positionType,
+    gpsUrl: state.me.gpsUrl,
+    gpsPort: state.me.gpsPort,
+    gpsBaud: state.me.gpsBaud,
+    currentPosition: state.uiEvents.uipositionProvider.getPosition(),
   };
 }
 
