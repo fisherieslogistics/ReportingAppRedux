@@ -3,13 +3,12 @@ import moment from 'moment';
 
 class FishingEventActions{
 
-    startFishingEvent(gear, position) {
+    startFishingEvent(position) {
         return (dispatch, getState) => {
             const state = getState().default;
             dispatch({
                 type: 'startFishingEvent',
                 location: position,
-                gear: gear,
                 tripId: state.trip.objectId,
                 timestamp: moment(),
                 formType: state.me.formType
@@ -44,19 +43,22 @@ class FishingEventActions{
 
     setfishingEventValue(fishingEventId, inputId, value) {
       return (dispatch, getState) => {
+        const state = getState().default;
         dispatch({
             type: 'setFishingEventValue',
             inputId: inputId,
             fishingEventId: fishingEventId,
             value: value,
-            formType: getState().default.me.formType,
+            formType: state.me.formType,
             timestamp: moment()
-        });
-        dispatch({
-          type: 'addFavourite',
-          favouriteName: inputId,
-          value: value
-        })
+        }); 
+        const fEvent = state.fishingEvents.events[fishingEventId - 1];
+        if(fEvent.datetimeAtEnd){
+          dispatch({
+            type: "syncEvent",
+            objectId: fEvent.objectId
+          });
+        }
       }
     }
 

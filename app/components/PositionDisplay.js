@@ -8,6 +8,7 @@ import {
 import React from 'react';
 import Sexagesimal from 'sexagesimal';
 import {textStyles} from '../styles/styles';
+import moment from 'moment';
 
 class PositionDisplay extends React.Component{
   constructor(props){
@@ -23,11 +24,13 @@ class PositionDisplay extends React.Component{
   }
   
   getPositionText(){
-    if(!this.state.position){
+    if(!this.state.position || !this.state.position.coords){
       return "awaiting position";
     }
     let coords = this.state.position.coords;
-    return Sexagesimal.format(coords.latitude, 'lat') + "  " + Sexagesimal.format(coords.longitude, 'lon');
+    let posText = Sexagesimal.format(coords.latitude, 'lat') + "  " + Sexagesimal.format(coords.longitude, 'lon');
+    let timeText = new moment(this.state.position.timestamp).fromNow();
+    return `${posText} - ${timeText}`
   }
 
   render() {

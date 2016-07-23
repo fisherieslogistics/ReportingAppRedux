@@ -21,11 +21,11 @@ export default (state = initialState, action) => {
         case 'endTrip':
           return initialState;
         case 'startFishingEvent':
-          return newFishingEvent(state, action.location, action.gear, action.formType);
+          return newFishingEvent(state, action.location, action.formType);
         case 'endFishingEvent':
           return endFishingEvent(state, action.location, action.id, action.formType);
         case 'cancelFishingEvent':
-          return changeState(state, {events: [...state.uiEvents.slice(0, state.uiEvents.length - 1)]});
+          return changeState(state, {events: [...state.events.slice(0, state.events.length - 1)]});
         case 'setFishingEventValue':
           let change = {};
           change[action.inputId] = action.value;
@@ -78,7 +78,7 @@ const clearDeletedProducts = (fishingEventId, state) => {
 }
 
 const stashDeletedProduct = (state, {fishingEventId, productIndex, formType}) => {
-  let fishingEvent = state.uiEvents[fishingEventId -1];
+  let fishingEvent = state.events[fishingEventId -1];
   let product = fishingEvent.products[productIndex];
   let deletedProducts = Object.assign({}, state.deletedProducts);
   if(fishingEventId in deletedProducts){
@@ -100,7 +100,7 @@ const changeState = (state, change) => {
 
 const changeEvent = (index, state, changes, formType) => {
   changes.lastChange = moment();
-  updatedEvent = Object.assign({}, state.uiEvents[index], changes);
+  updatedEvent = Object.assign({}, state.events[index], changes);
   updatedEvent.eventValid = calculateEventValid(updatedEvent, formType);
   return replaceFishingEvent(state, updatedEvent);
 }
@@ -108,9 +108,9 @@ const changeEvent = (index, state, changes, formType) => {
 const replaceFishingEvent = (state, updatedEvent) => {
   return Object.assign({}, state,
     {events: [
-      ...state.uiEvents.slice(0, updatedEvent.id -1),
+      ...state.events.slice(0, updatedEvent.id -1),
       updatedEvent,
-      ...state.uiEvents.slice(updatedEvent.id)
+      ...state.events.slice(updatedEvent.id)
     ]
   });
 }
@@ -121,9 +121,9 @@ const blankCatch = () => {
 
 const getNewProduct = (fishingEventId, state) => {
   let product = blankCatch();
-  let fishingEvent = state.uiEvents[fishingEventId-1];
+  let fishingEvent = state.events[fishingEventId-1];
   if(fishingEventId > 1){
-    const previousEvent = state.uiEvents[fishingEventId - 2];
+    const previousEvent = state.events[fishingEventId - 2];
     const previousProduct = previousEvent.products[fishingEvent.products.length];
     if(previousProduct){
       ['code', 'containerType', 'treatment', 'state'].forEach((a) => {
@@ -140,7 +140,7 @@ const addNewCatch = (fishingEventId, state, formType) => {
 }
 
 const addProductToEvent = (fishingEventId, product, state, formType) => {
-  let fishingEventProducts = [...state.uiEvents[fishingEventId -1].products, product];
+  let fishingEventProducts = [...state.events[fishingEventId -1].products, product];
   return changeEvent(fishingEventId -1, state, {products: fishingEventProducts}, formType);
 }
 
@@ -148,20 +148,20 @@ const ChangeCatch = (action, state, attr, formType) => {
   let fishingEventIndex = action.fishingEventId - 1;
   let change = {}
   change[attr] = action.value;
-  let newCatch = Object.assign({}, state.uiEvents[fishingEventIndex].products[action.catchIndex], change)
+  let newCatch = Object.assign({}, state.events[fishingEventIndex].products[action.catchIndex], change)
   let fishingEventChange = {};
   fishingEventChange.products = [
-      ...state.uiEvents[fishingEventIndex].products.slice(0, action.catchIndex),
+      ...state.events[fishingEventIndex].products.slice(0, action.catchIndex),
       newCatch,
-      ...state.uiEvents[fishingEventIndex].products.slice(action.catchIndex + 1)
+      ...state.events[fishingEventIndex].products.slice(action.catchIndex + 1)
   ];
-  updatedEvent = Object.assign({}, state.uiEvents[fishingEventIndex], fishingEventChange);
+  updatedEvent = Object.assign({}, state.events[fishingEventIndex], fishingEventChange);
   updatedEvent.lastChange = moment();
   updatedEvent.eventValid = calculateEventValid(updatedEvent, formType);
   return Object.assign({}, state, {events: [
-      ...state.uiEvents.slice(0, fishingEventIndex),
+      ...state.events.slice(0, fishingEventIndex),
       updatedEvent,
-      ...state.uiEvents.slice(fishingEventIndex + 1)
+      ...state.events.slice(fishingEventIndex + 1)
   ]});
 }
 
@@ -169,12 +169,12 @@ const endFishingEvent = (state, location, id, formType) => {
   let change = {};
   change.datetimeAtEnd = moment();
   change.locationAtEnd = location;
-  let fishingEventToUpdate = Object.assign({}, state.uiEvents[id - 1], change);
+  let fishingEventToUpdate = Object.assign({}, state.events[id - 1], change);
   fishingEventToUpdate.eventValid = calculateEventValid(fishingEventToUpdate, formType);
   return Object.assign({}, state, {events: [
-      ...state.uiEvents.slice(0, id - 1),
+      ...state.events.slice(0, id - 1),
       fishingEventToUpdate,
-      ...state.uiEvents.slice(id, state.uiEvents.length)
+      ...state.events.slice(id, state.events.length)
   ]});
 };
 
@@ -201,10 +201,10 @@ const setFishingEventGear = (fishingEvent, gear) => {
   return fishingEvent;
 }
 
-const newFishingEvent = (state, location, gear, formType) => {
+const newFishingEvent = (state, location, formType) => {
   const fishingEventModel = getFishingEventModelByTypeCode(formType);
   let newEvent = ModelUtils.blankModel(fishingEventModel.complete);
-  let id = state.uiEvents.length + 1;
+  let id = state.events.length + 1;
   const objectId = newEvent.objectId;
   newEvent.id = id;
   let deletedProducts = Object.assign({}, state.deletedProducts);
@@ -214,7 +214,7 @@ const newFishingEvent = (state, location, gear, formType) => {
   let Location = Object.assign({}, location);
   newEvent.locationAtStart = Location;
   newEvent.products = [];
-  let previousEvent = state.uiEvents.length ? Object.assign({}, state.uiEvents[state.uiEvents.length - 1]) : null;
+  let previousEvent = state.events.length ? Object.assign({}, state.events[state.events.length - 1]) : null;
   if(previousEvent){
     newEvent.targetSpecies = "" + previousEvent.targetSpecies;
     fishingEventModel.specific.forEach((attribute) => {
@@ -222,13 +222,11 @@ const newFishingEvent = (state, location, gear, formType) => {
       update[attribute.id] = previousEvent[attribute.id];
       newEvent = Object.assign({}, newEvent, update);
     });
-
-
   }
   newEvent.objectId = objectId;
   return Object.assign({}, state, {
       events: [
-          ...state.uiEvents,
+          ...state.events,
           newEvent
       ]
   });

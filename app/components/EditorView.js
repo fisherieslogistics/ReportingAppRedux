@@ -11,7 +11,7 @@ function EditorView(props) {
     return <View />;
   }
   return (
-    <View style={[props.styles.col, props.styles.fill, props.styles.outerWrapper, {alignSelf: 'flex-start'}]}>
+    <View style={[props.styles.col, props.styles.fill, props.styles.outerWrapper, {alignSelf: 'stretch'}]}>
       <View style={[props.styles.topWrapper]}>
         {props.top}
       </View>

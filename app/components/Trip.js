@@ -139,7 +139,7 @@ const select = (State, dispatch) => {
     ports: state.me.ports,
     tripStarted: state.trip.started,
     tripCanStart: helper.tripCanStart(state.trip),
-    tripCanEnd: state.trip.started && (state.fishingEvents.events.find(f => !f.eventValid) === undefined),
+    tripCanEnd: state.trip.started && (state.fishingEvents.events.find(f => !f.signature) === undefined),
     orientation: state.view.orientation,
     vesselId: state.me.vessel.id
   };

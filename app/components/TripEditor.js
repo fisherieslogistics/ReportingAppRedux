@@ -281,6 +281,9 @@ class TripEditor extends React.Component {
                 onPress={this.endTrip.bind(this)}
                 disabled={!this.props.tripCanEnd}
               />
+              <Text style={{textAlign: 'center'}}>
+                {this.props.trip.started && (!this.props.tripCanEnd) ? "Complete all shots and sign all forms before ending trip" : ""}
+              </Text>
             </View>
           </View>
           <View style={[styles.bottomRow, {alignItems: 'center', padding: 10, marginTop: 20}]}>

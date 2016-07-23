@@ -26,11 +26,6 @@ import {MasterToolbar, DetailToolbar} from './Toolbar';
 import {colors, textStyles, iconStyles} from '../styles/styles';
 import Icon8 from './Icon8';
 
-function getParsedPostion(provider){
-  const pos = provider.getPosition();
-  return {lat: pos.coords.latitude, lon: pos.coords.longitude};
-}
-
 const fishingEventActions = new FishingEventActions();
 
 class Fishing extends React.Component{
@@ -42,48 +37,53 @@ class Fishing extends React.Component{
     };
   }
 
-  startFishingEvent(){
-    if(this.props.formType == 'tcer'){
-      this.startEvent();
+  getCurrentLocation(){
+    let pos = this.props.positionProvider.getPosition()
+    let parsedPos;
+
+    if(pos && pos.coords){
+      parsedPos = {
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude
+      }
     }else{
-      this.startLCEREvent();
+      AlertIOS.alert("No location fix - please remember to edit the location");
+    }
+
+    return parsedPos;
+  }
+
+  startFishingEvent(){
+    const pos = this.getCurrentLocation();
+    
+    if(this.props.formType == 'tcer'){
+      this.startEvent(pos);
+    }else{
+      this.startLCEREvent(pos);
     }
   }
 
-  startEvent(){
-    let position = getParsedPostion();
+  startEvent(position){
     //TODO alert if not position so you can type it in
     if(this.props.enableStartEvent){
-      this.props.dispatch(fishingEventActions.startFishingEvent(this.props.gear, position));
+      this.props.dispatch(fishingEventActions.startFishingEvent(position));
     }
   }
 
-  startLCEREvent(){
+  startLCEREvent(position){
     AlertIOS.alert(
       'Start new Set',
       'Click OK to confirm that you are starting a new set',
       [
         {text: 'Cancel', onPress: () => {}, style: 'cancel'},
         {text: 'OK', onPress: () => {
-          this.startEvent();
+          this.startEvent(position);
         }}
       ]
     );
   }
 
-
-  commitFishingEvents(){
-    AlertIOS.alert(
-      'Commit Fishing',
-      'Click OK to confirm that all data is correct this will sign any unsigned forms',
-      [
-        {text: 'Cancel', onPress: () => {}, style: 'cancel'},
-        {text: 'OK', onPress: () => {}}
-      ]
-    );
-  }
-
-  endTCEREvent(){
+  endTCEREvent(position){
     AlertIOS.alert(
           "Hauling",
           'Touch yes to confirm - you cannot delete a shot after you haul it.',
@@ -92,14 +92,13 @@ class Fishing extends React.Component{
               return;
             }, style: 'cancel'},
             {text: 'Yes', onPress: () => {
-              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, 
-                                                                      getParsedPostion(this.props.positionProvider)));
+              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, position));
             }}
           ]
         );
   }
 
-  endLCEREvent(){
+  endLCEREvent(position){
     AlertIOS.alert(
           "Hauling Set " + this.props.viewingEvent.id,
           "Touch yes to confirm - you are hauling set " + this.props.viewingEvent.id,
@@ -108,8 +107,7 @@ class Fishing extends React.Component{
               return;
             }, style: 'cancel'},
             {text: 'Yes', onPress: () => {
-              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.viewingEvent.id, 
-                                                      getParsedPostion(this.props.positionProvider)));
+              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.viewingEvent.id, position));
             }}
           ]
         );
@@ -119,10 +117,11 @@ class Fishing extends React.Component{
     if(!this.props.lastEvent){
       return;
     }
+    const pos = this.getCurrentLocation();
     if(this.props.formType == 'tcer'){
-      this.endTCEREvent();
+      this.endTCEREvent(pos);
     }else{
-      this.endLCEREvent();
+      this.endLCEREvent(pos);
     }
   }
 
@@ -313,7 +312,6 @@ const select = (State, dispatch) => {
     }else{
       props.enableHaul = props.viewingEvent && (!props.viewingEvent.datetimeAtEnd);
     }
-    
     return props;
 }
 

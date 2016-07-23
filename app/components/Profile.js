@@ -46,7 +46,6 @@ const GPSSettings = ({currentPosition, positionType, gpsUrl, gpsPort, gpsBaud, d
                         }
   let styles = eventEditorStyles;
   let lastUpdated = (<Text>No Position updated</Text>);
-  console.log("current", currentPosition);
   if(currentPosition && currentPosition.timestamp)
   lastUpdated = (
      <View>

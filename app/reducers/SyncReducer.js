@@ -41,6 +41,7 @@ export default (state = initialState, action) => {
     case 'deleteProduct':
     case 'undoDeleteProduct':
     case 'changeEventGear':
+    case 'syncEvent':
       if(action.objectId){
         state.fishingEvents[action.objectId] = new moment();
       }

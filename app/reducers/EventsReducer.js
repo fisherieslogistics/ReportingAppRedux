@@ -1,26 +1,26 @@
 import EventEmitter from 'EventEmitter';
 import PositionProvider from '../utils/PositionProvider';
 
-const initialState = {
+let initialState = {
   eventEmitter: new EventEmitter(),
   uipositionProvider: new PositionProvider()
 }
 
-export default (state = initialState, action) => {
+export default (state, action) => {
   switch(action.type){
     case "nativeGPSOn":
-      state.uipositionProvider.stopIPPosition();
-      state.uipositionProvider.startPosition();
-      return state;
+      initialState.uipositionProvider.stopIPPosition();
+      initialState.uipositionProvider.startPosition();
+      return initialState;
     case "ipGpsOn":
-      state.uipositionProvider.stopNativePosition();
-      state.uipositionProvider.startIPPosition();
-      return state;
+      initialState.uipositionProvider.stopNativePosition();
+      initialState.uipositionProvider.startIPPosition();
+      return initialState;
     case "applyGpsSettings":
       let url = `http://${action.url}:${action.port}`;
-      state.uipositionProvider.setUrl(url);
-      return state;
+      initialState.uipositionProvider.setUrl(url);
+      return initialState;
     default:
-      return state;
+      return initialState;
   }
 }
