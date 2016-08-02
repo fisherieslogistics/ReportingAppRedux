@@ -22,7 +22,7 @@ class PositionDisplay extends React.Component{
       });
     }, 3000);
   }
-  
+
   getPositionText(){
     if(!this.state.position || !this.state.position.coords){
       return "awaiting position";
@@ -30,7 +30,7 @@ class PositionDisplay extends React.Component{
     let coords = this.state.position.coords;
     let posText = Sexagesimal.format(coords.latitude, 'lat') + "  " + Sexagesimal.format(coords.longitude, 'lon');
     let timeText = new moment(this.state.position.timestamp).fromNow();
-    return `${posText} - ${timeText}`
+    return `${posText} - ${timeText}`;
   }
 
   render() {

@@ -14,19 +14,11 @@ function getPosition(successCallback, onError){
 }
 
 function watchPositon(successCallback, onError){
-  return navigator.geolocation.watchPosition(
-    (position) => {
-      successCallback(position);
-    },
-    (err) => {
-       onError(err);
-    },
-    {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
-  );
+  return setInterval(() => getPosition(successCallback, onError), 2000);
 }
 
 function clearWatch(watchId){
-  navigator.geolocation.clearWatch(watchId);
+  clearInterval(watchId);
 }
 
 function requestPosition(url, successCallback, onError){
