@@ -4,6 +4,7 @@ import {
   TabBarIOS,
   StyleSheet,
   Dimensions,
+  AlertIOS,
 } from 'react-native';
 import React, { Component } from 'react';
 import Fishing from '../components/Fishing';
@@ -66,13 +67,23 @@ class ReportingApp extends Component {
   renderTabs(){
 
     const tabs = {
-      "trip": {render: this.renderTrip.bind(this), icon: 'fishing-boat'},
-      "fishing": {render: this.renderFishing.bind(this), icon: 'fishing'},
-      "forms": {render: this.renderForms.bind(this), icon: 'form'},
-      "settings": {render: this.renderProfile.bind(this), icon: 'settings'},
+      trip: {render: this.renderTrip.bind(this), icon: 'fishing-boat'},
+      fishing: {render: this.renderFishing.bind(this), icon: 'fishing'},
+      forms: {render: this.renderForms.bind(this), icon: 'form'},
+      settings: {render: this.renderProfile.bind(this), icon: 'settings'},
     }
 
     return Object.keys(tabs).map((key)=>{
+      let _key = "" + key;
+      let message = "Please start trip first";
+      if(!this.props.trip.started && key !== "settings"){
+        _key = "trip";
+      }
+
+      if(!this.props.loggedIn){
+        _key = "settings";
+        message = "Please login first";
+      }
       let selected = !!(this.state.selectedTab == key);
       return (
         <Icon8.TabBarItemIOS
@@ -84,19 +95,21 @@ class ReportingApp extends Component {
           hitSlop={{top: 20, left: 20, bottom: 20, right: 20}}
           style={{flex: 0.1}}
           onPress={() => {
-            if(this.props.loggedIn){
-              if(key === "forms"){
-                let forms = createForms(this.props.fishingEvents, this.props.formType);
-                this.props.dispatch(formActions.setViewingForm(forms[forms.length-1]));
-              }
-              setTimeout(() => {
-                this.setState({
-                  selectedTab: key
-                });
-              }, 100);
+            if(_key !== key){
+              AlertIOS.alert(message);
+              key = _key
             }
+            if(_key === "forms"){
+              let forms = createForms(this.props.fishingEvents, this.props.formType);
+              this.props.dispatch(formActions.setViewingForm(forms[forms.length-1]));
+            }
+            setTimeout(() => {
+              this.setState({
+                selectedTab: _key
+              });
+            }, 100);
           }}>
-        {tabs[key].render()}
+        {tabs[_key].render()}
       </Icon8.TabBarItemIOS>);
     });
   }
