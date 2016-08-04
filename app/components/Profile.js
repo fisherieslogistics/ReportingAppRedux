@@ -20,6 +20,7 @@ import AuthActions from '../actions/AuthActions';
 import MasterListView from './MasterListView';
 import EditorView from './EditorView';
 import GPSControlActions from '../actions/GPSControlActions';
+import version from '../constants/version';
 
 import Validator from '../utils/Validator';
 const valid = Validator.valid;
@@ -58,7 +59,7 @@ const GPSSettings = ({currentPosition, positionType, gpsUrl, gpsPort, gpsBaud, d
    <View>
     <View>
         <Text>IP GPS URL</Text>
-        <TextInput 
+        <TextInput
           value={gpsUrl}
           style={textInputStyle}
           autoCapitalize={"none"}
@@ -69,7 +70,7 @@ const GPSSettings = ({currentPosition, positionType, gpsUrl, gpsPort, gpsBaud, d
       </View>
       <View>
         <Text>IP GPS HTTP Port</Text>
-        <TextInput 
+        <TextInput
           style={textInputStyle}
           autoCapitalize={"none"}
           autoCorrect={false}
@@ -80,7 +81,7 @@ const GPSSettings = ({currentPosition, positionType, gpsUrl, gpsPort, gpsBaud, d
       </View>
       <View>
         <Text>IP GPS Baud rate</Text>
-        <TextInput 
+        <TextInput
           style={textInputStyle}
           autoCapitalize={"none"}
           autoCorrect={false}
@@ -361,7 +362,8 @@ class Profile extends React.Component{
   render(){
     let detailToolbar = (
       <DetailToolbar
-        centerBottom={<Text style={[textStyles.font, textStyles.midLabel]}>{this.state.selectedLabel}</Text>}
+        centerTop={<Text style={[textStyles.font, textStyles.midLabel]}>{this.state.selectedLabel}</Text>}
+        centerBottom={<Text style={[textStyles.font]}>{"Version: " + version}</Text>}
       />
     );
     let masterToolbar = (
