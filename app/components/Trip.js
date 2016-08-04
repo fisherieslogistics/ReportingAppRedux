@@ -85,6 +85,7 @@ class Trip extends React.Component{
 
   startTrip(){
     this.props.dispatch(tripActions.startTrip(this.props.vesselId));
+    this.props.startTripCallback();
   }
 
   renderMasterView(){
