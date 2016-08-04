@@ -39,7 +39,7 @@ const upsertFishingEvent = (fEvent, tripId) => {
 }
 
 const upsertLCERFishingEvent = (fEvent, tripId) => {
-  const catches = fEvent.products.map((c) => {
+  const catches = fEvent.products.filter((x) => !!x.code).map((c) => {
     let prod = Object.assign({}, c, {weight: parseInt(c.weight || 0),
                                      numberOfContainers: parseInt(c.numberOfContainers | 0)});
     delete prod["objectId"];
