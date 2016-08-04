@@ -102,7 +102,7 @@ class FormView extends React.Component {
     let items = obj[k];
     if(meta.prep){
       items = meta.prep(obj[k]);
-      key = key + "__prepped"; 
+      key = key + "__prepped";
       obj[key] = items;
     }
     items.forEach((v, i) => {
@@ -261,7 +261,7 @@ class FormView extends React.Component {
         </View>) : null;
 
     let renderedForm = renderForm(this.props.formType, text, styles);
-    
+
     return (
       <MasterDetailView
         master={this.renderFormsListView()}
@@ -336,7 +336,12 @@ const styles = StyleSheet.create({
   selectedListRow: {
     backgroundColor: '#eee',
   },
-  bgImage: {
+  bgImageLCER:{
+    resizeMode: "stretch",
+    height: 485,
+    width: 700
+  },
+  bgImageTCER: {//change for formType
     resizeMode: "stretch",
     height: 495,
     width: 710,

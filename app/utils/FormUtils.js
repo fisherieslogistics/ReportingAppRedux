@@ -18,7 +18,7 @@ import TCERFishingEventModel from '../models/TCERFishingEventModel';
 import LCERFishingEventModel from '../models/LCERFishingEventModel';
 
 const lcerModel = FormModel.concat(LCERFormModel);
-const tcerModel = FormModel.concat(LCERFormModel);
+const tcerModel = FormModel.concat(TCERFormModel);
 
 const tcerFishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
 const lcerFishingEventModel = FishingEventModel.concat(LCERFishingEventModel);
@@ -27,7 +27,7 @@ function renderForm(formType, text, styles){
   switch(formType){
     case 'tcer':
       return (
-        <Image source={require('../images/TCER.png')} style={[styles.bgImage]}>
+        <Image source={require('../images/TCER.png')} style={[styles.bgImageTCER]}>
           <View style={styles.form}>
             {text}
           </View>
@@ -35,9 +35,7 @@ function renderForm(formType, text, styles){
       );
     case 'lcer':
       return (
-        <Image source={require('../images/LCER.png')} style={[{resizeMode: "stretch",
-                                                               height: 485,
-                                                               width: 700} ]}>
+        <Image source={require('../images/LCER.png')} style={[styles.bgImageLCER]}>
           <View style={styles.form}>
             {text}
           </View>
@@ -104,6 +102,7 @@ function getFormModelByTypeCode(typeCode){
   if(! typeCode in formModels){
     throw new Error("invalid type code for form model");
   }
+  console.log(formModels[typeCode], "beef it up");
   return formModels[typeCode];
 }
 
