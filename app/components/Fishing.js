@@ -55,7 +55,7 @@ class Fishing extends React.Component{
 
   startFishingEvent(){
     const pos = this.getCurrentLocation();
-    
+
     if(this.props.formType == 'tcer'){
       this.startEvent(pos);
     }else{
@@ -246,9 +246,10 @@ class Fishing extends React.Component{
         onPress:this.startFishingEvent.bind(this),
         enabled:this.props.enableStartEvent,
     };
+    let fishingDescription = this.props.formType == "tcer" ? "Trawling" : "Lining";
     return(
         <MasterToolbar
-          center={<View style={{marginTop: 36}}><Text style={[textStyles.font, textStyles.midLabel]}>Fishing</Text></View>}
+          center={<View style={{marginTop: 36}}><Text style={[textStyles.font, textStyles.midLabel]}>{fishingDescription}</Text></View>}
           right={startEventButton}
         />
       );
@@ -296,6 +297,7 @@ const select = (State, dispatch) => {
       enableStartEvent: state.trip.started,
       containerChoices: state.me.containers,
       positionProvider: state.uiEvents.uipositionProvider,
+      formType: state.me.formType,
     }
     if(!state.fishingEvents.events.length){
       return props;
