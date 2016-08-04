@@ -168,11 +168,11 @@ class EventProductsEditor extends React.Component{
     render() {
       return (
         <View style={[styles.col, styles.fill, {alignItems: 'stretch', marginTop: 3}]}>
+            {this.getBottomRow()}
           <ScrollView style={[styles.scroll]}>
             {this.getInputs()}
             <View style={{height: 550}}></View>
           </ScrollView>
-            {this.getBottomRow()}
         </View>
       );
     }
@@ -187,13 +187,13 @@ const pStyle = {
     backgroundColor: colors.blue
   },
   bottomRow: {
-    height: 100,
+    height: 40,
     paddingTop: 10,
     flexDirection: 'row',
     justifyContent: 'center',
-    backgroundColor: colors.white,
-    borderTopWidth: 1,
-    borderColor: colors.midGray
+    //backgroundColor: colors.white,
+    //borderTopWidth: 1,
+    //borderColor: colors.midGray
   },
   buttonWrapper:{
     width: 360,
