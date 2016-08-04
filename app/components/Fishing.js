@@ -33,7 +33,7 @@ class Fishing extends React.Component{
     super(props);
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
-      selectedDetail: props.fishingEvents ? 0 : 2
+      selectedDetail: 0
     };
   }
 
@@ -180,20 +180,20 @@ class Fishing extends React.Component{
                  renderMessage={this.renderMessage.bind(this)}
                  containerChoices={this.props.containerChoices}
                 />);
-      case 2:
+      /*case 2:
         return (<EventGearEditor
                  renderMessage={this.renderMessage.bind(this)}
                  dispatch={this.props.dispatch}
                  fishingEvent={this.props.viewingEvent}
                  formType={this.props.formType}
-                />);
+                />);*/
     }
   }
 
   renderSegementedControl(){
     return (
       <SegmentedControlIOS
-        values={["details", "catches", "gear"]}
+        values={["details", "catches"/*, "gear"*/]}
         selectedIndex={this.state.selectedDetail}
         style={styles.detailSelector}
         onChange={({nativeEvent}) => {

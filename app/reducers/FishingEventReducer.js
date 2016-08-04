@@ -51,7 +51,7 @@ export default (state = initialState, action) => {
           let gearChange = {};
           gearChange[action.key] = action.value;
           state = changeEvent(action.fishingEventId - 1, state, gearChange, action.formType);
-         
+
           return state;
         case 'formSigned':
           action.fishingEvents.forEach((fe) => {
@@ -169,6 +169,7 @@ const endFishingEvent = (state, location, id, formType) => {
   let change = {};
   change.datetimeAtEnd = moment();
   change.locationAtEnd = location;
+  change.nonFishProtected = false;
   let fishingEventToUpdate = Object.assign({}, state.events[id - 1], change);
   fishingEventToUpdate.eventValid = calculateEventValid(fishingEventToUpdate, formType);
   return Object.assign({}, state, {events: [

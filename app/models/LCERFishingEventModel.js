@@ -4,15 +4,18 @@ const valid = Validator.valid;
 let model = [];
 
 model = [
-  {label: 'Bottom Depth', id: 'bottomDepth', valid: valid.greaterThanZero, type: 'number',
-    editorDisplay: {editor: 'event', type: 'single'}, unit: 'm'
-  },
   {label: 'Number of Hooks', id: 'numberOfHooks', valid: valid.greaterThanZero, type: 'number',
     editorDisplay: {editor: 'event', type: 'single'}
   },
   {label: 'Hook Spacing', id: 'hookSpacing', valid: valid.greaterThanZero, type: 'float',
     editorDisplay: {editor: 'gear', type: 'single'}, unit: 'm'
-  }
+  },
+  {label: 'Bottom Depth', id: 'bottomDepth', valid: valid.greaterThanZero, type: 'number',
+    editorDisplay: {editor: 'event', type: 'single'}, unit: 'm'
+  },
+  {label: 'Non Fish Protected Species',  type: 'bool', id: 'nonFishProtected', valid: valid.alwaysValid, type: 'bool',
+    editorDisplay: {editor: 'event', type: 'single', hideUndefined: true}
+  },
 ];
 
 export default model;
