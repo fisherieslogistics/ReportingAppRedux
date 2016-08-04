@@ -27,6 +27,7 @@ const initialState = {
   gpsBaud: null,
   applyGpsSettings: null,
   positionType: 'native',
+  catchDetailsExpanded: true,
   autoSuggestFavourites: {
   }
 }
@@ -47,6 +48,9 @@ export default (state = initialState, action) => {
       return state;
     case "ipGpsOn":
       state.positionType = 'IP';
+      return state;
+    case "setCatchDetailsExpanded":
+      state.catchDetailsExpanded = action.catchDetailsExpanded;
       return state;
     case 'setMe':
       if(!action.user){

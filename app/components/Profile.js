@@ -296,6 +296,7 @@ class Profile extends React.Component{
                   vessel={this.props.vessel}
                   tripStarted={this.props.tripStarted}
                   formType={this.props.formType}
+                  catchDetailsExpanded={this.props.catchDetailsExpanded}
                 />);
       case "account":
         return (<Login
@@ -418,6 +419,7 @@ const select = (State, dispatch) => {
     gpsPort: state.me.gpsPort,
     gpsBaud: state.me.gpsBaud,
     currentPosition: state.uiEvents.uipositionProvider.getPosition(),
+    catchDetailsExpanded: state.me.catchDetailsExpanded
   };
 }
 

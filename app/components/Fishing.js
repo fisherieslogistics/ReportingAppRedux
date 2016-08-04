@@ -179,6 +179,7 @@ class Fishing extends React.Component{
                  orientation={this.props.orientation}
                  renderMessage={this.renderMessage.bind(this)}
                  containerChoices={this.props.containerChoices}
+                 optionalFields={this.props.catchDetailsExpanded}
                 />);
       /*case 2:
         return (<EventGearEditor
@@ -297,6 +298,7 @@ const select = (State, dispatch) => {
       enableStartEvent: state.trip.started,
       containerChoices: state.me.containers,
       positionProvider: state.uiEvents.uipositionProvider,
+      catchDetailsExpanded: state.me.catchDetailsExpanded,
       formType: state.me.formType,
     }
     if(!state.fishingEvents.events.length){

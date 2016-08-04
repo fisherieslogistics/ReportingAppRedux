@@ -2,7 +2,9 @@
 import {
   StyleSheet,
   View,
-  PickerIOS
+  PickerIOS,
+  Switch,
+  Text
 } from 'react-native';
 
 import React from 'react';
@@ -66,10 +68,23 @@ const VesselEditor = (props) => {
     </PickerIOS>
   );
 
+  let catchExpand = (
+    <View style={{marginLeft: 30}}>
+      <Text>Enter Containers - state - and treatment?</Text>
+      <Switch
+        onValueChange={(bool) => {
+          props.dispatch(userActions.setCatchDetailsExpanded(bool));
+        }}
+        value={props.catchDetailsExpanded}
+      />
+    </View>
+);
+
   let top = (
     <View>
       {vesselPicker}
       {formTypePicker}
+      {catchExpand}
     </View>
   );
 

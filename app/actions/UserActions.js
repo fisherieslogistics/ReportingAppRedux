@@ -24,6 +24,13 @@ class UserActions{
     }
   }
 
+  setCatchDetailsExpanded(expanded){
+    return {
+      type: "setCatchDetailsExpanded",
+      catchDetailsExpanded: expanded
+    }
+  }
+
   setVessels(vessels){
     return {
       type: 'setVessels',
