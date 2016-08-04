@@ -75,6 +75,7 @@ class ReportingApp extends Component {
 
     return Object.keys(tabs).map((key)=>{
       let _key = "" + key;
+      let displayKey  = "" + key;
       let message = "Please start trip first";
       if(!this.props.trip.started && key !== "settings"){
         _key = "trip";
@@ -84,11 +85,15 @@ class ReportingApp extends Component {
         _key = "settings";
         message = "Please login first";
       }
+
+      if(key == "trip"){
+        displayKey = this.props.trip.started ? "End Trip" : "Start Trip";
+      }
       let selected = !!(this.state.selectedTab == key);
       return (
         <Icon8.TabBarItemIOS
           key={key}
-          title={key.capitalize()}
+          title={displayKey.capitalize()}
           selected={selected}
           iconName={tabs[key].icon}
           selectedIconName={tabs[key].icon + '-filled'}
@@ -133,6 +138,11 @@ class ReportingApp extends Component {
       <View style={[styles.col, styles.fill]}>
         <Trip
           position = {this.props.position}
+          startTripCallback = { () => {
+            this.setState({
+              selectedTab: "fishing"
+            });
+          }}
         />
       </View>
     )
