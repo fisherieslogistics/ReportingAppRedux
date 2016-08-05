@@ -8,7 +8,7 @@ model = [
     editorDisplay: {editor: 'event', type: 'single'}
   },
   {label: 'Hook Spacing', id: 'hookSpacing', valid: valid.greaterThanZero, type: 'float',
-    editorDisplay: {editor: 'gear', type: 'single'}, unit: 'm'
+    editorDisplay: {editor: 'event', type: 'single'}, unit: 'm'
   },
   {label: 'Bottom Depth', id: 'bottomDepth', valid: valid.greaterThanZero, type: 'number',
     editorDisplay: {editor: 'event', type: 'single'}, unit: 'm'

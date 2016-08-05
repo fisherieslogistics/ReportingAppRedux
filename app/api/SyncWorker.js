@@ -114,6 +114,7 @@ class SyncWorker {
     return this.api.mutate(query, variables, this.getState().default.auth)
       .then(success)
       .catch((err) => {
+        debugger;
         this.dispatch({
           type: "syncError",
           time: new moment(),
