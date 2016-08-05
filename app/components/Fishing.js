@@ -242,7 +242,9 @@ class Fishing extends React.Component{
 
   getMasterToolbar(){
     let startEventButton = {
-        icon: 'plus-math',
+        //icon: 'plus-math',
+        text: "Shoot",
+        textAlign: "right",
         color: this.props.enableStartEvent ? colors.blue : colors.gray,
         onPress:this.startFishingEvent.bind(this),
         enabled:this.props.enableStartEvent,
