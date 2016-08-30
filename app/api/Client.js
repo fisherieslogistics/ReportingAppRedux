@@ -32,7 +32,6 @@ class Client {
   performRefreshableRequest(func, auth){
     let self = this;
     if(this.refreshNeeded(auth)){
-      console.log("need refresh");
       return this.promisifyRequestBody(this._refresh(auth))
                .catch((err) => {
                  console.log(err);
@@ -43,7 +42,6 @@ class Client {
                  return self.promisifyRequestBody(func());
                });
     }else{
-      console.log("not need refresh");
       return this.promisifyRequestBody(func());
     }
   }
