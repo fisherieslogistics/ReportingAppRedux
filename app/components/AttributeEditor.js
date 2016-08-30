@@ -5,6 +5,7 @@ import {
   Switch,
   AlertIOS,
   TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import React from 'react';
 import FishPicker from '../components/FishPicker';
@@ -15,6 +16,7 @@ import Sexagesimal from 'sexagesimal';
 import moment from 'moment';
 import {LongButton} from './Buttons';
 import Helper from '../utils/Helper';
+import FocusOnDemandTextInput from './FocusOnDemandTextInput';
 const helper = new Helper();
 
 const Editors = (props) => {
@@ -30,25 +32,30 @@ const Editors = (props) => {
   return <View>{ inputs }</View>;
 }
 
-const SingleEditor = ({ attribute, styles, getEditor, value, editing, editingCallback }) => {
+const SingleEditor = ({ attribute, styles, getEditor, value, focusedAttributeId, editingCallback }) => {
   if(!attribute.valid) {
     throw new Error(`${attribute.id} doesn't have a validator`);
   }
   const isValid = attribute.valid.func(value);
+  const isEditing = focusedAttributeId === attribute.id;
   return (
-    <View style={[styles.col, styles.inputRow]} key={attribute.id}>
+    <TouchableOpacity style={[styles.col, styles.inputRow]}
+          key={attribute.id}
+          onPress={() => {
+            editingCallback(attribute.id, true)
+    }}>
         <View style={[styles.row, styles.labelRow]}>
           <Text style={styles.labelText}>
             {attribute.label}
           </Text>
-          { isValid ? null : (editing ? <Text style={[styles.labelError]}>
+          { isValid ? null : (isEditing ? <Text style={[styles.labelError]}>
             { attribute.valid.errorMessage }
           </Text> : <View style={styles.errorDot} />)}
         </View>
         <View style={[styles.row, styles.editorRow]}>
-          {AttributeEditor(getEditor(attribute), editingCallback, editing)}
+          {AttributeEditor(getEditor(attribute), editingCallback, focusedAttributeId)}
         </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -63,29 +70,49 @@ const getCombinedEditors = (attribute, model, getEditor) => {
   return editors.concat(addedEditors);
 }
 
-const renderCombinedEditors = (combinedEditors, styles, editingCallback, editing) => {
+const renderCombinedEditors = (combinedEditors, styles, editingCallback, focusedAttributeId) => {
   return (
-    <View style={[styles.col, styles.inputRow]} key={"editor" + combinedEditors.map(e => e.editor && e.editor.attribute.id).join('.')}>
+    <View style={[styles.col, styles.inputRow]}
+          key={"editor" + combinedEditors.map(e => e.editor && e.editor.attribute.id).join('.')}>
       <View style={[styles.row]}>
         {combinedEditors.map((e, index) => {
+          if(e.editor === null){
+            return (
+              <View style={[styles.rowSection]}
+                    key={"editor__" + e.label + index}>
+                <View style={[styles.labelRow]}>
+                  <Text style={[styles.labelText, {color: 'black'}]}>
+                    {e.label}
+                  </Text>
+                </View>
+              </View>
+
+            )
+          }
           if(e.editor && !e.editor.attribute.valid) {
             throw new Error(`${e.editor.attribute.id} doesn't have a validator`);
           }
           const isValid = !e.editor || e.editor.attribute.valid.func(e.editor.value);
+
           return (
-              <View style={[styles.rowSection]} key={"editor__" + e.label + index}>
+              <TouchableOpacity
+                style={[styles.rowSection]}
+                key={"editor__" + e.label + index}
+                onPress={() => {
+                  e.editor && editingCallback(e.editor.attribute.id, true);
+                }}>
                 <View style={[styles.labelRow]}>
                   <Text style={styles.labelText}>
                     {e.label}
                   </Text>
-                  { isValid ? null : (editing === e.editor.attribute.id ? <Text style={[styles.labelError]}>
+                  { isValid ? null : (focusedAttributeId === e.editor.attribute.id ? <Text style={[styles.labelError]}>
                     { e.editor.attribute.valid.errorMessage }
                   </Text> : <View style={styles.errorDot} />)}
                 </View>
                 <View style={[styles.editorRow]}>
-                  {e.editor && AttributeEditor(e.editor, (editing) => editingCallback(e.editor.attribute.id, editing), editing)}
+                  {e.editor && AttributeEditor(e.editor, focusedAttributeId => editingCallback(e.editor.attribute.id, focusedAttributeId), focusedAttributeId)}
                 </View>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </View>
@@ -98,7 +125,6 @@ const renderEditor = (attribute, props) => {
   if(attribute.editorDisplay && attribute.editorDisplay.hideUndefined && props.obj[attribute.id] === undefined){
     return null;
   }
-  const editing = (props.editing === attribute.id);
   if(attribute.editorDisplay && attribute.editorDisplay.editor === props.editorType){
     switch (attribute.editorDisplay.type) {
       case "single":
@@ -107,13 +133,13 @@ const renderEditor = (attribute, props) => {
         styles={props.styles}
         getEditor={props.getEditor}
         value={props.values[attribute.id]}
-        editing={editing}
+        focusedAttributeId={ props.focusedAttributeId }
         key={attribute.id}
-        editingCallback={(editing) => props.editingCallback(attribute.id, editing)}
+        editingCallback={focusedAttributeId => props.editingCallback(attribute.id, focusedAttributeId)}
       />);
       case "combined":
         const combinedEditors = getCombinedEditors(attribute, props.model, props.getEditor);
-        return renderCombinedEditors(combinedEditors, props.styles, props.editingCallback, props.editing);
+        return renderCombinedEditors(combinedEditors, props.styles, props.editingCallback, props.focusedAttributeId);
       default:
     }
   }
@@ -187,7 +213,7 @@ class EditOnBlur extends React.Component {
 
   render(){
     return (
-      <TextInput
+      <FocusOnDemandTextInput
         selectTextOnFocus={true}
         autoCorrect={false}
         autoCapitalize={'none'}
@@ -198,6 +224,7 @@ class EditOnBlur extends React.Component {
         onFocus={this.onFocus.bind(this)}
         onBlur={this.onBlur.bind(this)}
         onChangeText={this.onChangeText.bind(this)}
+        focus={ this.props.focus }
         {...this.props.extraProps} />
     );
   }
@@ -360,7 +387,7 @@ class LocationEditor extends React.Component {
   }
 
   render(){
-    if(this.props.editing !== this.props.attribute.id){
+    if(this.props.focusedAttributeId !== this.props.attribute.id){
       return this.renderLocation();
     }else{
       return (
@@ -373,9 +400,15 @@ class LocationEditor extends React.Component {
   }
 }
 
-const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, editingCallback, editing) => {
+const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, editingCallback, focusedAttributeId, index) => {
   if(!extraProps) {
     extraProps = {};
+  }
+  let focus = (focusedAttributeId === attribute.id);
+  if(index){
+    const attrId = focusedAttributeId.split("__")[0]
+    const attrIndex = focusedAttributeId.split("__")[1];
+    focus = (attrId === attribute.id) && (attrIndex == index);
   }
   //return (<View style={{paddingTop: 6}}><Text style={textStyles.font, textStyles.midLabel}>{}</Text></View>);
   switch (attribute.type) {
@@ -411,6 +444,8 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
                 inputId={inputId}
                 {...extraProps}
                 editingCallback={editingCallback}
+                focusedAttributeId={focusedAttributeId}
+                focus={focus}
               />);
     case "container":
       return (<ContainerPicker
@@ -423,6 +458,8 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
                 inputId={inputId}
                 {...extraProps}
                 editingCallback={editingCallback}
+                focusedAttributeId={focusedAttributeId}
+                focus={focus}
               />);
     case "location":
         return(<LocationEditor
@@ -431,7 +468,7 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
             onChange={(value) => {
               onChange(attribute.id, value);
             }}
-            editing={editing}
+            focusedAttributeId={focusedAttributeId}
             extraProps={{editable: false}}
             inputId={inputId}
             editingCallback={editingCallback}
@@ -456,6 +493,8 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
           inputId={inputId}
           {...extraProps}
           editingCallback={editingCallback}
+          focusedAttributeId={focusedAttributeId}
+          focus={focus}
         />
       );
   }

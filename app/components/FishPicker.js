@@ -18,6 +18,7 @@ import ViewActions from '../actions/ViewActions';
 import reactMixin from 'react-mixin';
 import Subscribable from 'Subscribable';
 import {connect} from 'react-redux';
+import FocusOnDemandTextInput from './FocusOnDemandTextInput';
 
 const viewActions = new ViewActions();
 
@@ -107,7 +108,7 @@ class FishPicker extends React.Component {
 
   render () {
     return(
-      <TextInput
+      <FocusOnDemandTextInput
         style={[inputStyles.textInput]}
         onFocus={this.onFocus.bind(this)}
         onBlur={this.onBlur.bind(this)}
@@ -118,6 +119,7 @@ class FishPicker extends React.Component {
         autoCapitalize={'none'}
         autoCorrect={false}
         ref={'textInput'}
+        focus={ this.props.focus }
       />)
 
   }

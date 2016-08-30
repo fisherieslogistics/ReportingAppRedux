@@ -32,7 +32,7 @@ const DeleteButton = (props) => {
 class EventProductsEditor extends React.Component{
     constructor (props){
         super(props);
-        this.state = { editing: ''};
+        this.state = { focusedAttributeId: ''};
     }
 
     addProduct(){
@@ -98,14 +98,14 @@ class EventProductsEditor extends React.Component{
         let num = index + 1;
         combinedEditors.push({label: "Catch " + num, editor: null});
       }
-      const editingCallback = (attributeId, editing) => {
-        if(editing) {
-          this.setState({ editing: attributeId + '__' + index });
-        } else if(this.state.editing == attributeId + '__' + index) {
-          this.setState({ editing: '' });
+      const editingCallback = (attributeId, focusedAttributeId) => {
+        if(focusedAttributeId) {
+          this.setState({ focusedAttributeId: attributeId + '__' + index });
+        } else if(this.state.focusedAttributeId == attributeId + '__' + index) {
+          this.setState({ focusedAttributeId: '' });
         }
       }
-      const split = this.state.editing.split('__');
+      const split = this.state.focusedAttributeId.split('__');
       let editting = '';
       if(split.length == 2 && split[1] == index) {
         editting = split[0];

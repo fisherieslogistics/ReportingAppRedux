@@ -6,7 +6,7 @@ import React from 'react';
 import { Editors } from './AttributeEditor';
 
 function EditorView(props) {
- 
+
   if(!props.obj || !props.values){
     return <View />;
   }
@@ -29,18 +29,26 @@ function EditorView(props) {
 class EditingState extends React.Component {
     constructor() {
       super();
-      this.state = { editing: '' };
+      this.state = {
+        focusedAttributeId: ''
+      };
+    }
+
+    setFocus(attributeId){
+      this.setState({ focusedAttributeId: attributeId });
     }
 
     render() {
-      const editingCallback = (attributeId, editing) => {
-        if(editing) {
-          this.setState({ editing: attributeId });
-        } else if(this.state.editing == attributeId) {
-          this.setState({ editing: '' });
+      const editingCallback = (attributeId, focusedAttributeId) => {
+        if(focusedAttributeId) {
+          this.setFocus(attributeId);
+        } else if(this.state.focusedAttributeId == attributeId) {
+          this.setState({ focusedAttributeId: '' });
         }
       }
-      return <EditorView {...this.props} editing={this.state.editing} editingCallback={editingCallback} />
+      return <EditorView {...this.props}
+                         focusedAttributeId={this.state.focusedAttributeId}
+                         editingCallback={editingCallback} />
     }
 }
 
