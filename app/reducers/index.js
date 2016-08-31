@@ -10,6 +10,7 @@ import Helper from '../utils/Helper';
 import EventsReducer from './EventsReducer';
 import GearReducer from './GearReducer';
 import SyncReducer from './SyncReducer';
+import APIReducer from './APIReducer';
 
 const helper = new Helper();
 var AsyncStorage = require('AsyncStorage');
@@ -24,6 +25,7 @@ const reducers = {
   uiEvents: EventsReducer,
   gear: GearReducer,
   sync: SyncReducer,
+  api: APIReducer,
 }
 
 let MainReducer = combineReducers(reducers);

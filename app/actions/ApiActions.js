@@ -15,8 +15,8 @@ const helper = new Helper();
 let client;
 class ApiActions {
 
-  setUpClient(dispatch, timeoutMS){
-    client = new Client(dispatch, timeoutMS);
+  setUpClient(dispatch, ApiEndpoint, timeoutMS){
+    client = new Client(dispatch, ApiEndpoint, timeoutMS);
   }
 
   login(username, password){

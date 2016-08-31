@@ -18,6 +18,7 @@ export default (state = initialState, action) => {
     case 'setAuth':
       return helper.updateAuth(state, action.auth);
     case 'logout':
+    case 'devMode':
       return Object.assign({}, initialState);
     case 'loginError':
     AlertIOS.alert(

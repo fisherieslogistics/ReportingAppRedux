@@ -11,8 +11,7 @@ const helper = new Helper();
 const authActions = new AuthActions();
 
 class Client {
-
-  constructor(dispatch) {
+  constructor(dispatch, ApiEndpoint) {
     this.apiEndpoint = ApiEndpoint;
     this.dispatch = dispatch;
   }

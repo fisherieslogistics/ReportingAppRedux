@@ -9,7 +9,11 @@ import {
   Modal,
   ScrollView,
   TextInput,
-  Switch
+  Switch,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  PickerIOS,
+  PickerItemIOS
 } from 'react-native';
 import React from 'react';
 
@@ -185,6 +189,55 @@ const Login = ({onLoginPress, loggedIn, disabled, sync}) => {
   );
 }
 
+const DevScreen = (props) => {
+    return(
+      <View>
+        <UrlPicker dispatch={props.dispatch} ApiEndpoint={props.ApiEndpoint} />
+        <TouchableOpacity onPress={props.exitDevMode}>
+          <Text>Exit Dev Mode</Text>
+        </TouchableOpacity>
+      </View>
+    );
+}
+
+const urls = [
+  {
+    name: 'Production',
+    value: 'http://api.fisherylogistics.com/',
+  },
+  {
+    name: 'Staging',
+    value: 'http://fisherieslogistics.com:5003/',
+  },
+  {
+    name: 'Local',
+    value: 'http://localhost:5003/',
+  }
+];
+
+let urlItems = urls.map((url) => (
+  <PickerItemIOS
+    key={url.name}
+    value={url.name}
+    label={url.name}
+  />));
+
+function UrlPicker(props){
+  return(
+    <PickerIOS
+      selectedValue={urls.find(url => url.value == props.ApiEndpoint).name}
+      onValueChange={(u) => {
+        console.log('devMode'+u);
+        props.dispatch({type: 'devMode', payload: u});
+      }}
+    >
+      {urlItems}
+    </PickerIOS>
+  )
+}
+
+
+
 
 class Profile extends React.Component{
   constructor (props){
@@ -196,8 +249,44 @@ class Profile extends React.Component{
       modalVisible: false,
       transparent: false,
       email: "",
-      password: ""
+      password: "",
+      devTaps: 0,
+      devMode: false
     };
+  }
+
+  componentDidMount() {
+    const func = () => {
+      if(this.state.devTaps >= 3){
+        this.setState({devMode: true});
+        AlertIOS.alert(
+          "Congratulations",
+          'You are an elite hacker',
+          [
+            {text: 'Awesome!', onPress: () => {
+              return;
+            }, style: 'cancel'},
+          ]
+        );
+
+        // this.props.dispatch({
+        //   type: 'devModeOn',
+        // });
+      }
+        this.setState({devTaps: 0});
+    };
+    const timer = setInterval(func, 1200);
+  }
+
+  exitDevMode() {
+      this.setState({devMode: false, selectedEditor: "account"});
+      this.props.dispatch({
+        type: 'devModeOff',
+      });
+  }
+
+  onTap(){
+    this.setState({devTaps: (this.state.devTaps+1)});
   }
 
   onLoginPress(){
@@ -245,12 +334,16 @@ class Profile extends React.Component{
 
   renderListView(){
 
-    let items = [
+    let defaultItems = [
       {name: "account", icon: 'cloud', label: "Account", color: colors.green},
       {name: "user", icon: 'user', label: "Profile", color: this.props.loggedIn ? colors.blue : colors.midGray},
       {name: "vessel", icon: 'fishing-boat', label: "Vessel", color: this.props.vessels.length ?  colors.blue : colors.midGray},
       {name: "gps", icon: 'settings', label: "GPS Settings", color: colors.blue},
     ];
+
+    let devItem = (this.state.devMode?[{name: "dev", icon: 'cloud', label: "Dev", color: colors.orange}]:[]);
+
+    let items = [...defaultItems, ...devItem];
 
     const isSelected = (items) => {
       return (items.name == this.state.selectedEditor);
@@ -305,6 +398,8 @@ class Profile extends React.Component{
                   onLoginPress={this.onLoginPress.bind(this)}
                   sync={this.props.sync}
                 />);
+      case "dev":
+        return (<DevScreen ApiEndpoint={this.props.ApiEndpoint} dispatch={this.props.dispatch} exitDevMode={this.exitDevMode.bind(this)}/>);
       case "gps":
         return (<GPSSettings {...this.props} />);
       default:
@@ -364,7 +459,9 @@ class Profile extends React.Component{
     let detailToolbar = (
       <DetailToolbar
         centerTop={<Text style={[textStyles.font, textStyles.midLabel]}>{this.state.selectedLabel}</Text>}
-        centerBottom={<Text style={[textStyles.font]}>{"Version: " + version}</Text>}
+        centerBottom={<TouchableWithoutFeedback onPress={this.onTap.bind(this)}>
+                        <View><Text style={[textStyles.font]}>{"Version: " + version}</Text></View>
+                      </TouchableWithoutFeedback>}
       />
     );
     let masterToolbar = (
@@ -419,7 +516,8 @@ const select = (State, dispatch) => {
     gpsPort: state.me.gpsPort,
     gpsBaud: state.me.gpsBaud,
     currentPosition: state.uiEvents.uipositionProvider.getPosition(),
-    catchDetailsExpanded: state.me.catchDetailsExpanded
+    catchDetailsExpanded: state.me.catchDetailsExpanded,
+    ApiEndpoint: state.api.ApiEndpoint,
   };
 }
 
