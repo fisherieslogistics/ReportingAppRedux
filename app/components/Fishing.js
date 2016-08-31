@@ -48,6 +48,10 @@ class Fishing extends React.Component{
       }
     }else{
       AlertIOS.alert("No location fix - please remember to edit the location");
+      parsedPos = {
+        lat: 0,
+        lon: 0
+      }
     }
 
     return parsedPos;
