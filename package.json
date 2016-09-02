@@ -3,19 +3,21 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start"
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "reset": "./node_modules/react-native/packager/packager.sh start --resetCache"
   },
   "dependencies": {
     "fbjs": "^0.8.2",
-    "react": "^15.1.0",
+    "react": "^15.3.0",
     "react-mixin": "^2.0.2",
-    "react-native": "0.27.2",
+    "react-native": "^0.32.0",
     "react-native-blur": "^1.0.0",
     "react-native-datepicker": "^1.2.1",
     "react-native-keyboard-spacer": "^0.3.0",
+    "react-native-location": "^0.27.0",
     "react-native-orientation": "^1.17.0",
     "react-native-signature-capture": "^0.4.0",
-    "react-native-vector-icons": "^2.0.3",
+    "react-native-vector-icons": "^2.1.0",
     "react-redux": "^4.4.5",
     "react-relay": "^0.8.1",
     "redux": "^3.5.2",
