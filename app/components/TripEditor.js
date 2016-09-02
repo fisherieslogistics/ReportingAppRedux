@@ -265,7 +265,7 @@ class TripEditor extends React.Component {
               />
             </View>
           </View>
-                    <View style={[styles.row, styles.topRow]}>
+          <View style={[styles.row, styles.topRow]}>
             <View style={[styles.halfway]}>
               <LongButton
                 text={"Start Trip"}
@@ -312,7 +312,8 @@ const styles = StyleSheet.create({
   },
   topRow: {
     alignSelf: 'stretch',
-     paddingTop: 20
+    paddingTop: 20,
+    height: 300,
   },
   borderBottom: {
     borderBottomWidth: 0.4,
