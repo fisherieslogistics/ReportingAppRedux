@@ -64,7 +64,7 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
       <View style={{left: -22,}}>
         <View>
            <Text style={{color: colors.blue}}>
-            {timeType === 'sailingTime'? 'Start Time' : 'End Time'}
+            {timeType === 'sailingTime'? 'Start Time' : 'Estimated Return Time'}
           </Text>
             <Text style={[textStyles.font, {fontSize: 16}]}>{!time || isNaN(time.unix()) ? "  " : time.format("DD MMM HH:mm") }</Text>
             <Text style={[dateStyle, {color: colors.darkGray, fontSize: 12, top: 2}]}>{ (!time || isNaN(time.unix()) ) ? "Select date" : time.fromNow() }</Text>

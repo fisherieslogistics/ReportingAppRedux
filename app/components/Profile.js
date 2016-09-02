@@ -42,6 +42,7 @@ const gpsControlActions = new GPSControlActions();
 
 
 const GPSSettings = ({currentPosition, positionType, gpsUrl, gpsPort, gpsBaud, dispatch} ) => {
+  return <View style={{paddingTop: 10, paddingLeft: 10}}><Text>No settings here currently.</Text></View>;
   let textInputStyle = {width: 360,
                           marginTop: 10,
                           height: 30,
