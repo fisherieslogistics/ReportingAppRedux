@@ -259,7 +259,7 @@ class LocationEditor extends React.Component {
       <View
         key={name + "__location"}
         style={[{ flexDirection: 'row', marginLeft: 10}]}>
-        <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 5}]}>
+        <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 3}]}>
           {label}
         </Text>
         <TextInput
@@ -410,7 +410,7 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
     const attrIndex = focusedAttributeId.split("__")[1];
     focus = (attrId === attribute.id) && (attrIndex == index);
   }
-  //return (<View style={{paddingTop: 6}}><Text style={textStyles.font, textStyles.midLabel}>{}</Text></View>);
+  //return (<View style={{paddingTop: 6}}><Text sty le={textStyles.font, textStyles.midLabel}>{}</Text></View>);
   switch (attribute.type) {
     case "labelOnly":
       return (<Text>{value}</Text>);
@@ -420,12 +420,13 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
         <DatePicker
           date={value || new Date()}
           mode="datetime"
-          format="YYYY-MM-DD HH:mm"
+          format="MMM DD HH:mm"
           confirmBtnText="Confirm"
           cancelBtnText="Cancel"
           customStyles={{
+            dateText: inputStyles.dateText,
             dateInput: inputStyles.dateInput,
-            dateIcon: inputStyles.dateIcon
+            dateIcon: inputStyles.dateIcon,
           }}
           onDateChange={(datetime) => {
             onChange(attribute.id, new moment(datetime));

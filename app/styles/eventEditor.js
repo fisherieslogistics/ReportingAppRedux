@@ -2,16 +2,16 @@ import colors from './colors';
 
 export default {
   innerWrapper:{
-   paddingTop: 10,
-   paddingLeft: 30,
-   paddingBottom: 10,
+   paddingTop: 6,
+   paddingLeft: 5,
+   paddingBottom: 3,
   },
   outerWrapper: {
-    marginTop: 10,
-    marginLeft: 10,
-    marginRight: 10,
+    marginTop: 5,
+    marginLeft: 5,
+    marginRight: 5,
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 6,
     overflow: "hidden"
   },
   topWrapper: {
@@ -35,7 +35,8 @@ export default {
     flex: 0.3,
   },
   labelText: {
-    color: colors.blue
+    color: colors.blue,
+    fontSize: 16,
   },
   labelError: {
     marginLeft: 4,
@@ -52,8 +53,8 @@ export default {
     margin: 4,
   },
   inputRow: {
-    paddingTop: 5,
     alignSelf: 'stretch',
+    flex: 1,
     borderBottomWidth: 1,
     borderBottomColor: colors.midGray
   }

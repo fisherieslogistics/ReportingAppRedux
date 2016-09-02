@@ -224,14 +224,14 @@ const pStyle = {
     flex: 0.24
   },
   innerWrapper:{
-   paddingTop: 5,
-   paddingLeft: 30,
+   paddingTop: 2,
+   paddingLeft: 20,
    paddingBottom: 5,
   },
   outerWrapper: {
-    marginTop: 10,
-    marginLeft: 10,
-    marginRight: 10,
+    marginTop: 5,
+    marginLeft: 5,
+    marginRight: 5,
     backgroundColor: '#fff',
     borderRadius: 10,
     overflow: "hidden"
