@@ -7,7 +7,7 @@ model = [
   {label: 'Number of Hooks', id: 'numberOfHooks', valid: valid.greaterThanZero, type: 'number',
     editorDisplay: {editor: 'event', type: 'single'}
   },
-  {label: 'Hook Spacing', id: 'hookSpacing', valid: valid.greaterThanZero, type: 'float',
+  {label: 'Hook Spacing', id: 'hookSpacing', valid: valid.greaterThanZero, type: 'float', repeating: true,
     editorDisplay: {editor: 'event', type: 'single'}, unit: 'm'
   },
   {label: 'Bottom Depth', id: 'bottomDepth', valid: valid.greaterThanZero, type: 'number',
