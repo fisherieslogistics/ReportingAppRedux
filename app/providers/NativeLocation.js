@@ -31,17 +31,18 @@ class NativeLocation {
   }
 
   startUpdatingLocation(){
+    console.log("REQUESTING");
     Location.requestAlwaysAuthorization();
     Location.getAuthorizationStatus((authorization) => {
-      this.locationStarted = true;
       // authorization is a string which is either "authorizedAlways",
       // "authorizedWhenInUse", "denied", "notDetermined" or "restricted"
-      if(authorization === "authorizedAlways"){
+      console.log(authorization);
+      if(authorization === "authorizedAlways" || authorization === "authorizedWhenInUse"){
         this.locationAuthorized = true;
-        Location.setAllowsBackgroundLocationUpdates(true);
         Location.setDistanceFilter(5.0);
         Location.setDesiredAccuracy(2);
         Location.startUpdatingLocation();
+        this.locationStarted = true;
       }
     });
 
