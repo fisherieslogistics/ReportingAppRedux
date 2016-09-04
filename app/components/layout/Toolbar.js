@@ -9,22 +9,30 @@ import {
 import React from 'react';
 import {colors, shadowStyles, textStyles} from '../../styles/styles';
 import {TextButton, IconButton} from '../common/Buttons';
+
 const renderButton = (button, textAlign) => {
+
   if(button.icon){
-    return (<IconButton
-              icon={button.icon}
-              color={button.color}
-              onPress={button.onPress}
-              style={{width: 50, marginTop:29, height: 50, marginRight: 0, backgroundColor: 'transparent'}}
-              disabled={!button.enabled} />);
+    const iconStyle = {width: 50, marginTop:29, height: 50, marginRight: 0, backgroundColor: 'transparent'}
+    return (
+      <IconButton
+        icon={button.icon}
+        color={button.color}
+        onPress={button.onPress}
+        style={ button.style || iconStyle }
+        disabled={!button.enabled} />
+    );
   }
-  return (<TextButton
-            text={button.text}
-            style={{marginTop: 34, marginRight: 15, marginLeft: 22, width: 70}}
-            color={button.color}
-            textAlign={textAlign || "left"}
-            onPress={button.onPress}
-            disabled={!button.enabled}  />);
+  const textButtonStyle = {marginTop: 34, marginRight: 15, marginLeft: 22, width: 70};
+  return (
+    <TextButton
+      text={button.text}
+      style={ button.style || textButtonStyle }
+      color={button.color}
+      textAlign={textAlign || "left"}
+      onPress={button.onPress}
+      disabled={!button.enabled}
+  />);
 }
 
 const MasterToolbar = (props) => {
