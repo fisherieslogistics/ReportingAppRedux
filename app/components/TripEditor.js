@@ -145,96 +145,6 @@ class TripEditor extends React.Component {
       this.props.dispatch(tripActions.updateTrip(id, value, this.props.trip.started));
     }
 
-    renderMessage(){
-      let message = this.props.trip.started ?
-                      "Trip started" : (this.props.tripCanStart ?
-                        "Ready to start trip" :  "Select ports and times before starting trip");
-      return (
-        <View style={{padding: 10}}>
-        <Text style={{ color: colors.blue}}>Trip Status:</Text>
-        <Text style={{ fontSize: 20, paddingTop: 4}}>{message}</Text>
-          </View>
-      );
-    }
-
-    renderAddPort(){
-      let pickerItems = [];
-      let items = this.state.regions.map((region, index) => {
-        return (
-          <PickerItemIOS
-            key={"region_" + region}
-            value={region}
-            label={region}
-          />
-        )
-      });
-      return (
-        <View style={[{backgroundColor: "white", marginTop: 50,
-                      flex: 1, alignSelf: 'stretch'}]}>
-          <View>
-            <View><Text style={[textStyles.font, {color: colors.blue }]}>Region</Text></View>
-          </View>
-          <View style={[]}>
-            <PickerIOS
-              style={[{backgroundColor: "#ffffff"}]}
-              selectedValue={this.state.selectedRegion}
-              onValueChange={(region) => {
-                this.setState({selectedRegion: region});
-              }}
-            >
-              {items}
-            </PickerIOS>
-            <Text style={[textStyles.font, {color: colors.blue }]}>Port</Text>
-            <TextInput
-              selectTextOnFocus={true}
-              placeholder={"Port Name"}
-              autoCorrect={false}
-              autoCapitalize={'none'}
-              value={this.state.newPortName}
-              style={inputStyles.textInput, {backgroundColor: 'white', height: 50, alignSelf: 'stretch'}}
-              onChangeText={(text) => {
-                this.setState({
-                  newPortName: text
-                })
-              }}
-            />
-          <LongButton
-            text={"Save Port"}
-            bgColor={colors.blue}
-            _style={{alignSelf: 'center', marginTop: 20}}
-            onPress={() => {
-              AlertIOS.alert(
-                "Add: " + this.state.newPortName + " to " + this.state.selectedRegion,
-                "Is this correct? Click OK to save this port.",
-                [
-                  {text: 'Cancel', onPress: () => {
-                    this.setState({
-                      newPortName: "",
-                      showAddPort: false
-                    });
-                  }, style: 'cancel'},
-                  {text: 'OK', onPress: () => {
-                    let portName = this.state.newPortName ? this.state.newPortName : "";
-                    let choices = this.state.portChoices;
-                    if(portName.length){
-                      choices.push({value: portName, description: this.state.selectedRegion});
-                      this.props.dispatch(userActions.addPort(this.state.selectedRegion,
-                                          this.state.portName));
-                    }
-                    this.setState({
-                      newPortName: "",
-                      showAddPort: false,
-                      portChoices: choices
-                    });
-                  }}
-                ]
-              );
-            }}
-          />
-        </View>
-      </View>);
-    }
-
     render() {
       let LANDSCAPE = (this.props.orientation.indexOf("LANDSCAPE") !== -1);
       return (
@@ -276,28 +186,15 @@ class TripEditor extends React.Component {
             </View>
             <View style={[styles.halfway]}>
               <LongButton
-                text={"Return To Port"}
+                text={"End Trip"}
                 bgColor={this.props.tripCanEnd ? colors.blue : colors.midGray}
                 onPress={this.endTrip.bind(this)}
                 disabled={!this.props.tripCanEnd}
               />
-              <Text style={{textAlign: 'center'}}>
-                {this.props.trip.started && (!this.props.tripCanEnd) ? "Complete all shots and sign all forms before ending trip" : ""}
-              </Text>
             </View>
           </View>
           <View style={[styles.bottomRow, {alignItems: 'center', padding: 10, marginTop: 20}]}>
-            <LongButton
-              text={"Add New Port"}
-              bgColor={colors.blue}
-              onPress={() => {
-                this.setState({
-                  showAddPort: true
-                });
-              }}
-            />
           </View>
-          {this.state.showAddPort ? this.renderAddPort() : this.renderMessage()}
         </View>
       );
     }

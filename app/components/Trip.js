@@ -88,6 +88,28 @@ class Trip extends React.Component{
     this.props.startTripCallback();
   }
 
+  renderMessage(){
+    let message = "";
+    if(this.props.trip.started){
+      message = this.props.tripCanEnd ? "Trip started - OK To End Trip" : "Complete all shots and sign all forms before ending trip";
+    }else {
+      message = this.props.tripCanStart ? "Ready to start trip" :  "Select ports and times before starting trip";
+    }
+    return (
+      <PlaceholderMessage text={message} height={this.props.height } />
+    );
+  }
+
+  renderDetailView(){
+    return (
+      <View style={[{padding: 0, flexDirection: 'column', flex: 1 }]}>
+        <View style={[{flexDirection: 'row', flex: 1}]}>
+          { this.renderMessage() }
+        </View>
+      </View>
+    );
+  }
+
   renderMasterView(){
     return (
       <View style={{top: 0, left: 0}}>
@@ -116,9 +138,9 @@ class Trip extends React.Component{
     let toolbarStyle = {height: 20, flex: 0, backgroundColor: colors.backgrounds.dark};
     return (
       <MasterDetailView
-        master={this.renderMasterView()}
+        master={ this.renderMasterView() }
         sizes={{m: 0.6, d: 0.4}}
-        detailView={null}
+        detail={ this.renderDetailView() }
         detailToolbar={<DetailToolbar style={toolbarStyle} />}
         masterToolbar={<MasterToolbar style={toolbarStyle} />}
       />
@@ -132,6 +154,7 @@ const select = (State, dispatch) => {
   let totals = helper.getTotals([].concat.apply(allProducts));
   return {
     fishingEvents: state.fishingEvents.events,
+    height: state.view.height,
     user: state.me.user,
     trip: state.trip,
     totals: Object.keys(totals).map((t) => {
