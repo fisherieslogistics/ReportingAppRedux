@@ -9,7 +9,7 @@ import{
 import Validator from '../utils/Validator';
 
 import React from 'react';
-import AutoSuggestBar from './AutoSuggestBar';
+import AutoSuggestBar from './common/AutoSuggestBar';
 import {inputStyles, textStyles} from '../styles/styles';
 import ViewActions from '../actions/ViewActions';
 import reactMixin from 'react-mixin';

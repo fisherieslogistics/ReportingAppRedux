@@ -5,7 +5,7 @@ import {
 import React from 'react';
 
 import UserModel from '../models/UserModel';
-import EditorView from './EditorView';
+import EditorView from './common/EditorView';
 import UserActions from '../actions/UserActions';
 
 import {eventEditorStyles} from '../styles/styles';

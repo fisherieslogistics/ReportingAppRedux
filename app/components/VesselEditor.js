@@ -9,8 +9,8 @@ import {
 
 import React from 'react';
 import VesselModel from '../models/VesselModel';
-import {AttributeEditor} from './AttributeEditor';
-import EditorView from './EditorView';
+import {AttributeEditor} from './common/AttributeEditor';
+import EditorView from './common/EditorView';
 import eventEditorStyles from '../styles/eventEditor';
 import UserActions from '../actions/UserActions';
 import ModelUtils from '../utils/ModelUtils';

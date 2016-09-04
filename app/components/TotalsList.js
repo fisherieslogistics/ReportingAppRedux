@@ -9,7 +9,7 @@ import React from 'react';
 import Helper from '../utils/Helper';
 import colors from '../styles/colors.js';
 const helper = new Helper();
-import MasterListView from './MasterListView';
+import MasterListView from './common/MasterListView';
 import styles from '../styles/listView';
 import textStyles from '../styles/text';
 

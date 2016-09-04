@@ -5,11 +5,6 @@ const valid = Validator.valid;
 const helper = new Helper();
 
 const model = [
-  {label: 'Wing Spread', id: 'wingSpread', valid: valid.greaterThanZero, type: 'number', repeating: true,
-    editorDisplay: {editor: 'event', type: 'combined', siblings: ['headlineHeight']}, unit: 'm', order: 1,
-  },
-  {label: 'Headline Height', id: 'headlineHeight', valid: valid.greaterThanZero, type: 'float', unit: 'm', repeating: true,
-  },
   {label: 'Bottom Depth', id: 'bottomDepth', valid: valid.greaterThanZero, type: 'number',
     combinedValid: {attributes: ["bottomDepth", "groundropeDepth"], func: combined.orderedLessThanOrEqual},
     editorDisplay: {editor: 'event', type: 'combined', siblings: ['groundropeDepth']}, unit: 'm'
@@ -19,6 +14,11 @@ const model = [
   },
   {label: 'Average Speed', id: 'averageSpeed', valid: valid.greaterThanZero, type: 'float',
     editorDisplay: {editor: 'event', type: 'single'}, unit: 'kt'
+  },
+  {label: 'Wing Spread', id: 'wingSpread', valid: valid.greaterThanZero, type: 'number', repeating: true,
+    editorDisplay: {editor: 'event', type: 'combined', siblings: ['headlineHeight']}, unit: 'm', order: 1,
+  },
+  {label: 'Headline Height', id: 'headlineHeight', valid: valid.greaterThanZero, type: 'float', unit: 'm', repeating: true,
   },
   {label: 'Non Fish Protected Species',  type: 'bool', id: 'nonFishProtected', valid: valid.alwaysValid, type: 'bool',
     editorDisplay: {editor: 'event', type: 'single', hideUndefined: true}

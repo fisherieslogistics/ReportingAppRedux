@@ -14,7 +14,7 @@ import React from 'react';
 import moment from 'moment';
 import Helper from '../utils/Helper';
 import FormsList from './FormsList';
-import MasterDetailView from './MasterDetailView';
+import MasterDetailView from './layout/MasterDetailView';
 import ModelUtils from '../utils/ModelUtils';
 import SignatureView from './SignatureView';
 import AsyncStorage from 'AsyncStorage';
@@ -23,7 +23,7 @@ const formActions = new FormActions();
 
 import {connect} from 'react-redux';
 import {createForms} from '../utils/FormUtils';
-import {MasterToolbar, DetailToolbar} from './Toolbar';
+import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
 import {colors, listViewStyles, textStyles, shadowStyles} from '../styles/styles';
 import {getFormModelByTypeCode, renderForm} from '../utils/FormUtils';
 

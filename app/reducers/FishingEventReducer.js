@@ -218,7 +218,6 @@ const newFishingEvent = (state, location, formType) => {
   let previousEvent = state.events.length ? Object.assign({}, state.events[state.events.length - 1]) : null;
   if(previousEvent){
     newEvent.targetSpecies = "" + previousEvent.targetSpecies;
-    console.log(fishingEventModel);
     fishingEventModel.specific.filter(attr => attr.repeating).forEach((attribute) => {
       let update = {};
       update[attribute.id] = previousEvent[attribute.id];

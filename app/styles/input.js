@@ -12,8 +12,13 @@ export default {
     fontSize: 22,
     flex: 1,
     color: "#707070",
-    height: 25,
+    height: 22,
     marginTop: 10,
+  },
+  locationContainer: {
+    backgroundColor: '#f80046',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   dateIcon: {
     height: 0,

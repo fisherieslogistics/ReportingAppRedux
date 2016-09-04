@@ -11,15 +11,22 @@ import {
 import React from 'react';
 import ProductActions from '../actions/ProductActions';
 import ProductModel from '../models/ProductModel';
-import BlankMessage from './BlankMessage';
+import PlaceholderMessage from './common/PlaceholderMessage';
 
 import {connect} from 'react-redux';
 import {eventEditorStyles, inputStyle, colors, textStyles} from '../styles/styles';
-import {renderCombinedEditors, getCombinedEditors } from './AttributeEditor';
-import {LongButton} from './Buttons';
-import Icon8 from './Icon8';
+import {renderCombinedEditors, getCombinedEditors } from './common/AttributeEditor';
+import {LongButton} from './common/Buttons';
+import Icon8 from './common/Icon8';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const productActions = new ProductActions();
+
+const inputOrder = [
+  'code',
+  'numberOfContainers',
+  'weight',
+];
 
 const DeleteButton = (props) => {
   return (
@@ -32,7 +39,11 @@ const DeleteButton = (props) => {
 class EventProductsEditor extends React.Component{
     constructor (props){
         super(props);
-        this.state = { focusedAttributeId: ''};
+        this.state = {
+          focusedAttributeId: '',
+          nextInput: ''
+        };
+        this.onEnterPress = this.onEnterPress.bind(this);
     }
 
     addProduct(){
@@ -41,19 +52,20 @@ class EventProductsEditor extends React.Component{
 
     getEditor(attribute, product, index){
       const value = product[attribute.id];
-      const random = Math.random.toString();
-      const inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index + random;
+      const inputId = attribute.id + "__event__" + this.props.fishingEvent.id + "__product__" + index;
       let extraProps = {fishingEvent: this.props.fishingEvent}
       if(attribute.type == 'container'){
         extraProps.choices = this.props.containerChoices;
-        extraProps.name = "__product" + "_" + index + "__container";
+        extraProps.name = "__product" + "__" + index + "__container";
       }
+      const enterPressed = (attrId) => { this.onEnterPress(attrId, index) };
       return {
         attribute,
         value,
         onChange: (name, v) => this.onChange(name, v, index),
         extraProps: extraProps,
-        inputId
+        inputId,
+        onEnterPress: enterPressed,
       }
     }
 
@@ -91,6 +103,34 @@ class EventProductsEditor extends React.Component{
       );
     }
 
+    onEnterPress(attributeId, productIndex){
+      const index = inputOrder.indexOf(attributeId);
+
+      if(index === -1){
+        this.setState({
+          nextInput: '',
+        });
+        return;
+      }
+
+      const isLastInput = (index === (inputOrder.length - 1));
+      const input = isLastInput ? inputOrder[0] : inputOrder[index + 1];
+
+      if((productIndex === (this.props.products.length - 1)) && isLastInput){
+        this.addProduct();
+        this.setState({
+          nextInput: input + '__' + (productIndex + 1),
+        });
+        return;
+      };
+
+      console.log('the thing', input + '__' + (isLastInput ? (productIndex + 1) : productIndex));
+
+      this.setState({
+        nextInput: input + '__' + (isLastInput ? (productIndex + 1) : productIndex),
+      });
+    }
+
     renderEditor(attribute, product, index){
       const getEditor = (attr) => this.getEditor(attr, product, index);
       const combinedEditors = getCombinedEditors(attribute, ProductModel, getEditor);
@@ -98,19 +138,24 @@ class EventProductsEditor extends React.Component{
         let num = index + 1;
         combinedEditors.push({label: "Catch " + num, editor: null});
       }
-      const editingCallback = (attributeId, focusedAttributeId) => {
-        if(focusedAttributeId) {
-          this.setState({ focusedAttributeId: attributeId + '__' + index });
-        } else if(this.state.focusedAttributeId == attributeId + '__' + index) {
+      const editingCallback = (attributeId, isFocused) => {
+        const attrId = attributeId + '__' + index;
+        if(attrId === this.state.nextInput){
+          this.setState({ focusedAttributeId: '', nextInput: ''});
+        } else if(isFocused) {
+          this.setState({ focusedAttributeId: attrId });
+        } else if(this.state.focusedAttributeId == attrId) {
           this.setState({ focusedAttributeId: '' });
         }
       }
-      const split = this.state.focusedAttributeId.split('__');
-      let editting = '';
-      if(split.length == 2 && split[1] == index) {
-        editting = split[0];
-      }
-      return renderCombinedEditors(combinedEditors, styles, editingCallback, editting);
+
+      let nextInput = this.state.nextInput;
+      let focusedId = this.state.focusedAttributeId;
+
+      console.log(nextInput, focusedId);
+
+      return renderCombinedEditors(
+        combinedEditors, styles, editingCallback, nextInput, index);
     }
 
     getDetailWidth(){
@@ -163,17 +208,17 @@ class EventProductsEditor extends React.Component{
       this.props.products.forEach((p, i) => {
         inputs.push(this.renderEditors(p, i));
       });
-      return inputs.reverse();
+      return inputs;
     }
 
     render() {
       return (
         <View style={[styles.col, styles.fill, {alignItems: 'stretch', marginTop: 3}]}>
             {this.getBottomRow()}
-          <ScrollView style={[styles.scroll]}>
+          <KeyboardAwareScrollView style={[styles.scroll]} viewIsInsideTabBar={true} extraHeight={ 230 } alwaysBounceVertical={false} bouncesZoom={false}>
             {this.getInputs()}
             <View style={{height: 550}}></View>
-          </ScrollView>
+          </KeyboardAwareScrollView>
         </View>
       );
     }
@@ -217,7 +262,7 @@ const pStyle = {
     backgroundColor: colors.red,
   },
   labelRow: {
-    flex: 0.20,
+    flex: 0.50,
     marginRight: 3
   },
   rowSection: {
@@ -236,6 +281,11 @@ const pStyle = {
     borderRadius: 10,
     overflow: "hidden"
   },
+  labelText: {
+    fontSize: 16,
+    color: colors.blue,
+  },
+
 }
 
 const styles = StyleSheet.create(Object.assign({}, eventEditorStyles, pStyle));

@@ -102,7 +102,6 @@ function getFormModelByTypeCode(typeCode){
   if(! typeCode in formModels){
     throw new Error("invalid type code for form model");
   }
-  console.log(formModels[typeCode], "beef it up");
   return formModels[typeCode];
 }
 

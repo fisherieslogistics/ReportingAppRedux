@@ -8,16 +8,16 @@ import {
 } from 'react-native';
 
 import React, { Component } from 'react';
-import MasterDetailView from './MasterDetailView';
+import MasterDetailView from './layout/MasterDetailView';
 import TripActions from '../actions/TripActions';
 import colors from '../styles/colors';
 import {connect} from 'react-redux';
 import Helper from '../utils/Helper';
-import {MasterToolbar, DetailToolbar} from './Toolbar';
+import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
 import TripEditor from './TripEditor';
 import TotalsList from './TotalsList';
 import textStyles from '../styles/text';
-import BlankMessage from './BlankMessage';
+import PlaceholderMessage from './common/PlaceholderMessage';
 import moment from 'moment';
 
 //let user add a new port if the port is not there

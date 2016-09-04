@@ -25,25 +25,25 @@ export default {
     flexDirection: 'row',
   },
   editorRow: {
-    flex: 0.7,
-    paddingBottom: 3
+    flex: 0.8,
+    paddingBottom: 4
   },
   fill: {
     flex: 1,
   },
   labelRow: {
-    flex: 0.3,
+    flex: 0.5,
   },
   labelText: {
     color: colors.blue,
-    fontSize: 16,
+    fontSize: 18,
   },
   labelError: {
     marginLeft: 4,
     color: colors.orange
   },
   rowSection: {
-    flex: 0.3
+    flex: 0.4
   },
   errorDot: {
     width: 10,
@@ -56,6 +56,8 @@ export default {
     alignSelf: 'stretch',
     flex: 1,
     borderBottomWidth: 1,
+    paddingTop: 2,
+    paddingBottom: 2,
     borderBottomColor: colors.midGray
   }
 }

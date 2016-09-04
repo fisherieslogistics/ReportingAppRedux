@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 
 import React from 'react';
-import EditorView from './EditorView';
+import EditorView from './common/EditorView';
 import GearActions from '../actions/GearActions';
 import {eventEditorStyles, textStyles} from '../styles/styles';
 import {getFishingEventModelByTypeCode} from '../utils/FormUtils';

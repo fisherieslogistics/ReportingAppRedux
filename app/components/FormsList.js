@@ -8,7 +8,7 @@ import React from 'react';
 import FormActions from '../actions/FormActions';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Helper from '../utils/Helper';
-import MasterListView from './MasterListView';
+import MasterListView from './common/MasterListView';
 
 import {connect} from 'react-redux';
 import {colors, listViewStyles, textStyles, iconStyles} from '../styles/styles';
@@ -16,7 +16,7 @@ import {colors, listViewStyles, textStyles, iconStyles} from '../styles/styles';
 const helper = new Helper();
 const formActions = new FormActions();
 
-import Icon8 from  './Icon8';
+import Icon8 from  './common/Icon8';
 
 class FormsList extends React.Component {
 

@@ -19,22 +19,22 @@ import React from 'react';
 
 import ProfileEditor from './ProfileEditor';
 import VesselEditor from './VesselEditor';
-import MasterDetailView from './MasterDetailView';
+import MasterDetailView from './layout/MasterDetailView';
 import AuthActions from '../actions/AuthActions';
-import MasterListView from './MasterListView';
-import EditorView from './EditorView';
+import MasterListView from './common/MasterListView';
+import EditorView from './common/EditorView';
 import GPSControlActions from '../actions/GPSControlActions';
 import version from '../constants/version';
 
 import Validator from '../utils/Validator';
 const valid = Validator.valid;
 
-import {LongButton} from './Buttons';
-import {MasterToolbar, DetailToolbar} from './Toolbar';
+import {LongButton} from './common/Buttons';
+import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
 import {colors, listViewStyles, textStyles, iconStyles, eventEditorStyles} from '../styles/styles';
 import {connect} from 'react-redux';
 
-import Icon8 from './Icon8';
+import Icon8 from './common/Icon8';
 
 const authActions = new AuthActions();
 const editorStyles = StyleSheet.create(eventEditorStyles);

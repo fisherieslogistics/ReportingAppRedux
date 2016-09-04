@@ -11,14 +11,14 @@ import{
 import Validator from '../utils/Validator';
 
 import React from 'react';
-import AutoSuggestBar from './AutoSuggestBar';
+import AutoSuggestBar from './common/AutoSuggestBar';
 import {inputStyles} from '../styles/styles';
 import speciesCodesDesc from '../constants/speciesDesc.json';
 import ViewActions from '../actions/ViewActions';
 import reactMixin from 'react-mixin';
 import Subscribable from 'Subscribable';
 import {connect} from 'react-redux';
-import FocusOnDemandTextInput from './FocusOnDemandTextInput';
+import FocusOnDemandTextInput from './common/FocusOnDemandTextInput';
 
 const viewActions = new ViewActions();
 
@@ -64,12 +64,13 @@ class FishPicker extends React.Component {
         changedByEvent: true,
         value: event.value
       });
-      setTimeout(() => {
+      this.props.onEnterPress(this.props.name);
+      /*setTimeout(() => {
         this.forceUpdate();
         if(this.refs.textInput){
           this.refs.textInput.blur();
         }
-      });
+      });*/
     }
   }
 
@@ -106,6 +107,12 @@ class FishPicker extends React.Component {
     this.props.dispatch(viewActions.changeAutoSuggestBarText(text, this.props.name));
   }
 
+  onKeyPress(event) {
+    if(event.nativeEvent.key === 'Enter' && this.props.onEnterPress){
+      this.props.onEnterPress(this.props.name);
+    }
+  }
+
   render () {
     return(
       <FocusOnDemandTextInput
@@ -118,6 +125,7 @@ class FishPicker extends React.Component {
         selectTextOnFocus={true}
         autoCapitalize={'none'}
         autoCorrect={false}
+        onKeyPress={this.onKeyPress.bind(this)}
         ref={'textInput'}
         focus={ this.props.focus }
       />)

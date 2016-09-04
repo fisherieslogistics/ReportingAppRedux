@@ -8,14 +8,42 @@ import {
 } from 'react-native';
 
 import React from 'react';
-import Errors from './Errors';
-import EditorView from './EditorView';
+import Errors from './common/Errors';
+import EditorView from './common/EditorView';
 import FishingEventActions from '../actions/FishingEventActions';
 import {eventEditorStyles, colors} from '../styles/styles';
 import {getFishingEventModelByTypeCode} from '../utils/FormUtils';
 const fishingEventActions = new FishingEventActions();
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+
+const inputOrder = [
+  'targetSpecies',
+  'bottomDepth',
+  'groundropeDepth',
+  'averageSpeed',
+  'wingSpread',
+  'headlineHeight',
+];
 
 class EventDetailEditor extends React.Component{
+
+    constructor(props){
+      super(props);
+      this.onEnterPress = this.onEnterPress.bind(this);
+      this.state = {
+        nextInput: null
+      }
+    }
+
+    onEnterPress(inputName){
+      const index = inputOrder.indexOf(inputName);
+      let input = (index === inputOrder.length -1) ? inputOrder[0] : inputOrder[index + 1];
+      this.setState({
+        nextInput: inputName ? input : null,
+      });
+    }
+
     onChange(name, value){
       switch (name) {
         case "nonFishProtected":
@@ -54,6 +82,7 @@ class EventDetailEditor extends React.Component{
         onChange: attribute.type === 'bool' ? this.onNonFishChange.bind(this) : this.onChange.bind(this),
         extraProps: {fishingEvent: this.props.fishingEvent},
         inputId,
+        onEnterPress: inputOrder.indexOf(attribute.id) === -1 ? null : this.onEnterPress,
       };
     }
 
@@ -71,10 +100,11 @@ class EventDetailEditor extends React.Component{
         return this.props.renderMessage("No shots to edit");
       }
       const model = getFishingEventModelByTypeCode(this.props.formType).complete;
-      return (<ScrollView style={{marginTop: 3}}>
+      return (<KeyboardAwareScrollView style={{marginTop: 3}} viewIsInsideTabBar={ true } extraHeight={ 150 } bouncesZoom={false} alwaysBounceVertical={false}>
                 <EditorView
                   styles={styles}
                   getCallback={this.getCallback.bind(this)}
+                  toFocusAttributeId={ this.state.nextInput }
                   getEditor={this.getEditor.bind(this)}
                   editorType={"event"}
                   name={"eventDetail"}
@@ -83,11 +113,10 @@ class EventDetailEditor extends React.Component{
                   values={this.props.fishingEvent}
                 />
               <View style={{height: 600}}></View>
-              </ScrollView>);
+            </KeyboardAwareScrollView>);
     }
 };
 
 const styles = StyleSheet.create(eventEditorStyles);
-
 
 export default EventDetailEditor;

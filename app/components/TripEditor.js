@@ -16,11 +16,11 @@ import TripModel from '../models/TripModel';
 import Helper from '../utils/Helper';
 import colors from '../styles/colors';
 import {textStyles, inputStyles} from '../styles/styles';
-import {LongButton} from './Buttons';
-import {AttributeEditor} from './AttributeEditor';
+import {LongButton} from './common/Buttons';
+import {AttributeEditor} from './common/AttributeEditor';
 import PortPicker from './PortPicker';
 import UserActions from '../actions/UserActions';
-import BlankMessage from './BlankMessage';
+import PlaceholderMessage from './common/PlaceholderMessage';
 import ViewActions from '../actions/ViewActions';
 
 const viewActions = new ViewActions();

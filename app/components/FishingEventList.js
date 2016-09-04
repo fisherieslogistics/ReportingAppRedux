@@ -8,11 +8,11 @@ import{
 import React from 'react';
 import FishingEventActions from '../actions/FishingEventActions';
 import Helper from '../utils/Helper';
-import MasterListView from './MasterListView';
-import Icon8 from './Icon8';
+import MasterListView from './common/MasterListView';
+import Icon8 from './common/Icon8';
 
 import {colors, listViewStyles, iconStyles, textStyles} from '../styles/styles';
-import {IconButton} from './Buttons';
+import {IconButton} from './common/Buttons';
 
 const fishingEventActions = new FishingEventActions();
 const helper = new Helper();

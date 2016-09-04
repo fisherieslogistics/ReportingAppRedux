@@ -11,7 +11,7 @@ import Fishing from '../components/Fishing';
 import Profile from '../components/Profile';
 import Forms from '../components/FormView';
 import {connect} from 'react-redux';
-import AutoSuggestBar from '../components/AutoSuggestBar';
+import AutoSuggestBar from '../components/common/AutoSuggestBar';
 import Orientation from 'react-native-orientation';
 import ViewActions from '../actions/ViewActions';
 import FormActions from '../actions/FormActions';
@@ -19,7 +19,7 @@ import ApiActions from '../actions/ApiActions';
 import Trip from '../components/Trip';
 import SyncWorker from '../api/SyncWorker';
 import ShadowStyle from '../styles/shadow';
-import Icon8 from '../components/Icon8';
+import Icon8 from '../components/common/Icon8';
 import {createForms} from '../utils/FormUtils';
 import GPSControlActions from '../actions/GPSControlActions';
 

@@ -11,7 +11,7 @@ import {
 import React, { Component } from 'react';
 import EventDetailEditor from './EventDetailEditor';
 import FishingEventList from './FishingEventList';
-import MasterDetailView from './MasterDetailView';
+import MasterDetailView from './layout/MasterDetailView';
 import FishingEventActions from '../actions/FishingEventActions';
 import EventGearEditor from './EventGearEditor';
 import PositionDisplay from './PositionDisplay';
@@ -19,12 +19,12 @@ import EventProductsEditor from './EventProductsEditor';
 import {connect} from 'react-redux';
 import moment from 'moment';
 import Sexagesimal from 'sexagesimal';
-import BlankMessage from './BlankMessage';
+import PlaceholderMessage from './common/PlaceholderMessage';
 
-import {TextButton, IconButton} from './Buttons';
-import {MasterToolbar, DetailToolbar} from './Toolbar';
+import {TextButton, IconButton} from './common/Buttons';
+import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
 import {colors, textStyles, iconStyles} from '../styles/styles';
-import Icon8 from './Icon8';
+import Icon8 from './common/Icon8';
 
 const fishingEventActions = new FishingEventActions();
 
@@ -226,7 +226,7 @@ class Fishing extends React.Component{
 
   renderMessage(message){
     return (
-      <BlankMessage
+      <PlaceholderMessage
         text={message}
         height={this.props.height}
       />);
