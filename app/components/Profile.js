@@ -35,6 +35,7 @@ import {colors, listViewStyles, textStyles, iconStyles, eventEditorStyles} from 
 import {connect} from 'react-redux';
 
 import Icon8 from './common/Icon8';
+import AddPort from './AddPort';
 
 const authActions = new AuthActions();
 const editorStyles = StyleSheet.create(eventEditorStyles);
@@ -339,7 +340,7 @@ class Profile extends React.Component{
       {name: "account", icon: 'cloud', label: "Account", color: colors.green},
       {name: "user", icon: 'user', label: "Profile", color: this.props.loggedIn ? colors.blue : colors.midGray},
       {name: "vessel", icon: 'fishing-boat', label: "Vessel", color: this.props.vessels.length ?  colors.blue : colors.midGray},
-      {name: "gps", icon: 'settings', label: "GPS Settings", color: colors.blue},
+      {name: "addPort", icon: 'settings', label: "Add Port", color: colors.blue},
     ];
 
     let devItem = (this.state.devMode?[{name: "dev", icon: 'cloud', label: "Dev", color: colors.orange}]:[]);
@@ -401,8 +402,10 @@ class Profile extends React.Component{
                 />);
       case "dev":
         return (<DevScreen ApiEndpoint={this.props.ApiEndpoint} dispatch={this.props.dispatch} exitDevMode={this.exitDevMode.bind(this)}/>);
-      case "gps":
-        return (<GPSSettings {...this.props} />);
+      //case "gps":
+        //return (<GPSSettings {...this.props} />);
+      case "addPort":
+        return (<AddPort ports={ this.props.ports } dispatch={ this.props.dispatch } />);
       default:
     }
   }
@@ -519,6 +522,7 @@ const select = (State, dispatch) => {
     currentPosition: state.uiEvents.uipositionProvider.getPosition(),
     catchDetailsExpanded: state.me.catchDetailsExpanded,
     ApiEndpoint: state.api.ApiEndpoint,
+    ports: state.me.ports,
   };
 }
 
