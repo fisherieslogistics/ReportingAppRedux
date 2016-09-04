@@ -266,14 +266,16 @@ class FormView extends React.Component {
       <MasterDetailView
         master={this.renderFormsListView()}
         detail={(
-          <View style={[styles.col, styles.fill, {alignSelf: 'flex-start'},
-                        styles.wrapper, {opacity:this.props.viewingForm ? 1 : 0}]}>
-            {renderedForm}
-            {this.renderSignatureAndDate()}
-            {greyBackground}
-            {signatureView}
-            {signatureWarningView}
-          </View>
+          <ScrollView horizontal={true}>
+            <View style={[styles.col, styles.fill, {alignSelf: 'flex-start'},
+                          styles.wrapper, {opacity:this.props.viewingForm ? 1 : 0}]}>
+              {renderedForm}
+              {this.renderSignatureAndDate()}
+              {greyBackground}
+              {signatureView}
+              {signatureWarningView}
+            </View>
+          </ScrollView>
         )}
         detailToolbar={detailToolbar}
         masterToolbar={masterToolbar}
