@@ -47,8 +47,9 @@ class EditingState extends React.Component {
         }
       }
       return <EditorView {...this.props}
-                         focusedAttributeId={this.state.focusedAttributeId}
-                         editingCallback={editingCallback} />
+                         focusedAttributeId={this.props.toFocusAttributeId || this.state.focusedAttributeId}
+                         editingCallback={editingCallback}
+                         onEnterPress={this.props.onEnterPress} />
     }
 }
 

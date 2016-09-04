@@ -8,7 +8,7 @@ import{
 } from 'react-native';
 import React from 'react';
 
-import {listViewStyles, colors} from '../styles/styles';
+import {listViewStyles, colors} from '../../styles/styles';
 
 const renderSeperator = (sectionID: number, rowID: number, adjacentRowHighlighted: bool) => {
   return (

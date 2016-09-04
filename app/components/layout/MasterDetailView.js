@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import React from 'react';
 
-import {shadowStyles, colors} from '../styles/styles';
+import {shadowStyles, colors} from '../../styles/styles';
 
 const MasterDetail = (props) => {
   let masterFlex = props.sizes ? props.sizes.d : 0.3;

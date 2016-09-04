@@ -10,9 +10,9 @@ import{
 
 import React from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
-import UserActions from '../actions/UserActions';
+import UserActions from '../../actions/UserActions';
 
-import {colors, textStyles} from '../styles/styles';
+import {colors, textStyles} from '../../styles/styles';
 
 const userActions = new UserActions();
 

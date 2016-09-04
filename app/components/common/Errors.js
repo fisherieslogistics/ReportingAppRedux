@@ -5,9 +5,9 @@ import{
   StyleSheet
 } from 'react-native';
 import React from 'react';
-import {findErrors, findCombinedErrors} from '../utils/ModelErrors';
+import {findErrors, findCombinedErrors} from '../../utils/ModelErrors';
 
-import colors from '../styles/colors';
+import colors from '../../styles/colors';
 
 class Errors {
 

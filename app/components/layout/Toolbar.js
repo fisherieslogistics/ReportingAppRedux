@@ -7,8 +7,8 @@ import {
 } from 'react-native';
 
 import React from 'react';
-import {colors, shadowStyles, textStyles} from '../styles/styles';
-import {TextButton, IconButton} from './Buttons';
+import {colors, shadowStyles, textStyles} from '../../styles/styles';
+import {TextButton, IconButton} from '../common/Buttons';
 const renderButton = (button, textAlign) => {
   if(button.icon){
     return (<IconButton

@@ -5,7 +5,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import React from 'react';
-import {colors, textStyles} from '../styles/styles';
+import {colors, textStyles} from '../../styles/styles';
 
 export default (props) => {
   return (

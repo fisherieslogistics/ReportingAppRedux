@@ -8,15 +8,16 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';
-import FishPicker from '../components/FishPicker';
-import ContainerPicker from '../components/ContainerPicker';
+import FishPicker from '../FishPicker';
+import ContainerPicker from '../ContainerPicker';
 import DatePicker from 'react-native-datepicker';
-import {inputStyles, textStyles, colors} from '../styles/styles';
+import {inputStyles, textStyles, colors} from '../../styles/styles';
 import Sexagesimal from 'sexagesimal';
 import moment from 'moment';
 import {LongButton} from './Buttons';
-import Helper from '../utils/Helper';
+import Helper from '../../utils/Helper';
 import FocusOnDemandTextInput from './FocusOnDemandTextInput';
+import LocationEditor from '../LocationEditor';
 const helper = new Helper();
 
 const Editors = (props) => {
@@ -32,12 +33,18 @@ const Editors = (props) => {
   return <View>{ inputs }</View>;
 }
 
-const SingleEditor = ({ attribute, styles, getEditor, value, focusedAttributeId, editingCallback }) => {
+const renderErrorView = (focusedAttributeId, attribute, styles) => {
+  if(focusedAttributeId === attribute.id) {
+    return (<Text style={[styles.labelError]}>{attribute.valid.errorMessage}</Text>);
+  }
+  return (<View style={styles.errorDot} />);
+}
+
+const SingleEditor = ({ attribute, styles, getEditor, value, focusedAttributeId, editingCallback, onEnterPress }) => {
   if(!attribute.valid) {
     throw new Error(`${attribute.id} doesn't have a validator`);
   }
-  const isValid = attribute.valid.func(value);
-  const isEditing = focusedAttributeId === attribute.id;
+  const errorView = attribute.valid.func(value) ? null : renderErrorView(focusedAttributeId, attribute, styles);
   return (
     <TouchableOpacity style={[styles.col, styles.inputRow]}
           key={attribute.id}
@@ -48,9 +55,7 @@ const SingleEditor = ({ attribute, styles, getEditor, value, focusedAttributeId,
           <Text style={styles.labelText}>
             {attribute.label}
           </Text>
-          { isValid ? null : (isEditing ? <Text style={[styles.labelError]}>
-            { attribute.valid.errorMessage }
-          </Text> : <View style={styles.errorDot} />)}
+          { errorView }
         </View>
         <View style={[styles.row, styles.editorRow]}>
           {AttributeEditor(getEditor(attribute), editingCallback, focusedAttributeId)}
@@ -70,11 +75,12 @@ const getCombinedEditors = (attribute, model, getEditor) => {
   return editors.concat(addedEditors);
 }
 
-const renderCombinedEditors = (combinedEditors, styles, editingCallback, focusedAttributeId) => {
+const renderCombinedEditors = (combinedEditors, styles, editingCallback, focusedAttributeId, _index) => {
   return (
     <View style={[styles.col, styles.inputRow]}
-          key={"editor" + combinedEditors.map(e => e.editor && e.editor.attribute.id).join('.')}>
-      <View style={[styles.row]}>
+          key={"editor" + combinedEditors.map(e => e.editor && e.editor.attribute.id).join('.') + _index }>
+
+      <View style={[styles.row, { flex: 1, alignSelf: 'stretch' }]}>
         {combinedEditors.map((e, index) => {
           if(e.editor === null){
             return (
@@ -86,14 +92,13 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, focused
                   </Text>
                 </View>
               </View>
-
-            )
+            );
           }
           if(e.editor && !e.editor.attribute.valid) {
             throw new Error(`${e.editor.attribute.id} doesn't have a validator`);
           }
           const isValid = !e.editor || e.editor.attribute.valid.func(e.editor.value);
-
+          const errorView = isValid ? null : renderErrorView(focusedAttributeId, e.editor.attribute, styles);
           return (
               <TouchableOpacity
                 style={[styles.rowSection]}
@@ -101,16 +106,14 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, focused
                 onPress={() => {
                   e.editor && editingCallback(e.editor.attribute.id, true);
                 }}>
-                <View style={[styles.labelRow]}>
+                <View style={[styles.labelRow, { flexDirection: 'row'}]}>
                   <Text style={styles.labelText}>
                     {e.label}
                   </Text>
-                  { isValid ? null : (focusedAttributeId === e.editor.attribute.id ? <Text style={[styles.labelError]}>
-                    { e.editor.attribute.valid.errorMessage }
-                  </Text> : <View style={styles.errorDot} />)}
+                  { errorView }
                 </View>
                 <View style={[styles.editorRow]}>
-                  {e.editor && AttributeEditor(e.editor, focusedAttributeId => editingCallback(e.editor.attribute.id, focusedAttributeId), focusedAttributeId)}
+                  {e.editor && AttributeEditor(e.editor, (focusedId) => editingCallback(e.editor.attribute.id, focusedId), focusedAttributeId, _index)}
                 </View>
             </TouchableOpacity>
           );
@@ -128,15 +131,16 @@ const renderEditor = (attribute, props) => {
   if(attribute.editorDisplay && attribute.editorDisplay.editor === props.editorType){
     switch (attribute.editorDisplay.type) {
       case "single":
-        return (<SingleEditor
-        attribute={attribute}
-        styles={props.styles}
-        getEditor={props.getEditor}
-        value={props.values[attribute.id]}
-        focusedAttributeId={ props.focusedAttributeId }
-        key={attribute.id}
-        editingCallback={focusedAttributeId => props.editingCallback(attribute.id, focusedAttributeId)}
-      />);
+        return (
+          <SingleEditor
+            attribute={attribute}
+            styles={props.styles}
+            getEditor={props.getEditor}
+            value={props.values[attribute.id]}
+            focusedAttributeId={ props.focusedAttributeId }
+            key={attribute.id}
+            editingCallback={focusedAttributeId => props.editingCallback(attribute.id, focusedAttributeId)}
+          />);
       case "combined":
         const combinedEditors = getCombinedEditors(attribute, props.model, props.getEditor);
         return renderCombinedEditors(combinedEditors, props.styles, props.editingCallback, props.focusedAttributeId);
@@ -175,6 +179,14 @@ class EditOnBlur extends React.Component {
 
   onFocus(){
     this.props.editingCallback(true);
+    this.props.onEnterPress ? this.props.onEnterPress() : null;
+  }
+
+  onKeyPress(event) {
+    if(event.nativeEvent.key === 'Enter' && this.props.onEnterPress){
+      console.log("AAAA", this.props.attribute.id, this.props)
+      this.props.onEnterPress(this.props.attribute.id);
+    }
   }
 
   onBlur(){
@@ -225,188 +237,20 @@ class EditOnBlur extends React.Component {
         onBlur={this.onBlur.bind(this)}
         onChangeText={this.onChangeText.bind(this)}
         focus={ this.props.focus }
+        onKeyPress={this.onKeyPress.bind(this)}
         {...this.props.extraProps} />
     );
   }
 }
 
-class LocationEditor extends React.Component {
 
-  constructor(props){
-    super(props);
-    this.state = {
-      location: {
-      },
-      latPositive: false,
-      lonPositive: true,
-      canSave: true
-    }
-  }
-
-  onFocus(){
-    let location = helper.getDegreesMinutesFromLocation(this.props.value);
-    this.props.editingCallback(true);
-    this.setState({
-      location: location,
-      lonPositive: this.props.value.lon > 0,
-      latPositive: this.props.value.lat > 0
-    });
-  }
-
-  getInput(name, label, maxLength, maxVal){
-    let value = this.state.location[name];
-    return (
-      <View
-        key={name + "__location"}
-        style={[{ flexDirection: 'row', marginLeft: 10}]}>
-        <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 3}]}>
-          {label}
-        </Text>
-        <TextInput
-          selectTextOnFocus={true}
-          autoCorrect={false}
-          autoCapitalize={'none'}
-          value={value.toString()}
-          style={{width: 40, height: 30, alignSelf: 'flex-start', marginLeft:5}}
-          maxLength={maxLength}
-          onChangeText={(text) => {
-            let change = {};
-            change[name] = text;
-            this.setState({
-              location: Object.assign({}, this.state.location, change),
-              canSave: (isNaN(parseInt(text)) === false) && (parseInt(text) <= maxVal)
-            });
-          }}
-        />
-        </View>);
-  }
-
-  renderEditingView(){
-    let latInputs = [["latDegrees", "degrees", 3, 90],
-                     ["latMinutes", "minutes", 2, 60],
-                     ["latSeconds", "seconds", 2, 60]].map((part) => {
-                       return this.getInput(part[0], part[1], part[2], part[3]);
-                  });
-    let lonInputs = [["lonDegrees", "degrees", 3, 180],
-                     ["lonMinutes", "minutes", 2, 60],
-                     ["lonSeconds", "seconds", 2, 60]].map((part) => {
-                       return this.getInput(part[0], part[1], part[2], part[3]);
-                  });
-    return (
-      <View>
-        <View>
-          <Text style={[inputStyles.labelText, {color: colors.blue}]}>
-            Latitude
-          </Text>
-          {latInputs}
-          <View style={{flexDirection: 'row'}}>
-            <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 5, marginRight: 10, marginLeft: 10}]}>
-              South
-            </Text>
-            <Switch
-              onValueChange={(bool) => {
-                this.setState({
-                  latPositive: bool
-                });
-              }}
-              value={this.state.latPositive}
-            />
-            <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 5, marginRight: 10, marginLeft: 10}]}>
-              North
-            </Text>
-          </View>
-        </View>
-
-        <View>
-          <Text style={[inputStyles.labelText, {color: colors.blue}]}>
-            Longitude
-          </Text>
-          {lonInputs}
-          <View style={{flexDirection: 'row'}}>
-            <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 5, marginRight: 10, marginLeft: 10}]}>
-              West
-            </Text>
-            <Switch
-              onValueChange={(bool) => {
-                this.setState({
-                lonPositive: bool});
-              }}
-              value={!!this.state.lonPositive}
-            />
-            <Text style={[inputStyles.labelText, {color: colors.blue, marginTop: 5, marginLeft: 10, marginRight: 10}]}>
-              East
-            </Text>
-
-          </View>
-        </View>
-        <LongButton
-          text={"Save"}
-          bgColor={colors.blue}
-          onPress={this.saveLocation.bind(this)}
-          disabled={!this.state.canSave}
-          _style={{marginTop: 5}}
-        />
-        <LongButton
-          text={"Cancel"}
-          bgColor={colors.red}
-          onPress={() => {this.props.editingCallback(false);}}
-          disabled={false}
-          _style={{marginTop: 5}}
-        />
-      </View>
-    );
-  }
-
-  renderLocation(){
-    let posText = Sexagesimal.format(this.props.value.lat, 'lat') + "  " + Sexagesimal.format(this.props.value.lon, 'lon');
-    return (
-      <TextInput
-        selectTextOnFocus={true}
-        autoCorrect={false}
-        autoCapitalize={'none'}
-        keyboardType={'number-pad'}
-        placeholderText={this.props.attribute.label}
-        value={posText}
-        style={inputStyles.textInput}
-        onFocus={this.onFocus.bind(this)}
-        onBlur={() => {
-          this.props.editingCallback(false);
-        }}
-        onChangeText={() => {}}
-      />
-    );
-  }
-
-  saveLocation(){
-    let stateLoc = Object.assign({}, this.state.location);
-    let location = helper.parseLocation(stateLoc,
-                                        this.state.lonPositive,
-                                        this.state.latPositive);
-    this.props.onChange(location);
-    this.props.editingCallback(false);
-  }
-
-  render(){
-    if(this.props.focusedAttributeId !== this.props.attribute.id){
-      return this.renderLocation();
-    }else{
-      return (
-        <View>
-          {this.renderLocation()}
-          {this.renderEditingView()}
-        </View>
-      );
-    }
-  }
-}
-
-const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, editingCallback, focusedAttributeId, index) => {
+const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEnterPress }, editingCallback, focusedAttributeId, index) => {
   if(!extraProps) {
     extraProps = {};
   }
   let focus = (focusedAttributeId === attribute.id);
-  if(index){
-    const attrId = focusedAttributeId.split("__")[0]
+  if((isNaN(index) === false) && focusedAttributeId){
+    const attrId = focusedAttributeId.split("__")[0];
     const attrIndex = focusedAttributeId.split("__")[1];
     focus = (attrId === attribute.id) && (attrIndex == index);
   }
@@ -418,7 +262,7 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
     case "datetime":
       return (
         <DatePicker
-          date={value || new Date()}
+          date={ value ? value.toDate() : new Date()}
           mode="datetime"
           format="MMM DD HH:mm"
           confirmBtnText="Confirm"
@@ -446,12 +290,12 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
                 {...extraProps}
                 editingCallback={editingCallback}
                 focusedAttributeId={focusedAttributeId}
+                onEnterPress={onEnterPress}
                 focus={focus}
               />);
     case "container":
       return (<ContainerPicker
                 onChange={(value) => {
-
                   onChange(attribute.id, value);
                 }}
                 value={value}
@@ -460,20 +304,19 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
                 {...extraProps}
                 editingCallback={editingCallback}
                 focusedAttributeId={focusedAttributeId}
+                onEnterPress={onEnterPress}
                 focus={focus}
               />);
     case "location":
-        return(<LocationEditor
-            attribute={attribute}
-            value={value}
-            onChange={(value) => {
-              onChange(attribute.id, value);
-            }}
-            focusedAttributeId={focusedAttributeId}
-            extraProps={{editable: false}}
-            inputId={inputId}
-            editingCallback={editingCallback}
-            />);
+      return (
+        <LocationEditor
+          attribute={attribute}
+          value={value}
+          onChange={ onChange }
+          inputId={inputId}
+          editingCallback={editingCallback}
+        />
+      );
       break;
     case "bool":
       return (<Switch
@@ -496,6 +339,7 @@ const AttributeEditor = ({attribute, value, onChange, extraProps, inputId}, edit
           editingCallback={editingCallback}
           focusedAttributeId={focusedAttributeId}
           focus={focus}
+          onEnterPress={onEnterPress}
         />
       );
   }

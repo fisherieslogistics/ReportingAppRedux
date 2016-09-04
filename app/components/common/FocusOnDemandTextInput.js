@@ -6,6 +6,10 @@ import React from 'react';
 
 export default class FocusOnDemandTextInput extends TextInput {
 
+  constructor(props){
+    super(props)
+  }
+
   focus() {
     this._component.focus();
   }

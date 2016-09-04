@@ -48,4 +48,3 @@ let Icon8 = createIconSet(glyphMap, 'Reporting-App', 'Reporting-App.ttf');
 
 module.exports = Icon8;
 module.exports.glyphMap = glyphMap;
-

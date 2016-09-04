@@ -7,7 +7,7 @@ import{
   Image
 } from 'react-native';
 import React from 'react';
-import {textStyles, iconStyles, colors} from '../styles/styles';
+import {textStyles, iconStyles, colors} from '../../styles/styles';
 import Icon8 from './Icon8';
 
 const getActiveOpacity = (disabled) => {
