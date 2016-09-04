@@ -8,7 +8,7 @@ class Helper {
     const lon = Sexagesimal.format(location.lon, 'lon').split(" ");
     let ew = "East";
     let ns = "North";
-    if(location.lat < 0){
+    if(location.lat <= 0){
       ns = "South";
     }
     if(location.lon < 0){
