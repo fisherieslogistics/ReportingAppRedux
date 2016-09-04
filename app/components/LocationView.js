@@ -2,14 +2,9 @@
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet
 } from 'react-native';
 import React from 'react';
-import DatePicker from 'react-native-datepicker';
-import moment from 'moment';
-import {connect} from 'react-redux';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import Helper from '../utils/Helper';
 const helper = new Helper();
 
