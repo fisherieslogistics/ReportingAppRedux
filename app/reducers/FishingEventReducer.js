@@ -60,8 +60,12 @@ export default (state = initialState, action) => {
                                                    committed: true}, action.formType);
           });
           return Object.assign({}, state);
+        case 'addUnsoughtCatch':
+          const addChange = {lastChange: new moment()};
+          addChange[action.unsoughtType] = action.unsoughtCatch;
+          return changeEvent(action.fishingEventId - 1, state, addChange, action.formType);
         default:
-            return state;
+          return state;
     }
 }
 
