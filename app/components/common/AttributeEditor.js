@@ -31,7 +31,6 @@ const Editors = (props) => {
       }
       //i being zero means top row - use it to render the error bubble on the side
       const isTopRow = i === 1;
-      console.log(!i, isTopRow, "topRow", i);
       inputs.push(renderEditor(attribute, props, isTopRow));
   });
 
@@ -42,7 +41,7 @@ const SingleEditor = ({ attribute, styles, getEditor, value, focusedAttributeId,
   if(!attribute.valid) {
     throw new Error(`${attribute.id} doesn't have a validator`);
   }
-  console.log("TOP", isTopRow);
+
   const errorView = attribute.valid.func(value) ? null : errorBubble(focusedAttributeId, attribute, isTopRow);
   return (
     <TouchableOpacity style={[styles.col, styles.inputRow]}
@@ -81,6 +80,7 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, focused
 
       <View style={[styles.row, { flex: 1, alignSelf: 'stretch' }]}>
         {combinedEditors.map((e, index) => {
+
           if(e.editor === null){
             return (
               <View style={[styles.rowSection]}
@@ -184,7 +184,6 @@ class EditOnBlur extends React.Component {
 
   onKeyPress(event) {
     if(event.nativeEvent.key === 'Enter' && this.props.onEnterPress){
-      console.log("AAAA", this.props.attribute.id, this.props)
       this.props.onEnterPress(this.props.attribute.id);
     }
   }
