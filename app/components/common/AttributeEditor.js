@@ -25,21 +25,25 @@ const helper = new Helper();
 const Editors = (props) => {
   let inputs = [];
   let labels = []
-  props.model.forEach((attribute) => {
+  props.model.forEach((attribute, i) => {
       if(attribute.readOnly || attribute.hidden) {
           return;
       }
-      inputs.push(renderEditor(attribute, props));
+      //i being zero means top row - use it to render the error bubble on the side
+      const isTopRow = i === 1;
+      console.log(!i, isTopRow, "topRow", i);
+      inputs.push(renderEditor(attribute, props, isTopRow));
   });
 
   return <View>{ inputs }</View>;
 }
 
-const SingleEditor = ({ attribute, styles, getEditor, value, focusedAttributeId, editingCallback, onEnterPress }) => {
+const SingleEditor = ({ attribute, styles, getEditor, value, focusedAttributeId, editingCallback, onEnterPress, isTopRow }) => {
   if(!attribute.valid) {
     throw new Error(`${attribute.id} doesn't have a validator`);
   }
-  const errorView = attribute.valid.func(value) ? null : errorBubble(focusedAttributeId, attribute);
+  console.log("TOP", isTopRow);
+  const errorView = attribute.valid.func(value) ? null : errorBubble(focusedAttributeId, attribute, isTopRow);
   return (
     <TouchableOpacity style={[styles.col, styles.inputRow]}
           key={attribute.id}
@@ -70,7 +74,7 @@ const getCombinedEditors = (attribute, model, getEditor) => {
   return editors.concat(addedEditors);
 }
 
-const renderCombinedEditors = (combinedEditors, styles, editingCallback, focusedAttributeId, _index) => {
+const renderCombinedEditors = (combinedEditors, styles, editingCallback, focusedAttributeId, _index, isTopRow) => {
   return (
     <View style={[styles.col, styles.inputRow]}
           key={"editor" + combinedEditors.map(e => e.editor && e.editor.attribute.id).join('.') + _index }>
@@ -93,7 +97,7 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, focused
             throw new Error(`${e.editor.attribute.id} doesn't have a validator`);
           }
           const isValid = !e.editor || e.editor.attribute.valid.func(e.editor.value);
-          const errorView = isValid ? null : errorBubble(focusedAttributeId, e.editor.attribute);
+          const errorView = isValid ? null : errorBubble(focusedAttributeId, e.editor.attribute, isTopRow);
           return (
               <TouchableOpacity
                 style={[styles.rowSection]}
@@ -118,7 +122,7 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, focused
   );
 }
 
-const renderEditor = (attribute, props) => {
+const renderEditor = (attribute, props, isTopRow) => {
 
   if(attribute.editorDisplay && attribute.editorDisplay.hideUndefined && props.obj[attribute.id] === undefined){
     return null;
@@ -128,6 +132,7 @@ const renderEditor = (attribute, props) => {
       case "single":
         return (
           <SingleEditor
+            isTopRow={isTopRow}
             attribute={attribute}
             styles={props.styles}
             getEditor={props.getEditor}
@@ -138,7 +143,7 @@ const renderEditor = (attribute, props) => {
           />);
       case "combined":
         const combinedEditors = getCombinedEditors(attribute, props.model, props.getEditor);
-        return renderCombinedEditors(combinedEditors, props.styles, props.editingCallback, props.focusedAttributeId);
+        return renderCombinedEditors(combinedEditors, props.styles, props.editingCallback, props.focusedAttributeId, isTopRow);
       default:
     }
   }

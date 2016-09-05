@@ -14,29 +14,35 @@ import { colors } from '../../styles/styles';
 import Triangle from 'react-native-triangle';
 
 
-export default function(focusedAttributeId, attribute) {
+export default function(focusedAttributeId, attribute, onSide=false) {
   if(focusedAttributeId !== attribute.id) {
     return (<View style={styles.errorDot} />);
   }
 
   const key = focusedAttributeId + attribute.id + 'err';
-
+  const bubbleStyles = [ styles.bubble, styles.shadow];
+  const triangleStyles = [styles.shadow, styles.triangle1];
+  if(onSide) {
+    triangleStyles.push({ left: 230, top: 47 });
+    bubbleStyles.push({ left: 150, top: 0 });
+  }
+  const triangle = (
+    <Triangle
+      width={16}
+      height={12}
+      color={ 'white' }
+      direction={ 'down' }
+      style={ triangleStyles }
+    />
+  );
   return [
     (
-      <View key={key + 'bubble'} style={[ styles.bubble, styles.shadow ]}>
+      <View key={key + 'bubble'} style={ bubbleStyles }>
         <Text style={[ styles.labelError ]}>
           { attribute.valid.errorMessage }
         </Text>
+        { onSide ? null : triangle }
       </View>
-    ),
-    (
-        <Triangle
-          width={16}
-          height={12}
-          color={'white'}
-          direction={'down'}
-          style={[styles.shadow, styles.triangle1]}
-        />
     ),
   ];
 }
@@ -75,7 +81,7 @@ const styles = StyleSheet.create({
   triangle1: {
     position: 'absolute',
     left: 80,
-    top: -1,
+    top: 48,
     shadowColor: "#000000",
     shadowOpacity: 0.8,
     shadowRadius: 2,
