@@ -37,6 +37,9 @@ const FishingEventModel = [
   {id: 'signature', valid: valid.alwaysValid, defaultValue: false, hidden: true},
   {id: 'dateSigned', valid: valid.alwaysValid, defaultValue: false, hidden: true},
   {id: 'committed', valid: valid.alwaysValid, defaultValue: false, hidden: true},
+  {id: 'discards', valid: valid.alwaysValid, defaultValue: [], hidden: true},
+  {id: 'protects', valid: valid.alwaysValid, defaultValue: [], hidden: true},
+  {id: 'incidents', valid: valid.alwaysValid, defaultValue: [], hidden: true},
 ];
 
 export default FishingEventModel;
