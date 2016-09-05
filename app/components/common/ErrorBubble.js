@@ -14,50 +14,35 @@ import { colors } from '../../styles/styles';
 import Triangle from 'react-native-triangle';
 
 
-export default class ErrorBubble extends Component {
-
-  render() {
-    if(this.props.focusedAttributeId !== this.props.attribute.id) {
-      return (<View style={styles.errorDot} />);
-    }
-
-    const key = this.props.focusedAttributeId + this.props.attribute.id + 'err';
-
-    return [
-      (
-        <View key={key + 'bubble'} style={[ styles.bubble ]}>
-          <Text style={[ styles.labelError ]}>
-            { this.props.attribute.valid.errorMessage }
-          </Text>
-        </View>
-      ),
-      (
-        <View style={[ styles.triangle1 ]} key={ key + 'triangle1' }>
-          <Triangle
-            width={15}
-            height={15}
-            color={'black'}
-            direction={'down'}
-          />
-        </View>
-      ),
-      (
-        <View style={[ styles.triangle2 ]} key={ key + 'triangle2' }>
-          <Triangle
-            width={15}
-            height={15}
-            color={'white'}
-            direction={'down'}
-          />
-        </View>
-      ),
-    ];
+export default function(focusedAttributeId, attribute) {
+  if(focusedAttributeId !== attribute.id) {
+    return (<View style={styles.errorDot} />);
   }
+
+  const key = focusedAttributeId + attribute.id + 'err';
+
+  return [
+    (
+      <View key={key + 'bubble'} style={[ styles.bubble, styles.shadow ]}>
+        <Text style={[ styles.labelError ]}>
+          { attribute.valid.errorMessage }
+        </Text>
+      </View>
+    ),
+    (
+        <Triangle
+          width={16}
+          height={12}
+          color={'white'}
+          direction={'down'}
+          style={[styles.shadow, styles.triangle1]}
+        />
+    ),
+  ];
 }
 
 const styles = StyleSheet.create({
   labelError: {
-    marginLeft: 4,
     color: colors.orange
   },
   errorDot: {
@@ -74,6 +59,11 @@ const styles = StyleSheet.create({
     width: 180,
     height: 50,
     backgroundColor: 'white',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  shadow: {
     shadowColor: "#000000",
     shadowOpacity: 0.8,
     shadowRadius: 2,
@@ -81,16 +71,17 @@ const styles = StyleSheet.create({
       height: 1,
       width: 0,
     },
-    borderRadius: 4,
-  },
-  triangle2: {
-    position: 'absolute',
-    left: 80,
-    top: -3,
   },
   triangle1: {
     position: 'absolute',
     left: 80,
     top: -1,
+    shadowColor: "#000000",
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    shadowOffset: {
+      height: 4,
+      width: 0,
+    },
   }
 });

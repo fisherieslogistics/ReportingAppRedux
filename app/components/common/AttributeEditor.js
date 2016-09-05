@@ -18,7 +18,7 @@ import {LongButton} from './Buttons';
 import Helper from '../../utils/Helper';
 import FocusOnDemandTextInput from './FocusOnDemandTextInput';
 import LocationEditor from '../LocationEditor';
-import ErrorBubble from './ErrorBubble';
+import errorBubble from './ErrorBubble';
 
 const helper = new Helper();
 
@@ -35,18 +35,11 @@ const Editors = (props) => {
   return <View>{ inputs }</View>;
 }
 
-const renderErrorView = (focusedAttributeId, attribute) => {
-  return (<ErrorBubble
-            focusedAttributeId={ focusedAttributeId }
-            attribute={ attribute }
-          />);
-}
-
 const SingleEditor = ({ attribute, styles, getEditor, value, focusedAttributeId, editingCallback, onEnterPress }) => {
   if(!attribute.valid) {
     throw new Error(`${attribute.id} doesn't have a validator`);
   }
-  const errorView = attribute.valid.func(value) ? null : renderErrorView(focusedAttributeId, attribute, styles);
+  const errorView = attribute.valid.func(value) ? null : errorBubble(focusedAttributeId, attribute);
   return (
     <TouchableOpacity style={[styles.col, styles.inputRow]}
           key={attribute.id}
@@ -100,7 +93,7 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, focused
             throw new Error(`${e.editor.attribute.id} doesn't have a validator`);
           }
           const isValid = !e.editor || e.editor.attribute.valid.func(e.editor.value);
-          const errorView = isValid ? null : renderErrorView(focusedAttributeId, e.editor.attribute, styles);
+          const errorView = isValid ? null : errorBubble(focusedAttributeId, e.editor.attribute);
           return (
               <TouchableOpacity
                 style={[styles.rowSection]}
