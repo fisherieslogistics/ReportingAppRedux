@@ -25,8 +25,11 @@ import {TextButton, IconButton} from './common/Buttons';
 import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
 import {colors, textStyles, iconStyles} from '../styles/styles';
 import Icon8 from './common/Icon8';
+import UnsoughtCatch from './UnsoughtCatch';
 
 const fishingEventActions = new FishingEventActions();
+
+const segMents = ["details", "catches", "discards", "incidents", "protecteds"];
 
 class Fishing extends React.Component{
   constructor (props){
@@ -185,6 +188,21 @@ class Fishing extends React.Component{
                  containerChoices={this.props.containerChoices}
                  optionalFields={this.props.catchDetailsExpanded}
                 />);
+        case 2:
+        case 3:
+        case 4:
+        const unsoughtType = segMents[this.state.selectedDetail];
+        return (<UnsoughtCatch
+                 fishingEvent={ this.props.viewingEvent }
+                 items={ this.props.viewingEvent[unsoughtType] || [] }
+                 dispatch={ this.props.dispatch }
+                 editorType={ 'event' }
+                 orientation={ this.props.orientation }
+                 renderMessage={ this.renderMessage.bind(this) }
+                 deletedProducts={ [] }
+                 unsoughtType={ unsoughtType }
+                 formType={ this.props.formType }
+                />);
       /*case 2:
         return (<EventGearEditor
                  renderMessage={this.renderMessage.bind(this)}
@@ -195,10 +213,10 @@ class Fishing extends React.Component{
     }
   }
 
-  renderSegementedControl(){
+  renderSegementedControl() {
     return (
       <SegmentedControlIOS
-        values={["details", "catches"/*, "gear"*/]}
+        values={segMents}
         selectedIndex={this.state.selectedDetail}
         style={styles.detailSelector}
         onChange={({nativeEvent}) => {
@@ -289,8 +307,8 @@ const styles = {
     flex: 1,
   },
   detailSelector:{
-    width: 260,
-    height: 25,
+    width: 350,
+    height: 23,
     alignSelf: 'center'
   }
 }
