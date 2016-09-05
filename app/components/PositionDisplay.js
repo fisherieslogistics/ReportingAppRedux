@@ -28,13 +28,13 @@ class PositionDisplay extends React.Component{
       return "awaiting position";
     }
     let coords = this.state.position.coords;
-    let posText = Sexagesimal.format(coords.latitude, 'lat') + "  " + Sexagesimal.format(coords.longitude, 'lon');
+    let posText = Sexagesimal.format(coords.latitude, 'lat') + "       " + Sexagesimal.format(coords.longitude, 'lon');
     let timeText = new moment(this.state.position.timestamp).fromNow();
     return `${posText} - ${timeText}`;
   }
 
   render() {
-    return (<Text style={[textStyles.font, {fontSize: 13}]}>{this.getPositionText()}</Text>);
+    return (<Text style={[textStyles.font, {fontSize: 13, marginTop: 2}]}>{this.getPositionText()}</Text>);
   }
 };
 
