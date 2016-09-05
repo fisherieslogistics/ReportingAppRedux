@@ -8,6 +8,7 @@ const upsertFishingEvent = (fEvent, tripId) => {
                                      delete prod["objectId"];
                                      return prod;
                                   });
+  console.log(catches);
   let custom = {
     headlineHeight: fEvent.headlineHeight || 0,
     wingSpread: fEvent.wingSpread || 0
@@ -30,7 +31,10 @@ const upsertFishingEvent = (fEvent, tripId) => {
         custom: ${ JSON.stringify(JSON.stringify(custom)) },
         locationStart: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtStart.lat, lon: fEvent.locationAtStart.lon})) },
         locationEnd: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtEnd.lat, lon: fEvent.locationAtEnd.lon})) },
-        catches: ${ util.inspect(catches).replace(/\'/g, '"') }
+        catches: ${ util.inspect(catches).replace(/\'/g, '"') },
+        discards: ${ util.inspect(fEvent.discards).replace(/\'/g, '"') },
+        protecteds: ${ util.inspect(fEvent.protecteds).replace(/\'/g, '"') },
+        incidents: ${ util.inspect(fEvent.incidents).replace(/\'/g, '"') },
       ) {
         _id,
       }
