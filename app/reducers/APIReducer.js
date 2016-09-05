@@ -11,7 +11,6 @@ Local:  {
 }
 
 export default (state = lookup.Production, action) => {
-  console.log(action.type + 'lol');
   switch(action.type){
     case "devMode":
       return Object.assign({}, lookup[action.payload]);
