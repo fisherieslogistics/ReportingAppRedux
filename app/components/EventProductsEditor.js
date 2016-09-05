@@ -124,7 +124,6 @@ class EventProductsEditor extends React.Component{
         return;
       };
 
-      console.log('the thing', input + '__' + (isLastInput ? (productIndex + 1) : productIndex));
 
       this.setState({
         nextInput: input + '__' + (isLastInput ? (productIndex + 1) : productIndex),
@@ -151,8 +150,6 @@ class EventProductsEditor extends React.Component{
 
       let nextInput = this.state.nextInput;
       let focusedId = this.state.focusedAttributeId;
-
-      console.log(nextInput, focusedId);
 
       return renderCombinedEditors(
         combinedEditors, styles, editingCallback, nextInput, index);
@@ -289,4 +286,5 @@ const pStyle = {
 }
 
 const styles = StyleSheet.create(Object.assign({}, eventEditorStyles, pStyle));
+export { DeleteButton }
 export default EventProductsEditor;
