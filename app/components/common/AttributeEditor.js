@@ -18,6 +18,8 @@ import {LongButton} from './Buttons';
 import Helper from '../../utils/Helper';
 import FocusOnDemandTextInput from './FocusOnDemandTextInput';
 import LocationEditor from '../LocationEditor';
+import ErrorBubble from './ErrorBubble';
+
 const helper = new Helper();
 
 const Editors = (props) => {
@@ -33,11 +35,11 @@ const Editors = (props) => {
   return <View>{ inputs }</View>;
 }
 
-const renderErrorView = (focusedAttributeId, attribute, styles) => {
-  if(focusedAttributeId === attribute.id) {
-    return (<Text style={[styles.labelError]}>{attribute.valid.errorMessage}</Text>);
-  }
-  return (<View style={styles.errorDot} />);
+const renderErrorView = (focusedAttributeId, attribute) => {
+  return (<ErrorBubble
+            focusedAttributeId={ focusedAttributeId }
+            attribute={ attribute }
+          />);
 }
 
 const SingleEditor = ({ attribute, styles, getEditor, value, focusedAttributeId, editingCallback, onEnterPress }) => {
@@ -85,7 +87,7 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, focused
           if(e.editor === null){
             return (
               <View style={[styles.rowSection]}
-                    key={"editor__" + e.label + index}>
+                    key={ "editor__" + e.label + index }>
                 <View style={[styles.labelRow]}>
                   <Text style={[styles.labelText, {color: 'black'}]}>
                     {e.label}
