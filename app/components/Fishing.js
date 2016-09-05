@@ -249,7 +249,7 @@ class Fishing extends React.Component{
         //icon: 'plus-math',
         text: "Shoot",
         textAlign: "right",
-        style: {marginTop: 34, right: 0, width: 100 },
+        style: {marginTop: 34, right: 10, width: 100 },
         color: this.props.enableStartEvent ? colors.blue : colors.gray,
         onPress:this.startFishingEvent.bind(this),
         enabled:this.props.enableStartEvent,
