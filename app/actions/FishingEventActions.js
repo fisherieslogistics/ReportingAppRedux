@@ -3,6 +3,19 @@ import moment from 'moment';
 
 class FishingEventActions{
 
+    addUnsoughtCatch(fishingEventId, unsoughtCatches, unsoughtType, formType){
+      return (dispatch, getState) => {
+        dispatch({
+          type: 'addUnsoughtCatch',
+          unsoughtCatch: unsoughtCatches,
+          unsoughtType: unsoughtType,
+          timestamp: moment(),
+          formType: formType,
+          fishingEventId: fishingEventId,
+        });
+      }
+    }
+
     startFishingEvent(position) {
         return (dispatch, getState) => {
             const state = getState().default;
@@ -51,7 +64,7 @@ class FishingEventActions{
             value: value,
             formType: state.me.formType,
             timestamp: moment()
-        }); 
+        });
         const fEvent = state.fishingEvents.events[fishingEventId - 1];
         if(fEvent.datetimeAtEnd){
           dispatch({
