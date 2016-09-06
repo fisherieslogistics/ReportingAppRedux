@@ -12,14 +12,15 @@ import React from 'react';
 import UnsoughtCatchModel from '../models/UnsoughtCatchModel';
 import PlaceholderMessage from './common/PlaceholderMessage';
 import {connect} from 'react-redux';
-import {eventEditorStyles, inputStyle, colors, textStyles} from '../styles/styles';
-import { SingleEditor } from './common/AttributeEditor';
+import {eventEditorStyles, inputStyles, colors, textStyles} from '../styles/styles';
+import TouchableEditor from './common/TouchableEditor';
 import {LongButton} from './common/Buttons';
 import Icon8 from './common/Icon8';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FishingEventActions from '../actions/FishingEventActions';
 const inputOrder = ['code','name','amount','notes'];
 import ModelUtils from '../utils/ModelUtils';
+import FocusOnDemandTextInput from './common/FocusOnDemandTextInput';
 const fishingEventActions = new FishingEventActions();
 
 
@@ -57,28 +58,33 @@ class UnsoughtCatch extends React.Component{
                                                                this.props.formType));
     }
 
-    getEditor(attribute, product, index){
-      const value = product[attribute.id];
-      const inputId = this.getInputId(attribute, product, index)
-      let extraProps = {fishingEvent: this.props.fishingEvent}
-      const enterPressed = (attrId) => { this.onEnterPress(attrId, index) };
-      return {
-        attribute,
-        value,
-        onChange: (name, v) => this.onChange(name, v, index),
-        extraProps: extraProps,
-        inputId,
-        onEnterPress: enterPressed,
-      }
+    getEditor(attribute, item, index, focus, onFocus, onBlur){
+      const value = item[attribute.id];
+      const inputId = this.getInputId(attribute.id, index);
+      const onKeyPress = (evt) => evt.nativeEvent.key === 'Enter' && this.onEnterPress(attribute.id, index);
+      return (
+        <FocusOnDemandTextInput
+          key={ inputId + '_key_' + item.objectId }
+          selectTextOnFocus={true}
+          autoCorrect={false}
+          autoCapitalize={'none'}
+          value={ value }
+          style={ inputStyles.textInput }
+          onFocus={ () => this.onInputFocus(attribute.id, index) }
+          onChangeText={ (v) => this.onChange(attribute.id, v, index) }
+          focus={ focus }
+          onKeyPress={ onKeyPress }
+         />
+      );
     }
 
-    renderEditors(product, index){
+    renderEditors(item, index){
       let inputs = [];
       UnsoughtCatchModel.forEach((attribute) => {
-          inputs.push(this.renderEditor(attribute, product, index));
+        inputs.push(this.renderEditor(attribute, item, index));
       });
       return (
-        <View style={[styles.innerWrapper, styles.outerWrapper]} key={this.props.unsoughtType + product.objectId + '_' + index}>
+        <View style={[styles.innerWrapper, styles.outerWrapper]} key={this.props.unsoughtType + item.objectId + '_' + index}>
           {inputs}
           <DeleteButton
             onPress={this.deleteItem.bind(this)}
@@ -88,10 +94,9 @@ class UnsoughtCatch extends React.Component{
       );
     }
 
-    onEnterPress(attribute, productIndex){
-      console.log(attribute, productIndex);
-      const index = inputOrder.indexOf(attribute.id);
-      console.log(attribute.id, productIndex, "ON ENTER", index, "INDEX");
+    onEnterPress(attributeId, itemIndex){
+      const index = inputOrder.indexOf(attributeId);
+
       if(index === -1){
         this.setState({
           nextInput: '',
@@ -99,49 +104,47 @@ class UnsoughtCatch extends React.Component{
         return;
       }
 
-      if (index <= UnsoughtCatchModel.length){
-        this.setState({
-          nextInput: this.getInputId(attribute, productIndex),
-        });
+      const isLastInput = (index === (inputOrder.length - 1));
+      const input = isLastInput ? inputOrder[0] : inputOrder[index + 1];
+
+      if((itemIndex === (this.props.items.length - 1)) && isLastInput){
         return;
+      };
+
+      this.setState({
+        nextInput: this.getInputId(input, isLastInput ? itemIndex + 1 : itemIndex),
+      });
+
+    }
+
+    getInputId(name, index) {
+      return `${name}__${index}__${this.props.unsoughtType}`;
+    }
+
+    onInputFocus(attributeId, index){
+      const id = this.getInputId(attributeId, index);
+      if(id === this.state.nextInput){
+        this.setState({ focusedAttributeId: ''});
+      } else {
+        this.setState({ focusedAttributeId: id });
       }
     }
 
-    getInputId(attribute, index) {
-      return `${attribute.id} ${index} ${this.props.unsoughtType} ${this.props.fishingEvent.id}`;
-    }
+    renderEditor(attribute, item, index){
+      const inputId = this.getInputId(attribute.id, index);
 
-    renderEditor(attribute, product, index){
-
-      const attrId = this.getInputId(attribute, index);
-      //console.log(attrId);
-
-      const editingCallback = (attributeId, isFocused) => {
-        if(attrId === this.state.nextInput){
-          this.setState({ focusedAttributeId: '', nextInput: ''});
-        } else if(isFocused) {
-          this.setState({ focusedAttributeId: attrId });
-        } else if(this.state.focusedAttributeId == attrId) {
-          this.setState({ focusedAttributeId: '' });
-        }
-      }
-
-      let nextInput = this.state.nextInput;
-      let focusedId = this.state.focusedAttributeId;
-
-      console.log("next", nextInput, "focused", focusedId);
-
+      const focusedNext = (inputId === this.state.nextInput);
+      const focusedNow = (inputId === this.state.focusedAttributeId);
+      const input = this.getEditor(attribute, item, index, focusedNow || focusedNext);
       return (
-        <SingleEditor
-          attribute={attribute}
-          styles={styles}
-          getEditor={ () => this.getEditor(attribute, product, index) }
-          value={ product[attribute.id] }
-          focusedAttributeId={ focusedId }
-          editingCallback={editingCallback}
-          onEnterPress={ () => this.onEnterPress(attribute, index) }
-          isTopRow={ index === 1 }
-          key={ attrId + '__' + product.objectId }
+        <TouchableEditor
+          key={ attribute.id + inputId + item.objectId }
+          styles={ styles }
+          wrapperStyle={ [{flex: 1}] }
+          onPress={ () => this.onInputFocus(attribute.id, index) }
+          inputId={ inputId }
+          input={ input }
+          label={ attribute.label }
         />
       );
     }
@@ -287,9 +290,6 @@ const pStyle = {
   labelRow: {
     flex: 0.50,
     marginRight: 3
-  },
-  rowSection: {
-    flex: 0.24
   },
   innerWrapper:{
    paddingTop: 2,

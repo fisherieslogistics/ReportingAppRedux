@@ -64,13 +64,8 @@ class FishPicker extends React.Component {
         changedByEvent: true,
         value: event.value
       });
+      this.props.onChange(event.value);
       this.props.onEnterPress(this.props.name);
-      /*setTimeout(() => {
-        this.forceUpdate();
-        if(this.refs.textInput){
-          this.refs.textInput.blur();
-        }
-      });*/
     }
   }
 
@@ -85,18 +80,18 @@ class FishPicker extends React.Component {
                                                               this.props.name,
                                                               this.props.inputId));
     this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
-    this.props.editingCallback(true);
+    this.props.editingCallback(this.props.name);
   }
 
   onBlur(){
     this.props.onChange(this.state.value);
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
-    this.props.editingCallback(false);
+    this.props.editingCallback();
   }
 
   componentWillUnmount(){
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
-    this.props.editingCallback(false);
+    this.props.editingCallback();
   }
 
   onChangeText(text) {

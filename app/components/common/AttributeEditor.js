@@ -19,6 +19,7 @@ import Helper from '../../utils/Helper';
 import FocusOnDemandTextInput from './FocusOnDemandTextInput';
 import LocationEditor from '../LocationEditor';
 import errorBubble from './ErrorBubble';
+import TouchableEditor from './TouchableEditor';
 
 const helper = new Helper();
 
@@ -37,28 +38,22 @@ const Editors = (props) => {
   return <View>{ inputs }</View>;
 }
 
-const SingleEditor = ({ attribute, styles, getEditor, value, focusedAttributeId, editingCallback, onEnterPress, isTopRow }) => {
+const SingleEditor = ({ attribute, styles, getEditor, focusedAttributeId, editingCallback, isTopRow, value, inputId }) => {
   if(!attribute.valid) {
     throw new Error(`${attribute.id} doesn't have a validator`);
   }
-
   const errorView = attribute.valid.func(value) ? null : errorBubble(focusedAttributeId, attribute, isTopRow);
+  const input = AttributeEditor(getEditor(attribute), editingCallback, focusedAttributeId);
   return (
-    <TouchableOpacity style={[styles.col, styles.inputRow]}
-          key={attribute.id}
-          onPress={() => {
-            editingCallback(attribute.id, true)
-    }}>
-        <View style={[styles.row, styles.labelRow]}>
-          <Text style={styles.labelText}>
-            {attribute.label}
-          </Text>
-          { errorView }
-        </View>
-        <View style={[styles.row, styles.editorRow]}>
-          {AttributeEditor(getEditor(attribute), editingCallback, focusedAttributeId)}
-        </View>
-    </TouchableOpacity>
+    <TouchableEditor
+      styles={ styles }
+      wrapperStyle={ [styles.col, styles.inputRow] }
+      errorView={ errorView }
+      onPress={ editingCallback }
+      inputId={ attribute.id }
+      input={ input }
+      label={ attribute.label }
+    />
   );
 }
 
@@ -81,40 +76,38 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, focused
       <View style={[styles.row, { flex: 1, alignSelf: 'stretch' }]}>
         {combinedEditors.map((e, index) => {
 
-          if(e.editor === null){
+          if(!e.editor){
             return (
-              <View style={[styles.rowSection]}
-                    key={ "editor__" + e.label + index }>
-                <View style={[styles.labelRow]}>
-                  <Text style={[styles.labelText, {color: 'black'}]}>
-                    {e.label}
-                  </Text>
-                </View>
-              </View>
+              <TouchableEditor
+                key={ "editor__" + e.label + index  }
+                styles={ styles }
+                wrapperStyle={ [styles.rowSection] }
+                onPress={ () => null }
+                inputId={ "editor__" + e.label + index }
+                input={ null }
+                label={ e.label }
+              />
             );
           }
+
           if(e.editor && !e.editor.attribute.valid) {
             throw new Error(`${e.editor.attribute.id} doesn't have a validator`);
           }
-          const isValid = !e.editor || e.editor.attribute.valid.func(e.editor.value);
+
+          const isValid = e.editor.attribute.valid.func(e.editor.value);
           const errorView = isValid ? null : errorBubble(focusedAttributeId, e.editor.attribute, isTopRow);
+
           return (
-              <TouchableOpacity
-                style={[styles.rowSection]}
-                key={"editor__" + e.label + index}
-                onPress={() => {
-                  e.editor && editingCallback(e.editor.attribute.id, true);
-                }}>
-                <View style={[styles.labelRow, { flexDirection: 'row'}]}>
-                  <Text style={styles.labelText}>
-                    {e.label}
-                  </Text>
-                  { errorView }
-                </View>
-                <View style={[styles.editorRow]}>
-                  {e.editor && AttributeEditor(e.editor, (focusedId) => editingCallback(e.editor.attribute.id, focusedId), focusedAttributeId, _index)}
-                </View>
-            </TouchableOpacity>
+            <TouchableEditor
+              key={ e.editor.attribute.id }
+              styles={ styles }
+              wrapperStyle={ [styles.rowSection] }
+              onPress={ () => editingCallback(e.editor.id) }
+              inputId={ e.editor.attribute.id }
+              errorView={ errorView }
+              input={ AttributeEditor(e.editor, (focusedId) => editingCallback(focusedId), focusedAttributeId, _index) }
+              label={ e.editor.attribute.label }
+            />
           );
         })}
       </View>
@@ -123,7 +116,6 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, focused
 }
 
 const renderEditor = (attribute, props, isTopRow) => {
-
   if(attribute.editorDisplay && attribute.editorDisplay.hideUndefined && props.obj[attribute.id] === undefined){
     return null;
   }
@@ -139,7 +131,7 @@ const renderEditor = (attribute, props, isTopRow) => {
             value={props.values[attribute.id]}
             focusedAttributeId={ props.focusedAttributeId }
             key={attribute.id}
-            editingCallback={focusedAttributeId => props.editingCallback(attribute.id, focusedAttributeId)}
+            editingCallback={focusedAttributeId => props.editingCallback(focusedAttributeId)}
           />);
       case "combined":
         const combinedEditors = getCombinedEditors(attribute, props.model, props.getEditor);
@@ -153,6 +145,7 @@ class EditOnBlur extends React.Component {
 
   constructor(props){
     super(props);
+    this.onKeyPress = this.onKeyPress.bind(this);
     this.state = {
       value: props.value,
       renderedValue: this.getRenderedValue(props.value),
@@ -178,7 +171,7 @@ class EditOnBlur extends React.Component {
   }
 
   onFocus(){
-    this.props.editingCallback(true);
+    this.props.editingCallback(this.props.attribute.id);
     this.props.onEnterPress ? this.props.onEnterPress() : null;
   }
 
@@ -190,7 +183,7 @@ class EditOnBlur extends React.Component {
 
   onBlur(){
     this.props.callback(this.props.attribute.id, this.getCorrectedValue(this.state.value));
-    this.props.editingCallback(false);
+    this.props.editingCallback();
     this.setState({
       renderedValue: this.getRenderedValue(this.state.value),
     });
@@ -236,7 +229,7 @@ class EditOnBlur extends React.Component {
         onBlur={this.onBlur.bind(this)}
         onChangeText={this.onChangeText.bind(this)}
         focus={ this.props.focus }
-        onKeyPress={this.onKeyPress.bind(this)}
+        onKeyPress={ this.onKeyPress }
         {...this.props.extraProps} />
     );
   }
@@ -248,7 +241,7 @@ const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEn
     extraProps = {};
   }
   let focus = (focusedAttributeId === attribute.id);
-  if((isNaN(index) === false) && focusedAttributeId){
+  if( !isNaN(parseInt(index)) && focusedAttributeId){
     const attrId = focusedAttributeId.split("__")[0];
     const attrIndex = focusedAttributeId.split("__")[1];
     focus = (attrId === attribute.id) && (attrIndex == index);

@@ -32,16 +32,28 @@ class EventDetailEditor extends React.Component{
       super(props);
       this.onEnterPress = this.onEnterPress.bind(this);
       this.state = {
-        nextInput: null
+        nextInput: ''
       }
     }
 
     onEnterPress(inputName){
       const index = inputOrder.indexOf(inputName);
-      let input = (index === inputOrder.length -1) ? inputOrder[0] : inputOrder[index + 1];
-      this.setState({
-        nextInput: inputName ? input : null,
-      });
+      if(index === -1){
+        this.setState({
+          nextInput: '',
+        });
+        return;
+      }
+
+      let isLast = (index === inputOrder.length - 1);
+      const input = isLast ? inputOrder[0] : inputOrder[index + 1];
+
+      if(!isLast){
+        const nextInput = inputOrder[index + 1];
+        this.setState({
+          nextInput: nextInput,
+        });
+      }
     }
 
     onChange(name, value){
