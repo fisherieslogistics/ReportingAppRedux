@@ -8,11 +8,18 @@ const upsertFishingEvent = (fEvent, tripId) => {
                                      delete prod["objectId"];
                                      return prod;
                                   });
-  console.log(catches);
   let custom = {
     headlineHeight: fEvent.headlineHeight || 0,
     wingSpread: fEvent.wingSpread || 0
   };
+  const otherCatches = {};
+  ['discards', 'protecteds', 'incidents'].forEach( name => {
+    otherCatches[name] = fEvent[name].map(item => {
+      const newItem = Object.assign({}, item);
+      delete newItem.objectId;
+      return newItem;
+    });
+  });
   return `
     mutation {
       upsertFishingEvent(
@@ -32,9 +39,9 @@ const upsertFishingEvent = (fEvent, tripId) => {
         locationStart: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtStart.lat, lon: fEvent.locationAtStart.lon})) },
         locationEnd: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtEnd.lat, lon: fEvent.locationAtEnd.lon})) },
         catches: ${ util.inspect(catches).replace(/\'/g, '"') },
-        discards: ${ util.inspect(fEvent.discards).replace(/\'/g, '"') },
-        protecteds: ${ util.inspect(fEvent.protecteds).replace(/\'/g, '"') },
-        incidents: ${ util.inspect(fEvent.incidents).replace(/\'/g, '"') },
+        discards: ${ util.inspect(otherCatches.discards).replace(/\'/g, '"') },
+        protecteds: ${ util.inspect(otherCatches.protecteds).replace(/\'/g, '"') },
+        incidents: ${ util.inspect(otherCatches.incidents).replace(/\'/g, '"') },
       ) {
         _id,
       }
