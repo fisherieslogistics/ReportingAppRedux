@@ -137,15 +137,15 @@ class EventProductsEditor extends React.Component{
         let num = index + 1;
         combinedEditors.push({label: "Catch " + num, editor: null});
       }
-      const editingCallback = (attributeId, isFocused) => {
+      const editingCallback = (attributeId) => {
         const attrId = attributeId + '__' + index;
         if(attrId === this.state.nextInput){
-          this.setState({ focusedAttributeId: '', nextInput: ''});
-        } else if(isFocused) {
+          this.setState({ nextInput: ''});
+        } /*else if(isFocused) {
           this.setState({ focusedAttributeId: attrId });
         } else if(this.state.focusedAttributeId == attrId) {
           this.setState({ focusedAttributeId: '' });
-        }
+        }*/
       }
 
       let nextInput = this.state.nextInput;
