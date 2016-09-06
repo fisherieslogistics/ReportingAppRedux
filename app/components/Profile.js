@@ -229,7 +229,6 @@ function UrlPicker(props){
     <PickerIOS
       selectedValue={urls.find(url => url.value == props.ApiEndpoint).name}
       onValueChange={(u) => {
-        console.log('devMode'+u);
         props.dispatch({type: 'devMode', payload: u});
       }}
     >

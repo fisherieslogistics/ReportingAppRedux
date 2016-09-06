@@ -46,7 +46,7 @@ class ApiActions {
           dispatch(authActions.setAuth(auth));
           client.query(queries.getMe, helper.updateAuth({}, auth))
             .catch((err) => {
-              console.log(err);
+              console.warn(err);
             })
             .then((res) => {
               let viewer = res.data.viewer;

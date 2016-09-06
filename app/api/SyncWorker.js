@@ -65,7 +65,7 @@ class SyncWorker {
           time: time
         });
       }catch(e) {
-        console.log(e);
+        console.warn(e);
       }
       return {response: res};
     }
@@ -84,7 +84,7 @@ class SyncWorker {
           objectId: res.data.upsertTripMutation.trip._id
         });
       }catch(e) {
-        console.log(e);
+        console.warn(e);
       }
       return {response: res};
     }

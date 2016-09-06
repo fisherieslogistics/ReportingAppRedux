@@ -2,9 +2,6 @@ import React, { DeviceEventEmitter } from 'react-native';
 //import RNLocation, { Location } from 'NativeModules';
 var { RNLocation: Location } = require('NativeModules');
 
-console.log("RN LOCATION", Location);
-
-//const Location = RNLocation.Location;
 
 class NativeLocation {
 
@@ -31,12 +28,10 @@ class NativeLocation {
   }
 
   startUpdatingLocation(){
-    console.log("REQUESTING");
     Location.requestAlwaysAuthorization();
     Location.getAuthorizationStatus((authorization) => {
       // authorization is a string which is either "authorizedAlways",
       // "authorizedWhenInUse", "denied", "notDetermined" or "restricted"
-      console.log(authorization);
       if(authorization === "authorizedAlways" || authorization === "authorizedWhenInUse"){
         this.locationAuthorized = true;
         Location.setDistanceFilter(5.0);

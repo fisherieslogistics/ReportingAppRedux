@@ -136,7 +136,7 @@ class TimedActions {
                   }
                 }
               `;
-              return client.mutate(query).catch((err)=>{console.log(err);}).then((response, err) => {
+              return client.mutate(query).catch((err)=>{console.warn(err);}).then((response, err) => {
                   //TODO make serverside return something on update
                   if(response && response.FishingEvent){
                     dispatch({
@@ -180,7 +180,7 @@ class TimedActions {
            },
            (error) => {
              alert(error.message);
-             console.log(error);
+             console.warn(error);
              setTimeout(getPosition, 10000);
            },
            {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
@@ -193,7 +193,7 @@ class TimedActions {
           updateLocation(position.coords);
         },
         (error) => {
-           console.log(error);
+           console.warn(error);
         },
         {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
       );
@@ -241,7 +241,7 @@ class TimedActions {
           .send({ 'uploadForms': JSON.stringify(data)})
           .end((err, res) => {
             if(err) {
-              console.log(err);
+              console.warn(err);
               setTimeout(checkFormQueue, 5000);
             } else {
               dispatch(tripActions.shiftFormsQueue());

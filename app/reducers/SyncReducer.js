@@ -73,7 +73,7 @@ export default (state = initialState, action) => {
       return state;
     case "syncError":
       state.updatedAt = new moment();
-      console.log(action.err);
+      console.warn(action.err);
       return state;
     default:
       return state;

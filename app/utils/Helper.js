@@ -103,7 +103,7 @@ class Helper {
       const state = JSON.parse(jsonData);
       return this.inflate(state);
     }catch(e){
-      console.log(e);
+      console.warn(e);
       return this.inflate(jsonData);
     }
   };
@@ -114,13 +114,13 @@ class Helper {
   };
 
   clearLocalStorage(){
-    AsyncStorage.clear(() => console.log("clear"));
+    AsyncStorage.clear(() => null);
   }
 
   loadSavedState(callback) {
     AsyncStorage.getItem('savedState', (err, state)=>{
       if(err){
-        console.log(err, state);
+        console.warn(err);
       }
       let savedState = this.deserialize(state) || {};
       callback(savedState);
@@ -143,7 +143,7 @@ class Helper {
     let serializedState = this.serialize(state);
     await AsyncStorage.setItem('savedState', serializedState, (err, something) => {
       if(err){
-        console.log(err, something);
+        console.warn(err);
       }
     });
   };

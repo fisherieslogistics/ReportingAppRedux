@@ -82,11 +82,6 @@ class FormView extends React.Component {
     }, 300);
  }
 
- _onDragEvent() {
-    // This callback will be called when the user enters signature
-   console.log("dragged");
- }
-
   renderFormsListView(){
     return (
       <FormsList
@@ -234,7 +229,6 @@ class FormView extends React.Component {
           style={[{flex:1}, styles.signature]}
           ref="sign"
           onSaveEvent={this._onSaveEvent.bind(this)}
-          onDragEvent={this._onDragEvent}
           saveImageFileInExtStorage={false}
           showNativeButtons={false}
           viewMode={"landscape"}/>
