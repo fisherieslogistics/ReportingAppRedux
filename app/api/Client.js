@@ -33,7 +33,7 @@ class Client {
     if(this.refreshNeeded(auth)){
       return this.promisifyRequestBody(this._refresh(auth))
                .catch((err) => {
-                 console.log(err);
+                 console.warn(err);
                  return err;
                })
                .then((newAuth) => {
@@ -52,7 +52,7 @@ class Client {
           try{
             reject(err.response.text);
           }catch(e){
-            console.log(e);
+            console.warn(e);
             reject(err);
           }
           return;
