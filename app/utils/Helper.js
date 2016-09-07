@@ -42,6 +42,11 @@ class Helper {
       lat: latHemisphere == 'North' ? lat : (lat * -1)
     };
   }
+  locationToGeoJSON(location){
+    return JSON.stringify(JSON.stringify(
+      { type: "Feature", geometry:
+        { type: "Point", coordinates: [location.lon, location.lat]}}));
+  }
   capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }

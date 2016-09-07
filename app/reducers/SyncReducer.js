@@ -63,9 +63,9 @@ export default (state = initialState, action) => {
         trip: _trip,
         fishingEvents: action.fishingEvents.filter(fe => !!state.fishingEvents[fe.objectId]),
         vesselId: action.vesselId,
-        formType: action.formType
+        formType: action.formType,
       });
-      state = Object.assign({}, state, { fishingEvents: {});
+      state = Object.assign({}, state, { fishingEvents: {}});
       return state;
     case 'formSigned':
       action.fishingEvents.forEach((fe) => {

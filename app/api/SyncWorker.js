@@ -77,6 +77,7 @@ class SyncWorker {
     let mutation = upsertTrip(trip);
     let time = new moment();
     let callback = (res) => {
+      console.log("SYNCING TRIP");
       try{
         this.dispatch({
           type: "tripSynced",
