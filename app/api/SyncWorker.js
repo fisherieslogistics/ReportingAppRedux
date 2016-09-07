@@ -16,7 +16,7 @@ class SyncWorker {
     this.dispatch = dispatch;
     this.api = api;
     this.getState = getState;
-    this.timeToSync = 5000;
+    this.timeToSync = 11000;
     this.requests = [];
     this.startSync();
   }
@@ -33,9 +33,9 @@ class SyncWorker {
 
     const formType = state.me.formType;
     const fEventIds = Object.keys(state.sync.fishingEvents);
+    console.log(fEventIds);
     this.requests = state.fishingEvents.events.filter(fe => (fEventIds.indexOf(fe.objectId) !== -1))
                                               .map(fe => this.mutateFishingEvent(fe, state.trip.objectId, formType));
-
     if(state.sync.trip){
       this.requests.push(this.mutateTrip(state.trip, state.me.vessel.id));
     }
@@ -107,14 +107,14 @@ class SyncWorker {
       });
       return {response: res};
     }
-    return this.performMutation(q, fishingEvent, callback.bind(this));
+    return this.performMutation(q, {}, callback.bind(this));
   }
 
   performMutation(query, variables, success, dispatch){
     return this.api.mutate(query, variables, this.getState().default.auth)
       .then(success)
       .catch((err) => {
-        debugger;
+        console.warn(err);
         this.dispatch({
           type: "syncError",
           time: new moment(),
