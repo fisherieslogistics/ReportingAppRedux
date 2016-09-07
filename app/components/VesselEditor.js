@@ -73,7 +73,7 @@ const VesselEditor = (props) => {
       <Text>Enter Containers - state - and treatment?</Text>
       <Switch
         onValueChange={(bool) => {
-          props.dispatch(userActions.setCatchDetailsExpanded(!bool));
+          props.dispatch(userActions.setCatchDetailsExpanded(bool));
         }}
         value={props.catchDetailsExpanded}
       />

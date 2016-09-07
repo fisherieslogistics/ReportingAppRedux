@@ -85,7 +85,7 @@ class EventProductsEditor extends React.Component{
 
     renderEditors(product, index){
       let inputs = [];
-      ProductModel.filter(pm => this.props.optionalFields ? !pm.optional : true)
+      ProductModel.filter(pm => this.props.optionalFields || !pm.optional)
                   .forEach((attribute) => {
           if(!attribute.editorDisplay) {
               return;
