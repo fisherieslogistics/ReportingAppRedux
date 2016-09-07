@@ -48,19 +48,15 @@ class EventDetailEditor extends React.Component{
     }
 
     setNextInput(name){
-      console.log("set next input to" , name);
       this.setState({
         nextInput: name,
       });
     }
 
     onEnterPress(inputName){
-      console.log("on enter press", inputName)
       const ordering = inputOrder[this.props.formType];
       const index = ordering.indexOf(inputName);
-      //console.log(inputName);
       if(index === -1){
-        console.log('not in there')
         this.setNextInput('');
         return;
       }
@@ -68,7 +64,6 @@ class EventDetailEditor extends React.Component{
       let isLast = (index === ordering.length - 1);
 
       if(!isLast){
-        //console.log('not is last ?')
         this.setNextInput(ordering[index + 1]);
       }
     }

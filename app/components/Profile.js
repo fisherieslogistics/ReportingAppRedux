@@ -206,7 +206,6 @@ const DevScreen = (props) => {
 
 function UrlPicker(props) {
   const urls = Object.keys(EndpointLookup).map(key => { return { name: key, value: EndpointLookup[key].ApiEndpoint } });
-  console.log(urls, Object.keys(EndpointLookup));
   let urlItems = urls.map((url) => (
     <PickerItemIOS
       key={url.name}
@@ -219,7 +218,6 @@ function UrlPicker(props) {
     <PickerIOS
       selectedValue={ selected ? selected.name: ''}
       onValueChange={(u) => {
-        console.log(u);
         props.dispatch({type: 'devMode', payload: u});
       }}
     >
