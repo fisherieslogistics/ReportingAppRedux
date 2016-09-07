@@ -61,10 +61,11 @@ export default (state = initialState, action) => {
       _trip.completed = true;
       state.queues.pastTrips.push({
         trip: _trip,
-        fishingEvents: action.fishingEvents.filter(fe => !!state.fishingEvents[action.objectId]),
+        fishingEvents: action.fishingEvents.filter(fe => !!state.fishingEvents[fe.objectId]),
         vesselId: action.vesselId,
         formType: action.formType
       });
+      state = Object.assign({}, state, { fishingEvents: {});
       return state;
     case 'formSigned':
       action.fishingEvents.forEach((fe) => {
