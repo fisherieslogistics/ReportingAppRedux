@@ -67,16 +67,16 @@ class Trip extends React.Component{
   endTrip(){
     if(this.props.tripCanEnd){
 
-      AlertIOS.prompt(
+      AlertIOS.alert(
         "Unloading " + this.props.trip.ETA.fromNow() + " at " + this.props.trip.estimatedReturnPort,
-        "Leave a message for the truck ? ie where to meet ? How much ice you need ? ",
+        "Confirm ?",
         [
-          {text: 'Cancel', onPress: (text) => { }, style: 'cancel'},
-          {text: 'OK', onPress: (text) => {
+          {text: 'Cancel', onPress: () => { }, style: 'cancel'},
+          {text: 'OK', onPress: () => {
             this.props.dispatch(tripActions.endTrip(this.props.trip,
                                                     this.props.fishingEvents,
                                                     this.props.vesselId,
-                                                    text));
+                                                    ""));
           }}
         ]
       );

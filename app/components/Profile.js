@@ -37,6 +37,8 @@ import {connect} from 'react-redux';
 import Icon8 from './common/Icon8';
 import AddPort from './AddPort';
 
+import { EndpointLookup } from '../reducers/APIReducer';
+
 const authActions = new AuthActions();
 const editorStyles = StyleSheet.create(eventEditorStyles);
 const gpsControlActions = new GPSControlActions();
@@ -192,7 +194,7 @@ const Login = ({onLoginPress, loggedIn, disabled, sync}) => {
 }
 
 const DevScreen = (props) => {
-    return(
+  return(
       <View>
         <UrlPicker dispatch={props.dispatch} ApiEndpoint={props.ApiEndpoint} />
         <TouchableOpacity onPress={props.exitDevMode}>
@@ -202,33 +204,22 @@ const DevScreen = (props) => {
     );
 }
 
-const urls = [
-  {
-    name: 'Production',
-    value: 'http://api.fisherylogistics.com/',
-  },
-  {
-    name: 'Staging',
-    value: 'http://fisherieslogistics.com:5003/',
-  },
-  {
-    name: 'Local',
-    value: 'http://localhost:5003/',
-  }
-];
+function UrlPicker(props) {
+  const urls = Object.keys(EndpointLookup).map(key => { return { name: key, value: EndpointLookup[key].ApiEndpoint } });
+  console.log(urls, Object.keys(EndpointLookup));
+  let urlItems = urls.map((url) => (
+    <PickerItemIOS
+      key={url.name}
+      value={url.name}
+      label={url.name}
+    />));
+  const selected = urls.find(url => url.value == props.ApiEndpoint)
 
-let urlItems = urls.map((url) => (
-  <PickerItemIOS
-    key={url.name}
-    value={url.name}
-    label={url.name}
-  />));
-
-function UrlPicker(props){
   return(
     <PickerIOS
-      selectedValue={urls.find(url => url.value == props.ApiEndpoint).name}
+      selectedValue={ selected ? selected.name: ''}
       onValueChange={(u) => {
+        console.log(u);
         props.dispatch({type: 'devMode', payload: u});
       }}
     >

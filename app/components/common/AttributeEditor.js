@@ -49,7 +49,7 @@ const SingleEditor = ({ attribute, styles, getEditor, focusedAttributeId, editin
       styles={ styles }
       wrapperStyle={ [styles.col, styles.inputRow] }
       errorView={ errorView }
-      onPress={ editingCallback }
+      onPress={ () => editingCallback(attribute.id) }
       inputId={ attribute.id }
       input={ input }
       label={ attribute.label }
@@ -102,7 +102,7 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, focused
               key={ e.editor.attribute.id }
               styles={ styles }
               wrapperStyle={ [styles.rowSection] }
-              onPress={ () => editingCallback(e.editor.id) }
+              onPress={ () => editingCallback(e.editor.attribute.id) }
               inputId={ e.editor.attribute.id }
               errorView={ errorView }
               input={ AttributeEditor(e.editor, (focusedId) => editingCallback(focusedId), focusedAttributeId, _index) }
@@ -241,6 +241,7 @@ const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEn
     extraProps = {};
   }
   let focus = (focusedAttributeId === attribute.id);
+  //if(focusfocusedAttributeId, attribute.id);
   if( !isNaN(parseInt(index)) && focusedAttributeId){
     const attrId = focusedAttributeId.split("__")[0];
     const attrIndex = focusedAttributeId.split("__")[1];

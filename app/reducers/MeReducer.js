@@ -21,7 +21,7 @@ const initialState = {
   ],
   vessels: [],
   user: initialUser,
-  formType: 'lcer',
+  formType: 'tcer',
   gpsUrl: null,
   gpsPort: null,
   gpsBaud: null,

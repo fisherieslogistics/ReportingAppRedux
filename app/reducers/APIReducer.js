@@ -1,4 +1,4 @@
-const lookup = {
+const EndpointLookup = {
   Production: {
     ApiEndpoint: 'http://api.fisherylogistics.com/',
   },
@@ -7,13 +7,18 @@ const lookup = {
   },
   Local:  {
     ApiEndpoint: 'http://localhost:5003/',
-  }
+  },
+  'Rimu PC ASTRO: 192.168.20.119': {
+    ApiEndpoint: 'http://192.168.20.119:5003/',
+  },
 }
 
-export default (state = lookup.Production, action) => {
+export { EndpointLookup }
+
+export default (state = EndpointLookup.Production, action) => {
   switch(action.type){
     case "devMode":
-      return Object.assign({}, lookup[action.payload]);
+      return Object.assign({}, EndpointLookup[action.payload]);
     default:
       return state;
   }

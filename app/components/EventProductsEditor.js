@@ -141,18 +141,19 @@ class EventProductsEditor extends React.Component{
         const attrId = attributeId + '__' + index;
         if(attrId === this.state.nextInput){
           this.setState({ nextInput: ''});
-        } /*else if(isFocused) {
-          this.setState({ focusedAttributeId: attrId });
-        } else if(this.state.focusedAttributeId == attrId) {
+        }
+        if(this.state.focusedAttributeId == attrId) {
           this.setState({ focusedAttributeId: '' });
-        }*/
+        } else {
+          this.setState({ focusedAttributeId: attrId });
+        }
       }
 
       let nextInput = this.state.nextInput;
       let focusedId = this.state.focusedAttributeId;
 
       return renderCombinedEditors(
-        combinedEditors, styles, editingCallback, nextInput, index);
+        combinedEditors, styles, editingCallback, nextInput || focusedId, index);
     }
 
     getDetailWidth(){

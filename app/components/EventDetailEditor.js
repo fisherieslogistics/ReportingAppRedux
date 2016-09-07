@@ -17,7 +17,7 @@ const fishingEventActions = new FishingEventActions();
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
-const inputOrder = [
+const tcerOrder = [
   'targetSpecies',
   'bottomDepth',
   'groundropeDepth',
@@ -25,6 +25,17 @@ const inputOrder = [
   'wingSpread',
   'headlineHeight',
 ];
+
+const lcerOrder = [
+  'targetSpecies',
+  'numberOfHooks',
+  'bottomDepth',
+];
+
+const inputOrder = {
+  tcer: tcerOrder,
+  lcer: lcerOrder,
+}
 
 class EventDetailEditor extends React.Component{
 
@@ -36,23 +47,29 @@ class EventDetailEditor extends React.Component{
       }
     }
 
+    setNextInput(name){
+      console.log("set next input to" , name);
+      this.setState({
+        nextInput: name,
+      });
+    }
+
     onEnterPress(inputName){
-      const index = inputOrder.indexOf(inputName);
+      console.log("on enter press", inputName)
+      const ordering = inputOrder[this.props.formType];
+      const index = ordering.indexOf(inputName);
+      //console.log(inputName);
       if(index === -1){
-        this.setState({
-          nextInput: '',
-        });
+        console.log('not in there')
+        this.setNextInput('');
         return;
       }
 
-      let isLast = (index === inputOrder.length - 1);
-      const input = isLast ? inputOrder[0] : inputOrder[index + 1];
+      let isLast = (index === ordering.length - 1);
 
       if(!isLast){
-        const nextInput = inputOrder[index + 1];
-        this.setState({
-          nextInput: nextInput,
-        });
+        //console.log('not is last ?')
+        this.setNextInput(ordering[index + 1]);
       }
     }
 
@@ -94,7 +111,7 @@ class EventDetailEditor extends React.Component{
         onChange: attribute.type === 'bool' ? this.onNonFishChange.bind(this) : this.onChange.bind(this),
         extraProps: {fishingEvent: this.props.fishingEvent},
         inputId,
-        onEnterPress: inputOrder.indexOf(attribute.id) === -1 ? null : this.onEnterPress,
+        onEnterPress: inputOrder[this.props.formType].indexOf(attribute.id) === -1 ? null : this.onEnterPress,
       };
     }
 

@@ -107,12 +107,15 @@ class UnsoughtCatch extends React.Component{
       const isLastInput = (index === (inputOrder.length - 1));
       const input = isLastInput ? inputOrder[0] : inputOrder[index + 1];
 
-      if((itemIndex === (this.props.items.length - 1)) && isLastInput){
+      if(isLastInput){
+        this.setState({
+          nextInput: '',
+        });
         return;
       };
 
       this.setState({
-        nextInput: this.getInputId(input, isLastInput ? itemIndex + 1 : itemIndex),
+        nextInput: this.getInputId(input, itemIndex + 1),
       });
 
     }

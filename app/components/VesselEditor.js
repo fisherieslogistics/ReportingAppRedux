@@ -73,7 +73,7 @@ const VesselEditor = (props) => {
       <Text>Enter Containers - state - and treatment?</Text>
       <Switch
         onValueChange={(bool) => {
-          props.dispatch(userActions.setCatchDetailsExpanded(bool));
+          props.dispatch(userActions.setCatchDetailsExpanded(!bool));
         }}
         value={props.catchDetailsExpanded}
       />
@@ -96,7 +96,7 @@ const VesselEditor = (props) => {
         getEditor={(attribute) => getEditor(attribute, props)}
         editorType={"vessel"}
         name={"vesselEdit"}
-        model={VesselModel}
+        model={[]}
         obj={props.vessel}
         values={props.vessel}
       />
