@@ -32,9 +32,9 @@ class Client {
     let self = this;
     if(this.refreshNeeded(auth)){
       return this.promisifyRequestBody(this._refresh(auth))
-               .catch((err) => {
-                 console.warn(err);
-                 return err;
+                 .catch((err) => {
+                  console.warn(err);
+                  throw err;
                })
                .then((newAuth) => {
                  self.dispatch(authActions.setAuth(newAuth));
@@ -50,14 +50,17 @@ class Client {
       req.end((err, res) => {
         if(err){
           try{
+            console.warn(err, err.response.text);
             reject(err.response.text);
           }catch(e){
             console.warn(e);
             reject(err);
           }
           return;
+        }else{
+          console.log(res);
+          resolve(res.body);
         }
-        resolve(res.body);
       });
     });
   }
@@ -72,6 +75,7 @@ class Client {
   }
 
   _mutate(query, variables, auth) {
+    console.log("mutating")
     return request.post(this.apiEndpoint + 'graphql')
       .type('application/json')
       .send(
