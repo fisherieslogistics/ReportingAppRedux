@@ -8,13 +8,17 @@ function mongoObjectId() {
     return _id;
 };
 
+function toGlobalId(type, id) {
+ return base64([type, id].join(':'));
+}
+
 export default {
-  blankModel: (model) => {
+  blankModel: (model, type) => {
     const blankModel = {};
     model.forEach(value => {
       blankModel[value.id] = value.defaultValue;
     });
-    blankModel.objectId = mongoObjectId();
+    blankModel.objectId = type ? toGlobalId(type, mongoObjectId()) : mongoObjectId();
     return blankModel;
   },
   blankModelWithoutObjectId: (model) => {

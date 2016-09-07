@@ -2,13 +2,13 @@
 import moment from 'moment';
 import ModelUtils from '../utils/ModelUtils';
 import TripModel from '../models/TripModel';
-let initialState = ModelUtils.blankModel(TripModel);
+let initialState = ModelUtils.blankModel(TripModel, 'Trip');
 
 const TripReducer = (state = initialState, action) => {
 
     switch(action.type) {
         case 'endTrip':
-            let t = ModelUtils.blankModel(TripModel);
+            let t = ModelUtils.blankModel(TripModel, 'Trip');
             t.sailingTime = new moment();
             t.ETA = new moment().add(2, 'days');
             t.leavingPort = action.trip.leavingPort;

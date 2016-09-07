@@ -208,7 +208,7 @@ const setFishingEventGear = (fishingEvent, gear) => {
 
 const newFishingEvent = (state, location, formType) => {
   const fishingEventModel = getFishingEventModelByTypeCode(formType);
-  let newEvent = ModelUtils.blankModel(fishingEventModel.complete);
+  let newEvent = ModelUtils.blankModel(fishingEventModel.complete, 'FishingEvent');
   let id = state.events.length + 1;
   const objectId = newEvent.objectId;
   newEvent.id = id;
