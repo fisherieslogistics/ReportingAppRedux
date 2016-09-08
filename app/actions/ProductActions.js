@@ -13,6 +13,10 @@ class ProductActions{
           timestamp: moment(),
           formType: getState().default.me.formType,
       });
+      dispatch({
+        type: "syncEvent",
+        objectId: id
+      });
     }
   }
   changeWeight(id, catchId, value, objectId) {
@@ -25,6 +29,10 @@ class ProductActions{
         value: value,
         timestamp: moment(),
         formType: getState().default.me.formType,
+      });
+      dispatch({
+        type: "syncEvent",
+        objectId: id
       });
     }
   }
@@ -40,6 +48,10 @@ class ProductActions{
         timestamp: moment(),
         formType: getState().default.me.formType,
       });
+      dispatch({
+        type: "syncEvent",
+        objectId: id
+      });
     }
   }
   addProduct(id, objectId){
@@ -49,6 +61,10 @@ class ProductActions{
         fishingEventId: id,
         objectId: objectId,
         formType: getState().default.me.formType,
+      });
+      dispatch({
+        type: "syncEvent",
+        objectId: id
       });
     }
   }
@@ -61,6 +77,10 @@ class ProductActions{
         objectId: objectId,
         formType: getState().default.me.formType,
       });
+      dispatch({
+        type: "syncEvent",
+        objectId: fishingEventId
+      });
     }
   }
   undoDeleteProduct(fishingEventId, objectId){
@@ -70,6 +90,10 @@ class ProductActions{
         fishingEventId: fishingEventId,
         objectId: objectId,
         formType: getState().default.me.formType,
+      });
+      dispatch({
+        type: "syncEvent",
+        objectId: fishingEventId
       });
     }
   }
