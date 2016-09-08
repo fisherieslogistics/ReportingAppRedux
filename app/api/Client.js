@@ -17,7 +17,7 @@ class Client {
   }
 
   mutate(query, variables, auth){
-    console.log(query);
+    //console.log(query);
     return this.performRefreshableRequest(this._mutate.bind(this, query, variables, auth), auth);
   }
 
@@ -34,7 +34,7 @@ class Client {
     if(this.refreshNeeded(auth)){
       return this.promisifyRequestBody(this._refresh(auth))
                  .catch((err) => {
-                  console.log(err);
+                  console.log("first catch", err);
                   throw err;
                })
                .then((newAuth) => {
@@ -51,9 +51,10 @@ class Client {
       req.end((err, res) => {
         if(err){
           try{
+            console.log("rejecting err.response.text", err.response, err)
             reject(err.response.text);
           }catch(e){
-            console.log(err);
+            console.log("no res text", err);
             console.log(e);
             reject(err);
           }
@@ -76,7 +77,7 @@ class Client {
   }
 
   _mutate(query, variables, auth) {
-    console.log("mutating")
+    console.log("mutating", query, variables, "hello");
     return request.post(this.apiEndpoint + 'graphql')
       .type('application/json')
       .send(
