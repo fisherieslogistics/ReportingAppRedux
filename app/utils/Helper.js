@@ -122,6 +122,17 @@ class Helper {
     AsyncStorage.clear(() => null);
   }
 
+  loadSavedStateAsync() {
+    return new Promise((resolve, reject) => {
+      this.loadSavedState((savedState, err) => {
+        if(err){
+          return reject(err);
+        }
+        return resolve(savedState);
+      });
+    });
+  }
+
   loadSavedState(callback) {
     AsyncStorage.getItem('savedState', (err, state)=>{
       if(err){
@@ -132,7 +143,7 @@ class Helper {
     });
   };
 
-  async saveToLocalStorage(state, actionType, key) {
+  async saveToLocalStorage(state, actionType) {
     switch (actionType) {
       case 'loadSavedState':
       case 'updateGps':
@@ -146,7 +157,7 @@ class Helper {
       return;
     }
     let serializedState = this.serialize(state);
-    await AsyncStorage.setItem('savedState', serializedState, (err, something) => {
+    return await AsyncStorage.setItem('savedState', serializedState, (err, something) => {
       if(err){
         console.warn(err);
       }
