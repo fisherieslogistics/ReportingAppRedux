@@ -2,13 +2,12 @@
 import Queries, {
   upsertTrip,
   upsertFishingEvent,
-  upsertLCERFishingEvent,
 } from './Queries';
 
 import Helper from '../utils/Helper';
 import moment from 'moment';
 const helper = new Helper();
-const TIMEOUT = 10000;
+const TIMEOUT = 4000;
 
 class SyncWorker {
 
@@ -16,7 +15,7 @@ class SyncWorker {
     this.dispatch = dispatch;
     this.api = api;
     this.getState = getState;
-    this.timeToSync = 11000;
+    this.timeToSync = 5000;
     this.requests = [];
     this.startSync();
   }
@@ -33,7 +32,6 @@ class SyncWorker {
 
     const formType = state.me.formType;
     const fEventIds = Object.keys(state.sync.fishingEvents);
-    console.log(fEventIds);
     this.requests = state.fishingEvents.events.filter(fe => (fEventIds.indexOf(fe.objectId) !== -1))
                                               .map(fe => this.mutateFishingEvent(fe, state.trip.objectId, formType));
     if(state.sync.trip){
@@ -58,6 +56,7 @@ class SyncWorker {
     let mutation = upsertTrip(trip);
     let time = new moment();
     let callback = (res) => {
+      console.log(res);
       try{
         this.dispatch({
           type: "removeFromQueue",
@@ -65,7 +64,7 @@ class SyncWorker {
           time: time
         });
       }catch(e) {
-        console.warn(e);
+        console.warn(e, e.stack);
       }
       return {response: res};
     }
@@ -78,11 +77,12 @@ class SyncWorker {
     let time = new moment();
     let callback = (res) => {
       console.log("SYNCING TRIP");
+      console.log(res);
       try{
         this.dispatch({
           type: "tripSynced",
           time: time,
-          objectId: res.data.upsertTripMutation.trip._id
+          objectId: res.data.upsertTrip2.trip.id
         });
       }catch(e) {
         console.warn(e);
@@ -97,7 +97,7 @@ class SyncWorker {
     if(formType == 'tcer'){
       q = upsertFishingEvent(fishingEvent, tripId);
     }else{
-      q = upsertLCERFishingEvent(fishingEvent, tripId);
+      q = upsertFishingEvent(fishingEvent, tripId);
     }
     let time = new moment();
     let callback = (res) => {
@@ -108,14 +108,15 @@ class SyncWorker {
       });
       return {response: res};
     }
-    return this.performMutation(q, {}, callback.bind(this));
+    console.log("passes it")
+    return this.performMutation(q.query, q.variables, callback.bind(this));
   }
 
   performMutation(query, variables, success, dispatch){
     return this.api.mutate(query, variables, this.getState().default.auth)
       .then(success)
       .catch((err) => {
-        console.warn(err);
+        console.warn("peromed not nice", err);
         this.dispatch({
           type: "syncError",
           time: new moment(),
