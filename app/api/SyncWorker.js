@@ -7,7 +7,7 @@ import Queries, {
 import Helper from '../utils/Helper';
 import moment from 'moment';
 const helper = new Helper();
-const TIMEOUT = 4000;
+const TIMEOUT = 6000;
 
 class SyncWorker {
 
@@ -15,7 +15,7 @@ class SyncWorker {
     this.dispatch = dispatch;
     this.api = api;
     this.getState = getState;
-    this.timeToSync = 5000;
+    this.timeToSync = 7000;
     this.requests = [];
     this.startSync();
   }
@@ -56,7 +56,7 @@ class SyncWorker {
     let mutation = upsertTrip(trip);
     let time = new moment();
     let callback = (res) => {
-      console.log(res);
+      console.log("SYNCING Past TRIPs");
       try{
         this.dispatch({
           type: "removeFromQueue",
@@ -77,7 +77,6 @@ class SyncWorker {
     let time = new moment();
     let callback = (res) => {
       console.log("SYNCING TRIP");
-      console.log(res);
       try{
         this.dispatch({
           type: "tripSynced",
@@ -101,6 +100,7 @@ class SyncWorker {
     }
     let time = new moment();
     let callback = (res) => {
+      console.log("SYNCING fishin even");
       this.dispatch({
         type: "fishingEventSynced",
         time: time,
@@ -108,7 +108,6 @@ class SyncWorker {
       });
       return {response: res};
     }
-    console.log("passes it")
     return this.performMutation(q.query, q.variables, callback.bind(this));
   }
 
