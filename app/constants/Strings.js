@@ -5,7 +5,7 @@ export default {
         noTarget: "no target species",
         numberOfInTrip: " Shot",
         ended: "hauled",
-        completed: "done",
+        complete: "done",
         committed: "committed",
         started: "in water",
         products: "catches",

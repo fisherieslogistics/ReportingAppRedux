@@ -58,7 +58,7 @@ export default (state = initialState, action) => {
       state.trip = null;
       let _trip = Object.assign({}, action.trip);
       _trip.message = action.message;
-      _trip.completed = true;
+      _trip.complete = true;
       state.queues.pastTrips.push({
         trip: _trip,
         fishingEvents: action.fishingEvents.filter(fe => !!state.fishingEvents[fe.objectId]),

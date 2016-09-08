@@ -43,7 +43,7 @@ class Helper {
     };
   }
   locationToGeoJSON(location){
-    return JSON.stringify(JSON.stringify(
+    return JSON.stringify(
       { type: "Feature", geometry:
         { type: "Point", coordinates: [location.lon, location.lat]}}));
   }
@@ -222,7 +222,7 @@ class Helper {
     }
 
     tripCanStart(trip){
-      return (trip.leavingPort && trip.sailingTime && trip.ETA && trip.estimatedReturnPort && (!trip.started))
+      return (trip.startPort && trip.startDate && trip.endDate && trip.endPort && (!trip.started))
     }
 
   };
