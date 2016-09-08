@@ -45,7 +45,7 @@ class Helper {
   locationToGeoJSON(location){
     return JSON.stringify(
       { type: "Feature", geometry:
-        { type: "Point", coordinates: [location.lon, location.lat]}}));
+        { type: "Point", coordinates: [location.lon, location.lat]}});
   }
   capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
