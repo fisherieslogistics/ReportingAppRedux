@@ -35,7 +35,7 @@ export default class App extends Component {
     return ( async () => {
       const state = await helper.loadSavedStateAsync();
       const result = this.migrateState(state);
-      if( (!state.migrations) || (result.migrations.length > state.migrations.lengths) ) {
+      if( (!result.migrations) || (result.migrations.length > result.migrations.lengths) ) {
         await helper.saveToLocalStorage(result, 'migrations');
         return await helper.loadSavedStateAsync();
       } else {
