@@ -37,7 +37,7 @@ export default class Migration {
       throw new Error(NO_NEW_STATE);
     }
 
-    console.log("getting new State", this._newState);
+    console.log("getting new State");
     return this._newState;
   }
 
@@ -63,19 +63,18 @@ export default class Migration {
       throw new Error(NO_ORIGINAL_STATE);
     }
     const newState = this._up(Object.assign({}, this._originalState));
-    console.log(newState, "WWWWWEEEEEEEEEEEEEEEEEEEE");
+    console.log("WWWWWEEEEEEEEEEEEEEEEEEEE", this.name);
     this.setNewState(
       Object.assign({}, newState,
         {migrations: [ ...newState.migrations || [], this.details ] }),
         myCallingCard);
-    console.log(this._newState);
+    console.log("HHHHHHHOOOOOOOPPPPPPP", this.name);
   }
 
   down() {
     if(! this._originalState){
       throw new Error(NO_ORIGINAL_STATE);
     }
-
     return this.setNewState(Object.assign({}, this._originalState), myCallingCard);
   }
 
