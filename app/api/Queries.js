@@ -109,6 +109,7 @@ const upsertTrip = (trip) => {
   delete _trip.started;
   delete _trip.objectId;
   delete _trip.vesselId;
+  delete _trip.message;
   return {
     query: `
       mutation($data: UpsertTripMutation2Input!){
@@ -136,6 +137,7 @@ export default {
         lastName
         username
         email
+        bins
         formData{
           cedric_client_number
           first_name
@@ -147,7 +149,7 @@ export default {
         vessels {
             name
             registration
-          id: _id
+            id
         }
       }
     }
