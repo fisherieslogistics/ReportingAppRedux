@@ -37,11 +37,11 @@ const meta = {
         parts:[
           {id: 'lat', x: 190, y: 175, resolve: (fe) => {
             let lat = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
-            return `${lat.latDegrees}${lat.latMinutes}`;
+            return `${lat.latDegrees}  ${lat.latMinutes}`;
           }},
           {id: 'lon', x: 197, y: 204, resolve: (fe) => {
             let lon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
-            return `${lon.lonDegrees}${lon.lonMinutes}`;
+            return `${lon.lonDegrees}  ${lon.lonMinutes}`;
           }},
           {id: 'ew', x: 310, y: 204, resolve: (fe) => {
             let latLon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
