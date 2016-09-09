@@ -17,12 +17,11 @@ function up(state) {
     const newEvents = newState.fishingEvents.events.map(
       fe => migrate(fe));
 
-    newFishingEvents = Object.assign(
+    const newFishingEvents = Object.assign(
       {}, newState.fishingEvents, { events: newEvents });
 
     newState.fishingEvents = newFishingEvents;
   }
-
   return newState;
 }
 
