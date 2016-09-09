@@ -31,7 +31,7 @@ const PickerItemIOS = PickerIOS.Item;
 
 
 const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTime, disabled, choices}) => {
-  time = time || new moment();
+  time = time || new moment(new Date().getTime());
   let placeTimeStyle = StyleSheet.create({
     wrapper:{
       backgroundColor: colors.pastelGreen,
