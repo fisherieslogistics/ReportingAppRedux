@@ -1,8 +1,13 @@
 import zero from '../reducers/migrations/0-add-place-to-store-mutations';
-import one from '../reducers/migrations/1-update-trip-attribute-names';
+
+import one from '../reducers/migrations/1-new-ids-for-trip-and-fishing-events';
+import two from '../reducers/migrations/2-update-trip-attribute-names';
+import three from '../reducers/migrations/3-add-new-fields-to-fishing-event';
 
 const migrations = [
   one,
+  two,
+  three,
 ];
 
 function stateShouldMigrate(migration, pastMigrations){

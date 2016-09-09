@@ -1,4 +1,4 @@
-import Migration from './Migration';
+import Migration from '../../utils/Migration';
 
 function up(state) {
 

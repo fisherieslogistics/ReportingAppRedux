@@ -9,7 +9,6 @@ const helper = new Helper();
 
 let initialState = {
   events: [],
-  errors: {},
   deletedProducts: {}
 }
 

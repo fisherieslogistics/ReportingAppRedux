@@ -18,7 +18,7 @@ export { EndpointLookup }
 export default (state = EndpointLookup.Production, action) => {
   switch(action.type){
     case "devMode":
-      return Object.assign({}, EndpointLookup[action.payload]);
+      return Object.assign({}, state, EndpointLookup[action.payload]);
     default:
       return state;
   }

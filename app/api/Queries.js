@@ -75,6 +75,7 @@ function upsertFishingEvent(fEvent, tripId) {
     protecteds: otherCatches.protecteds,
     incidents: otherCatches.incidents,
     version: version,
+    __legacyId: fEvent.__legacyId || null,
   };
   return {
     query: `
@@ -103,6 +104,7 @@ const upsertTrip = (trip) => {
     complete: trip.complete,
     endPort: trip.endPort,
     startPort: trip.startPort,
+    __legacyId: trip.__legacyId || null,
   });
   delete _trip.started;
   delete _trip.objectId;
