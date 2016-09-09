@@ -19,6 +19,24 @@ class ApiActions {
     client = new Client(dispatch, ApiEndpoint, timeoutMS);
   }
 
+  checkMe(auth, dispatch){
+    client.query(queries.getMe, {accessToken: auth.accessToken, expiresAt: auth.expiresAt})
+      .catch((err) => {
+        console.warn(err);
+      })
+      .then((res) => {
+        if(!res.data){
+          console.log("reeeeeeeeeeee", res)
+        }
+        let viewer = res.data.viewer;
+        dispatch(userActions.setVessels(viewer.vessels));
+        if(viewer.vessels.length){
+          dispatch(userActions.setVessel(viewer.vessels[0]));
+        }
+        dispatch(userActions.setUser(parseUser(viewer)));
+      });
+  }
+
   login(username, password){
     return (dispatch, getState) => {
       client.login(username, password)
@@ -46,7 +64,7 @@ class ApiActions {
           dispatch(authActions.setAuth(auth));
           client.query(queries.getMe, helper.updateAuth({}, auth))
             .catch((err) => {
-              console.warn(err);
+            //  console.warn(err);
             })
             .then((res) => {
               let viewer = res.data.viewer;
@@ -78,6 +96,7 @@ const parseUser = (viewer) => {
     permitHolderName: viewer.formData.permit_holder_name,
     permitHolderNumber: viewer.formData.permit_holder_number,
     email: viewer.email,
+    bins: viewer.bins,
   }
 }
 
