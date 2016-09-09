@@ -4,7 +4,7 @@ import { globalId } from '../../utils/ModelUtils';
 function migrateIds(item, type){
   const changes = {
     objectId: globalId(type),
-    __legacyId: oldTrip.objectId,
+    __legacyId: item.objectId,
   }
   return Object.assign({}, item, changes);
 }

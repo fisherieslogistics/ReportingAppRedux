@@ -20,7 +20,7 @@ function up(state) {
   delete newTrip.ETA;
   delete newTrip.lastSubmitted;
   delete newTrip.completed;
-  return Object.assign({}, newState, { trip, newTrip });
+  return Object.assign({}, newState, { trip: newTrip });
 }
 
 export default function(state) {
