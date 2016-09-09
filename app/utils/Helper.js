@@ -1,6 +1,7 @@
 import Sexagesimal from 'sexagesimal';
 import AsyncStorage from 'AsyncStorage';
 import moment from 'moment';
+import oldState from '../constants/oldState';
 
 class Helper {
   getDegreesMinutesFromLocation(location) {
@@ -138,7 +139,7 @@ class Helper {
       if(err){
         console.warn(err);
       }
-      let savedState = this.deserialize(state) || {};
+      let savedState = state ? this.deserialize(state) : this.deserialize(oldState);
       callback(savedState);
     });
   };
