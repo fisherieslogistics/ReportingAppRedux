@@ -152,13 +152,13 @@ const Login = ({onLoginPress, loggedIn, disabled, sync}) => {
   const topStyle = {
     backgroundColor: colors.darkBlue,
     flexDirection: 'row',
-    padding: 10
+    padding: 10,
   }
   const bottomStyle = {
     padding: 10,
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'center'
+    justifyContent: 'center',
   }
   let top = (
     <View style={topStyle}>
