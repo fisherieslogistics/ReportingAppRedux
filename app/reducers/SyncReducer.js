@@ -67,14 +67,9 @@ export default (state = initialState, action) => {
       });
       state = Object.assign({}, state, { fishingEvents: {}});
       return state;
-    case 'formSigned':
-      action.fishingEvents.forEach((fe) => {
-        state.fishingEvents[fe.objectId] = new moment();
-      });
-      return state;
     case "syncError":
       state.updatedAt = new moment();
-      console.warn(action.err);
+    //  console.warn(action.err);
       return state;
     default:
       return state;
