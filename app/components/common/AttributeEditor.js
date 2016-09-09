@@ -257,11 +257,10 @@ const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEn
         <DatePicker
           date={ value ? value.toDate() : new Date()}
           mode="datetime"
-          format="MMM DD HH:mm"
           confirmBtnText="Confirm"
           cancelBtnText="Cancel"
           customStyles={{
-            dateText: inputStyles.dateText,
+            dateText: Object.assign({}, inputStyles.dateText, {left: 45}),
             dateInput: inputStyles.dateInput,
             dateIcon: inputStyles.dateIcon,
           }}
