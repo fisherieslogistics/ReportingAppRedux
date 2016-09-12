@@ -230,7 +230,8 @@ class EditOnBlur extends React.Component {
         onChangeText={this.onChangeText.bind(this)}
         focus={ this.props.focus }
         onKeyPress={ this.onKeyPress }
-        {...this.props.extraProps} />
+        {...this.props.extraProps}
+     />
     );
   }
 }
