@@ -57,7 +57,7 @@ function getOrientationDetail(state, orientation){
     case 'LANDSCAPEUPSIDEDOWN':
       return update(state, {width: 1024, height: 768, orientation: orientation});
     default:
-      return update(state, {width: 1024, height: 768, orientation: orientation});
+      return state;
   }
 };
 
