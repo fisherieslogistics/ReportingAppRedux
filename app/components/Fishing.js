@@ -74,7 +74,10 @@ class Fishing extends React.Component{
     //TODO alert if not position so you can type it in
     if(this.props.enableStartEvent){
       this.props.dispatch(fishingEventActions.startFishingEvent(position));
-      this.props.dispatch(fishingEventActions.setViewingFishingEvent(this.props.fishingEvents.length + 1));
+      setTimeout(() => {
+        this.props.dispatch(fishingEventActions.setViewingFishingEvent(this.props.fishingEvents.length));
+      }, 300);
+
     }
   }
 
