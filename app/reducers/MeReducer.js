@@ -45,7 +45,6 @@ export default (state = initialState, action) => {
     case 'editUser':
       let user = update(state.user, action.change);
       return update(state,  { user: user });
-    case 'logout':
     case 'devMode':
       return initialState;
     case 'setUser':
