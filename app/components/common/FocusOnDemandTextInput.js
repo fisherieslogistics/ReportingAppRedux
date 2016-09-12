@@ -11,7 +11,15 @@ export default class FocusOnDemandTextInput extends TextInput {
   }
 
   focus() {
-    this._component.focus();
+    if(this._component){
+      this._component.focus();
+    }
+  }
+
+  componentWillUnmount(){
+    if(this._component){
+      this._component.blur();
+    }
   }
 
   componentWillReceiveProps(nextProps) {
