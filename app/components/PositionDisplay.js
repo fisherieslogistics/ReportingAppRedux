@@ -16,11 +16,19 @@ class PositionDisplay extends React.Component{
     this.state={
       position: null,
     }
-    setInterval(() => {
+
+  }
+
+  componentWillMount(){
+    this.interval = setInterval(() => {
       this.setState({
         position: this.props.provider.getPosition()
       });
-    }, 3000);
+    }, 2000);
+  }
+
+  componentWillUnmount(){
+    clearInterval(this.interval);
   }
 
   getPositionText(){
@@ -28,9 +36,9 @@ class PositionDisplay extends React.Component{
       return "awaiting position";
     }
     let coords = this.state.position.coords;
-    let posText = Sexagesimal.format(coords.latitude, 'lat') + "       " + Sexagesimal.format(coords.longitude, 'lon');
+    let posText = Sexagesimal.format(coords.latitude, 'lat') + "        " + Sexagesimal.format(coords.longitude, 'lon');
     let timeText = new moment(this.state.position.timestamp).fromNow();
-    return `${posText} - ${timeText}`;
+    return `${posText}   -   ${timeText}`;
   }
 
   render() {
