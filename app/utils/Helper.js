@@ -143,6 +143,14 @@ class Helper {
     });
   };
 
+  saveErrorToLocalStorage(state, err) {
+    let serializedState = this.serialize({
+      error: err,
+      state: state,
+    });
+    return AsyncStorage.setItem('errorState', serializedState, () => {});
+  }
+
   async saveToLocalStorage(state, actionType) {
     switch (actionType) {
       case 'loadSavedState':
