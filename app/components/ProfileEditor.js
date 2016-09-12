@@ -7,6 +7,7 @@ import React from 'react';
 import UserModel from '../models/UserModel';
 import EditorView from './common/EditorView';
 import UserActions from '../actions/UserActions';
+const userActions = new UserActions();
 
 import {eventEditorStyles} from '../styles/styles';
 
@@ -15,9 +16,9 @@ import {eventEditorStyles} from '../styles/styles';
 class ProfileEditor extends React.Component {
 
     onChange(key, value){
-      var change = {};
+      /*var change = {};
       change[key] = value
-      this.props.dispatch(userActions.editUser(change));
+      this.props.dispatch(userActions.editUser(change));*/
     }
 
     getEditor(attribute){
@@ -25,7 +26,7 @@ class ProfileEditor extends React.Component {
         attribute,
         value: this.props.user[attribute.id],
         onChange: this.onChange.bind(this),
-        extraProps: {editable: false},
+        extraProps: {editable: false, focus: false},
         inputId: attribute.id + "__profile__"
       };
     }
