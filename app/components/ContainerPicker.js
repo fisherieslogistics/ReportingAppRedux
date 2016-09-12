@@ -63,7 +63,6 @@ class ContainerPicker extends React.Component {
         value: event.value
       });
       this.props.onChange(event.value);
-      console.log(this.props.inputId, this.props.name);
       this.props.onEnterPress(this.props.attributeId);
       /*setTimeout(() => {
         this.forceUpdate();
