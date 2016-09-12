@@ -1,6 +1,6 @@
 'use strict';
 import React, { Component } from 'react';
-import { View, StatusBar } from 'react-native';
+import { View, StatusBar, AlertIOS } from 'react-native';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
@@ -13,6 +13,7 @@ import Helper from '../utils/Helper';
 import StateMigratorizer from '../utils/StateMigratorizer';
 import ErrorUtils from 'ErrorUtils';
 
+var Mailer = require('NativeModules').RNMail;
 
 const helper = new Helper();
 const stateLoadActions = new StateLoadActions();
@@ -27,11 +28,92 @@ String.prototype.capitalize = function() {
 export default class App extends Component {
   constructor(props) {
     super(props);
-    console.log('ErrorUtils', ErrorUtils);
+
+    this.handleError = this.handleError.bind(this);
+    this.email = this.email.bind(this);
+    this.sendErrorMail = this.sendErrorMail.bind(this);
+    this.resetState = this.resetState.bind(this);
+
+    ErrorUtils.setGlobalHandler(this.handleError);
+
     this.watchId = null;
     this.state = {
       loaded: false,
     }
+  }
+
+  handleError(err){
+    console.log(err);
+    AlertIOS.alert(
+      "Fatal Error",
+      `An email dialog will appear - please send the email containing all your current data and the error
+      'Once you have pressed send on the email - please restart the iPad then re open the app`,
+      [
+        {
+          text: 'OK', onPress: () => {
+            this.sendErrorMail(err);
+          }
+        }
+      ]
+    );
+  }
+
+  email(to, subject, content, callback) {
+    Mailer.mail({
+      subject: subject,
+      recipients: [to],
+      ccRecipients: [],
+      bccRecipients: [],
+      body: content,
+      /*attachment: {
+        path: '',  // The absolute path of the file from which to read data.
+        type: '',   // Mime Type: jpg, png, doc, ppt, html, pdf
+        name: '',   // Optional: Custom filename for attachment
+      }*/
+    }, (error, event) => {
+      callback(error, event);
+    });
+  }
+
+  sendErrorMail(err) {
+    helper.loadSavedStateAsync().then((state) => {
+      const content = {
+        errorObj: JSON.stringify(err),
+        errorText: err.text,
+        stack: err.stack,
+        state: helper.serialize(state),
+      }
+      this.email("rimu@fisherylogistics.com", "error from reporting app", JSON.stringify(content), (err, event) => {
+        if(err) {
+          console.log(err);
+          this.resetState(state);
+          return;
+        }
+        this.resetState(state);
+      });
+    });
+  }
+
+  resetState(state){
+    const auth = Object.assign({}, state.auth || {});
+    const me = Object.assign({}, state.me || {});
+    this.setState({
+      loaded: false,
+    });
+    Promise.all([
+      helper.saveErrorToLocalStorage(state, 'error'),
+      helper.saveToLocalStorage({}, 'reset'),
+    ]).then((res) => {
+      store.dispatch(stateLoadActions.loadSavedState({auth, me}));
+      setTimeout(() => {
+        this.setState({loaded: true});
+      }, 2000);
+    }).catch(err => {
+      store.dispatch(stateLoadActions.loadSavedState({}));
+      setTimeout(() => {
+        this.setState({loaded: true});
+      }, 2000);
+    });
   }
 
   get loadMigratedState(){
@@ -54,7 +136,6 @@ export default class App extends Component {
 
   componentDidMount(){
     this.loadMigratedState.then((state) => {
-      stateLoadActions.loadSavedState(state);
       store.dispatch(stateLoadActions.loadSavedState(state));
       setTimeout(() => {
         this.setState({loaded: true});
