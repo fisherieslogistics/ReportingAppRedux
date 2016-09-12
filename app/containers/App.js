@@ -11,6 +11,8 @@ import * as reducers from '../reducers';
 import StateLoadActions from '../actions/StateLoadActions';
 import Helper from '../utils/Helper';
 import StateMigratorizer from '../utils/StateMigratorizer';
+import ErrorUtils from 'ErrorUtils';
+
 
 const helper = new Helper();
 const stateLoadActions = new StateLoadActions();
@@ -25,6 +27,7 @@ String.prototype.capitalize = function() {
 export default class App extends Component {
   constructor(props) {
     super(props);
+    console.log('ErrorUtils', ErrorUtils);
     this.watchId = null;
     this.state = {
       loaded: false,
@@ -35,7 +38,8 @@ export default class App extends Component {
     return ( async () => {
       const state = await helper.loadSavedStateAsync();
       const result = this.migrateState(state);
-      if( (!result.migrations) || (result.migrations.length > result.migrations.lengths) ) {
+      const hadMigrations = state && state.migrations && state.migrations.length;
+      if( !hadMigrations || (result.migrations.length > state.migrations.length) ){
         await helper.saveToLocalStorage(result, 'migrations');
         return await helper.loadSavedStateAsync();
       } else {
@@ -50,6 +54,7 @@ export default class App extends Component {
 
   componentDidMount(){
     this.loadMigratedState.then((state) => {
+      stateLoadActions.loadSavedState(state);
       store.dispatch(stateLoadActions.loadSavedState(state));
       setTimeout(() => {
         this.setState({loaded: true});
