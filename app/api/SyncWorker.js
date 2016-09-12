@@ -28,11 +28,9 @@ class SyncWorker {
 
   sync(){
     const state = this.getState().default;
-    console.log('sync?');
     if(this.requests.length || (!state.auth.loggedIn)){
       return;
     }
-    console.log('sync');
     const formType = state.me.formType;
     const fEventIds = Object.keys(state.sync.fishingEvents);
     this.requests = state.fishingEvents.events.filter(fe => (fEventIds.indexOf(fe.objectId) !== -1))
@@ -41,9 +39,7 @@ class SyncWorker {
       this.requests.push(this.mutateTrip(state.trip, state.me.vessel.id));
     }
 
-    console.log(state.sync.queues.pastTrips.length, "any?");
     state.sync.queues.pastTrips.forEach((t) => {
-      console.log('mutateTrip', t)
       let pastRequests = [];
       t.fishingEvents.forEach(fe => pastRequests.push(this.mutateFishingEvent(fe, t.trip.objectId, t.formType)));
       return this.mutatePastTrip(t.trip, t.vesselId).then((res) => {
@@ -67,7 +63,6 @@ class SyncWorker {
     let mutation = upsertTrip(trip);
     let time = new moment();
     let callback = (res) => {
-      console.log("SYNCING Past TRIPs");
       try{
         this.dispatch({
           type: "removeFromQueue",
@@ -87,7 +82,6 @@ class SyncWorker {
     let mutation = upsertTrip(trip);
     let time = new moment();
     let callback = (res) => {
-      console.log("SYNCING TRIP");
       try{
         this.dispatch({
           type: "tripSynced",
@@ -111,7 +105,6 @@ class SyncWorker {
     }
     let time = new moment();
     let callback = (res) => {
-      console.log("SYNCING fishin even");
       this.dispatch({
         type: "fishingEventSynced",
         time: time,
