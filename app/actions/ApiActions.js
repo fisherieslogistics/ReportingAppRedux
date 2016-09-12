@@ -25,15 +25,7 @@ class ApiActions {
         console.warn(err);
       })
       .then((res) => {
-        if(!res.data){
-          console.log("reeeeeeeeeeee", res)
-        }
-        let viewer = res.data.viewer;
-        dispatch(userActions.setVessels(viewer.vessels));
-        if(viewer.vessels.length){
-          dispatch(userActions.setVessel(viewer.vessels[0]));
-        }
-        dispatch(userActions.setUser(parseUser(viewer)));
+        dispatch(userActions.setUser(parseUser(res.data.viewer)));
       });
   }
 
@@ -64,7 +56,7 @@ class ApiActions {
           dispatch(authActions.setAuth(auth));
           client.query(queries.getMe, helper.updateAuth({}, auth))
             .catch((err) => {
-            //  console.warn(err);
+              console.warn(err);
             })
             .then((res) => {
               let viewer = res.data.viewer;
