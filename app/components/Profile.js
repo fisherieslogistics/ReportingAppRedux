@@ -12,11 +12,10 @@ import {
   Switch,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  PickerIOS,
-  PickerItemIOS
+  PickerIOS
 } from 'react-native';
 import React from 'react';
-
+const PickerItemIOS = PickerIOS.Item;
 import ProfileEditor from './ProfileEditor';
 import VesselEditor from './VesselEditor';
 import MasterDetailView from './layout/MasterDetailView';
@@ -25,6 +24,7 @@ import MasterListView from './common/MasterListView';
 import EditorView from './common/EditorView';
 import GPSControlActions from '../actions/GPSControlActions';
 import version from '../constants/version';
+import moment from 'moment';
 
 import Validator from '../utils/Validator';
 const valid = Validator.valid;
@@ -42,7 +42,6 @@ import { EndpointLookup } from '../reducers/APIReducer';
 const authActions = new AuthActions();
 const editorStyles = StyleSheet.create(eventEditorStyles);
 const gpsControlActions = new GPSControlActions();
-
 
 const GPSSettings = ({currentPosition, positionType, gpsUrl, gpsPort, gpsBaud, dispatch} ) => {
   return <View style={{paddingTop: 10, paddingLeft: 10}}><Text>No settings here currently.</Text></View>;
@@ -196,7 +195,10 @@ const Login = ({onLoginPress, loggedIn, disabled, sync }) => {
 const DevScreen = (props) => {
   return(
       <View>
-        <UrlPicker dispatch={props.dispatch} ApiEndpoint={props.ApiEndpoint} />
+        <UrlPicker dispatch={props.dispatch} ApiEndpoint={props.ApiEndpoint || ""} />
+        <TouchableOpacity onPress={() => {throw new Error("Alert Error has been thrown by the user What the fuck?")}}>
+          <Text>Throw an Error</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={props.exitDevMode}>
           <Text>Exit Dev Mode</Text>
         </TouchableOpacity>
@@ -241,23 +243,15 @@ class Profile extends React.Component{
       email: null,
       password: null,
       devTaps: 0,
-      devMode: false
+      devMode: false,
+      lastTappedAt: new moment(),
     };
   }
 
-  componentDidMount() {
+  /*componentDidRecieveProps() {
     const func = () => {
       if(this.state.devTaps >= 3){
         this.setState({devMode: true});
-        AlertIOS.alert(
-          "Congratulations",
-          'You are an elite hacker',
-          [
-            {text: 'Awesome!', onPress: () => {
-              return;
-            }, style: 'cancel'},
-          ]
-        );
 
         // this.props.dispatch({
         //   type: 'devModeOn',
@@ -265,18 +259,40 @@ class Profile extends React.Component{
       }
         this.setState({devTaps: 0});
     };
-    const timer = setInterval(func, 1200);
-  }
+
+  }*/
 
   exitDevMode() {
-      this.setState({devMode: false, selectedEditor: "account"});
-      this.props.dispatch({
-        type: 'devModeOff',
-      });
+    this.setState({devMode: false, selectedEditor: "account"});
+    this.props.dispatch({
+      type: 'devModeOff',
+    });
   }
 
   onTap(){
-    this.setState({devTaps: (this.state.devTaps+1)});
+    const duration =  moment.duration(this.state.lastTappedAt.diff(new moment()));
+    const taps = this.state.devTaps;
+    if(taps > 2 && duration.asSeconds() < 4){
+      this.setState({
+        devMode: true,
+        lastTappedAt: new moment(),
+      });
+      AlertIOS.alert(
+        "Congratulations",
+        'You are an elite hacker',
+        [
+          {text: 'Awesome!', onPress: () => {
+            return;
+          }, style: 'cancel'},
+        ]
+      );
+
+    } else {
+      this.setState({
+        devTaps: (this.state.devTaps + 1),
+        lastTappedAt: new moment(),
+      });
+    }
   }
 
   onLoginPress(){
@@ -417,12 +433,6 @@ class Profile extends React.Component{
       borderBottomWidth: 0.5,
     };
 
-    const valueProp = {};
-
-    if(this.state.email === null) {
-      valueProp.value = this.props.user.email;
-    }
-
     return (
       <Modal
        animationType={'fade'}
@@ -438,8 +448,7 @@ class Profile extends React.Component{
                             placeholder={"email"}
                             autoCapitalize={"none"}
                             autoCorrect={false}
-                            onChangeText={(text) => { this.setState({email: text})}}
-                            { ...valueProp }
+                            onChangeText={(text) => { this.setState({ email: text })}}
                              />
                </View>
                <View style={[textInputWrapper]}>
