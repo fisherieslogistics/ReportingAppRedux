@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -34,6 +35,7 @@
 		B68CF2E8E66B475998C60170 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4CFAE4579BD9405CA2C0E136 /* Entypo.ttf */; };
 		BBAAA5A88EF748D89B6D57F7 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F70EF26B4E4277BDA64A82 /* libRNVectorIcons.a */; };
 		C46A090721134DC4934D9FA6 /* libRNLocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 10F359723A79486F93AEDEF6 /* libRNLocation.a */; };
+		E661BBAD1D8631E20028DB87 /* AppIcon.appiconset in Resources */ = {isa = PBXBuildFile; fileRef = E661BBAC1D8631E20028DB87 /* AppIcon.appiconset */; };
 		F64C644114C84D68A0414141 /* libRNBlur.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C23BD1664624D09B3DE39F5 /* libRNBlur.a */; };
 		FFD0D9722BAF428AA65F1F91 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B9C7300491A44EF594E122B7 /* Ionicons.ttf */; };
 /* End PBXBuildFile section */
@@ -193,6 +195,7 @@
 		B9C7300491A44EF594E122B7 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		BC99F55020D74836BB888F42 /* libRSSignatureCapture.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRSSignatureCapture.a; sourceTree = "<group>"; };
 		CC2FECF0F5F943859C1D6626 /* RCTOrientation.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTOrientation.xcodeproj; path = "../node_modules/react-native-orientation/iOS/RCTOrientation.xcodeproj"; sourceTree = "<group>"; };
+		E661BBAC1D8631E20028DB87 /* AppIcon.appiconset */ = {isa = PBXFileReference; lastKnownFileType = folder; path = AppIcon.appiconset; sourceTree = "<group>"; };
 		FC48473826FB4BD9AA8D9F0F /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -346,6 +349,7 @@
 		13B07FAE1A68108700A75B9A /* FLLReporting */ = {
 			isa = PBXGroup;
 			children = (
+				E661BBAC1D8631E20028DB87 /* AppIcon.appiconset */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -703,6 +707,7 @@
 				03546DA41D7972AA0042B84B /* Reporting-App.ttf in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				B68CF2E8E66B475998C60170 /* Entypo.ttf in Resources */,
+				E661BBAD1D8631E20028DB87 /* AppIcon.appiconset in Resources */,
 				B075FDA07D744605B8CCF970 /* EvilIcons.ttf in Resources */,
 				B4149E62155B40CBBD4C40B5 /* FontAwesome.ttf in Resources */,
 				8C3A15C0AD9D46789C1E4032 /* Foundation.ttf in Resources */,
@@ -813,7 +818,7 @@
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
@@ -835,6 +840,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.FLLReporting01;
 				PRODUCT_NAME = FLLReporting;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 2;
@@ -844,7 +850,7 @@
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				HEADER_SEARCH_PATHS = (
@@ -865,6 +871,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.FLLReporting01;
 				PRODUCT_NAME = FLLReporting;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 2;
