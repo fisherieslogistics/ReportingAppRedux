@@ -136,7 +136,7 @@ const GPSSettings = ({currentPosition, positionType, gpsUrl, gpsPort, gpsBaud, d
 }
 
 
-const Login = ({onLoginPress, loggedIn, disabled, sync}) => {
+const Login = ({onLoginPress, loggedIn, disabled, sync }) => {
   const tripsToSync = sync.queues.pastTrips.length + (sync.trip ? 1 : 0);
 
   const eventsToSync = Object.keys(sync.fishingEvents).length;
@@ -238,8 +238,8 @@ class Profile extends React.Component{
       selectedLabel: "Account",
       modalVisible: false,
       transparent: false,
-      email: "",
-      password: "",
+      email: null,
+      password: null,
       devTaps: 0,
       devMode: false
     };
@@ -290,12 +290,14 @@ class Profile extends React.Component{
   }
 
   login(){
-    this.setState({
-      modalVisible: false
-    })
+    let email = this.state.email === null ? this.props.user.email : this.state.email;
     this.props.dispatch(this.props.apiActions.login(
-      this.state.email, this.state.password));
-
+      email, this.state.password));
+    this.setState({
+      modalVisible: false,
+      email: null,
+      password: null,
+    });
   }
 
   logout(){
@@ -327,9 +329,16 @@ class Profile extends React.Component{
     let defaultItems = [
       {name: "account", icon: 'cloud', label: "Account", color: colors.green},
       {name: "user", icon: 'user', label: "Profile", color: this.props.loggedIn ? colors.blue : colors.midGray},
-      {name: "vessel", icon: 'fishing-boat', label: "Vessel", color: this.props.vessels.length ?  colors.blue : colors.midGray},
       {name: "addPort", icon: 'settings', label: "Add Port", color: colors.blue},
     ];
+
+    if(! this.props.loggedIn){
+      defaultItems = [defaultItems[0]];
+    }
+
+    if(!this.props.tripStarted) {
+      defaultItems.push({name: "vessel", icon: 'fishing-boat', label: "Vessel", color: this.props.vessels.length ?  colors.blue : colors.midGray});
+    }
 
     let devItem = (this.state.devMode?[{name: "dev", icon: 'cloud', label: "Dev", color: colors.orange}]:[]);
 
@@ -407,6 +416,13 @@ class Profile extends React.Component{
       borderBottomColor: colors.lightBlue,
       borderBottomWidth: 0.5,
     };
+
+    const valueProp = {};
+
+    if(this.state.email === null) {
+      valueProp.value = this.props.user.email;
+    }
+
     return (
       <Modal
        animationType={'fade'}
@@ -422,7 +438,9 @@ class Profile extends React.Component{
                             placeholder={"email"}
                             autoCapitalize={"none"}
                             autoCorrect={false}
-                            onChangeText={(text) => { this.setState({email: text})}} />
+                            onChangeText={(text) => { this.setState({email: text})}}
+                            { ...valueProp }
+                             />
                </View>
                <View style={[textInputWrapper]}>
                  <TextInput style={textInputStyle}
