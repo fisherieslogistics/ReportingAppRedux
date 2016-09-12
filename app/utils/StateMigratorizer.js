@@ -14,12 +14,10 @@ const migrations = [
 
 function stateShouldMigrate(migration, pastMigrations){
   return pastMigrations.find(m =>
-    m.version === migration.version &&
     m.name === migration.name) === undefined;
 }
 
-function migrateUp(migrate, state){
-  const migration = migrate(state);
+function migrateUp(migration, state){
   if(stateShouldMigrate(migration.details, state.migrations)){
     migration.setOriginalState(state);
     migration.up();
@@ -30,17 +28,16 @@ function migrateUp(migrate, state){
 
 export default function(state) {
   let newState = Object.assign({}, state || {});
-  console.log("NEW state", "" +  newState.migrations);
   if(! newState.migrations ){
     migrationZero = zero();
     migrationZero.setOriginalState(newState);
     migrationZero.up();
     newState = Object.assign({}, migrationZero.newState);
   }
-
   migrations.forEach(m => {
+    m = m(newState);
     if(stateShouldMigrate(m, newState.migrations)){
-      console.log("it should", m.name)
+      console.log("migrating", m.name)
       newState = migrateUp(m, newState);
     }
   });
