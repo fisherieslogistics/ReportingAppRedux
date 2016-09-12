@@ -112,10 +112,8 @@ class EventProductsEditor extends React.Component{
     }
 
     onEnterPress(attributeId, productIndex){
-      console.log(attributeId, productIndex);
       const orderOfinputs = this.props.optionalFields ? inputOrder.concat(optionalInputOrder) : inputOrder;
       const index = orderOfinputs.indexOf(attributeId);
-      console.log(orderOfinputs, attributeId);
       if(index === -1) {
         this.setState({
           nextInput: '',
