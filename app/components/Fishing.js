@@ -74,7 +74,7 @@ class Fishing extends React.Component{
     //TODO alert if not position so you can type it in
     if(this.props.enableStartEvent){
       this.props.dispatch(fishingEventActions.startFishingEvent(position));
-      this.props.dispatch(fishingEventActions.setViewingFishingEvent(this.props.viewingEvent.id + 1))
+      this.props.dispatch(fishingEventActions.setViewingFishingEvent(this.props.fishingEvents.length + 1));
     }
   }
 
@@ -101,7 +101,7 @@ class Fishing extends React.Component{
             }, style: 'cancel'},
             {text: 'Yes', onPress: () => {
               this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, position));
-              this.props.dispatch(fishingEventActions.setViewingFishingEvent(this.props.fishingEvents.length - 1));
+              this.props.dispatch(fishingEventActions.setViewingFishingEvent(this.props.fishingEvents.length));
             }}
           ]
         );
