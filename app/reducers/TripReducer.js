@@ -14,6 +14,7 @@ const TripReducer = (state = initialState, action) => {
             t.startPort = action.trip.startPort;
             t.endPort = action.trip.endPort;
             t.message = action.message;
+            t.complete = true;
             return t;
         case 'updateTrip':
             return Object.assign({}, state, action.update);
