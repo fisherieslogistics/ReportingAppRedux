@@ -138,7 +138,7 @@ export default {
         username
         email
         bins
-        formData{
+        formData {
           cedric_client_number
           first_name
           form_type
