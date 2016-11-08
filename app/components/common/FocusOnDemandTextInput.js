@@ -17,15 +17,17 @@ export default class FocusOnDemandTextInput extends TextInput {
   }
 
   componentWillUnmount(){
+    this.clearTimeout(this.blurTimeout);
     if(this._component){
-      this._component.blur();
+      this.blurTimeout = setTimeout(this._component.blur);
     }
   }
 
   componentWillReceiveProps(nextProps) {
     const { focus } = nextProps;
+    this.clearTimeout(this.focusTimeout);
     if(focus) {
-      this.focus();
+      this.focusTimeout = setTimeout(this.focus);
     }
   }
 
