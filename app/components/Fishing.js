@@ -29,7 +29,7 @@ import UnsoughtCatch from './UnsoughtCatch';
 
 const fishingEventActions = new FishingEventActions();
 
-const segMents = ["details", "catches", "discards", "incidents", "protecteds"];
+const segMents = ["details", "catches"/*, "discards", "incidents", "protecteds"*/];
 
 class Fishing extends React.Component{
   constructor (props){
@@ -270,18 +270,18 @@ class Fishing extends React.Component{
   getMasterToolbar(){
     let startEventButton = {
         //icon: 'plus-math',
-        text: "Shoot",
+        text: "Start Fishing",
         textAlign: "right",
-        style: {marginTop: 34, right: 10, width: 100 },
+        style: {marginTop: 34, left: 30, width: 200},
         color: this.props.enableStartEvent ? colors.blue : colors.gray,
         onPress:this.startFishingEvent.bind(this),
         enabled:this.props.enableStartEvent,
+        isButton: true,
     };
-    let fishingDescription = this.props.formType == "tcer" ? "Trawling" : "Lining";
     return(
         <MasterToolbar
-          center={<View style={{marginTop: 36}}><Text style={[textStyles.font, textStyles.midLabel]}>{fishingDescription}</Text></View>}
-          right={startEventButton}
+          center={startEventButton}
+          right={null}
         />
       );
   }

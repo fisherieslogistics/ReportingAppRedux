@@ -3,7 +3,7 @@ const valid = Validator.valid;
 
 const model = [
   {label: 'Species', id: 'code', valid: valid.targetProduct, defaultValue: "", type:"product",
-    editorDisplay: {editor: 'event', type: 'combined', siblings: ['numberOfContainers', 'weight']}},
+    editorDisplay: {editor: 'event', type: 'combined', siblings: ['weight']}},
   {label: 'Containers', id: 'numberOfContainers', type: 'number', valid: valid.alwaysValid, defaultValue: "0", optional: true},
   {label: 'Weight', id: 'weight', valid: valid.alwaysValid, type: 'number', defaultValue: "0", unit: 'kg'},
   {label: 'State', id: 'state', valid: valid.alwaysValid, defaultValue: "gre",

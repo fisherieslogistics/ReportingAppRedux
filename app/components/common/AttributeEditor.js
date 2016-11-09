@@ -42,7 +42,7 @@ const SingleEditor = ({ attribute, styles, getEditor, focusedAttributeId, editin
   if(!attribute.valid) {
     throw new Error(`${attribute.id} doesn't have a validator`);
   }
-  const errorView = attribute.valid.func(value) ? null : errorBubble(focusedAttributeId, attribute, isTopRow);
+  const errorView = attribute.valid.func(value) ? null : errorBubble(focusedAttributeId, attribute, true);
   const input = AttributeEditor(getEditor(attribute), editingCallback, focusedAttributeId);
   return (
     <TouchableEditor
@@ -95,7 +95,7 @@ const renderCombinedEditors = (combinedEditors, styles, editingCallback, focused
           }
 
           const isValid = e.editor.attribute.valid.func(e.editor.value);
-          const errorView = isValid ? null : errorBubble(focusedAttributeId, e.editor.attribute, isTopRow);
+          const errorView = isValid ? null : errorBubble(focusedAttributeId, e.editor.attribute, true);
 
           return (
             <TouchableEditor
