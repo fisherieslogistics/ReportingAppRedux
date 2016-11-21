@@ -11,6 +11,61 @@ const apiActions = new ApiActions();
 const helper = new Helper();
 const TIMEOUT = 6000;
 
+import net from 'react-native-tcp';
+
+var HOST = '192.168.1.1';
+var PORT = 5003;
+
+var client = new net.Socket();
+client.connect(PORT, HOST, function() {
+
+    console.log('CONNECTED TO: ' + HOST + ':' + PORT);
+
+});
+
+client.on('data', function(data) {
+
+    console.log('DATA: ' + data);
+
+});
+
+client.on('close', function() {
+    console.log('Connection closed');
+    client.connect(PORT, HOST, function() {
+        console.log('CONNECTED TO: ' + HOST + ':' + PORT);
+    });
+});
+
+
+
+
+var msgpack = require("msgpack-lite");
+
+function generateSetances(type, input, payloadLength = 250) {
+
+  function generateString(numberOfFragments, fragmentIndex, fragment) {
+    return `$FLL,${type},${numberOfFragments},${fragmentIndex},${fragment}*45`;
+  }
+
+  var buffer = msgpack.encode(input);
+  const data = buffer.toString('base64');
+
+  //const payloadLength = 250; //82;
+
+  const fragmentLength = payloadLength - generateString(99, 99, '').length;
+
+  const numberOfFragments = Math.ceil(data.length/fragmentLength);
+
+  const output = [];
+  for(var i = 1; i <= numberOfFragments; i++) {
+    const fragment = data.slice((i - 1) * fragmentLength, i * fragmentLength);
+    output.push(generateString(numberOfFragments, i,  fragment));
+  }
+  return output;
+}
+
+
+
 class SyncWorker {
 
   constructor(dispatch, getState, api) {
@@ -74,7 +129,10 @@ class SyncWorker {
       }
       return {response: res};
     }
-    return this.performMutation(mutation.query, mutation.variables, callback.bind(this));
+    generateSetances('TRP', mutation.variables).map((sentance) => {
+      client.write(`${sentance}\r\n`);
+    })
+    callback.bind(this)({});
   }
 
   mutateTrip(trip){
@@ -93,16 +151,15 @@ class SyncWorker {
       }
       return {response: res};
     }
-    return this.performMutation(mutation.query, mutation.variables, callback.bind(this));
-  }
+    generateSetances('TRP', mutation.variables).map((sentance) => {
+      client.write(`${sentance}\r\n`);
+    })
+    callback.bind(this)({});
+   }
 
   mutateFishingEvent(fishingEvent, tripId, formType){
-    let q;
-    if(formType == 'tcer'){
-      q = upsertFishingEvent(fishingEvent, tripId);
-    }else{
-      q = upsertFishingEvent(fishingEvent, tripId);
-    }
+    let q = upsertFishingEvent(fishingEvent, tripId);
+
     let time = new moment();
     let callback = (res) => {
       this.dispatch({
@@ -112,8 +169,11 @@ class SyncWorker {
       });
       return {response: res};
     }
-    return this.performMutation(q.query, q.variables, callback.bind(this));
-  }
+    generateSetances('FSHEVT', mutation.variables).map((sentance) => {
+      client.write(`${sentance}\r\n`);
+    })
+    callback.bind(this)({});
+    }
 
   performMutation(query, variables, success, dispatch){
     return new Promise((resolve, reject) => {

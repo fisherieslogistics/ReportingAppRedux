@@ -1,4 +1,3 @@
-import util from 'util';
 import Helper from '../utils/Helper';
 import version from '../constants/version';
 const helper = new Helper();
