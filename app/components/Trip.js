@@ -35,11 +35,11 @@ class Trip extends React.Component{
   }
 
   componentDidMount(){
-    if(!this.props.trip.sailingTime){
-      this.updateTrip("sailingTime", new moment());
+    if(!this.props.trip.startDate){
+      this.updateTrip("startDate", new moment());
     }
-    if(!this.props.trip.ETA){
-      this.updateTrip("ETA", new moment().add(2, 'day'));
+    if(!this.props.trip.endDate){
+      this.updateTrip("endDate", new moment().add(2, 'day'));
     }
   }
 
@@ -68,7 +68,7 @@ class Trip extends React.Component{
     if(this.props.tripCanEnd){
 
       AlertIOS.alert(
-        "Unloading " + this.props.trip.ETA.fromNow() + " at " + this.props.trip.estimatedReturnPort,
+        "Unloading " + this.props.trip.endDate.fromNow() + " at " + this.props.trip.endPort,
         "Confirm ?",
         [
           {text: 'Cancel', onPress: () => { }, style: 'cancel'},
@@ -136,13 +136,15 @@ class Trip extends React.Component{
 
   render(){
     let toolbarStyle = {height: 20, flex: 0, backgroundColor: colors.backgrounds.dark};
+    const detailToolbar = (<DetailToolbar style={toolbarStyle} />);
+    const masterToolbar = (<MasterToolbar style={toolbarStyle} />);
     return (
       <MasterDetailView
         master={ this.renderMasterView() }
         sizes={{m: 0.6, d: 0.4}}
         detail={ this.renderDetailView() }
-        detailToolbar={<DetailToolbar style={toolbarStyle} />}
-        masterToolbar={<MasterToolbar style={toolbarStyle} />}
+        detailToolbar={detailToolbar}
+        masterToolbar={masterToolbar}
       />
     );
   }

@@ -12,11 +12,10 @@ import {
   Switch,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  PickerIOS,
-  PickerItemIOS
+  PickerIOS
 } from 'react-native';
 import React from 'react';
-
+const PickerItemIOS = PickerIOS.Item;
 import ProfileEditor from './ProfileEditor';
 import VesselEditor from './VesselEditor';
 import MasterDetailView from './layout/MasterDetailView';
@@ -25,6 +24,7 @@ import MasterListView from './common/MasterListView';
 import EditorView from './common/EditorView';
 import GPSControlActions from '../actions/GPSControlActions';
 import version from '../constants/version';
+import moment from 'moment';
 
 import Validator from '../utils/Validator';
 const valid = Validator.valid;
@@ -42,7 +42,6 @@ import { EndpointLookup } from '../reducers/APIReducer';
 const authActions = new AuthActions();
 const editorStyles = StyleSheet.create(eventEditorStyles);
 const gpsControlActions = new GPSControlActions();
-
 
 const GPSSettings = ({currentPosition, positionType, gpsUrl, gpsPort, gpsBaud, dispatch} ) => {
   return <View style={{paddingTop: 10, paddingLeft: 10}}><Text>No settings here currently.</Text></View>;
@@ -136,7 +135,7 @@ const GPSSettings = ({currentPosition, positionType, gpsUrl, gpsPort, gpsBaud, d
 }
 
 
-const Login = ({onLoginPress, loggedIn, disabled, sync}) => {
+const Login = ({onLoginPress, loggedIn, disabled, sync }) => {
   const tripsToSync = sync.queues.pastTrips.length + (sync.trip ? 1 : 0);
 
   const eventsToSync = Object.keys(sync.fishingEvents).length;
@@ -152,13 +151,13 @@ const Login = ({onLoginPress, loggedIn, disabled, sync}) => {
   const topStyle = {
     backgroundColor: colors.darkBlue,
     flexDirection: 'row',
-    padding: 10
+    padding: 10,
   }
   const bottomStyle = {
     padding: 10,
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'center'
+    justifyContent: 'center',
   }
   let top = (
     <View style={topStyle}>
@@ -196,7 +195,10 @@ const Login = ({onLoginPress, loggedIn, disabled, sync}) => {
 const DevScreen = (props) => {
   return(
       <View>
-        <UrlPicker dispatch={props.dispatch} ApiEndpoint={props.ApiEndpoint} />
+        <UrlPicker dispatch={props.dispatch} ApiEndpoint={props.ApiEndpoint || ""} />
+        <TouchableOpacity onPress={() => {throw new Error("Alert Error has been thrown by the user What the fuck?")}}>
+          <Text>Throw an Error</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={props.exitDevMode}>
           <Text>Exit Dev Mode</Text>
         </TouchableOpacity>
@@ -206,7 +208,6 @@ const DevScreen = (props) => {
 
 function UrlPicker(props) {
   const urls = Object.keys(EndpointLookup).map(key => { return { name: key, value: EndpointLookup[key].ApiEndpoint } });
-  console.log(urls, Object.keys(EndpointLookup));
   let urlItems = urls.map((url) => (
     <PickerItemIOS
       key={url.name}
@@ -219,7 +220,6 @@ function UrlPicker(props) {
     <PickerIOS
       selectedValue={ selected ? selected.name: ''}
       onValueChange={(u) => {
-        console.log(u);
         props.dispatch({type: 'devMode', payload: u});
       }}
     >
@@ -240,26 +240,18 @@ class Profile extends React.Component{
       selectedLabel: "Account",
       modalVisible: false,
       transparent: false,
-      email: "",
-      password: "",
+      email: null,
+      password: null,
       devTaps: 0,
-      devMode: false
+      devMode: false,
+      lastTappedAt: new moment(),
     };
   }
 
-  componentDidMount() {
+  /*componentDidRecieveProps() {
     const func = () => {
       if(this.state.devTaps >= 3){
         this.setState({devMode: true});
-        AlertIOS.alert(
-          "Congratulations",
-          'You are an elite hacker',
-          [
-            {text: 'Awesome!', onPress: () => {
-              return;
-            }, style: 'cancel'},
-          ]
-        );
 
         // this.props.dispatch({
         //   type: 'devModeOn',
@@ -267,18 +259,40 @@ class Profile extends React.Component{
       }
         this.setState({devTaps: 0});
     };
-    const timer = setInterval(func, 1200);
-  }
+
+  }*/
 
   exitDevMode() {
-      this.setState({devMode: false, selectedEditor: "account"});
-      this.props.dispatch({
-        type: 'devModeOff',
-      });
+    this.setState({devMode: false, selectedEditor: "account"});
+    this.props.dispatch({
+      type: 'devModeOff',
+    });
   }
 
   onTap(){
-    this.setState({devTaps: (this.state.devTaps+1)});
+    const duration =  moment.duration(this.state.lastTappedAt.diff(new moment()));
+    const taps = this.state.devTaps;
+    if(taps > 2 && duration.asSeconds() < 4){
+      this.setState({
+        devMode: true,
+        lastTappedAt: new moment(),
+      });
+      AlertIOS.alert(
+        "Congratulations",
+        'You are an elite hacker',
+        [
+          {text: 'Awesome!', onPress: () => {
+            return;
+          }, style: 'cancel'},
+        ]
+      );
+
+    } else {
+      this.setState({
+        devTaps: (this.state.devTaps + 1),
+        lastTappedAt: new moment(),
+      });
+    }
   }
 
   onLoginPress(){
@@ -292,12 +306,14 @@ class Profile extends React.Component{
   }
 
   login(){
-    this.setState({
-      modalVisible: false
-    })
+    let email = this.state.email === null ? this.props.user.email : this.state.email;
     this.props.dispatch(this.props.apiActions.login(
-      this.state.email, this.state.password));
-
+      email, this.state.password));
+    this.setState({
+      modalVisible: false,
+      email: null,
+      password: null,
+    });
   }
 
   logout(){
@@ -329,9 +345,16 @@ class Profile extends React.Component{
     let defaultItems = [
       {name: "account", icon: 'cloud', label: "Account", color: colors.green},
       {name: "user", icon: 'user', label: "Profile", color: this.props.loggedIn ? colors.blue : colors.midGray},
-      {name: "vessel", icon: 'fishing-boat', label: "Vessel", color: this.props.vessels.length ?  colors.blue : colors.midGray},
       {name: "addPort", icon: 'settings', label: "Add Port", color: colors.blue},
     ];
+
+    if(! this.props.loggedIn){
+      defaultItems = [defaultItems[0]];
+    }
+
+    if(!this.props.tripStarted) {
+      defaultItems.push({name: "vessel", icon: 'fishing-boat', label: "Vessel", color: this.props.vessels.length ?  colors.blue : colors.midGray});
+    }
 
     let devItem = (this.state.devMode?[{name: "dev", icon: 'cloud', label: "Dev", color: colors.orange}]:[]);
 
@@ -409,6 +432,7 @@ class Profile extends React.Component{
       borderBottomColor: colors.lightBlue,
       borderBottomWidth: 0.5,
     };
+
     return (
       <Modal
        animationType={'fade'}
@@ -424,7 +448,8 @@ class Profile extends React.Component{
                             placeholder={"email"}
                             autoCapitalize={"none"}
                             autoCorrect={false}
-                            onChangeText={(text) => { this.setState({email: text})}} />
+                            onChangeText={(text) => { this.setState({ email: text })}}
+                             />
                </View>
                <View style={[textInputWrapper]}>
                  <TextInput style={textInputStyle}

@@ -17,6 +17,7 @@ class Client {
   }
 
   mutate(query, variables, auth){
+    //console.log(variables);
     return this.performRefreshableRequest(this._mutate.bind(this, query, variables, auth), auth);
   }
 
@@ -32,9 +33,9 @@ class Client {
     let self = this;
     if(this.refreshNeeded(auth)){
       return this.promisifyRequestBody(this._refresh(auth))
-               .catch((err) => {
-                 console.warn(err);
-                 return err;
+                 .catch((err) => {
+                  //console.log("first catch", err);
+                  throw err;
                })
                .then((newAuth) => {
                  self.dispatch(authActions.setAuth(newAuth));
@@ -52,12 +53,14 @@ class Client {
           try{
             reject(err.response.text);
           }catch(e){
-            console.warn(e);
+            console.log(e);
             reject(err);
           }
           return;
+        }else{
+          //console.log(res.body);
+          resolve(res.body);
         }
-        resolve(res.body);
       });
     });
   }
@@ -88,6 +91,7 @@ class Client {
   }
 
   _login(username, password){
+    //console.log(username, password, this.apiEndpoint);
     return request.post(this.apiEndpoint + 'oauth/token')
              .type('form')
              .send({ 'grant_type': 'password' })

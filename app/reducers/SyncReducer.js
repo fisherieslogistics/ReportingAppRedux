@@ -58,22 +58,18 @@ export default (state = initialState, action) => {
       state.trip = null;
       let _trip = Object.assign({}, action.trip);
       _trip.message = action.message;
-      _trip.completed = true;
+      _trip.complete = true;
       state.queues.pastTrips.push({
         trip: _trip,
-        fishingEvents: action.fishingEvents.filter(fe => !!state.fishingEvents[action.objectId]),
+        fishingEvents: action.fishingEvents.filter(fe => !!state.fishingEvents[fe.objectId]),
         vesselId: action.vesselId,
-        formType: action.formType
+        formType: action.formType,
       });
-      return state;
-    case 'formSigned':
-      action.fishingEvents.forEach((fe) => {
-        state.fishingEvents[fe.objectId] = new moment();
-      });
+      state = Object.assign({}, state, { fishingEvents: {}});
       return state;
     case "syncError":
       state.updatedAt = new moment();
-      console.warn(action.err);
+    //  console.warn(action.err);
       return state;
     default:
       return state;

@@ -34,21 +34,6 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case "setGpsUrl":
-      state.gpsUrl = action.url;
-      return state;
-    case "setGpsPort":
-      state.gpsPort = action.port;
-      return state;
-    case "setGpsBaud":
-      state.gpsBaud = action.baud;
-      return state;
-    case "nativeGPSOn":
-      state.positionType = 'native';
-      return state;
-    case "ipGpsOn":
-      state.positionType = 'IP';
-      return state;
     case "setCatchDetailsExpanded":
       state.catchDetailsExpanded = action.catchDetailsExpanded;
       return state;
@@ -56,15 +41,14 @@ export default (state = initialState, action) => {
       if(!action.user){
         return state;
       }
-      return state = update(state, {user: action.user});
+      return update(state, {user: action.user});
     case 'editUser':
       let user = update(state.user, action.change);
       return update(state,  { user: user });
-    case 'logout':
     case 'devMode':
       return initialState;
     case 'setUser':
-      return update(state,  { user: action.user });
+      return update(state,  { user: action.user, containers: action.user.bins || initialState.containers });
     case 'setVessel':
       return update(state, { vessel: action.vessel });
     case 'setFormType':

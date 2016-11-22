@@ -36,6 +36,7 @@ export default class ModalLocationForm extends Component {
     this.setState({
       nextInput: inputName ? input : null,
     });
+    
   }
 
   render(){

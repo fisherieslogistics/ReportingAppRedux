@@ -2,13 +2,14 @@
 import Queries, {
   upsertTrip,
   upsertFishingEvent,
-  upsertLCERFishingEvent,
 } from './Queries';
 
 import Helper from '../utils/Helper';
 import moment from 'moment';
+import ApiActions from '../actions/ApiActions.js';
+const apiActions = new ApiActions();
 const helper = new Helper();
-const TIMEOUT = 10000;
+const TIMEOUT = 6000;
 
 class SyncWorker {
 
@@ -16,7 +17,7 @@ class SyncWorker {
     this.dispatch = dispatch;
     this.api = api;
     this.getState = getState;
-    this.timeToSync = 5000;
+    this.timeToSync = 3000;
     this.requests = [];
     this.startSync();
   }
@@ -30,27 +31,31 @@ class SyncWorker {
     if(this.requests.length || (!state.auth.loggedIn)){
       return;
     }
-
     const formType = state.me.formType;
     const fEventIds = Object.keys(state.sync.fishingEvents);
     this.requests = state.fishingEvents.events.filter(fe => (fEventIds.indexOf(fe.objectId) !== -1))
                                               .map(fe => this.mutateFishingEvent(fe, state.trip.objectId, formType));
-
     if(state.sync.trip){
       this.requests.push(this.mutateTrip(state.trip, state.me.vessel.id));
     }
 
-    state.sync.queues.pastTrips.slice(0, 1).forEach((t) => {
+    state.sync.queues.pastTrips.forEach((t) => {
       let pastRequests = [];
       t.fishingEvents.forEach(fe => pastRequests.push(this.mutateFishingEvent(fe, t.trip.objectId, t.formType)));
-      return Promise.all(pastRequests).then(this.mutatePastTrip(t.trip));
+      return this.mutatePastTrip(t.trip, t.vesselId).then((res) => {
+        Promise.all(pastRequests).then();
+      })
     });
 
     if(this.requests.length){
       Promise.all(this.requests).then((responses) => {
         this.requests = [];
+        apiActions.checkMe(this.getState().default.auth, this.dispatch);
       });
     }
+
+
+
   }
 
   mutatePastTrip(trip){
@@ -81,10 +86,10 @@ class SyncWorker {
         this.dispatch({
           type: "tripSynced",
           time: time,
-          objectId: res.data.upsertTripMutation.trip._id
+          objectId: res.data.upsertTrip2.trip.id
         });
       }catch(e) {
-        console.warn(e);
+        //console.warn(e);
       }
       return {response: res};
     }
@@ -96,7 +101,7 @@ class SyncWorker {
     if(formType == 'tcer'){
       q = upsertFishingEvent(fishingEvent, tripId);
     }else{
-      q = upsertLCERFishingEvent(fishingEvent, tripId);
+      q = upsertFishingEvent(fishingEvent, tripId);
     }
     let time = new moment();
     let callback = (res) => {
@@ -107,21 +112,24 @@ class SyncWorker {
       });
       return {response: res};
     }
-    return this.performMutation(q, fishingEvent, callback.bind(this));
+    return this.performMutation(q.query, q.variables, callback.bind(this));
   }
 
   performMutation(query, variables, success, dispatch){
-    return this.api.mutate(query, variables, this.getState().default.auth)
-      .then(success)
-      .catch((err) => {
-        debugger;
-        this.dispatch({
-          type: "syncError",
-          time: new moment(),
-          err: err
-        })
+    return new Promise((resolve, reject) => {
+      this.api.mutate(query, variables, this.getState().default.auth)
+        .then((res) => resolve(success(res)))
+        .catch((err) => {
+          console.warn("peromed not nice", err, query, variables);
+          this.dispatch({
+            type: "syncError",
+            time: new moment(),
+            err: err
+          });
+          resolve(false);
+        });
       });
-  }
+    }
 
 }
 

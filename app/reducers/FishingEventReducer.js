@@ -9,7 +9,6 @@ const helper = new Helper();
 
 let initialState = {
   events: [],
-  errors: {},
   deletedProducts: {}
 }
 
@@ -187,7 +186,7 @@ const calculateEventValid = (fEvent, formType) => {
   const fishingEventModel = getFishingEventModelByTypeCode(formType);
   let valid = true;
   let productsValid = !fEvent.products.find(p => !(p.weight && p.code)) && fEvent.products.length;
-  fishingEventModel.specific.forEach((attr) => {
+  fishingEventModel.complete.forEach((attr) => {
     if(attr.valid){
       if(attr.valid && !attr.valid.func(fEvent[attr.id])){
         valid = false;
@@ -208,7 +207,7 @@ const setFishingEventGear = (fishingEvent, gear) => {
 
 const newFishingEvent = (state, location, formType) => {
   const fishingEventModel = getFishingEventModelByTypeCode(formType);
-  let newEvent = ModelUtils.blankModel(fishingEventModel.complete);
+  let newEvent = ModelUtils.blankModel(fishingEventModel.complete, 'FishingEvent');
   let id = state.events.length + 1;
   const objectId = newEvent.objectId;
   newEvent.id = id;

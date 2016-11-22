@@ -16,6 +16,7 @@ import reactMixin from 'react-mixin';
 import Subscribable from 'Subscribable';
 import {connect} from 'react-redux';
 import colors from '../styles/colors';
+import FocusOnDemandTextInput from './common/FocusOnDemandTextInput';
 
 const viewActions = new ViewActions();
 
@@ -61,12 +62,20 @@ class ContainerPicker extends React.Component {
         changedByEvent: true,
         value: event.value
       });
-      setTimeout(() => {
+      this.props.onChange(event.value);
+      this.props.onEnterPress(this.props.attributeId);
+      /*setTimeout(() => {
         this.forceUpdate();
         if(this.refs.textInput){
           this.refs.textInput.blur();
         }
-      });
+      });*/
+    }
+  }
+
+  onKeyPress(event) {
+    if(event.nativeEvent.key === 'Enter' && this.props.onEnterPress){
+      this.props.onEnterPress(this.props.attributeId);
     }
   }
 
@@ -78,15 +87,18 @@ class ContainerPicker extends React.Component {
                                                               this.props.inputId,
                                                               ));
     this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
+    this.props.editingCallback(this.props.name);
   }
 
   onBlur(event){
     this.props.onChange(this.state.value);
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
+    this.props.editingCallback();
   }
 
   componentWillUnmount(){
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
+    this.props.editingCallback();
   }
 
   onChangeText(text) {
@@ -100,7 +112,7 @@ class ContainerPicker extends React.Component {
     let style = [{fontSize: 16, flex: 1, height: 30, color: colors.black},
                   textStyles.font, this.props.textStyle];
     return(
-      <TextInput
+      <FocusOnDemandTextInput
         style={style}
         onFocus={this.onFocus.bind(this)}
         onBlur={this.onBlur.bind(this)}
@@ -113,6 +125,8 @@ class ContainerPicker extends React.Component {
         autoCorrect={false}
         ref={'textInput'}
         editable={!this.props.disabled}
+        focus={ this.props.focus }
+        onKeyPress={ this.onKeyPress.bind(this) }
       />)
   }
 };

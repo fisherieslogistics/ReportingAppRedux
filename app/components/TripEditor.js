@@ -31,7 +31,7 @@ const PickerItemIOS = PickerIOS.Item;
 
 
 const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTime, disabled, choices}) => {
-  time = time || new moment();
+  time = time || new moment(new Date().getTime());
   let placeTimeStyle = StyleSheet.create({
     wrapper:{
       backgroundColor: colors.pastelGreen,
@@ -64,7 +64,7 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
       <View style={{left: -22,}}>
         <View>
            <Text style={{color: colors.blue}}>
-            {timeType === 'sailingTime'? 'Start Time' : 'Estimated Return Time'}
+            {timeType === 'startDate'? 'Start Time' : 'Estimated Return Time'}
           </Text>
             <Text style={[textStyles.font, {fontSize: 16}]}>{!time || isNaN(time.unix()) ? "  " : time.format("DD MMM HH:mm") }</Text>
             <Text style={[dateStyle, {color: colors.darkGray, fontSize: 12, top: 2}]}>{ (!time || isNaN(time.unix()) ) ? "Select date" : time.fromNow() }</Text>
@@ -80,7 +80,7 @@ const PlaceAndTime = ({portType, timeType, port, time, onChangePort, onChangeTim
       </View>
       <View style={[{width: 120, left: 13, marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderColor: colors.gray }]}>
              <Text style={{color: colors.blue}}>
-            {timeType === 'sailingTime'? 'Start Port' : 'End Port'}
+            {timeType === 'startDate'? 'Start Port' : 'End Port'}
           </Text>
         <PortPicker
           name={portType + "__picker"}
@@ -152,10 +152,10 @@ class TripEditor extends React.Component {
           <View style={[styles.row, styles.bottomRow]}>
             <View style={[styles.halfway]}>
               <PlaceAndTime
-                portType={"leavingPort"}
-                timeType={"sailingTime"}
-                port={this.props.trip.leavingPort}
-                time={this.props.trip.sailingTime}
+                portType={"startPort"}
+                timeType={"startDate"}
+                port={this.props.trip.startPort}
+                time={this.props.trip.startDate}
                 onChangePort={this.onChangePort.bind(this)}
                 onChangeTime={this.onChangeTime.bind(this)}
                 disabled={this.props.trip.started}
@@ -164,10 +164,10 @@ class TripEditor extends React.Component {
             </View>
             <View style={[styles.halfway]}>
               <PlaceAndTime
-                portType={"estimatedReturnPort"}
-                timeType={"ETA"}
-                port={this.props.trip.estimatedReturnPort}
-                time={this.props.trip.ETA}
+                portType={"endPort"}
+                timeType={"endDate"}
+                port={this.props.trip.endPort}
+                time={this.props.trip.endDate}
                 onChangePort={this.onChangePort.bind(this)}
                 onChangeTime={this.onChangeTime.bind(this)}
                 disabled={false}

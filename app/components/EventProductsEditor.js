@@ -28,6 +28,13 @@ const inputOrder = [
   'weight',
 ];
 
+const optionalInputOrder = [
+  'state',
+  'containerType',
+  'grade',
+  'treatment',
+];
+
 const DeleteButton = (props) => {
   return (
     <TouchableOpacity onPress={() => props.onPress(props.index)} style={styles.deleteButtonWrapper}>
@@ -57,6 +64,7 @@ class EventProductsEditor extends React.Component{
       if(attribute.type == 'container'){
         extraProps.choices = this.props.containerChoices;
         extraProps.name = "__product" + "__" + index + "__container";
+        extraProps.attributeId = attribute.id;
       }
       const enterPressed = (attrId) => { this.onEnterPress(attrId, index) };
       return {
@@ -104,17 +112,17 @@ class EventProductsEditor extends React.Component{
     }
 
     onEnterPress(attributeId, productIndex){
-      const index = inputOrder.indexOf(attributeId);
-
-      if(index === -1){
+      const orderOfinputs = this.props.optionalFields ? inputOrder.concat(optionalInputOrder) : inputOrder;
+      const index = orderOfinputs.indexOf(attributeId);
+      if(index === -1) {
         this.setState({
           nextInput: '',
         });
         return;
       }
 
-      const isLastInput = (index === (inputOrder.length - 1));
-      const input = isLastInput ? inputOrder[0] : inputOrder[index + 1];
+      const isLastInput = (index === (orderOfinputs.length - 1));
+      const input = isLastInput ? orderOfinputs[0] : orderOfinputs[index + 1];
 
       if((productIndex === (this.props.products.length - 1)) && isLastInput){
         this.addProduct();
@@ -123,7 +131,6 @@ class EventProductsEditor extends React.Component{
         });
         return;
       };
-
 
       this.setState({
         nextInput: input + '__' + (isLastInput ? (productIndex + 1) : productIndex),

@@ -19,6 +19,16 @@ class ApiActions {
     client = new Client(dispatch, ApiEndpoint, timeoutMS);
   }
 
+  checkMe(auth, dispatch){
+    client.query(queries.getMe, {accessToken: auth.accessToken, expiresAt: auth.expiresAt})
+      .catch((err) => {
+        console.warn(err);
+      })
+      .then((res) => {
+        dispatch(userActions.setUser(parseUser(res.data.viewer)));
+      });
+  }
+
   login(username, password){
     return (dispatch, getState) => {
       client.login(username, password)
@@ -78,6 +88,7 @@ const parseUser = (viewer) => {
     permitHolderName: viewer.formData.permit_holder_name,
     permitHolderNumber: viewer.formData.permit_holder_number,
     email: viewer.email,
+    bins: viewer.bins,
   }
 }
 

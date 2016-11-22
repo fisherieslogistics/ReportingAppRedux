@@ -25,7 +25,7 @@ const helper = new Helper();
 
 const Editors = (props) => {
   let inputs = [];
-  let labels = []
+  let labels = [];
   props.model.forEach((attribute, i) => {
       if(attribute.readOnly || attribute.hidden) {
           return;
@@ -230,7 +230,8 @@ class EditOnBlur extends React.Component {
         onChangeText={this.onChangeText.bind(this)}
         focus={ this.props.focus }
         onKeyPress={ this.onKeyPress }
-        {...this.props.extraProps} />
+        {...this.props.extraProps}
+     />
     );
   }
 }
@@ -257,11 +258,10 @@ const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEn
         <DatePicker
           date={ value ? value.toDate() : new Date()}
           mode="datetime"
-          format="MMM DD HH:mm"
           confirmBtnText="Confirm"
           cancelBtnText="Cancel"
           customStyles={{
-            dateText: inputStyles.dateText,
+            dateText: Object.assign({}, inputStyles.dateText, {left: 45}),
             dateInput: inputStyles.dateInput,
             dateIcon: inputStyles.dateIcon,
           }}

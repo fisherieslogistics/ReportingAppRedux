@@ -28,7 +28,7 @@ class FormsList extends React.Component {
       if(!form.fishingEvents.find(f => !f.signature)){
         return {
           icon: 'cloud',
-          color: colors.midGray
+          color: colors.green
         }
       }
       if(form.signature){

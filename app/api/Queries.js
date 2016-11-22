@@ -1,164 +1,145 @@
-import util from 'util';
+import Helper from '../utils/Helper';
+import version from '../constants/version';
+const helper = new Helper();
 
-const upsertFishingEvent = (fEvent, tripId) => {
-  const catches = fEvent.products.filter((x) => !!x.code)
-                                 .map((c) => {
-                                     let prod = Object.assign({}, c, {weight: parseInt(c.weight || 0),
-                                                                      numberOfContainers: parseInt(c.numberOfContainers | 0)});
-                                     delete prod["objectId"];
-                                     return prod;
-                                  });
-  let custom = {
+function getCustom(fEvent){
+  const tcer = {
     headlineHeight: fEvent.headlineHeight || 0,
-    wingSpread: fEvent.wingSpread || 0
+    wingSpread: fEvent.wingSpread || 0,
   };
+  const lcer = {
+    numberOfHooks: fEvent.numberOfHooks || 0,
+    hookSpacing: fEvent.hookSpacing || 0,
+  };
+  if('numberOfHooks' in fEvent){
+    return JSON.stringify(lcer);
+  }
+  return JSON.stringify(tcer);
+}
+
+function parseProducts(products){
+  const catches = products.filter((x) => !!x.code).map((c) => {
+    let prod = Object.assign({}, c, {
+      weight: parseInt(c.weight || 0),
+      numberOfContainers: parseInt(c.numberOfContainers || 0),
+      containerType: c.containerType || "",
+      state: c.state || "",
+      treatment: c.treatment || "iced",
+      grade: c.grade || "",
+    });
+    delete prod["objectId"];
+    return prod;
+  });
+  return catches;
+}
+
+function parseUnsoughtCatches(fEvent){
   const otherCatches = {};
-  ['discards', 'protecteds', 'incidents'].forEach( name => {
-    otherCatches[name] = fEvent[name].map(item => {
+  ['discards', 'protecteds', 'accidents'].forEach( name => {
+    const _name = (name === 'accidents') ? 'incidents' : name;
+    const items = fEvent[_name].map(item => {
       const newItem = Object.assign({}, item);
       delete newItem.objectId;
       return newItem;
     });
+
+    otherCatches[_name] = items;
   });
-  return `
-    mutation {
-      upsertFishingEvent(
-        _id: "${fEvent.objectId}",
-        trip: "${ tripId }",
-        numberOfInTrip: ${ fEvent.id },
-        nonFishProtected: ${ fEvent.nonFishProtected ? true : false },
-        averageSpeed: ${ parseFloat(fEvent.averageSpeed || 0) },
-        bottomDepth: ${ parseInt(fEvent.bottomDepth || 0)},
-        endDate: "${ fEvent.datetimeAtEnd ? fEvent.datetimeAtEnd.toISOString() : fEvent.datetimeAtStart.toISOString()  }",
-        startDate: "${ fEvent.datetimeAtStart.toISOString() }",
-        finished: true,
-        groundropeDepth: ${ parseInt(fEvent.groundropeDepth || 0) },
-        targetSpecies: "${ fEvent.targetSpecies }",
-        committed: ${ !!fEvent.committed },
-        custom: ${ JSON.stringify(JSON.stringify(custom)) },
-        locationStart: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtStart.lat, lon: fEvent.locationAtStart.lon})) },
-        locationEnd: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtEnd.lat, lon: fEvent.locationAtEnd.lon})) },
-        catches: ${ util.inspect(catches).replace(/\'/g, '"') },
-        discards: ${ util.inspect(otherCatches.discards).replace(/\'/g, '"') },
-        protecteds: ${ util.inspect(otherCatches.protecteds).replace(/\'/g, '"') },
-        incidents: ${ util.inspect(otherCatches.incidents).replace(/\'/g, '"') },
-      ) {
-        _id,
-      }
-    }
-  `
+  return otherCatches;
 }
 
-const upsertLCERFishingEvent = (fEvent, tripId) => {
-  const catches = fEvent.products.filter((x) => !!x.code).map((c) => {
-    let prod = Object.assign({}, c, {weight: parseInt(c.weight || 0),
-                                     numberOfContainers: parseInt(c.numberOfContainers | 0)});
-    delete prod["objectId"];
-    return prod;
-  });
-  let custom = {
-    numberOfHooks: fEvent.numberOfHooks || 0,
-    hookSpacing: fEvent.hookSpacing || 0
+
+function upsertFishingEvent(fEvent, tripId) {
+  const otherCatches = parseUnsoughtCatches(fEvent);
+  const catches = parseProducts(fEvent.products);
+  const custom = getCustom(fEvent);
+  const startLoc = helper.locationToGeoJSON(fEvent.locationAtStart);
+  const endLoc = helper.locationToGeoJSON(fEvent.locationAtEnd);
+  const fishingEventInput = {
+    id: fEvent.objectId,
+    trip_id: tripId,
+    numberOfInTrip: fEvent.id,
+    nonFishProtected: !!fEvent.nonFishProtected,
+    averageSpeed: parseFloat(fEvent.averageSpeed || 0),
+    bottomDepth: parseInt(fEvent.bottomDepth || 0),
+    endDate: fEvent.datetimeAtEnd ? fEvent.datetimeAtEnd.toISOString() : null,
+    startDate: fEvent.datetimeAtStart.toISOString(),
+    finished: true,
+    groundropeDepth: parseInt(fEvent.groundropeDepth || 0),
+    targetSpecies: fEvent.targetSpecies,
+    committed: !!fEvent.committed,
+    custom: custom,
+    locationStart: startLoc,
+    locationEnd: endLoc,
+    catches: catches,
+    discards: otherCatches.discards,
+    protecteds: otherCatches.protecteds,
+    incidents: otherCatches.incidents,
+    version: version,
+    __legacyId: fEvent.__legacyId || null,
   };
-  return `
-    mutation {
-      upsertFishingEvent(
-        _id: "${fEvent.objectId}",
-        trip: "${ tripId }",
-        numberOfInTrip: ${ fEvent.id },
-        nonFishProtected: ${ fEvent.nonFishProtected ? true : false },
-        endDate: "${ fEvent.datetimeAtEnd ? fEvent.datetimeAtEnd.toISOString() : fEvent.datetimeAtStart.toISOString()  }",
-        startDate: "${ fEvent.datetimeAtStart.toISOString() }",
-        finished: true,
-        targetSpecies: "${ fEvent.targetSpecies }",
-        committed: ${ !!fEvent.committed },
-        bottomDepth: ${ parseInt(fEvent.bottomDepth || 0)},
-        custom: ${ JSON.stringify(JSON.stringify(custom)) },
-        locationStart: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtStart.lat, lon: fEvent.locationAtStart.lon})) },
-        locationEnd: ${ JSON.stringify(JSON.stringify({lat: fEvent.locationAtEnd.lat, lon: fEvent.locationAtEnd.lon})) },
-        catches: ${ util.inspect(catches).replace(/\'/g, '"') }
-      ) {
-        _id,
-      }
-    }
-  `
-}
-
-const newTrip = (trip) => {
-  let query = `
-      mutation {
-        createTrip(
-          leavingPort: "${trip.leavingPort}",
-          estimatedReturnPort: "${trip.estimatedReturnPort}",
-          sailingTime: "${trip.sailingTime.toISOString()}",
-          ETA: "${trip.ETA.toISOString()}",
-          vessel: "${trip.vesselId}"
-        ){
-          id
+  return {
+    query: `
+      mutation($data: UpsertFishingEventMutation2Input!) {
+        upsertFishingEvent2(input: $data)
+        {
+          fishingEvent {
+            id
+          }
         }
       }
-  `
-  return {query: query, variables: {}};
-}
-
-const updateTrip = (trip) => {
-  return `
-    mutation {
-      updateTrip(
-        Id: "${trip.id}",
-        binsOfIce:0,
-        message: "${trip.message}",
-        unloadPort: "${trip.estimatedReturnPort}",
-        time: "${trip.ETA.toISOString()}",
-      ) {
-        id
-      }
+    `,
+    variables: {
+      fishingEvent: fishingEventInput,
+      clientMutationId: "fisData2" + new Date().getTime(),
     }
-    `}
+  };
+}
 
 const upsertTrip = (trip) => {
   let _trip = Object.assign({}, trip, {
-    _id: trip.objectId,
-    sailingTime: trip.sailingTime.toISOString(),
-    ETA: trip.ETA.toISOString(),
-    vessel: trip.vesselId,
-    completed: trip.completed,
-    message: trip.message || "",
+    id: trip.objectId,
+    startDate: trip.startDate.toISOString(),
+    endDate: trip.endDate.toISOString(),
+    vessel_id: trip.vesselId,
+    complete: trip.complete,
+    endPort: trip.endPort,
+    startPort: trip.startPort,
+    __legacyId: trip.__legacyId || null,
   });
   delete _trip.started;
-  delete _trip.lastSubmitted;
-  delete _trip.lastChange;
   delete _trip.objectId;
   delete _trip.vesselId;
+  delete _trip.message;
   return {
     query: `
-      mutation($data: UpsertTripMutationInput!){
-        upsertTripMutation(input: $data)
+      mutation($data: UpsertTripMutation2Input!){
+        upsertTrip2(input: $data)
           {
             trip{
-              _id
+              id
             }
           }
       }
     `,
     variables: {
       trip: _trip,
-      clientMutationId: "tripData" + new Date().getTime()
+      clientMutationId: "tripData2" + new Date().getTime()
     }
   };
 }
-
-export {upsertTrip, upsertFishingEvent, upsertLCERFishingEvent};
+export {upsertTrip, upsertFishingEvent};
 
 export default {
-  getMe: `
+  getMe:`
     {
       viewer {
         firstName
         lastName
         username
         email
-        formData{
+        bins
+        formData {
           cedric_client_number
           first_name
           form_type
@@ -167,9 +148,9 @@ export default {
           permit_holder_name
         }
         vessels {
-            name
-            registration
-          id: _id
+          name
+          registration
+          id
         }
       }
     }

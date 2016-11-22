@@ -22,6 +22,11 @@ let initialState = {
   },
 }
 
+const update = (obj, change) => {
+  return Object.assign({}, obj, change);
+}
+
+initialState = getOrientationDetail(initialState, Orientation.getInitialOrientation());
 
 export default (state = initialState, action) => {
     if(!state.orientation){
@@ -57,10 +62,6 @@ function getOrientationDetail(state, orientation){
     case 'LANDSCAPEUPSIDEDOWN':
       return update(state, {width: 1024, height: 768, orientation: orientation});
     default:
-      return update(state, {width: 1024, height: 768, orientation: orientation});
+      return state;
   }
 };
-
-const update = (obj, change) => {
-  return Object.assign({}, obj, change);
-}

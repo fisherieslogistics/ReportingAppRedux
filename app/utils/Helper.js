@@ -42,6 +42,11 @@ class Helper {
       lat: latHemisphere == 'North' ? lat : (lat * -1)
     };
   }
+  locationToGeoJSON(location){
+    return JSON.stringify(
+      { type: "Feature", geometry:
+        { type: "Point", coordinates: [location.lon, location.lat]}});
+  }
   capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
@@ -117,17 +122,36 @@ class Helper {
     AsyncStorage.clear(() => null);
   }
 
+  loadSavedStateAsync() {
+    return new Promise((resolve, reject) => {
+      this.loadSavedState((savedState, err) => {
+        if(err){
+          return reject(err);
+        }
+        return resolve(savedState);
+      });
+    });
+  }
+
   loadSavedState(callback) {
     AsyncStorage.getItem('savedState', (err, state)=>{
       if(err){
         console.warn(err);
       }
-      let savedState = this.deserialize(state) || {};
+      let savedState = this.deserialize(state);
       callback(savedState);
     });
   };
 
-  async saveToLocalStorage(state, actionType, key) {
+  saveErrorToLocalStorage(state, err) {
+    let serializedState = this.serialize({
+      error: err,
+      state: state,
+    });
+    return AsyncStorage.setItem('errorState', serializedState, () => {});
+  }
+
+  async saveToLocalStorage(state, actionType) {
     switch (actionType) {
       case 'loadSavedState':
       case 'updateGps':
@@ -141,7 +165,7 @@ class Helper {
       return;
     }
     let serializedState = this.serialize(state);
-    await AsyncStorage.setItem('savedState', serializedState, (err, something) => {
+    return await AsyncStorage.setItem('savedState', serializedState, (err, something) => {
       if(err){
         console.warn(err);
       }
@@ -217,7 +241,7 @@ class Helper {
     }
 
     tripCanStart(trip){
-      return (trip.leavingPort && trip.sailingTime && trip.ETA && trip.estimatedReturnPort && (!trip.started))
+      return (trip.startPort && trip.startDate && trip.endDate && trip.endPort && (!trip.started))
     }
 
   };
