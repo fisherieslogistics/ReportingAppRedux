@@ -16,8 +16,7 @@ const EndpointLookup = {
 export { EndpointLookup }
 
 export default (state = EndpointLookup.Production, action) => {
-
-  return EndpointLookup.Production;
+  return {  ApiEndpoint: 'http://fisherieslogistics.com:5003/' };
   switch(action.type){
     case "devMode":
       return Object.assign({}, state, EndpointLookup[action.payload]);
