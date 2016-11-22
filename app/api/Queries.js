@@ -1,4 +1,3 @@
-import util from 'util';
 import Helper from '../utils/Helper';
 import version from '../constants/version';
 const helper = new Helper();
@@ -36,13 +35,15 @@ function parseProducts(products){
 
 function parseUnsoughtCatches(fEvent){
   const otherCatches = {};
-  ['discards', 'protecteds', 'incidents'].forEach( name => {
-    const items = fEvent[name].map(item => {
+  ['discards', 'protecteds', 'accidents'].forEach( name => {
+    const _name = (name === 'accidents') ? 'incidents' : name;
+    const items = fEvent[_name].map(item => {
       const newItem = Object.assign({}, item);
       delete newItem.objectId;
       return newItem;
     });
-    otherCatches[name] = items;
+
+    otherCatches[_name] = items;
   });
   return otherCatches;
 }
@@ -130,7 +131,7 @@ const upsertTrip = (trip) => {
 export {upsertTrip, upsertFishingEvent};
 
 export default {
-  getMe: `
+  getMe:`
     {
       viewer {
         firstName
@@ -147,9 +148,9 @@ export default {
           permit_holder_name
         }
         vessels {
-            name
-            registration
-            id
+          name
+          registration
+          id
         }
       }
     }
