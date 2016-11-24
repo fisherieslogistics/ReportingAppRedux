@@ -10,7 +10,7 @@ export default {
   lightBlue: "#b6daf0",
   darkBlue: "#0C5071",
   orange: "#FF9500",
-  green: "#4DC964",
+  green: "#78F7C6",
   pastelGreen: "#78F7C6",
   darkGray: "#8c8c8c",
   pink: "#FF2D55",

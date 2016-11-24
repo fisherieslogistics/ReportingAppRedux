@@ -37,7 +37,7 @@ const renderButton = (button, textAlign) => {
 
 const MasterToolbar = (props) => {
   return (
-    <View style={[masterStyles.toolbar, props.style]}>
+    <View style={[masterStyles.toolbar, props.style, { backgroundColor: colors.backgrounds.dark }]}>
       <View style={[masterStyles.left]}>
         {props.left ? renderButton(props.left, "left") : null}
       </View>
@@ -97,7 +97,7 @@ const masterStyles = StyleSheet.create({
 
 const detailStyles = StyleSheet.create({
    toolbar:{
-     backgroundColor: colors.white,
+     backgroundColor: colors.backgrounds.dark,
      flexDirection: 'row',
      flex: 0.1,
      height: 70

@@ -32,6 +32,9 @@ class Trip extends React.Component {
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
     };
+    this.isSelected = this.isSelected.bind(this);
+    this.endTrip = this.endTrip.bind(this);
+    this.startTrip = this.startTrip.bind(this);
   }
 
   componentDidMount(){
@@ -60,7 +63,7 @@ class Trip extends React.Component {
               data={this.state.ds.cloneWithRows(this.props.totals)}
               selectedTotal={this.props.selectedTotal}
               onPress={this.totalSelected}
-              isSelected={this.isSelected.bind(this)}
+              isSelected={this.isSelected}
             />);
   }
 
@@ -118,9 +121,9 @@ class Trip extends React.Component {
           dispatch={this.props.dispatch}
           tripCanStart={this.props.tripCanStart}
           tripCanEnd={this.props.tripCanEnd}
-          endTrip={this.endTrip.bind(this)}
+          endTrip={this.endTrip}
           ports={this.props.ports}
-          startTrip={this.startTrip.bind(this)}
+          startTrip={this.startTrip}
           orientation={this.props.orientation}
         />
         <View style={{flexDirection: 'row',

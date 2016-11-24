@@ -111,6 +111,10 @@ class TripEditor extends React.Component {
         newPortName: "",
         portChoices: this.getPortChoices(props),
       }
+      this.onChangePort = this.onChangePort.bind(this);
+      this.onChangeTime = this.onChangeTime.bind(this);
+      this.startTrip = this.startTrip.bind(this);
+      this.endTrip = this.endTrip.bind(this);
     }
 
     getPortChoices(props){
@@ -156,8 +160,8 @@ class TripEditor extends React.Component {
                 timeType={"startDate"}
                 port={this.props.trip.startPort}
                 time={this.props.trip.startDate}
-                onChangePort={this.onChangePort.bind(this)}
-                onChangeTime={this.onChangeTime.bind(this)}
+                onChangePort={this.onChangePort}
+                onChangeTime={this.onChangeTime}
                 disabled={this.props.trip.started}
                 choices={this.state.portChoices}
               />
@@ -168,8 +172,8 @@ class TripEditor extends React.Component {
                 timeType={"endDate"}
                 port={this.props.trip.endPort}
                 time={this.props.trip.endDate}
-                onChangePort={this.onChangePort.bind(this)}
-                onChangeTime={this.onChangeTime.bind(this)}
+                onChangePort={this.onChangePort}
+                onChangeTime={this.onChangeTime}
                 disabled={false}
                 choices={this.state.portChoices}
               />
@@ -180,7 +184,7 @@ class TripEditor extends React.Component {
               <LongButton
                 text={"Start Trip"}
                 bgColor={colors.blue}
-                onPress={this.startTrip.bind(this)}
+                onPress={this.startTrip}
                 disabled={!this.props.tripCanStart}
               />
             </View>
@@ -188,7 +192,7 @@ class TripEditor extends React.Component {
               <LongButton
                 text={"End Trip"}
                 bgColor={this.props.tripCanEnd ? colors.blue : colors.midGray}
-                onPress={this.endTrip.bind(this)}
+                onPress={this.endTrip}
                 disabled={!this.props.tripCanEnd}
               />
             </View>

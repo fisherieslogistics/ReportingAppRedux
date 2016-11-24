@@ -48,6 +48,12 @@ class ReportingApp extends Component {
         this.props.dispatch(gpsControlActions.ipGpsOn());
       }, 2000);
     }
+    this.orientationDidChange = this.orientationDidChange.bind(this);
+    this.renderTrip = this.renderTrip.bind(this);
+    this.renderFishing = this.renderFishing.bind(this);
+    this.renderForms = this.renderForms.bind(this);
+    this.renderTabs = this.renderTabs.bind(this);
+    this.renderProfile = this.renderProfile.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -62,21 +68,21 @@ class ReportingApp extends Component {
   }
 
   componentDidMount(){
-    Orientation.addOrientationListener(this.orientationDidChange.bind(this));
+    Orientation.addOrientationListener(this.orientationDidChange);
     this.props.dispatch(viewActions.orientation(Orientation.getInitialOrientation()));
   }
 
   componentWillUnmount() {
-    Orientation.removeOrientationListener(this.orientationDidChange.bind(this));
+    Orientation.removeOrientationListener(this.orientationDidChange);
   }
 
   renderTabs(){
 
     const tabs = {
-      trip: {render: this.renderTrip.bind(this), icon: 'fishing-boat'},
-      fishing: {render: this.renderFishing.bind(this), icon: 'fishing'},
-      forms: {render: this.renderForms.bind(this), icon: 'form'},
-      settings: {render: this.renderProfile.bind(this), icon: 'settings'},
+      trip: {render: this.renderTrip, icon: 'fishing-boat'},
+      fishing: {render: this.renderFishing, icon: 'fishing'},
+      forms: {render: this.renderForms, icon: 'form'},
+      settings: {render: this.renderProfile, icon: 'settings'},
     }
 
     return Object.keys(tabs).map((key)=>{
@@ -185,7 +191,7 @@ class ReportingApp extends Component {
           barTintColor="#F9F9F9"
           style={{flex: 1}}
         >
-            {this.renderTabs.bind(this)()}
+            {this.renderTabs()}
         </TabBarIOS>
         <AutoSuggestBar
           eventEmitter={this.props.eventEmitter}

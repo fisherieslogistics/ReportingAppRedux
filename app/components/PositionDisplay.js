@@ -42,7 +42,7 @@ class PositionDisplay extends React.Component{
   }
 
   render() {
-    return (<Text style={[textStyles.font, {fontSize: 13, marginTop: 2}]}>{this.getPositionText()}</Text>);
+    return (<Text style={[textStyles.font, {fontSize: 13, marginTop: 2, color: '#fff'}]}>{this.getPositionText()}</Text>);
   }
 };
 

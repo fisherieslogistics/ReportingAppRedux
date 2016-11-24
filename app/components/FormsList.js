@@ -20,6 +20,14 @@ import Icon8 from  './common/Icon8';
 
 class FormsList extends React.Component {
 
+    constructor(props){
+      super(props);
+      this.getDescription = this.getDescription.bind(this);
+      this.isSelected = this.isSelected.bind(this);
+      this.setViewingForm = this.setViewingForm.bind(this);
+      this.getIcon = this.getIcon.bind(this);
+    }
+
     setViewingForm(form, rowId){
       this.props.dispatch(formActions.setViewingForm(form, rowId));
     }
@@ -80,11 +88,11 @@ class FormsList extends React.Component {
     render () {
       return (
         <MasterListView
-          getDescription={this.getDescription.bind(this)}
-          isSelected={this.isSelected.bind(this)}
-          onPress={this.setViewingForm.bind(this)}
+          getDescription={this.getDescription}
+          isSelected={this.isSelected}
+          onPress={this.setViewingForm}
           dataSource={this.props.forms}
-          getIcon={this.getIcon.bind(this)}
+          getIcon={this.getIcon}
         />
       );
     }

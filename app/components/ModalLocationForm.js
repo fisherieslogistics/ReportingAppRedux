@@ -28,6 +28,7 @@ export default class ModalLocationForm extends Component {
     this.state = {
       nextInput: null,
     }
+    this.onEnterPress = this.onEnterPress.bind(this);
   }
 
   onEnterPress(inputName){
@@ -36,7 +37,7 @@ export default class ModalLocationForm extends Component {
     this.setState({
       nextInput: inputName ? input : null,
     });
-    
+
   }
 
   render(){
@@ -50,7 +51,7 @@ export default class ModalLocationForm extends Component {
           location={ this.props.location }
           attribute={ this.props.attribute }
           onChange={ this.props.onChange }
-          onEnterPress={ this.onEnterPress.bind(this) }
+          onEnterPress={ this.onEnterPress }
           nextInput={ this.state.nextInput }
         />
         <CoordinateEditor
@@ -58,7 +59,7 @@ export default class ModalLocationForm extends Component {
           location={ this.props.location }
           attribute={ this.props.attribute }
           onChange={ this.props.onChange }
-          onEnterPress={ this.onEnterPress.bind(this) }
+          onEnterPress={ this.onEnterPress }
           nextInput={ this.state.nextInput }
         />
       </View>

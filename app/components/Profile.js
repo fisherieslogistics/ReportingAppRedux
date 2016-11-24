@@ -246,6 +246,11 @@ class Profile extends React.Component{
       devMode: false,
       lastTappedAt: new moment(),
     };
+    this.selectEditor = this.selectEditor.bind(this);
+    this.onLoginPress = this.onLoginPress.bind(this);
+    this.exitDevMode = this.exitDevMode.bind(this);
+    this.login = this.login.bind(this);
+    this.onTap = this.onTap.bind(this);
   }
 
   /*componentDidRecieveProps() {
@@ -382,7 +387,7 @@ class Profile extends React.Component{
       <MasterListView
         getDescription={getDescription}
         isSelected={isSelected}
-        onPress={this.selectEditor.bind(this)}
+        onPress={this.selectEditor}
         dataSource={this.state.ds.cloneWithRows(items)}
         getIcon={getIcon}
       />
@@ -410,11 +415,11 @@ class Profile extends React.Component{
         return (<Login
                   disabled={this.props.loggedIn && this.props.tripStarted}
                   loggedIn={this.props.loggedIn}
-                  onLoginPress={this.onLoginPress.bind(this)}
+                  onLoginPress={this.onLoginPress}
                   sync={this.props.sync}
                 />);
       case "dev":
-        return (<DevScreen ApiEndpoint={this.props.ApiEndpoint} dispatch={this.props.dispatch} exitDevMode={this.exitDevMode.bind(this)}/>);
+        return (<DevScreen ApiEndpoint={this.props.ApiEndpoint} dispatch={this.props.dispatch} exitDevMode={this.exitDevMode}/>);
       //case "gps":
         //return (<GPSSettings {...this.props} />);
       case "addPort":
@@ -462,7 +467,7 @@ class Profile extends React.Component{
                  <LongButton
                    text={"login"}
                    bgColor={colors.pink}
-                   onPress={this.login.bind(this)}
+                   onPress={this.login}
                    disabled={false}
                  />
                </View>
@@ -478,7 +483,7 @@ class Profile extends React.Component{
     let detailToolbar = (
       <DetailToolbar
         centerTop={<Text style={[textStyles.font, textStyles.midLabel]}>{this.state.selectedLabel}</Text>}
-        centerBottom={<TouchableWithoutFeedback onPress={this.onTap.bind(this)}>
+        centerBottom={<TouchableWithoutFeedback onPress={this.onTap}>
                         <View><Text style={[textStyles.font]}>{"Version: " + version}</Text></View>
                       </TouchableWithoutFeedback>}
       />

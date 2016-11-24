@@ -213,13 +213,6 @@ class Fishing extends React.Component{
                  unsoughtType={ unsoughtType }
                  formType={ this.props.formType }
                 />);
-      /*case 2:
-        return (<EventGearEditor
-                 renderMessage={this.renderMessage.bind(this)}
-                 dispatch={this.props.dispatch}
-                 fishingEvent={this.props.viewingEvent}
-                 formType={this.props.formType}
-                />);*/
     }
   }
 
@@ -245,10 +238,11 @@ class Fishing extends React.Component{
   }
 
   renderFishingEventLists(){
-    return (<FishingEventList
-      fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents || []].reverse())}
-      onPress={this.setViewingFishingEvent}
-      selectedFishingEvent={this.props.viewingEvent}
+    return (
+      <FishingEventList
+        fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents || []].reverse())}
+        onPress={this.setViewingFishingEvent}
+        selectedFishingEvent={this.props.viewingEvent}
     />);
   }
 

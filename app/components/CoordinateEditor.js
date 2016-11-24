@@ -66,6 +66,10 @@ class InputView extends Component {
     this.state = {
       text: degMin[this.props.name].toString(),
     }
+    this.onFocus = this.onFocus.bind(this);
+    this.onBlur = this.onBlur.bind(this);
+    this.onChangeText = this.onChangeText.bind(this);
+    this.onKeyPress = this.onKeyPress.bind(this);
   }
 
   componentWillReceiveProps(props){
@@ -135,10 +139,10 @@ class InputView extends Component {
             keyboardType={ 'number-pad' }
             value={ this.state.text }
             style={ [ styles.textInput ] }
-            onChangeText={ this.onChangeText.bind(this) }
-            onKeyPress={ this.onKeyPress.bind(this) }
-            onBlur={ this.onBlur.bind(this) }
-            onFocus={ this.onFocus.bind(this) }
+            onChangeText={ this.onChangeText }
+            onKeyPress={ this.onKeyPress }
+            onBlur={ this.onBlur }
+            onFocus={ this.onFocus }
             returnKeyType={ 'next' }
           />
         </View>
@@ -148,6 +152,11 @@ class InputView extends Component {
 }
 
 export default class CoordinateEditor extends Component {
+
+  constructor(props) {
+    super(props);
+    this.onHemisphereChange = this.onHemisphereChange.bind(this);
+  }
 
   editorProps(coordType){
     const coordTypes = ['latitude', 'longitude'];
@@ -231,7 +240,7 @@ export default class CoordinateEditor extends Component {
           <View style={{flex: 1, justifyContent: 'space-between', paddingTop: 10 }}>
             <RadioButtons
               options={ _props.hemisphereOptions }
-              onSelection={ this.onHemisphereChange.bind(this) }
+              onSelection={ this.onHemisphereChange }
               renderContainer={ RadioButtons.renderHorizontalContainer }
               renderOption={ renderRadioButton }
               selectedOption={ hemisphere }
