@@ -1,7 +1,6 @@
 import shadowStyles from './shadow';
-import darkColors from './darkColors';
-
-import colors from './colors';
+import colors from './darkColors';
+import _olors from './colors';
 import iconStyles from './icon';
 import inputStyles from './input';
 import eventEditorStyles from './eventEditor';
@@ -12,7 +11,6 @@ import listViewStyles from './listView';
 export {
   colors,
   shadowStyles,
-  darkColors,
   iconStyles,
   inputStyles,
   eventEditorStyles,

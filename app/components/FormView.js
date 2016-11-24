@@ -149,7 +149,7 @@ class FormView extends React.Component {
   }
 
   renderText(val, meta, xIndex=0, yIndex=0, key){
-    let _key = val + " " + xIndex + " "  + yIndex  + " " + key;
+    let _key = `${val} ${xIndex} ${yIndex} ${key} ${meta.x} ${meta.y}`;
     let xy = {left: meta.x * 0.657, top: meta.y * 0.658};
     if(meta.ymultiple){
       xy.top += (meta.ymultiple * yIndex);
