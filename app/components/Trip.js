@@ -136,13 +136,15 @@ class Trip extends React.Component{
 
   render(){
     let toolbarStyle = {height: 20, flex: 0, backgroundColor: colors.backgrounds.dark};
+    const detailToolbar = (<DetailToolbar style={toolbarStyle} />);
+    const masterToolbar = (<MasterToolbar style={toolbarStyle} />);
     return (
       <MasterDetailView
         master={ this.renderMasterView() }
         sizes={{m: 0.6, d: 0.4}}
         detail={ this.renderDetailView() }
-        detailToolbar={<DetailToolbar style={toolbarStyle} />}
-        masterToolbar={<MasterToolbar style={toolbarStyle} />}
+        detailToolbar={detailToolbar}
+        masterToolbar={masterToolbar}
       />
     );
   }

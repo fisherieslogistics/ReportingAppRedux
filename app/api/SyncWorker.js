@@ -120,7 +120,7 @@ class SyncWorker {
       this.api.mutate(query, variables, this.getState().default.auth)
         .then((res) => resolve(success(res)))
         .catch((err) => {
-          console.warn("peromed not nice", err);
+          console.warn("peromed not nice", err, query, variables);
           this.dispatch({
             type: "syncError",
             time: new moment(),

@@ -25,7 +25,7 @@ const helper = new Helper();
 
 const Editors = (props) => {
   let inputs = [];
-  let labels = []
+  let labels = [];
   props.model.forEach((attribute, i) => {
       if(attribute.readOnly || attribute.hidden) {
           return;
