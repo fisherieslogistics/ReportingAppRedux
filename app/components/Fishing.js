@@ -26,7 +26,6 @@ import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
 import {colors, textStyles, iconStyles} from '../styles/styles';
 import Icon8 from './common/Icon8';
 import UnsoughtCatch from './UnsoughtCatch';
-
 const fishingEventActions = new FishingEventActions();
 
 const segMents = ["details", "catches", "discards", "incidents", "protecteds"];
@@ -38,6 +37,12 @@ class Fishing extends React.Component{
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
       selectedDetail: 0
     };
+    this.startFishingEvent = this.startFishingEvent.bind(this);
+    this.renderMessage = this.renderMessage.bind(this);
+    this.setViewingFishingEvent = this.setViewingFishingEvent.bind(this);
+    this.removeFishingEvent = this.removeFishingEvent.bind(this);
+    this.endFishingEvent = this.endFishingEvent.bind(this);
+    this.renderDetailView = this.renderDetailView.bind(this);
   }
 
   getCurrentLocation(){
@@ -172,7 +177,7 @@ class Fishing extends React.Component{
     switch (this.state.selectedDetail){
       case 0:
         return (<EventDetailEditor
-                 renderMessage={this.renderMessage.bind(this)}
+                 renderMessage={this.renderMessage}
                  fishingEvent={this.props.viewingEvent}
                  editorType={'event'}
                  dispatch={this.props.dispatch}
@@ -189,7 +194,7 @@ class Fishing extends React.Component{
                  dispatch={this.props.dispatch}
                  editorType={'event'}
                  orientation={this.props.orientation}
-                 renderMessage={this.renderMessage.bind(this)}
+                 renderMessage={this.renderMessage}
                  containerChoices={this.props.containerChoices}
                  optionalFields={this.props.catchDetailsExpanded}
                 />);
@@ -203,7 +208,7 @@ class Fishing extends React.Component{
                  dispatch={ this.props.dispatch }
                  editorType={ 'event' }
                  orientation={ this.props.orientation }
-                 renderMessage={ this.renderMessage.bind(this) }
+                 renderMessage={ this.renderMessage }
                  deletedProducts={ [] }
                  unsoughtType={ unsoughtType }
                  formType={ this.props.formType }
@@ -242,7 +247,7 @@ class Fishing extends React.Component{
   renderFishingEventLists(){
     return (<FishingEventList
       fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents || []].reverse())}
-      onPress={this.setViewingFishingEvent.bind(this)}
+      onPress={this.setViewingFishingEvent}
       selectedFishingEvent={this.props.viewingEvent}
     />);
   }
@@ -259,29 +264,46 @@ class Fishing extends React.Component{
     let deleteActive = this.props.lastEvent && (!this.props.lastEvent.datetimeAtEnd);
     return(
       <DetailToolbar
-        left={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent.bind(this), enabled: deleteActive}}
-        right={{color: colors.blue, text: "Haul", onPress: this.endFishingEvent.bind(this), enabled: this.props.enableHaul}}
+        left={null}
+        right={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent, enabled: deleteActive}}
         centerTop={<PositionDisplay provider={this.props.positionProvider} />}
         centerBottom={this.renderSegementedControl()}
       />
     );
   }
 
+  getFishingButton(){
+    const btnStyle =  {width: 150, left: 20 };
+    let startEventButton = (
+      <TextButton
+        text={"Start Fishing"}
+        style={ btnStyle }
+        color={ colors.green }
+        textAlign={ "center" }
+        onPress={ this.startFishingEvent }
+        disabled={ false }
+      />
+    );
+    let endEventButton = (
+      <TextButton
+        text={"Stop Fishing"}
+        style={ btnStyle }
+        color={ colors.red }
+        textAlign={ "center" }
+        onPress={ this.endFishingEvent }
+        disabled={ false }
+      />
+    );
+    return this.props.enableStartEvent ? startEventButton : endEventButton;
+  }
+
   getMasterToolbar(){
-    let startEventButton = {
-        //icon: 'plus-math',
-        text: "Shoot",
-        textAlign: "right",
-        style: {marginTop: 34, right: 10, width: 100 },
-        color: this.props.enableStartEvent ? colors.blue : colors.gray,
-        onPress:this.startFishingEvent.bind(this),
-        enabled:this.props.enableStartEvent,
-    };
-    let fishingDescription = this.props.formType == "tcer" ? "Trawling" : "Lining";
+
+
     return(
         <MasterToolbar
-          center={<View style={{marginTop: 36}}><Text style={[textStyles.font, textStyles.midLabel]}>{fishingDescription}</Text></View>}
-          right={startEventButton}
+          center={<View style={{marginTop: 36}}>{ this.getFishingButton() }</View>}
+          right={<View></View>}
         />
       );
   }
@@ -290,8 +312,8 @@ class Fishing extends React.Component{
 
     return (
       <MasterDetailView
-        master={this.renderFishingEventLists()/* : this.renderMessage(this.props.tripStarted ? "Trip Started" : "Trip Hasn\'t Started")*/}
-        detail={this.renderDetailView.bind(this)()}
+        master={ this.renderFishingEventLists() /*this.renderMessage(this.props.tripStarted ? "Trip Started" : "Trip Hasn\'t Started")*/ }
+        detail={this.renderDetailView()}
         detailToolbar={this.getDetailToolbar()}
         masterToolbar={this.getMasterToolbar()}
       />

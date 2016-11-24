@@ -6,6 +6,7 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { connect } from 'react-redux';
 import AsyncStorage from 'AsyncStorage';
+import CodePush from 'react-native-code-push'
 import ReportingApp from './ReportingApp';
 import * as reducers from '../reducers';
 import StateLoadActions from '../actions/StateLoadActions';
@@ -25,7 +26,7 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
-export default class App extends Component {
+class App extends Component {
   constructor(props) {
     super(props);
 
@@ -44,7 +45,8 @@ export default class App extends Component {
 
   handleError(err){
     console.log(err);
-    AlertIOS.alert(
+    throw err;
+    /*AlertIOS.alert(
       "Fatal Error",
       `An email dialog will appear - please send the email containing all your current data and the error
       'Once you have pressed send on the email - please restart the iPad then re open the app`,
@@ -55,7 +57,7 @@ export default class App extends Component {
           }
         }
       ]
-    );
+    );*/
   }
 
   email(to, subject, content, callback) {
@@ -160,3 +162,7 @@ export default class App extends Component {
     );
   }
 }
+
+const MyApp = CodePush(App);
+
+export default MyApp;
