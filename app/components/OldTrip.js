@@ -13,7 +13,7 @@ import TripActions from '../actions/TripActions';
 import { colors } from '../styles/styles';
 import {connect} from 'react-redux';
 import Helper from '../utils/Helper';
-import { MasterToolbar, DetailToolbar } from './layout/Toolbar';
+import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
 import TripEditor from './TripEditor';
 import TotalsList from './TotalsList';
 import textStyles from '../styles/text';
@@ -100,7 +100,7 @@ class Trip extends React.Component {
     );
   }
 
-  renderMasterView(){
+  renderDetailView(){
     return (
       <View style={[{padding: 0, flexDirection: 'column', flex: 1 }]}>
         <View style={[{flexDirection: 'row', flex: 1}]}>
@@ -110,7 +110,7 @@ class Trip extends React.Component {
     );
   }
 
-  renderDetailView(){
+  renderMasterView(){
     return (
       <View style={{top: 0, left: 0}}>
         <TripEditor
@@ -141,6 +141,7 @@ class Trip extends React.Component {
     return (
       <MasterDetailView
         master={ this.renderMasterView() }
+        sizes={{m: 0.6, d: 0.4}}
         detail={ this.renderDetailView() }
         detailToolbar={detailToolbar}
         masterToolbar={masterToolbar}

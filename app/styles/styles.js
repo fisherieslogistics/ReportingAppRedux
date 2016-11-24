@@ -1,13 +1,15 @@
 import shadowStyles from './shadow';
-import darkColors from './darkColors';
-
-import colors from './colors';
+import _darkColors from './darkColors';
+import _colors from './colors';
 import iconStyles from './icon';
 import inputStyles from './input';
 import eventEditorStyles from './eventEditor';
 import commonStyles from './common';
 import textStyles from './text';
 import listViewStyles from './listView';
+
+const colors = _darkColors;
+const darkColors = _colors;
 
 export {
   colors,
