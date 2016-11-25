@@ -15,7 +15,7 @@ export default {
   pink: "#FF2D55",
   black: 'rgba(0, 0, 0, 0.5)',
   backgrounds: {
-    dark: 'rgba(0, 0, 0, 1)',
+    dark: 'rgba(80, 80, 80, 1)',
     light: 'rgba(120, 120, 120, 1)',
     veryLight: 'rgba(200, 200, 200, 1)',
     veryDark: 'rgba(0, 0, 0, 1)',

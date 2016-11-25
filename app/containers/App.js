@@ -153,7 +153,7 @@ class App extends Component {
       <Provider store={store}>
         <View>
         <StatusBar
-          barStyle="default"
+          barStyle="light-content"
         />
         <ReportingApp
           store={store} />

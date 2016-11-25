@@ -13,7 +13,7 @@ import {TextButton, IconButton} from '../common/Buttons';
 const renderButton = (button, textAlign) => {
 
   if(button.icon){
-    const iconStyle = {width: 50, marginTop:29, height: 50, marginRight: 0, backgroundColor: 'transparent'}
+    const iconStyle = {width: 50, marginTop:29, height: 50, marginRight: 0}
     return (
       <IconButton
         icon={button.icon}
@@ -74,7 +74,7 @@ const DetailToolbar = (props) => {
 
 const masterStyles = StyleSheet.create({
    toolbar:{
-     backgroundColor: colors.white,
+     backgroundColor: colors.backgrounds.veryDark,
      flexDirection: 'row',
      height: 70,
    },
@@ -97,7 +97,7 @@ const masterStyles = StyleSheet.create({
 
 const detailStyles = StyleSheet.create({
    toolbar:{
-     backgroundColor: colors.white,
+     backgroundColor: colors.backgrounds.veryDark,
      flexDirection: 'row',
      flex: 0.1,
      height: 70
