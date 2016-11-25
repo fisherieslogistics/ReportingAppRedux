@@ -101,7 +101,7 @@ class EventProductsEditor extends React.Component{
           inputs.push(this.renderEditor(attribute, product, index));
       });
       return (
-        <View style={[styles.innerWrapper, styles.outerWrapper]} key={"product" + product.objectId}>
+        <View key={"product" + product.objectId}>
           {inputs}
           <DeleteButton
             onPress={this.deleteProduct.bind(this)}
@@ -137,7 +137,10 @@ class EventProductsEditor extends React.Component{
       });
     }
 
-    renderEditor(attribute, product, index){
+    renderEditor(attribute, product, index, productIndex){
+      if(index > 0) {
+        delete attribute.label;
+      }
       const getEditor = (attr) => this.getEditor(attr, product, index);
       const combinedEditors = getCombinedEditors(attribute, ProductModel, getEditor);
       if(combinedEditors.length < 4){

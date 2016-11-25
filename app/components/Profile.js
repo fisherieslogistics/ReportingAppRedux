@@ -246,21 +246,8 @@ class Profile extends React.Component{
       devMode: false,
       lastTappedAt: new moment(),
     };
+    this.onTap = this.onTap.bind(this);
   }
-
-  /*componentDidRecieveProps() {
-    const func = () => {
-      if(this.state.devTaps >= 3){
-        this.setState({devMode: true});
-
-        // this.props.dispatch({
-        //   type: 'devModeOn',
-        // });
-      }
-        this.setState({devTaps: 0});
-    };
-
-  }*/
 
   exitDevMode() {
     this.setState({devMode: false, selectedEditor: "account"});
@@ -475,12 +462,18 @@ class Profile extends React.Component{
   }
 
   render(){
+    const button = (
+      <TouchableWithoutFeedback onPress={this.onTap.bind(this)}>
+        <View>
+          <Text style={[textStyles.font, textStyles.midLabel]}>
+            {this.state.selectedLabel}
+          </Text>
+          </View>
+      </TouchableWithoutFeedback>
+    );
     let detailToolbar = (
       <DetailToolbar
-        centerTop={<Text style={[textStyles.font, textStyles.midLabel]}>{this.state.selectedLabel}</Text>}
-        centerBottom={<TouchableWithoutFeedback onPress={this.onTap.bind(this)}>
-                        <View><Text style={[textStyles.font]}>{"Version: " + version}</Text></View>
-                      </TouchableWithoutFeedback>}
+        center={button}
       />
     );
     let masterToolbar = (

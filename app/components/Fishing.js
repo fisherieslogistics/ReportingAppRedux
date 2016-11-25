@@ -23,12 +23,22 @@ import PlaceholderMessage from './common/PlaceholderMessage';
 
 import {TextButton, IconButton} from './common/Buttons';
 import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
-import {colors, textStyles, iconStyles} from '../styles/styles';
+import {colors, textStyles, iconStyles, masterDetailStyles} from '../styles/styles';
 import Icon8 from './common/Icon8';
 import UnsoughtCatch from './UnsoughtCatch';
 const fishingEventActions = new FishingEventActions();
 
 const segMents = ["details", "catches", "discards", "incidents", "protecteds"];
+
+const toBind = [
+  'endFishingEvent',
+  'startFishingEvent',
+  'renderDetailView',
+  'removeFishingEvent',
+  'renderDetailView',
+  'setViewingFishingEvent',
+  'renderMessage'
+];
 
 class Fishing extends React.Component{
   constructor (props){
@@ -37,12 +47,7 @@ class Fishing extends React.Component{
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
       selectedDetail: 0
     };
-    this.startFishingEvent = this.startFishingEvent.bind(this);
-    this.renderMessage = this.renderMessage.bind(this);
-    this.setViewingFishingEvent = this.setViewingFishingEvent.bind(this);
-    this.removeFishingEvent = this.removeFishingEvent.bind(this);
-    this.endFishingEvent = this.endFishingEvent.bind(this);
-    this.renderDetailView = this.renderDetailView.bind(this);
+    toBind.forEach(funcName => {this[funcName] = this[funcName].bind(this)});
   }
 
   getCurrentLocation(){
@@ -167,6 +172,10 @@ class Fishing extends React.Component{
     this.props.dispatch(fishingEventActions.setViewingFishingEvent(fishingEvent.id));
   }
 
+  componentWillUpdate(props, state) {
+    console.log(props);
+  }
+
   selectedDetailView(){
     if(!this.props.viewingEvent){
       return this.renderMessage("No shots to edit");
@@ -262,12 +271,13 @@ class Fishing extends React.Component{
 
   getDetailToolbar(){
     let deleteActive = this.props.lastEvent && (!this.props.lastEvent.datetimeAtEnd);
-    return(
+    const posDisplay = (<PositionDisplay provider={this.props.positionProvider} />);
+    return (
       <DetailToolbar
         left={null}
         right={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent, enabled: deleteActive}}
-        centerTop={<PositionDisplay provider={this.props.positionProvider} />}
-        centerBottom={this.renderSegementedControl()}
+        right={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent.bind(this), enabled: deleteActive}}
+        center={ posDisplay }
       />
     );
   }
@@ -298,14 +308,23 @@ class Fishing extends React.Component{
   }
 
   getMasterToolbar(){
-
-
+    const onPress = this.props.enableStartEvent ? this.startFishingEvent : this.endFishingEvent;
+    const backgroundColor = this.props.enableStartEvent ? colors.green : colors.red;
+    const buttonStyle = { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor, alignSelf: 'stretch'};
+    const eventButton = (
+      <TouchableOpacity onPress={onPress} style={[buttonStyle]}>
+        <View style={ { alignItems: 'center', flex: 1} }>
+          <Text style={ { fontSize: 35, fontWeight: '500', color: '#fff', alignSelf: 'center' } }>
+            { this.props.enableStartEvent ? "Shoot" : "Haul" }
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
     return(
         <MasterToolbar
-          center={<View style={{marginTop: 36}}>{ this.getFishingButton() }</View>}
-          right={<View></View>}
+          center={eventButton}
         />
-      );
+    );
   }
 
   render(){
