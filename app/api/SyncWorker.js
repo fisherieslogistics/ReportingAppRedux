@@ -22,6 +22,10 @@ class SyncWorker {
     this.dispatchMutateTrip = this.dispatchMutateTrip.bind(this);
     this.dispatchMutatePastTrip = this.dispatchMutatePastTrip.bind(this);
     this.dispatchMutateFishingEvent = this.dispatchMutateFishingEvent.bind(this);
+    this.sync = this.sync.bind(this);
+    this.mutateTrip = this.mutateTrip.bind(this);
+    this.mutateFishingEvent = this.mutateFishingEvent.bind(this);
+    this.mutatePastTrip = this.mutatePastTrip.bind(this);
     this.startSync();
   }
 
@@ -125,7 +129,7 @@ class SyncWorker {
       this.api.mutate(query, variables, this.getState().default.auth)
         .then((res) => resolve(success(res)))
         .catch((err) => {
-          console.warn("perfomed with error", err, query, variables);
+          console.warn("perfomed with error", JSON.stringify(err), err, query, "Chicken");
           this.dispatch({
             type: "syncError",
             time: new moment(),

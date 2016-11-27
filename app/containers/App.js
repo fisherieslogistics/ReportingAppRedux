@@ -44,7 +44,7 @@ class App extends Component {
   }
 
   handleError(err){
-    console.log(err);
+    console.log("handling");
     throw err;
     /*AlertIOS.alert(
     console.log(err, err.message, err.stack);

@@ -51,7 +51,7 @@ class Client {
       req.end((err, res) => {
         if(err){
           try{
-            reject(err.response.text);
+            reject(err.response.text, err);
           }catch(e){
             console.log(e);
             reject(err);

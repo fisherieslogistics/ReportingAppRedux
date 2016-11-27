@@ -11,9 +11,8 @@ export default class FocusOnDemandTextInput extends TextInput {
   }
 
   focus() {
-    this.clearTimeout(this.focusTimeout);
     if(this._component){
-      this.focusTimeout = setTimeout(this._component.focus);
+      this._component.focus;
     }
   }
 
@@ -26,8 +25,9 @@ export default class FocusOnDemandTextInput extends TextInput {
 
   componentWillReceiveProps(nextProps) {
     const { focus } = nextProps;
+    this.clearTimeout(this.focusTimeout);
     if(focus) {
-      this.focus();
+      this.focusTimeout = setTimeout(this.focus);
     }
   }
 
