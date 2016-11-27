@@ -6,6 +6,7 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { connect } from 'react-redux';
 import AsyncStorage from 'AsyncStorage';
+import CodePush from 'react-native-code-push'
 import ReportingApp from './ReportingApp';
 import * as reducers from '../reducers';
 import StateLoadActions from '../actions/StateLoadActions';
@@ -25,7 +26,7 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
-export default class App extends Component {
+class App extends Component {
   constructor(props) {
     super(props);
 
@@ -44,6 +45,9 @@ export default class App extends Component {
 
   handleError(err){
     console.log(err);
+    throw err;
+    /*AlertIOS.alert(
+    console.log(err, err.message, err.stack);
     AlertIOS.alert(
       "Fatal Error",
       `An email dialog will appear - please send the email containing all your current data and the error
@@ -51,11 +55,11 @@ export default class App extends Component {
       [
         {
           text: 'OK', onPress: () => {
-            this.sendErrorMail(err);
+            //this.sendErrorMail(err);
           }
         }
       ]
-    );
+    );*/
   }
 
   email(to, subject, content, callback) {
@@ -137,9 +141,9 @@ export default class App extends Component {
   componentDidMount(){
     this.loadMigratedState.then((state) => {
       store.dispatch(stateLoadActions.loadSavedState(state));
-      setTimeout(() => {
+      //setTimeout(() => {
         this.setState({loaded: true});
-      });
+      //});
     });
   }
 
@@ -151,7 +155,7 @@ export default class App extends Component {
       <Provider store={store}>
         <View>
         <StatusBar
-          barStyle="default"
+          barStyle="light-content"
         />
         <ReportingApp
           store={store} />
@@ -160,3 +164,7 @@ export default class App extends Component {
     );
   }
 }
+
+const MyApp = CodePush(App);
+
+export default MyApp;

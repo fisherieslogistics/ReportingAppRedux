@@ -11,8 +11,7 @@ import {colors, shadowStyles, textStyles} from '../../styles/styles';
 import {TextButton, IconButton} from '../common/Buttons';
 
 const renderButton = (button, textAlign) => {
-
-  if(button.icon){
+  if( button.icon){
     const iconStyle = {width: 50, marginTop:29, height: 50, marginRight: 0, backgroundColor: 'transparent'}
     return (
       <IconButton
@@ -38,15 +37,12 @@ const renderButton = (button, textAlign) => {
 const MasterToolbar = (props) => {
   const center = props.center && props.center.onPress ? renderButton(props.center, "center") : props.center;
   return (
-    <View style={[masterStyles.toolbar, props.style]}>
+    <View style={[masterStyles.toolbar, props.style, { backgroundColor: colors.backgrounds.dark }]}>
       <View style={[masterStyles.left]}>
         {props.left ? renderButton(props.left, "left") : null}
       </View>
       <View style={masterStyles.center}>
         {center}
-      </View>
-      <View style={[masterStyles.right]}>
-        {props.right ? renderButton(props.right, "right") : null}
       </View>
     </View>
   );
@@ -55,15 +51,9 @@ const MasterToolbar = (props) => {
 const DetailToolbar = (props) => {
   return (
     <View style={[detailStyles.toolbar, shadowStyles.shadow, props.style || {}]}>
-      <View style={[detailStyles.left]}>
-        {props.left ? renderButton(props.left) : null}
-      </View>
-      <View style={detailStyles.center}>
-        <View style={[detailStyles.centerTop]}>
-          {props.centerTop}
-        </View>
-        <View style={[detailStyles.centerBottom]}>
-          {props.centerBottom}
+      <View style={[detailStyles.center]}>
+        <View style={[detailStyles.center]}>
+          {props.center}
         </View>
       </View>
       <View style={[detailStyles.right]}>
@@ -75,7 +65,7 @@ const DetailToolbar = (props) => {
 
 const masterStyles = StyleSheet.create({
    toolbar:{
-     backgroundColor: colors.white,
+     backgroundColor: colors.backgrounds.veryDark,
      flexDirection: 'row',
      height: 70,
    },
@@ -91,22 +81,17 @@ const masterStyles = StyleSheet.create({
    },
    center:{
      alignSelf: 'stretch',
-     flex: 0.6,
+     flex: 1,
      alignItems: 'center'
    }
 });
 
 const detailStyles = StyleSheet.create({
    toolbar:{
-     backgroundColor: colors.white,
+     backgroundColor: colors.backgrounds.veryDark,
      flexDirection: 'row',
      flex: 0.1,
      height: 70
-   },
-   left: {
-     alignSelf: 'stretch',
-     flex: 0.2,
-     alignItems: 'flex-start'
    },
    right:{
      alignSelf: 'stretch',
@@ -114,16 +99,9 @@ const detailStyles = StyleSheet.create({
      alignItems: 'flex-end'
    },
    center:{
-     paddingTop: 15,
-     flex: 0.6,
-     alignItems: 'center',
-   },
-   centerTop:{
-     flex: 0.4,
-   },
-   centerBottom:{
-     flex: 0.6,
-     alignItems: 'center'
+     paddingTop: 10,
+     flex: 0.8,
+     alignItems: 'flex-start',
    },
 });
 

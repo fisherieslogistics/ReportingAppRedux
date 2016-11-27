@@ -22,13 +22,13 @@ export default StyleSheet.create({
     fontFamily: 'System'
   },
   light: {
-    color: colors.midGray
+    color: colors.midGray,
   },
   dark: {
-    color: colors.darkGray
+    color: colors.darkGray,
   },
   black: {
-    color: "black"
+    color: colors.black,
   },
   white: {
     color: 'white'

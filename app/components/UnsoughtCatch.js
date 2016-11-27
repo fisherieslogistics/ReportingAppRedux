@@ -41,6 +41,9 @@ class UnsoughtCatch extends React.Component{
           deletes: {}
         };
         this.onEnterPress = this.onEnterPress.bind(this);
+        this.deleteItem = this.deleteItem.bind(this);
+        this.undoDeleteItem = this.undoDeleteItem.bind(this);
+        this.addItem = this.addItem.bind(this);
     }
 
     onChange(name, value, index){
@@ -87,7 +90,7 @@ class UnsoughtCatch extends React.Component{
         <View style={[styles.innerWrapper, styles.outerWrapper]} key={this.props.unsoughtType + item.objectId + '_' + index}>
           {inputs}
           <DeleteButton
-            onPress={this.deleteItem.bind(this)}
+            onPress={this.deleteItem}
             index={index}
           />
         </View>
@@ -215,14 +218,14 @@ class UnsoughtCatch extends React.Component{
             <LongButton
                bgColor={colors.pink}
                text={"Undo"}
-               onPress={this.undoDeleteItem.bind(this)}
+               onPress={this.undoDeleteItem}
                disabled={!(this.state.deletes[this.props.fishingEvent.id] || []).length}
             />
             <LongButton
               bgColor={colors.blue}
               text={"Add " + this.props.unsoughtType.slice(0, this.props.unsoughtType.length - 1) }
               disabled={false}
-              onPress={this.addItem.bind(this)}
+              onPress={this.addItem}
             />
           </View>
         </View>

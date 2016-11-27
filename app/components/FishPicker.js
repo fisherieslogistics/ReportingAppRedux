@@ -32,6 +32,11 @@ class FishPicker extends React.Component {
       changedByEvent: false,
       error: false
     }
+    this.autoSuggestEmitted = this.autoSuggestEmitted.bind(this);
+    this.onFocus = this.onFocus.bind(this);
+    this.onBlur = this.onBlur.bind(this);
+    this.onChangeText = this.onChangeText.bind(this);
+    this.onKeyPress = this.onKeyPress.bind(this);
   }
 
   componentWillMount(){
@@ -41,7 +46,7 @@ class FishPicker extends React.Component {
     });
     this.addListenerOn(this.props.eventEmitter,
                        'AutoSuggestResultPress',
-                       this.autoSuggestEmitted.bind(this));
+                       this.autoSuggestEmitted);
   }
 
   componentWillReceiveProps(props){
@@ -112,15 +117,15 @@ class FishPicker extends React.Component {
     return(
       <FocusOnDemandTextInput
         style={[inputStyles.textInput]}
-        onFocus={this.onFocus.bind(this)}
-        onBlur={this.onBlur.bind(this)}
-        onChangeText={this.onChangeText.bind(this)}
+        onFocus={this.onFocus}
+        onBlur={this.onBlur}
+        onChangeText={this.onChangeText}
         value={this.state.value}
         maxLength={3}
         selectTextOnFocus={true}
         autoCapitalize={'none'}
         autoCorrect={false}
-        onKeyPress={this.onKeyPress.bind(this)}
+        onKeyPress={this.onKeyPress}
         ref={'textInput'}
         focus={ this.props.focus }
       />)

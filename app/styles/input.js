@@ -34,7 +34,6 @@ export default {
     height: 0,
     width: 0,
     opacity: 0,
-
   },
   label:{
     fontWeight: "500",

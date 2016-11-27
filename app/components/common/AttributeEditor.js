@@ -151,6 +151,10 @@ class EditOnBlur extends React.Component {
       renderedValue: this.getRenderedValue(props.value),
       inputId: props.inputId
     }
+    this.onFocus = this.onFocus.bind(this);
+    this.getKeypad = this.getKeypad.bind(this);
+    this.onBlur = this.onBlur.bind(this);
+    this.onChangeText = this.onChangeText.bind(this);
   }
 
   componentWillReceiveProps(props){
@@ -221,13 +225,13 @@ class EditOnBlur extends React.Component {
         selectTextOnFocus={true}
         autoCorrect={false}
         autoCapitalize={'none'}
-        keyboardType={this.getKeypad.bind(this)()}
+        keyboardType={this.getKeypad()}
         placeholderText={this.props.attribute.label}
         value={this.state.renderedValue}
         style={inputStyles.textInput}
-        onFocus={this.onFocus.bind(this)}
-        onBlur={this.onBlur.bind(this)}
-        onChangeText={this.onChangeText.bind(this)}
+        onFocus={this.onFocus}
+        onBlur={this.onBlur}
+        onChangeText={this.onChangeText}
         focus={ this.props.focus }
         onKeyPress={ this.onKeyPress }
         {...this.props.extraProps}

@@ -30,6 +30,11 @@ class ContainerPicker extends React.Component {
       changedByEvent: false,
       error: false
     }
+    this.autoSuggestEmitted = this.autoSuggestEmitted.bind(this);
+    this.onFocus = this.onFocus.bind(this);
+    this.onBlur = this.onBlur.bind(this);
+    this.onChangeText = this.onChangeText.bind(this);
+    this.onKeyPress = this.onKeyPress.bind(this);
   }
 
   componentWillMount(){
@@ -39,7 +44,7 @@ class ContainerPicker extends React.Component {
     });
     this.addListenerOn(this.props.eventEmitter,
                        'AutoSuggestResultPress',
-                       this.autoSuggestEmitted.bind(this));
+                       this.autoSuggestEmitted);
   }
 
   componentWillReceiveProps(props){
@@ -114,9 +119,9 @@ class ContainerPicker extends React.Component {
     return(
       <FocusOnDemandTextInput
         style={style}
-        onFocus={this.onFocus.bind(this)}
-        onBlur={this.onBlur.bind(this)}
-        onChangeText={this.onChangeText.bind(this)}
+        onFocus={this.onFocus}
+        onBlur={this.onBlur}
+        onChangeText={this.onChangeText}
         value={this.state.value}
         placeholder={this.props.placeholder}
         placeholderTextColor={colors.black}
@@ -126,7 +131,7 @@ class ContainerPicker extends React.Component {
         ref={'textInput'}
         editable={!this.props.disabled}
         focus={ this.props.focus }
-        onKeyPress={ this.onKeyPress.bind(this) }
+        onKeyPress={ this.onKeyPress }
       />)
   }
 };

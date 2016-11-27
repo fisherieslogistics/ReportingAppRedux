@@ -19,7 +19,10 @@ const helper = new Helper();
 
 class FishingEventList extends React.Component {
     constructor(props){
-      super(props)
+      super(props);
+      this.getDescription = this.getDescription.bind(this);
+      this.isSelected = this.isSelected.bind(this);
+      this.getIcon = this.getIcon.bind(this);
     }
 
     eventStatus(fishingEvent){
@@ -71,11 +74,11 @@ class FishingEventList extends React.Component {
     render () {
       return (
         <MasterListView
-          getDescription={this.getDescription.bind(this)}
-          isSelected={this.isSelected.bind(this)}
+          getDescription={this.getDescription}
+          isSelected={this.isSelected}
           onPress={this.props.onPress}
           dataSource={this.props.fishingEvents}
-          getIcon={this.getIcon.bind(this)}
+          getIcon={this.getIcon}
         />
       );
     }

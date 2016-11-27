@@ -19,6 +19,9 @@ class SyncWorker {
     this.getState = getState;
     this.timeToSync = 3000;
     this.requests = [];
+    this.dispatchMutateTrip = this.dispatchMutateTrip.bind(this);
+    this.dispatchMutatePastTrip = this.dispatchMutatePastTrip.bind(this);
+    this.dispatchMutateFishingEvent = this.dispatchMutateFishingEvent.bind(this);
     this.startSync();
   }
 
@@ -53,14 +56,9 @@ class SyncWorker {
         apiActions.checkMe(this.getState().default.auth, this.dispatch);
       });
     }
-
-
-
   }
 
-  mutatePastTrip(trip){
-    const state = this.getState().default;
-    let mutation = upsertTrip(trip);
+  dispatchMutatePastTrip(res){
     let time = new moment();
     let callback = (res) => {
       try{
@@ -74,26 +72,42 @@ class SyncWorker {
       }
       return {response: res};
     }
-    return this.performMutation(mutation.query, mutation.variables, callback.bind(this));
+  }
+
+  mutatePastTrip(trip){
+    const state = this.getState().default;
+    let mutation = upsertTrip(trip);
+    return this.performMutation(mutation.query, mutation.variables, this.dispatchMutateTrip);
+  }
+
+  dispatchMutateTrip(res){
+    let time = new moment();
+    try{
+      this.dispatch({
+        type: "tripSynced",
+        time: time,
+        objectId: res.data.upsertTrip2.trip.id
+      });
+    }catch(e) {
+      console.warn(e);
+    }
+    return {response: res};
   }
 
   mutateTrip(trip){
     const state = this.getState().default;
     let mutation = upsertTrip(trip);
+    return this.performMutation(mutation.query, mutation.variables, this.mutateTrip);
+  }
+
+  dispatchMutateFishingEvent(fishingEvent, res){
     let time = new moment();
-    let callback = (res) => {
-      try{
-        this.dispatch({
-          type: "tripSynced",
-          time: time,
-          objectId: res.data.upsertTrip2.trip.id
-        });
-      }catch(e) {
-        //console.warn(e);
-      }
-      return {response: res};
-    }
-    return this.performMutation(mutation.query, mutation.variables, callback.bind(this));
+    this.dispatch({
+      type: "fishingEventSynced",
+      time: time,
+      objectId: fishingEvent.objectId
+    });
+    return {response: res};
   }
 
   mutateFishingEvent(fishingEvent, tripId, formType){
@@ -103,16 +117,7 @@ class SyncWorker {
     }else{
       q = upsertFishingEvent(fishingEvent, tripId);
     }
-    let time = new moment();
-    let callback = (res) => {
-      this.dispatch({
-        type: "fishingEventSynced",
-        time: time,
-        objectId: fishingEvent.objectId
-      });
-      return {response: res};
-    }
-    return this.performMutation(q.query, q.variables, callback.bind(this));
+    return this.performMutation(q.query, q.variables, (res) => { this.dispatchMutateFishingEvent(fishingEvents, res); });
   }
 
   performMutation(query, variables, success, dispatch){
@@ -120,7 +125,7 @@ class SyncWorker {
       this.api.mutate(query, variables, this.getState().default.auth)
         .then((res) => resolve(success(res)))
         .catch((err) => {
-          console.warn("peromed not nice", err);
+          console.warn("perfomed with error", err, query, variables);
           this.dispatch({
             type: "syncError",
             time: new moment(),

@@ -246,21 +246,12 @@ class Profile extends React.Component{
       devMode: false,
       lastTappedAt: new moment(),
     };
+    this.selectEditor = this.selectEditor.bind(this);
+    this.onLoginPress = this.onLoginPress.bind(this);
+    this.exitDevMode = this.exitDevMode.bind(this);
+    this.login = this.login.bind(this);
+    this.onTap = this.onTap.bind(this);
   }
-
-  /*componentDidRecieveProps() {
-    const func = () => {
-      if(this.state.devTaps >= 3){
-        this.setState({devMode: true});
-
-        // this.props.dispatch({
-        //   type: 'devModeOn',
-        // });
-      }
-        this.setState({devTaps: 0});
-    };
-
-  }*/
 
   exitDevMode() {
     this.setState({devMode: false, selectedEditor: "account"});
@@ -382,7 +373,7 @@ class Profile extends React.Component{
       <MasterListView
         getDescription={getDescription}
         isSelected={isSelected}
-        onPress={this.selectEditor.bind(this)}
+        onPress={this.selectEditor}
         dataSource={this.state.ds.cloneWithRows(items)}
         getIcon={getIcon}
       />
@@ -410,11 +401,11 @@ class Profile extends React.Component{
         return (<Login
                   disabled={this.props.loggedIn && this.props.tripStarted}
                   loggedIn={this.props.loggedIn}
-                  onLoginPress={this.onLoginPress.bind(this)}
+                  onLoginPress={this.onLoginPress}
                   sync={this.props.sync}
                 />);
       case "dev":
-        return (<DevScreen ApiEndpoint={this.props.ApiEndpoint} dispatch={this.props.dispatch} exitDevMode={this.exitDevMode.bind(this)}/>);
+        return (<DevScreen ApiEndpoint={this.props.ApiEndpoint} dispatch={this.props.dispatch} exitDevMode={this.exitDevMode}/>);
       //case "gps":
         //return (<GPSSettings {...this.props} />);
       case "addPort":
@@ -462,7 +453,7 @@ class Profile extends React.Component{
                  <LongButton
                    text={"login"}
                    bgColor={colors.pink}
-                   onPress={this.login.bind(this)}
+                   onPress={this.login}
                    disabled={false}
                  />
                </View>
@@ -475,12 +466,18 @@ class Profile extends React.Component{
   }
 
   render(){
+    const button = (
+      <TouchableWithoutFeedback onPress={this.onTap.bind(this)}>
+        <View>
+          <Text style={[textStyles.font, textStyles.midLabel]}>
+            {this.state.selectedLabel}
+          </Text>
+          </View>
+      </TouchableWithoutFeedback>
+    );
     let detailToolbar = (
       <DetailToolbar
-        centerTop={<Text style={[textStyles.font, textStyles.midLabel]}>{this.state.selectedLabel}</Text>}
-        centerBottom={<TouchableWithoutFeedback onPress={this.onTap.bind(this)}>
-                        <View><Text style={[textStyles.font]}>{"Version: " + version}</Text></View>
-                      </TouchableWithoutFeedback>}
+        center={button}
       />
     );
     let masterToolbar = (

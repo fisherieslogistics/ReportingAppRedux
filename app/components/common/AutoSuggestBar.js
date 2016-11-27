@@ -30,6 +30,8 @@ class AutoSuggestBar extends React.Component {
         name: "",
         inputId: null
       }
+      this.renderResult = this.renderResult.bind(this);
+      this.renderResults = this.renderResults.bind(this);
     }
 
     addSearchable(value, description, index, valueStore, descriptionStore){
@@ -113,7 +115,8 @@ class AutoSuggestBar extends React.Component {
 
     renderResult(resultIndex){
       let result = this.state.choices[resultIndex];
-      let text = this.props.text || "";
+      const blank = "";
+      let text = this.props.text || blank;
       if(!(result && result.value)){
         return null;
       }
@@ -137,7 +140,7 @@ class AutoSuggestBar extends React.Component {
 
     renderResults(){
       if(this.props.text.length){
-        return this.state.results.map(this.renderResult.bind(this));
+        return this.state.results.map(this.renderResult);
       }else{
         return this.state.choices.slice(0, this.props.maxResults).map((r, i) => {
           return this.renderResult(i);
@@ -152,7 +155,7 @@ class AutoSuggestBar extends React.Component {
       return (
         <View style={styles.resultsBarWrapper}>
           <View style={[styles.resultsBar, {width: this.props.width}]}>
-            {this.renderResults.bind(this)()}
+            {this.renderResults()}
           </View>
           <KeyboardSpacer />
         </View>

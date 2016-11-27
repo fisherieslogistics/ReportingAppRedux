@@ -42,6 +42,10 @@ class EventDetailEditor extends React.Component{
     constructor(props){
       super(props);
       this.onEnterPress = this.onEnterPress.bind(this);
+      this.onNonFishChange = this.onNonFishChange.bind(this);
+      this.onChange = this.onChange.bind(this);
+      this.getCallback = this.getCallback.bind(this);
+      this.getEditor = this.getEditor.bind(this);
       this.state = {
         nextInput: ''
       }
@@ -103,7 +107,7 @@ class EventDetailEditor extends React.Component{
       return {
         attribute,
         value: this.props.fishingEvent[attribute.id],
-        onChange: attribute.type === 'bool' ? this.onNonFishChange.bind(this) : this.onChange.bind(this),
+        onChange: attribute.type === 'bool' ? this.onNonFishChange : this.onChange,
         extraProps: {fishingEvent: this.props.fishingEvent},
         inputId,
         onEnterPress: inputOrder[this.props.formType].indexOf(attribute.id) === -1 ? null : this.onEnterPress,
@@ -127,9 +131,9 @@ class EventDetailEditor extends React.Component{
       return (<KeyboardAwareScrollView style={{marginTop: 3}} viewIsInsideTabBar={ true } extraHeight={ 150 } bouncesZoom={false} alwaysBounceVertical={false}>
                 <EditorView
                   styles={styles}
-                  getCallback={this.getCallback.bind(this)}
+                  getCallback={this.getCallback}
                   toFocusAttributeId={ this.state.nextInput }
-                  getEditor={this.getEditor.bind(this)}
+                  getEditor={this.getEditor}
                   editorType={"event"}
                   name={"eventDetail"}
                   model={model}

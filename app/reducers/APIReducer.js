@@ -1,6 +1,6 @@
 const EndpointLookup = {
   Production: {
-    ApiEndpoint: 'http://api.fisherylogistics.com/',
+    ApiEndpoint: 'http://fisherylogistics.com:5003/',
   },
   Staging: {
     ApiEndpoint: 'http://fisherieslogistics.com:5003/',
@@ -16,11 +16,11 @@ const EndpointLookup = {
 export { EndpointLookup }
 
 export default (state = EndpointLookup.Production, action) => {
- return {  ApiEndpoint: 'http://fisherieslogistics.com:5003/' };
+  return {  ApiEndpoint: 'http://fisherieslogistics.com:5003/' };
   switch(action.type){
     case "devMode":
       return Object.assign({}, state, EndpointLookup[action.payload]);
     default:
-      return state;
+      return EndpointLookup.Production;
   }
 }

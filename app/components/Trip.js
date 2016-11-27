@@ -10,10 +10,10 @@ import {
 import React, { Component } from 'react';
 import MasterDetailView from './layout/MasterDetailView';
 import TripActions from '../actions/TripActions';
-import colors from '../styles/colors';
+import { colors } from '../styles/styles';
 import {connect} from 'react-redux';
 import Helper from '../utils/Helper';
-import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
+import { MasterToolbar, DetailToolbar } from './layout/Toolbar';
 import TripEditor from './TripEditor';
 import TotalsList from './TotalsList';
 import textStyles from '../styles/text';
@@ -26,12 +26,15 @@ import moment from 'moment';
 const helper = new Helper();
 const tripActions = new TripActions();
 
-class Trip extends React.Component{
+class Trip extends React.Component {
   constructor (props){
     super(props);
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
     };
+    this.isSelected = this.isSelected.bind(this);
+    this.endTrip = this.endTrip.bind(this);
+    this.startTrip = this.startTrip.bind(this);
   }
 
   componentDidMount(){
@@ -60,7 +63,7 @@ class Trip extends React.Component{
               data={this.state.ds.cloneWithRows(this.props.totals)}
               selectedTotal={this.props.selectedTotal}
               onPress={this.totalSelected}
-              isSelected={this.isSelected.bind(this)}
+              isSelected={this.isSelected}
             />);
   }
 
@@ -100,7 +103,7 @@ class Trip extends React.Component{
     );
   }
 
-  renderDetailView(){
+  renderMasterView(){
     return (
       <View style={[{padding: 0, flexDirection: 'column', flex: 1 }]}>
         <View style={[{flexDirection: 'row', flex: 1}]}>
@@ -110,7 +113,7 @@ class Trip extends React.Component{
     );
   }
 
-  renderMasterView(){
+  renderDetailView(){
     return (
       <View style={{top: 0, left: 0}}>
         <TripEditor
@@ -118,9 +121,9 @@ class Trip extends React.Component{
           dispatch={this.props.dispatch}
           tripCanStart={this.props.tripCanStart}
           tripCanEnd={this.props.tripCanEnd}
-          endTrip={this.endTrip.bind(this)}
+          endTrip={this.endTrip}
           ports={this.props.ports}
-          startTrip={this.startTrip.bind(this)}
+          startTrip={this.startTrip}
           orientation={this.props.orientation}
         />
         <View style={{flexDirection: 'row',
@@ -141,7 +144,6 @@ class Trip extends React.Component{
     return (
       <MasterDetailView
         master={ this.renderMasterView() }
-        sizes={{m: 0.6, d: 0.4}}
         detail={ this.renderDetailView() }
         detailToolbar={detailToolbar}
         masterToolbar={masterToolbar}
