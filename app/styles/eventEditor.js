@@ -10,7 +10,7 @@ export default {
     marginTop: 5,
     marginLeft: 5,
     marginRight: 5,
-    backgroundColor: '#fff',
+    backgroundColor: colors.backgrounds.veryDark,
     borderRadius: 6,
     overflow: "hidden"
   },

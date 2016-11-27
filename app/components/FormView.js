@@ -149,7 +149,7 @@ class FormView extends React.Component {
   }
 
   renderText(val, meta, xIndex=0, yIndex=0, key){
-    let _key = val + " " + xIndex + " "  + yIndex  + " " + key;
+    let _key = `${val} ${xIndex} ${yIndex} ${key} ${meta.x} ${meta.y}`;
     let xy = {left: meta.x * 0.657, top: meta.y * 0.658};
     if(meta.ymultiple){
       xy.top += (meta.ymultiple * yIndex);
@@ -206,8 +206,7 @@ class FormView extends React.Component {
     let detailToolbar = (
       <DetailToolbar
         right={{color: signColor, text: "Sign", onPress: () => this.toggleSignature(canSignOne), enabled: true}}
-        centerTop={<Text style={[textStyles.font]}>{this.props.viewingForm ? this.props.viewingForm.id : null}</Text>}
-        centerBottom={<View style={styles.spacer} />}
+        center={<Text style={[textStyles.font]}>{this.props.viewingForm ? this.props.viewingForm.id : null}</Text>}
       />
     );
     //right={{color: colors.blue, text: "Sign all", onPress: () => this.toggleSignature("all", canSignAll), enabled: canSignAll}}
@@ -255,22 +254,23 @@ class FormView extends React.Component {
         </View>) : null;
 
     let renderedForm = renderForm(this.props.formType, text, styles);
+    const detailView = (
+      <ScrollView horizontal={true}>
+        <View style={[styles.col, styles.fill, {alignSelf: 'flex-start'},
+                      styles.wrapper, {opacity:this.props.viewingForm ? 1 : 0}]}>
+          {renderedForm}
+          {this.renderSignatureAndDate()}
+          {greyBackground}
+          {signatureView}
+          {signatureWarningView}
+        </View>
+      </ScrollView>
+    );
 
     return (
       <MasterDetailView
         master={this.renderFormsListView()}
-        detail={(
-          <ScrollView horizontal={true}>
-            <View style={[styles.col, styles.fill, {alignSelf: 'flex-start'},
-                          styles.wrapper, {opacity:this.props.viewingForm ? 1 : 0}]}>
-              {renderedForm}
-              {this.renderSignatureAndDate()}
-              {greyBackground}
-              {signatureView}
-              {signatureWarningView}
-            </View>
-          </ScrollView>
-        )}
+        detail={detailView}
         detailToolbar={detailToolbar}
         masterToolbar={masterToolbar}
       />

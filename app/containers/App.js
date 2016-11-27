@@ -47,13 +47,15 @@ class App extends Component {
     console.log(err);
     throw err;
     /*AlertIOS.alert(
+    console.log(err, err.message, err.stack);
+    AlertIOS.alert(
       "Fatal Error",
       `An email dialog will appear - please send the email containing all your current data and the error
       'Once you have pressed send on the email - please restart the iPad then re open the app`,
       [
         {
           text: 'OK', onPress: () => {
-            this.sendErrorMail(err);
+            //this.sendErrorMail(err);
           }
         }
       ]
@@ -139,9 +141,9 @@ class App extends Component {
   componentDidMount(){
     this.loadMigratedState.then((state) => {
       store.dispatch(stateLoadActions.loadSavedState(state));
-      setTimeout(() => {
+      //setTimeout(() => {
         this.setState({loaded: true});
-      });
+      //});
     });
   }
 
@@ -153,7 +155,7 @@ class App extends Component {
       <Provider store={store}>
         <View>
         <StatusBar
-          barStyle="default"
+          barStyle="light-content"
         />
         <ReportingApp
           store={store} />

@@ -113,7 +113,8 @@ class AutoSuggestBar extends React.Component {
 
     renderResult(resultIndex){
       let result = this.state.choices[resultIndex];
-      let text = this.props.text || "";
+      const blank = "";
+      let text = this.props.text || blank;
       if(!(result && result.value)){
         return null;
       }
