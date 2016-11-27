@@ -28,7 +28,7 @@ import Icon8 from './common/Icon8';
 import UnsoughtCatch from './UnsoughtCatch';
 const fishingEventActions = new FishingEventActions();
 
-const segMents = ["details", "catches"]/*, "discards", "incidents", "protecteds"];*/
+const segMents = ["details", "catches"]/*, "discards", "Accident", "protecteds"];*/
 //TODO optional discard etc
 
 const toBind = [
@@ -175,7 +175,7 @@ class Fishing extends React.Component{
   }
 
   componentWillUpdate(props, state) {
-    console.log(props);
+    console.log("props");
   }
 
   selectedDetailView(){
@@ -308,11 +308,11 @@ class Fishing extends React.Component{
   getMasterToolbar(){
     const onPress = this.props.enableStartEvent ? this.startFishingEvent : this.endFishingEvent;
     const backgroundColor = this.props.enableStartEvent ? colors.green : colors.red;
-    const buttonStyle = { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor, alignSelf: 'stretch'};
+    const buttonStyle = { flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor, alignSelf: 'stretch'};
     const eventButton = (
       <TouchableOpacity onPress={onPress} style={[buttonStyle]}>
-        <View style={ { alignItems: 'center', flex: 1} }>
-          <Text style={ { fontSize: 35, fontWeight: '500', color: '#fff', alignSelf: 'center' } }>
+         <View style={{alignItems: 'center'}}>
+          <Text style={ { fontSize: 30, fontWeight: '500', color: '#fff', textAlign: 'center', marginTop: 20 } }>
             { this.props.enableStartEvent ? "Start Fishing" : "Haul" }
           </Text>
         </View>

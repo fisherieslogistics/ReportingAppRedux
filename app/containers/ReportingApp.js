@@ -188,7 +188,7 @@ class ReportingApp extends Component {
         <TabBarIOS
           unselectedTintColor="#bbbbbb"
           tintColor="#007aff"
-          barTintColor="#F9F9F9"
+          barTintColor="#000"
           style={{flex: 1}}
         >
             {this.renderTabs()}

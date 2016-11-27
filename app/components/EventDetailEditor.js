@@ -20,7 +20,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 const tcerOrder = [
   'targetSpecies',
   'bottomDepth',
-  'groundropeDepth',
+  //'groundropeDepth',
   'averageSpeed',
   'wingSpread',
   'headlineHeight',
@@ -47,7 +47,8 @@ class EventDetailEditor extends React.Component{
       this.getCallback = this.getCallback.bind(this);
       this.getEditor = this.getEditor.bind(this);
       this.state = {
-        nextInput: ''
+        nextInput: '',
+        showMore: false,
       }
     }
 
@@ -123,6 +124,22 @@ class EventDetailEditor extends React.Component{
       }
     }
 
+    showMore(){
+
+    }
+
+    showLess(){
+
+    }
+
+    renderToggleShowMore(){
+      return (
+        <View style={{position: 'absolute', right: 0, top: 0, height: 20, width: 40, backgroundColor: '#fff'}}>
+          <Text>{'more'}</Text>
+        </View>
+      )
+    }
+
     render() {
       if(!this.props.fishingEvent){
         return this.props.renderMessage("No shots to edit");
@@ -140,6 +157,7 @@ class EventDetailEditor extends React.Component{
                   obj={this.props.fishingEvent}
                   values={this.props.fishingEvent}
                 />
+              { this.renderToggleShowMore() }
               <View style={{height: 600}}></View>
             </KeyboardAwareScrollView>);
     }
