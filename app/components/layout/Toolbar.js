@@ -36,8 +36,11 @@ const renderButton = (button, textAlign) => {
 
 const MasterToolbar = (props) => {
   return (
-    <View style={[masterStyles.toolbar, props.style]}>
-      <View style={[masterStyles.center]}>
+    <View style={[masterStyles.toolbar, props.style, { backgroundColor: colors.backgrounds.dark }]}>
+      <View style={[masterStyles.left]}>
+        {props.left ? renderButton(props.left, "left") : null}
+      </View>
+      <View style={masterStyles.center}>
         {props.center}
       </View>
     </View>

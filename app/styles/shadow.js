@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 export default StyleSheet.create({
   shadowDown:{
-    shadowColor: "#000000",
+    shadowColor: "#ffffff",
     shadowOpacity: 0.25,
     shadowRadius: 1.5,
     shadowOffset: {
@@ -13,7 +13,7 @@ export default StyleSheet.create({
     }
   },
   shadowUp:{
-    shadowColor: "#000000",
+    shadowColor: "#ffffff",
     shadowOpacity: 0.25,
     shadowRadius: 1.5,
     shadowOffset: {
@@ -22,7 +22,7 @@ export default StyleSheet.create({
     }
   },
   shadowLeft:{
-    shadowColor: "#000000",
+    shadowColor: "#ffffff",
     shadowOpacity: 0.25,
     shadowRadius: 1.5,
     shadowOffset: {
@@ -31,7 +31,7 @@ export default StyleSheet.create({
     }
   },
   shadowRight:{
-    shadowColor: "#000000",
+    shadowColor: "#ffffff",
     shadowOpacity: 0.25,
     shadowRadius: 1.5,
     shadowOffset: {

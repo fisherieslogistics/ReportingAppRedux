@@ -29,6 +29,10 @@ class PortPicker extends React.Component {
       changedByEvent: false,
       error: false
     }
+    this.autoSuggestEmitted = this.autoSuggestEmitted.bind(this);
+    this.onFocus = this.onFocus.bind(this);
+    this.onBlur = this.onBlur.bind(this);
+    this.onChangeText = this.onChangeText.bind(this);
   }
 
   componentWillMount(){
@@ -38,7 +42,7 @@ class PortPicker extends React.Component {
     });
     this.addListenerOn(this.props.eventEmitter,
                        'AutoSuggestResultPress',
-                       this.autoSuggestEmitted.bind(this));
+                       this.autoSuggestEmitted);
   }
 
   componentWillReceiveProps(props){
@@ -103,9 +107,9 @@ class PortPicker extends React.Component {
     return(
       <TextInput
         style={style}
-        onFocus={this.onFocus.bind(this)}
-        onBlur={this.onBlur.bind(this)}
-        onChangeText={this.onChangeText.bind(this)}
+        onFocus={this.onFocus}
+        onBlur={this.onBlur}
+        onChangeText={this.onChangeText}
         value={this.state.value}
         placeholder={this.props.placeholder}
         placeholderTextColor={colors.black}

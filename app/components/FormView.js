@@ -39,6 +39,7 @@ class FormView extends React.Component {
       forms: props.forms,
       selectedIndex: 0
     };
+    this._onSaveEvent = this._onSaveEvent.bind(this);
   }
 
   componentWillReceiveProps(props){
@@ -227,7 +228,7 @@ class FormView extends React.Component {
         <SignatureView
           style={[{flex:1}, styles.signature]}
           ref="sign"
-          onSaveEvent={this._onSaveEvent.bind(this)}
+          onSaveEvent={this._onSaveEvent}
           saveImageFileInExtStorage={false}
           showNativeButtons={false}
           viewMode={"landscape"}/>

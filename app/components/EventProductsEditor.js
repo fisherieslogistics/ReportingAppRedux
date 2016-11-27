@@ -51,6 +51,9 @@ class EventProductsEditor extends React.Component{
           nextInput: ''
         };
         this.onEnterPress = this.onEnterPress.bind(this);
+        this.deleteProduct = this.deleteProduct.bind(this);
+        this.undoDeleteProduct = this.undoDeleteProduct.bind(this);
+        this.addProduct = this.addProduct.bind(this);
     }
 
     addProduct(){
@@ -104,7 +107,7 @@ class EventProductsEditor extends React.Component{
         <View key={"product" + product.objectId}>
           {inputs}
           <DeleteButton
-            onPress={this.deleteProduct.bind(this)}
+            onPress={this.deleteProduct}
             index={index}
           />
         </View>
@@ -194,14 +197,14 @@ class EventProductsEditor extends React.Component{
             <LongButton
                bgColor={colors.pink}
                text={"Undo"}
-               onPress={this.undoDeleteProduct.bind(this)}
+               onPress={this.undoDeleteProduct}
                disabled={!this.props.deletedProducts.length}
             />
             <LongButton
               bgColor={colors.blue}
               text={"Add Catch"}
               disabled={false}
-              onPress={this.addProduct.bind(this)}
+              onPress={this.addProduct}
             />
           </View>
         </View>

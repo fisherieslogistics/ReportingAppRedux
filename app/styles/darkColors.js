@@ -1,6 +1,6 @@
 export default {
   white: "white",
-  lightestGray: 'rgba(150, 150, 150, 1)',
+  lightestGray: 'rgba(100, 100, 100, 1)',
   midGray: 'rgba(90, 90, 90, 1)',
   gray: 'rgba(80, 80, 80, 1)',
   red: "#FF2D55",
@@ -9,7 +9,7 @@ export default {
   lightBlue: "#b6daf0",
   darkBlue: "#0C5071",
   orange: "#FF9500",
-  green: "#4DC964",
+  green: "#66ff33",
   pastelGreen: "#78F7C6",
   darkGray: "rgba(40, 40, 40, 1)",
   pink: "#FF2D55",

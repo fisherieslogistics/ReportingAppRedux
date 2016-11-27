@@ -11,6 +11,10 @@ import colors from '../../styles/colors';
 
 class Errors {
 
+    constructor(props){
+      this.getErrorMessages = this.getErrorMessages.bind(this)
+    }
+
     getErrorMessages(){
       let errors = [];
       if(this.props.inputErrors){
@@ -37,7 +41,7 @@ class Errors {
     render(){
       return (
           <View style={[styles.tableView]}>
-            {this.getErrorMessages.bind(this)()}
+            {this.getErrorMessages()}
           </View>
       );
     }

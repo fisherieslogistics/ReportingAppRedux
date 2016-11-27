@@ -9,6 +9,9 @@ import textStyles from './text';
 import listViewStyles from './listView';
 import masterDetailStyles from './masterDetail';
 
+const colors = _darkColors;
+const darkColors = _colors;
+
 export {
   colors,
   shadowStyles,

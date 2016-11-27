@@ -15,6 +15,12 @@ import textStyles from '../styles/text';
 
 class FishingEventList extends React.Component {
 
+    constructor(props){
+      super(props);
+      this.getDescription = this.getDescription.bind(this);
+      this.isSelected = this.isSelected.bind(this);
+    }
+
     isSelected(code){
       return false;
     }
@@ -40,8 +46,8 @@ class FishingEventList extends React.Component {
     render () {
       return (
         <MasterListView
-          getDescription={this.getDescription.bind(this)}
-          isSelected={this.isSelected.bind(this)}
+          getDescription={this.getDescription}
+          isSelected={this.isSelected}
           onPress={this.props.onPress}
           dataSource={this.props.data}
           getIcon={() => null}

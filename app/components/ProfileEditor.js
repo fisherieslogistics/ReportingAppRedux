@@ -15,6 +15,12 @@ import {eventEditorStyles} from '../styles/styles';
 
 class ProfileEditor extends React.Component {
 
+    constructor(props) {
+      super(props);
+       this.onChange = this.onChange.bind(this);
+       this.getEditor = this.getEditor.bind(this);
+    }
+
     onChange(key, value){
       /*var change = {};
       change[key] = value
@@ -25,7 +31,7 @@ class ProfileEditor extends React.Component {
       return {
         attribute,
         value: this.props.user[attribute.id],
-        onChange: this.onChange.bind(this),
+        onChange: this.onChange,
         extraProps: {editable: false, focus: false},
         inputId: attribute.id + "__profile__"
       };
@@ -35,8 +41,8 @@ class ProfileEditor extends React.Component {
       return (
         <EditorView
           styles={styles}
-          getCallback={() => this.onChange.bind(this)}
-          getEditor={this.getEditor.bind(this)}
+          getCallback={() => this.onChange}
+          getEditor={this.getEditor}
           editorType={"profile"}
           name={"profileEdit"}
           model={UserModel}
