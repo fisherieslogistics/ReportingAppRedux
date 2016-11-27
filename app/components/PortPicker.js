@@ -65,12 +65,9 @@ class PortPicker extends React.Component {
         changedByEvent: true,
         value: event.value
       });
-      setTimeout(() => {
-        this.forceUpdate();
-        if(this.refs.textInput){
-          this.refs.textInput.blur();
-        }
-      });
+      if(this.refs.textInput){
+        this.refs.textInput.blur();
+      }
     }
   }
 

@@ -82,14 +82,15 @@ class ApiActions {
 }
 
 const parseUser = (viewer) => {
-  return {
+  const dummy = {};
+  return viewer ? {
     firstName: viewer.firstName,
     lastName: viewer.lastName,
     permitHolderName: viewer.formData.permit_holder_name,
     permitHolderNumber: viewer.formData.permit_holder_number,
     email: viewer.email,
     bins: viewer.bins,
-  }
+  } : dummy;
 }
 
 export default ApiActions;
