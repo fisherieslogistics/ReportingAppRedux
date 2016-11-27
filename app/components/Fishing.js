@@ -329,7 +329,7 @@ class Fishing extends React.Component{
 
     return (
       <MasterDetailView
-        master={ this.renderFishingEventLists() /*this.renderMessage(this.props.tripStarted ? "Trip Started" : "Trip Hasn\'t Started")*/ }
+        master={ this.renderFishingEventLists() }
         detail={this.renderDetailView()}
         detailToolbar={this.getDetailToolbar()}
         masterToolbar={this.getMasterToolbar()}

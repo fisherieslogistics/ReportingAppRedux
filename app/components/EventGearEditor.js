@@ -45,17 +45,17 @@ const EventGearEditor = (props) => {
   const model = getFishingEventModelByTypeCode(props.formType).complete;
   return (
     <ScrollView>
-    <EditorView
-      styles={styles}
-      getCallback={(name, value) => this.onChange(name, value, props)}
-      getEditor={(attribute) => getEditor(attribute, props)}
-      editorType={"gear"}
-      name={"eventGear"}
-      model={model}
-      obj={props.fishingEvent}
-      values={props.fishingEvent}
-    />
-  </ ScrollView>
+      <EditorView
+        styles={styles}
+        getCallback={(name, value) => this.onChange(name, value, props)}
+        getEditor={(attribute) => getEditor(attribute, props)}
+        editorType={"gear"}
+        name={"eventGear"}
+        model={model}
+        obj={props.fishingEvent}
+        values={props.fishingEvent}
+      />
+    </ScrollView>
   );
 }
 
