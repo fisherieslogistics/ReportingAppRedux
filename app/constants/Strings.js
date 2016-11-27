@@ -14,7 +14,7 @@ export default {
         notComplete: "Not yet hauled",
         noPositon: "Position not entered",
         endingFishingEvent: "Hauling ?",
-        startFishingEvent: "Shoot",
+        startFishingEvent: "Start Fishing",
         endFishingEvent: "Haul"
       }
     },

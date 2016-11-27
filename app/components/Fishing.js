@@ -28,16 +28,18 @@ import Icon8 from './common/Icon8';
 import UnsoughtCatch from './UnsoughtCatch';
 const fishingEventActions = new FishingEventActions();
 
-const segMents = ["details", "catches", "discards", "incidents", "protecteds"];
+const segMents = ["details", "catches"]/*, "discards", "incidents", "protecteds"];*/
+//TODO optional discard etc
 
 const toBind = [
   'endFishingEvent',
   'startFishingEvent',
   'renderDetailView',
   'removeFishingEvent',
-  'renderDetailView',
   'setViewingFishingEvent',
-  'renderMessage'
+  'renderMessage',
+  'renderSegementedControl',
+  'selectedDetailView'
 ];
 
 class Fishing extends React.Component{
@@ -247,7 +249,10 @@ class Fishing extends React.Component{
   renderDetailView(){
     return(
       <View style={[styles.detailView, styles.col]}>
-        <View style={[styles.row]}>
+        <View style={[styles.col]}>
+          <View style={[{paddingTop: 6}]}>
+            {this.renderSegementedControl()}
+          </View>
           {this.selectedDetailView()}
         </View>
     </View>);
@@ -276,7 +281,6 @@ class Fishing extends React.Component{
       <DetailToolbar
         left={null}
         right={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent, enabled: deleteActive}}
-        right={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent.bind(this), enabled: deleteActive}}
         center={ posDisplay }
       />
     );
@@ -315,7 +319,7 @@ class Fishing extends React.Component{
       <TouchableOpacity onPress={onPress} style={[buttonStyle]}>
         <View style={ { alignItems: 'center', flex: 1} }>
           <Text style={ { fontSize: 35, fontWeight: '500', color: '#fff', alignSelf: 'center' } }>
-            { this.props.enableStartEvent ? "Shoot" : "Haul" }
+            { this.props.enableStartEvent ? "Start Fishing" : "Haul" }
           </Text>
         </View>
       </TouchableOpacity>
