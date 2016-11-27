@@ -105,6 +105,7 @@ const changeEvent = (index, state, changes, formType) => {
   changes.lastChange = moment();
   updatedEvent = Object.assign({}, state.events[index], changes);
   updatedEvent.eventValid = calculateEventValid(updatedEvent, formType);
+  updatedEvent.groundropeDepth = updatedEvent.bottomDepth;
   return replaceFishingEvent(state, updatedEvent);
 }
 

@@ -96,7 +96,7 @@ class EventProductsEditor extends React.Component{
 
     renderEditors(product, index){
       let inputs = [];
-      ProductModel.filter(pm => this.props.optionalFields || !pm.optional)
+      ProductModel.filter(pm => !this.props.optionalFields || !pm.optional)
                   .forEach((attribute) => {
           if(!attribute.editorDisplay) {
               return;
@@ -148,7 +148,7 @@ class EventProductsEditor extends React.Component{
       const combinedEditors = getCombinedEditors(attribute, ProductModel, getEditor);
       if(combinedEditors.length < 4){
         let num = index + 1;
-        combinedEditors.push({label: "Catch " + num, editor: null});
+        //combinedEditors.push({label: "Catch " + num, editor: null});
       }
       const editingCallback = (attributeId) => {
         const attrId = attributeId + '__' + index;
