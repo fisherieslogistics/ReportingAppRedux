@@ -48,7 +48,7 @@ class AutoSuggestPicker extends React.Component {
   }
 
   componentWillReceiveProps(props){
-    if(this.state.inputId !== props.inputId || (this.state.changedByEvent)){
+    if(this.state.inputId === props.inputId || (this.state.changedByEvent)){
       this.setState({
         value: props.value
       });
@@ -74,7 +74,7 @@ class AutoSuggestPicker extends React.Component {
 
   onKeyPress(event) {
     if(event.nativeEvent.key === 'Enter' && this.props.onEnterPress){
-      this.props.onEnterPress(this.props.attributeId);
+      this.props.onEnterPress(event.nativeEvent, this.state.value);
     }
   }
 
@@ -129,6 +129,7 @@ class AutoSuggestPicker extends React.Component {
         editable={!this.props.disabled}
         focus={ this.props.focus }
         onKeyPress={ this.onKeyPress }
+        maxLength={ this.props.maxLength || 900 }
       />)
   }
 };
