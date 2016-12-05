@@ -38,9 +38,6 @@ const MasterToolbar = (props) => {
   const center = props.center && props.center.onPress ? renderButton(props.center, "center") : props.center;
   return (
     <View style={[masterStyles.toolbar, props.style, { backgroundColor: colors.backgrounds.dark }]}>
-      <View style={[masterStyles.left]}>
-        {props.left ? renderButton(props.left, "left") : null}
-      </View>
       <View style={masterStyles.center}>
         {center}
       </View>

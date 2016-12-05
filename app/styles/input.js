@@ -1,3 +1,4 @@
+import colors from './darkColors';
 
 export default {
   dateText: {
@@ -11,7 +12,7 @@ export default {
   textInput: {
     fontSize: 22,
     flex: 1,
-    color: "#707070",
+    color: colors.green,
     height: 22,
     marginTop: 10,
   },

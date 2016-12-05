@@ -40,6 +40,9 @@ const FishingEventModel = [
   {id: 'discards', valid: valid.alwaysValid, defaultValue: [], hidden: true},
   {id: 'protecteds', valid: valid.alwaysValid, defaultValue: [], hidden: true},
   {id: 'incidents', valid: valid.alwaysValid, defaultValue: [], hidden: true},
+  {label: 'Bottom Depth', id: 'bottomDepth', valid: valid.greaterThanZero, type: 'number',
+    unit: 'm',
+  },
 ];
 
 export default FishingEventModel;

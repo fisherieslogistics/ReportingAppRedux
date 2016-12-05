@@ -82,14 +82,13 @@ class EventProductsEditor extends React.Component{
     }
 
     validateCode(code) {
-      if(!code.length < 3) {
+      if(!code.length >= 3) {
         return true;
       }
       if(this.props.fishingEvent.products.find(p => p.code === code)){
         AlertIOS.alert("Only one catch per species code is allowed.");
         return false;
       }
-      return true;
     }
 
     validateInput(name, value) {
@@ -101,7 +100,6 @@ class EventProductsEditor extends React.Component{
     }
 
     onChange(name, value, catchId){
-      console.log("oChangep", name, value, catchId)
       if(!this.validateInput(name, value)){
         return;
       }
@@ -130,10 +128,6 @@ class EventProductsEditor extends React.Component{
       return (
         <View key={"product" + product.objectId}>
           {inputs}
-          <DeleteButton
-            onPress={this.deleteProduct}
-            index={index}
-          />
         </View>
       );
     }

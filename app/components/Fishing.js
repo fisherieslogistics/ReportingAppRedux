@@ -28,7 +28,7 @@ import Icon8 from './common/Icon8';
 import UnsoughtCatch from './UnsoughtCatch';
 const fishingEventActions = new FishingEventActions();
 
-const segMents = ["details", "catches"]/*, "discards", "incidents", "protecteds"];*/
+const segMents = ["details", "catches"]/*, "discards", "Accident", "protecteds"];*/
 //TODO optional discard etc
 
 const toBind = [
@@ -39,7 +39,8 @@ const toBind = [
   'setViewingFishingEvent',
   'renderMessage',
   'renderSegementedControl',
-  'selectedDetailView'
+  'selectedDetailView',
+  'toggleOptionalFields',
 ];
 
 class Fishing extends React.Component{
@@ -47,7 +48,8 @@ class Fishing extends React.Component{
     super(props);
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
-      selectedDetail: 0
+      selectedDetail: 0,
+      showOptionalFields: false,
     };
     toBind.forEach(funcName => {this[funcName] = this[funcName].bind(this)});
   }
@@ -175,7 +177,14 @@ class Fishing extends React.Component{
   }
 
   componentWillUpdate(props, state) {
-    console.log(props);
+    console.log("props");
+  }
+
+  toggleOptionalFields() {
+    console.log(this.state.showOptionalFields, "optioanl");
+    this.setState({
+      showOptionalFields: !this.state.showOptionalFields,
+    });
   }
 
   selectedDetailView(){
@@ -193,6 +202,8 @@ class Fishing extends React.Component{
                  editorType={'event'}
                  dispatch={this.props.dispatch}
                  formType={this.props.formType}
+                 optionalFieldsPress={this.toggleOptionalFields}
+                 showOptionalFields={this.state.showOptionalFields}
                  />);
       case 1:
         if(!this.props.viewingEvent.datetimeAtEnd){
@@ -308,11 +319,11 @@ class Fishing extends React.Component{
   getMasterToolbar(){
     const onPress = this.props.enableStartEvent ? this.startFishingEvent : this.endFishingEvent;
     const backgroundColor = this.props.enableStartEvent ? colors.green : colors.red;
-    const buttonStyle = { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor, alignSelf: 'stretch'};
+    const buttonStyle = { flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor, alignSelf: 'stretch'};
     const eventButton = (
       <TouchableOpacity onPress={onPress} style={[buttonStyle]}>
-        <View style={ { alignItems: 'center', flex: 1} }>
-          <Text style={ { fontSize: 35, fontWeight: '500', color: '#fff', alignSelf: 'center' } }>
+         <View style={{alignItems: 'center'}}>
+          <Text style={ { fontSize: 30, fontWeight: '500', color: '#fff', textAlign: 'center', marginTop: 20 } }>
             { this.props.enableStartEvent ? "Start Fishing" : "Haul" }
           </Text>
         </View>
@@ -329,7 +340,7 @@ class Fishing extends React.Component{
 
     return (
       <MasterDetailView
-        master={ this.renderFishingEventLists() /*this.renderMessage(this.props.tripStarted ? "Trip Started" : "Trip Hasn\'t Started")*/ }
+        master={ this.renderFishingEventLists() }
         detail={this.renderDetailView()}
         detailToolbar={this.getDetailToolbar()}
         masterToolbar={this.getMasterToolbar()}

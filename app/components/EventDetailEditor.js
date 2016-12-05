@@ -5,6 +5,7 @@ import {
   AlertIOS,
   Text,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 
 import React from 'react';
@@ -20,7 +21,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 const tcerOrder = [
   'targetSpecies',
   'bottomDepth',
-  'groundropeDepth',
+  //'groundropeDepth',
   'averageSpeed',
   'wingSpread',
   'headlineHeight',
@@ -47,7 +48,8 @@ class EventDetailEditor extends React.Component{
       this.getCallback = this.getCallback.bind(this);
       this.getEditor = this.getEditor.bind(this);
       this.state = {
-        nextInput: ''
+        nextInput: '',
+        showMore: false,
       }
     }
 
@@ -123,11 +125,30 @@ class EventDetailEditor extends React.Component{
       }
     }
 
+    renderToggleShowMore(){
+      console.log(this.props.optionalFieldsPress);
+      console.log(this.props.showOptionalFields);
+      const viewStyle = {position: 'absolute', right: 0, top: 0, height: 30, width: 60};
+      return (
+        <TouchableOpacity
+          style={viewStyle}
+          onPress={ this.props.optionalFieldsPress }
+        >
+          <View>
+            <Text style={{fontSize: 18, color: '#33F9FF'}} >{ this.props.showOptionalFields ? 'Less' : 'More' }</Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }
+
     render() {
       if(!this.props.fishingEvent){
         return this.props.renderMessage("No shots to edit");
       }
-      const model = getFishingEventModelByTypeCode(this.props.formType).complete;
+      let model = getFishingEventModelByTypeCode(this.props.formType).complete;
+      if(!this.props.showOptionalFields) {
+        model = model.filter(field => !field.optionalRender);
+      }
       return (<KeyboardAwareScrollView style={{marginTop: 3}} viewIsInsideTabBar={ true } extraHeight={ 150 } bouncesZoom={false} alwaysBounceVertical={false}>
                 <EditorView
                   styles={styles}
@@ -140,6 +161,7 @@ class EventDetailEditor extends React.Component{
                   obj={this.props.fishingEvent}
                   values={this.props.fishingEvent}
                 />
+              { this.renderToggleShowMore() }
               <View style={{height: 600}}></View>
             </KeyboardAwareScrollView>);
     }

@@ -1,26 +1,23 @@
 const EndpointLookup = {
-  Production: {
-    ApiEndpoint: 'http://fisherylogistics.com:5003/',
-  },
-  Staging: {
-    ApiEndpoint: 'http://fisherieslogistics.com:5003/',
-  },
-  Local:  {
-    ApiEndpoint: 'http://localhost:5003/',
-  },
-  'Rimu PC ASTRO: 192.168.20.119': {
-    ApiEndpoint: 'http://192.168.20.119:5003/',
-  },
+  Production: 'api.fisherylogistics.com',
+  Staging: 'fisherieslogistics.com',
+  Local: '192.168.178.41',
+  'Rimu PC ASTRO': '192.168.20.119',
+  JarethIp: '192.168.20.135',
 }
-
-export { EndpointLookup }
+const port = 5003;
 
 export default (state = EndpointLookup.Production, action) => {
-  return {  ApiEndpoint: 'http://fisherieslogistics.com:5003/' };
+  //return EndpointLookup.Production;
+  console.log(state, action);
   switch(action.type){
     case "devMode":
-      return Object.assign({}, state, EndpointLookup[action.payload]);
+      console.log(action);
+      const endpoint = EndpointLookup[action.payload];
+      return Object.assign({}, state, { ApiEndpoint: `http://${endpoint}:${port}/`});
     default:
       return EndpointLookup.Production;
   }
 }
+
+export { EndpointLookup }

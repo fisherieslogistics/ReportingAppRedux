@@ -10,8 +10,6 @@ export default {
     marginTop: 5,
     marginLeft: 5,
     marginRight: 5,
-    backgroundColor: colors.backgrounds.veryDark,
-    borderRadius: 6,
     overflow: "hidden"
   },
   topWrapper: {
@@ -58,6 +56,6 @@ export default {
     borderBottomWidth: 1,
     paddingTop: 2,
     paddingBottom: 2,
-    borderBottomColor: colors.midGray
+    borderBottomColor: colors.lightestGray
   }
 }

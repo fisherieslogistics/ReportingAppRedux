@@ -2,21 +2,24 @@
 import {
   StyleSheet
 } from 'react-native';
-import colors from './colors';
+import colors from './darkColors';
 
 export default StyleSheet.create({
   midLabel: {
     lineHeight: 22,
     fontSize: 20,
-    fontWeight: "400"
+    fontWeight: "400",
+    color: '#fff',
   },
   midLabel2:{
     fontSize: 24,
-    fontWeight: "300"
+    fontWeight: "300",
+      color: '#fff',
   },
   largeLabel: {
     lineHeight: 35,
     fontSize: 30,
+      color: '#fff',
   },
   font: {
     fontFamily: 'System'
@@ -46,6 +49,7 @@ export default StyleSheet.create({
   },
   button: {
     fontSize: 20,
-    fontWeight: "400"
+    fontWeight: "400",
+    color: '#fff',
   }
 });

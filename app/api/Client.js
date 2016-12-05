@@ -4,7 +4,7 @@ import request from 'superagent';
 import {connect} from 'react-redux';
 import moment from 'moment';
 import AuthActions from '../actions/AuthActions';
-import ApiEndpoint from './ApiEndpoint';
+//import ApiEndpoint from './ApiEndpoint';
 import Helper from '../utils/Helper';
 
 const helper = new Helper();
@@ -17,7 +17,7 @@ class Client {
   }
 
   mutate(query, variables, auth){
-    //console.log(variables);
+    console.log(variables);
     return this.performRefreshableRequest(this._mutate.bind(this, query, variables, auth), auth);
   }
 
@@ -31,13 +31,20 @@ class Client {
 
   performRefreshableRequest(func, auth){
     let self = this;
+    console.log(this.refreshNeeded("auth need", auth));
+    auth.expiresAt = new moment();
+    console.log(this.refreshNeeded("now need it", auth));
     if(this.refreshNeeded(auth)){
       return this.promisifyRequestBody(this._refresh(auth))
                  .catch((err) => {
+                   console.log("WHERE IS THE AUTH")
                   //console.log("first catch", err);
+                  debugger;
                   throw err;
                })
                .then((newAuth) => {
+                 console.log("NEW FUCKING AUTH", newAuth)
+                 debugger;
                  self.dispatch(authActions.setAuth(newAuth));
                  return self.promisifyRequestBody(func());
                });
@@ -51,9 +58,10 @@ class Client {
       req.end((err, res) => {
         if(err){
           try{
-            reject(err.response.text);
+            console.log(err.response.text);
+            reject(err.response.text, err);
           }catch(e){
-            console.log(e);
+            console.log(err);
             reject(err);
           }
           return;
@@ -84,6 +92,7 @@ class Client {
   }
 
   _query(query, auth) {
+    console.log(this.apiEndpoint);
     return request.post(this.apiEndpoint + 'graphql')
              .type('application/graphql')
              .send(query)
