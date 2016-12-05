@@ -176,7 +176,6 @@ class EditOnBlur extends React.Component {
 
   onFocus(){
     this.props.editingCallback(this.props.attribute.id);
-    this.props.onEnterPress ? this.props.onEnterPress() : null;
   }
 
   onKeyPress(event) {
@@ -284,11 +283,11 @@ const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEn
                 value={value}
                 name={attribute.id}
                 inputId={inputId}
-                {...extraProps}
                 editingCallback={editingCallback}
                 focusedAttributeId={focusedAttributeId}
                 onEnterPress={onEnterPress}
                 focus={focus}
+                {...extraProps}
               />);
     case "container":
       return (<AutoSuggestPicker
