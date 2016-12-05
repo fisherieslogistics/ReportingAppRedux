@@ -1,4 +1,4 @@
-import colors from './colors';
+import colors from './darkColors';
 
 export default {
   innerWrapper:{
@@ -34,7 +34,7 @@ export default {
   },
   labelText: {
     color: colors.blue,
-    fontSize: 18,
+    fontSize: 17,
   },
   labelError: {
     marginLeft: 4,

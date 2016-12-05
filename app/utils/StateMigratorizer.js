@@ -37,7 +37,6 @@ export default function(state) {
   migrations.forEach(m => {
     m = m(newState);
     if(stateShouldMigrate(m, newState.migrations)){
-      console.log("migrating", m.name)
       newState = migrateUp(m, newState);
     }
   });

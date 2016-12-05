@@ -99,8 +99,6 @@ class SyncWorker {
   }
 
   mutateTrip(trip){
-    debugger;
-    console.log("muatte trip", Object.keys(trip));
     const state = this.getState().default;
     let mutation = upsertTrip(trip);
     return this.performMutation(mutation.query, mutation.variables, this.dispatchMutateTrip);

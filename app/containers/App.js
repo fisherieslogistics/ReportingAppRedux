@@ -44,10 +44,8 @@ class App extends Component {
   }
 
   handleError(err){
-    console.log("handling");
     throw err;
-    /*AlertIOS.alert(
-    console.log(err, err.message, err.stack);
+    return;
     AlertIOS.alert(
       "Fatal Error",
       `An email dialog will appear - please send the email containing all your current data and the error
@@ -55,11 +53,20 @@ class App extends Component {
       [
         {
           text: 'OK', onPress: () => {
-            //this.sendErrorMail(err);
+            try {
+              this.sendErrorMail(err);
+            }
+            catch(e) {
+              this.handleNoEmail(err)
+            }
           }
         }
       ]
-    );*/
+    );
+  }
+
+  handleNoEmail(err){
+    AlertIOS.alert("Error and Email not working", "Please restart iPad if still broken - then call Rimu on 0220487896")
   }
 
   email(to, subject, content, callback) {
@@ -84,7 +91,6 @@ class App extends Component {
       }
       this.email("rimu@fisherylogistics.com", "error from reporting app", JSON.stringify(content), (err, event) => {
         if(err) {
-          console.log(err);
           this.resetState(state);
           return;
         }
