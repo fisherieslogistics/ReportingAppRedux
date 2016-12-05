@@ -39,7 +39,8 @@ const toBind = [
   'setViewingFishingEvent',
   'renderMessage',
   'renderSegementedControl',
-  'selectedDetailView'
+  'selectedDetailView',
+  'toggleOptionalFields',
 ];
 
 class Fishing extends React.Component{
@@ -47,7 +48,8 @@ class Fishing extends React.Component{
     super(props);
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
-      selectedDetail: 0
+      selectedDetail: 0,
+      showOptionalFields: false,
     };
     toBind.forEach(funcName => {this[funcName] = this[funcName].bind(this)});
   }
@@ -178,6 +180,13 @@ class Fishing extends React.Component{
     console.log("props");
   }
 
+  toggleOptionalFields() {
+    console.log(this.state.showOptionalFields, "optioanl");
+    this.setState({
+      showOptionalFields: !this.state.showOptionalFields,
+    });
+  }
+
   selectedDetailView(){
     if(!this.props.viewingEvent){
       return this.renderMessage("No shots to edit");
@@ -193,6 +202,8 @@ class Fishing extends React.Component{
                  editorType={'event'}
                  dispatch={this.props.dispatch}
                  formType={this.props.formType}
+                 optionalFieldsPress={this.toggleOptionalFields}
+                 showOptionalFields={this.state.showOptionalFields}
                  />);
       case 1:
         if(!this.props.viewingEvent.datetimeAtEnd){

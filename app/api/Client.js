@@ -17,7 +17,7 @@ class Client {
   }
 
   mutate(query, variables, auth){
-    //console.log(variables);
+    console.log(variables);
     return this.performRefreshableRequest(this._mutate.bind(this, query, variables, auth), auth);
   }
 
@@ -31,6 +31,7 @@ class Client {
 
   performRefreshableRequest(func, auth){
     let self = this;
+    console.log(this.refreshNeeded(auth));
     if(this.refreshNeeded(auth)){
       return this.promisifyRequestBody(this._refresh(auth))
                  .catch((err) => {
@@ -51,9 +52,10 @@ class Client {
       req.end((err, res) => {
         if(err){
           try{
+            console.log(err.response.text);
             reject(err.response.text, err);
           }catch(e){
-            console.log(e);
+            console.log(err);
             reject(err);
           }
           return;

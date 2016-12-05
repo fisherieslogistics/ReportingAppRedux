@@ -99,9 +99,11 @@ class SyncWorker {
   }
 
   mutateTrip(trip){
+    debugger;
+    console.log("muatte trip", Object.keys(trip));
     const state = this.getState().default;
     let mutation = upsertTrip(trip);
-    return this.performMutation(mutation.query, mutation.variables, this.mutateTrip);
+    return this.performMutation(mutation.query, mutation.variables, this.dispatchMutateTrip);
   }
 
   dispatchMutateFishingEvent(fishingEvent, res){
@@ -121,7 +123,7 @@ class SyncWorker {
     }else{
       q = upsertFishingEvent(fishingEvent, tripId);
     }
-    return this.performMutation(q.query, q.variables, (res) => { this.dispatchMutateFishingEvent(fishingEvents, res); });
+    return this.performMutation(q.query, q.variables, (res) => { this.dispatchMutateFishingEvent(fishingEvent, res); });
   }
 
   performMutation(query, variables, success, dispatch){
@@ -129,7 +131,7 @@ class SyncWorker {
       this.api.mutate(query, variables, this.getState().default.auth)
         .then((res) => resolve(success(res)))
         .catch((err) => {
-          console.warn("perfomed with error", JSON.stringify(err), err, query, "Chicken");
+          console.warn("performed with error", JSON.stringify(err), err, query, "Chicken");
           this.dispatch({
             type: "syncError",
             time: new moment(),

@@ -5,6 +5,7 @@ import {
   AlertIOS,
   Text,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 
 import React from 'react';
@@ -124,27 +125,30 @@ class EventDetailEditor extends React.Component{
       }
     }
 
-    showMore(){
-
-    }
-
-    showLess(){
-
-    }
-
     renderToggleShowMore(){
+      console.log(this.props.optionalFieldsPress);
+      console.log(this.props.showOptionalFields);
+      const viewStyle = {position: 'absolute', right: 0, top: 0, height: 30, width: 60};
       return (
-        <View style={{position: 'absolute', right: 0, top: 0, height: 20, width: 40, backgroundColor: '#fff'}}>
-          <Text>{'more'}</Text>
-        </View>
-      )
+        <TouchableOpacity
+          style={viewStyle}
+          onPress={ this.props.optionalFieldsPress }
+        >
+          <View>
+            <Text style={{fontSize: 18, color: '#33F9FF'}} >{ this.props.showOptionalFields ? 'Less' : 'More' }</Text>
+          </View>
+        </TouchableOpacity>
+      );
     }
 
     render() {
       if(!this.props.fishingEvent){
         return this.props.renderMessage("No shots to edit");
       }
-      const model = getFishingEventModelByTypeCode(this.props.formType).complete;
+      let model = getFishingEventModelByTypeCode(this.props.formType).complete;
+      if(!this.props.showOptionalFields) {
+        model = model.filter(field => !field.optionalRender);
+      }
       return (<KeyboardAwareScrollView style={{marginTop: 3}} viewIsInsideTabBar={ true } extraHeight={ 150 } bouncesZoom={false} alwaysBounceVertical={false}>
                 <EditorView
                   styles={styles}

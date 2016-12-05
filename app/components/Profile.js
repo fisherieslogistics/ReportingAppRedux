@@ -220,6 +220,7 @@ function UrlPicker(props) {
     <PickerIOS
       selectedValue={ selected ? selected.name: ''}
       onValueChange={(u) => {
+        console.log(u);
         props.dispatch({type: 'devMode', payload: u});
       }}
     >
