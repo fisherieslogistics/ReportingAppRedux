@@ -11,13 +11,20 @@ const helper = new Helper();
 const authActions = new AuthActions();
 
 class Client {
-  constructor(dispatch, ApiEndpoint) {
+  constructor(dispatch, ApiEndpoint, AuthEndpoint) {
     this.apiEndpoint = ApiEndpoint;
+    this.authEndpoint = AuthEndpoint;
     this.dispatch = dispatch;
+    this.mutate = this.mutate.bind(this);
+    this.query = this.query.bind(this);
+    this.login = this.login.bind(this);
+    this.performRefreshableRequest = this.performRefreshableRequest.bind(this);
+    this._query = this._query.bind(this);
+    this._refresh = this._refresh.bind(this);
+    this._mutate = this._mutate.bind(this);
   }
 
   mutate(query, variables, auth){
-    console.log(variables);
     return this.performRefreshableRequest(this._mutate.bind(this, query, variables, auth), auth);
   }
 
@@ -31,42 +38,32 @@ class Client {
 
   performRefreshableRequest(func, auth){
     let self = this;
-    console.log(this.refreshNeeded("auth need", auth));
-    auth.expiresAt = new moment();
-    console.log(this.refreshNeeded("now need it", auth));
+    const endpoint = this.apiEndpoint;
     if(this.refreshNeeded(auth)){
       return this.promisifyRequestBody(this._refresh(auth))
                  .catch((err) => {
-                   console.log("WHERE IS THE AUTH")
-                  //console.log("first catch", err);
-                  debugger;
                   throw err;
                })
                .then((newAuth) => {
-                 console.log("NEW FUCKING AUTH", newAuth)
-                 debugger;
-                 self.dispatch(authActions.setAuth(newAuth));
-                 return self.promisifyRequestBody(func());
+                  const req = func();
+                  req.set("Authorization", "Bearer " + newAuth.refreshToken);
+                 return self.promisifyRequestBody(req);
                });
     }else{
       return this.promisifyRequestBody(func());
     }
   }
 
-  promisifyRequestBody(req){
+  promisifyRequestBody(req, newAuth){
       return new Promise((resolve, reject) => {
       req.end((err, res) => {
         if(err){
           try{
-            console.log(err.response.text);
-            reject(err.response.text, err);
+            reject(err.response.text);
           }catch(e){
-            console.log(err);
             reject(err);
           }
-          return;
         }else{
-          //console.log(res.body);
           resolve(res.body);
         }
       });
@@ -79,7 +76,7 @@ class Client {
     }
     let nearFuture = new moment();
     nearFuture.add(2, 'minute');
-    return (auth.expiresAt.unix() < nearFuture.unix())
+    return (auth.expiresAt.unix() < nearFuture.unix());
   }
 
   _mutate(query, variables, auth) {
@@ -92,7 +89,6 @@ class Client {
   }
 
   _query(query, auth) {
-    console.log(this.apiEndpoint);
     return request.post(this.apiEndpoint + 'graphql')
              .type('application/graphql')
              .send(query)
@@ -100,7 +96,6 @@ class Client {
   }
 
   _login(username, password){
-    //console.log(username, password, this.apiEndpoint);
     return request.post(this.apiEndpoint + 'oauth/token')
              .type('form')
              .send({ 'grant_type': 'password' })
@@ -108,11 +103,14 @@ class Client {
              .send({ 'password': password });
   }
 
-  _refresh(auth){
-    return request.post(this.apiEndpoint + 'oauth/token')
+  _refresh({ refreshToken }){
+    if(!refreshToken) {
+      return Promise.reject("No Refresh Token")
+    }
+    return request.post(this.authEndpoint + 'oauth/token')
              .type('form')
              .send({'grant_type': 'refresh_token'})
-             .send({'refresh_token': auth.refreshToken});
+             .send({'refresh_token': refreshToken});
   }
 
   _reject(msg){

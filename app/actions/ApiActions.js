@@ -15,12 +15,12 @@ const helper = new Helper();
 let client;
 class ApiActions {
 
-  setUpClient(dispatch, ApiEndpoint, timeoutMS){
-    client = new Client(dispatch, ApiEndpoint, timeoutMS);
+  setUpClient(dispatch, ApiEndpoint, AuthEndpoint){
+    client = new Client(dispatch, ApiEndpoint, AuthEndpoint);
   }
 
   checkMe(auth, dispatch){
-    client.query(queries.getMe, {accessToken: auth.accessToken, expiresAt: auth.expiresAt})
+    client.query(queries.getMe, auth)
       .catch((err) => {
         console.warn(err);
       })
@@ -33,13 +33,11 @@ class ApiActions {
     return (dispatch, getState) => {
       client.login(username, password)
         .catch((err) => {
-          //dispatch(authActions.loginError(JSON.stringify(err)));
-
-          //TODO: USE SERVER ERROR IN FUTURE
+          return dispatch(authActions.loginError("please try that again "));
         })
         .then((auth) => {
           if(!auth){
-            return dispatch(authActions.loginError("please try that again" + auth));
+            return dispatch(authActions.loginError("please try that again " + auth));
           }else{
             //TODO: This needs to be in a popup dispatcher and not in the logic here
             AlertIOS.alert(
