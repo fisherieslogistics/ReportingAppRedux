@@ -7,16 +7,22 @@ const EndpointLookup = {
 }
 const port = 5003;
 
-export default (state = EndpointLookup.Production, action) => {
-  //return EndpointLookup.Production;
-  console.log(state, action);
+function getEndpointObject(key){
+  const endpoint = EndpointLookup[key];
+  return {
+    ApiEndpoint: `http://${endpoint}:${port}/`,
+    AuthEndpoint: `http://${endpoint}:${port}/`,
+  };
+}
+
+const production = getEndpointObject('Production');
+
+export default (state = production, action) => {
   switch(action.type){
     case "devMode":
-      console.log(action);
-      const endpoint = EndpointLookup[action.payload];
-      return Object.assign({}, state, { ApiEndpoint: `http://${endpoint}:${port}/`});
+      return Object.assign({}, state, getEndpointObject(action.payload));
     default:
-      return EndpointLookup.Production;
+      return production;
   }
 }
 

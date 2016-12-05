@@ -97,12 +97,6 @@ function upsertFishingEvent(fEvent, tripId) {
 }
 
 const upsertTrip = (trip) => {
-  console.log("trip", Object.keys(trip));
-  try{
-    trip.startDate.toISOString()
-  }catch(e){
-    debugger;
-  }
   let _trip = Object.assign({}, trip, {
     id: trip.objectId,
     startDate: trip.startDate.toISOString(),

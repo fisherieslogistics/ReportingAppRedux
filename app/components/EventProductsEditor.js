@@ -20,6 +20,7 @@ import {renderCombinedEditors, getCombinedEditors } from './common/AttributeEdit
 import {LongButton} from './common/Buttons';
 import Icon8 from './common/Icon8';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import speciesCodesDesc from '../constants/speciesDesc.json';
 
 const productActions = new ProductActions();
 
@@ -70,6 +71,10 @@ class EventProductsEditor extends React.Component{
         extraProps.name = "__product" + "__" + index + "__container";
         extraProps.attributeId = attribute.id;
       }
+      if(attribute.id == "code"){
+        extraProps.choices = speciesCodesDesc;
+        extraProps.autoCapitalize = "characters";
+      }
       const enterPressed = (attrId) => { this.onEnterPress(attrId, index) };
       return {
         attribute,
@@ -101,7 +106,6 @@ class EventProductsEditor extends React.Component{
     }
 
     onChange(name, value, catchId){
-      console.log("oChangep", name, value, catchId)
       if(!this.validateInput(name, value)){
         return;
       }

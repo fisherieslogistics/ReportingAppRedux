@@ -176,12 +176,7 @@ class Fishing extends React.Component{
     this.props.dispatch(fishingEventActions.setViewingFishingEvent(fishingEvent.id));
   }
 
-  componentWillUpdate(props, state) {
-    console.log("props");
-  }
-
   toggleOptionalFields() {
-    console.log(this.state.showOptionalFields, "optioanl");
     this.setState({
       showOptionalFields: !this.state.showOptionalFields,
     });

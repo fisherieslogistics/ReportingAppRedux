@@ -4,7 +4,7 @@ export default {
   midGray: 'rgba(90, 90, 90, 1)',
   gray: 'rgba(80, 80, 80, 1)',
   red: "#FF2D55",
-  blue: "#426BF2",
+  blue: "#7DDBFE",
   highlightBlue: "#3E95FF",
   lightBlue: "#b6daf0",
   darkBlue: "#0C5071",

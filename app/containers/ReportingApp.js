@@ -36,7 +36,7 @@ class ReportingApp extends Component {
     this.state = {
       selectedTab: this.props.loggedIn ? (this.props.tripStarted ? "fishing" : "trip") : "settings",
     };
-    apiActions.setUpClient(props.dispatch, props.ApiEndpoint);
+    apiActions.setUpClient(props.dispatch, props.ApiEndpoint, props.AuthEndpoint);
     this.SyncWorker = new SyncWorker(props.dispatch,
                                      props.store.getState,
                                      apiActions);
@@ -58,7 +58,7 @@ class ReportingApp extends Component {
 
   componentWillReceiveProps(nextProps) {
     if(nextProps.ApiEndpoint !== this.props.ApiEndpoint) {
-      apiActions.setUpClient(nextProps.dispatch, nextProps.ApiEndpoint);
+      apiActions.setUpClient(nextProps.dispatch, nextProps.ApiEndpoint, nextProps.AuthEndpoint);
     }
   }
 
@@ -232,6 +232,7 @@ const select = (State, dispatch) => {
       gpsPort: state.me.gpsPort,
       gpsBaud: state.me.gpsBaud,
       ApiEndpoint: state.api.ApiEndpoint,
+      AuthEndpoint: state.api.AuthEndpoint,
     };
 }
 

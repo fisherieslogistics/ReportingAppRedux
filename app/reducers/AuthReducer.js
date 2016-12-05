@@ -21,15 +21,15 @@ export default (state = initialState, action) => {
     case 'devMode':
       return Object.assign({}, initialState);
     case 'loginError':
-    AlertIOS.alert(
-      "Login Error",
-      'Cannot login, check email/password',
-      [
-        {text: 'Ok', onPress: () => {
-          return;
-        }, style: 'cancel'},
-      ]
-    );
+      AlertIOS.alert(
+        "Login Error",
+        'Cannot login, check email/password',
+        [
+          {text: 'Ok', onPress: () => {
+            return;
+          }, style: 'cancel'},
+        ]
+      );
       return Object.assign({}, initialState, { message: action.message});
     default:
         return state;

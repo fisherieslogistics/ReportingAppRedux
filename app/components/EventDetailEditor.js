@@ -16,6 +16,8 @@ import {eventEditorStyles, colors} from '../styles/styles';
 import {getFishingEventModelByTypeCode} from '../utils/FormUtils';
 const fishingEventActions = new FishingEventActions();
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import speciesCodesDesc from '../constants/speciesDesc.json';
+
 
 
 const tcerOrder = [
@@ -106,11 +108,16 @@ class EventDetailEditor extends React.Component{
 
     getEditor(attribute){
       const inputId = attribute.id + "__event__" + this.props.fishingEvent.id;
+      const extraProps =  {};
+      if(attribute.id == 'targetSpecies'){
+        extraProps.choices = speciesCodesDesc;
+        extraProps.autoCapitalize = 'characters'
+      }
       return {
         attribute,
         value: this.props.fishingEvent[attribute.id],
         onChange: attribute.type === 'bool' ? this.onNonFishChange : this.onChange,
-        extraProps: {fishingEvent: this.props.fishingEvent},
+        extraProps: extraProps,
         inputId,
         onEnterPress: inputOrder[this.props.formType].indexOf(attribute.id) === -1 ? null : this.onEnterPress,
       };
@@ -126,8 +133,6 @@ class EventDetailEditor extends React.Component{
     }
 
     renderToggleShowMore(){
-      console.log(this.props.optionalFieldsPress);
-      console.log(this.props.showOptionalFields);
       const viewStyle = {position: 'absolute', right: 0, top: 0, height: 30, width: 60};
       return (
         <TouchableOpacity

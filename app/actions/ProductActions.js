@@ -3,7 +3,6 @@ import moment from 'moment';
 
 class ProductActions{
   changeSpecies(id, catchId, value, objectId) {
-      console.log("change species", value, catchId, objectId, id);
       return (dispatch, getState) => {
         dispatch({
           type: 'changeSpecies',
