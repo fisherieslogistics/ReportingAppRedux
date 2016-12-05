@@ -71,8 +71,9 @@ const meta = {
         repeating: true,
         prep: (products) => {
           //sort highest to lowest take the highest 8 by weight
-          let totals = helper.getTotals([...products]).sort((c1, c2) => c2.weight - c1.weight).slice(0, 8);
-          return totals;
+          return helper.getTotals([...products]).sort((c1, c2) => {
+            return c2.weight - c1.weight;
+          }).slice(0, 8);
         },
         parts: [
           {
@@ -96,7 +97,8 @@ const meta = {
         ]
       },
       otherSpeciesWeight: {id: 'products', resolve: (fe) => {
-        return helper.getUncountedWeight(fe.products, 8);
+        const other =  fe.products.find(p => p.code === 'OTH');
+        return other ? other.weight : 0;
       }, x: 244, y: 572}
     }
   }
