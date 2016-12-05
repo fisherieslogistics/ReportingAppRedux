@@ -8,8 +8,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';
-import FishPicker from '../FishPicker';
-import ContainerPicker from '../ContainerPicker';
 import DatePicker from 'react-native-datepicker';
 import {inputStyles, textStyles, colors} from '../../styles/styles';
 import Sexagesimal from 'sexagesimal';
@@ -20,6 +18,8 @@ import FocusOnDemandTextInput from './FocusOnDemandTextInput';
 import LocationEditor from '../LocationEditor';
 import errorBubble from './ErrorBubble';
 import TouchableEditor from './TouchableEditor';
+import AutoSuggestPicker from './AutoSuggestPicker';
+
 
 const helper = new Helper();
 
@@ -277,7 +277,7 @@ const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEn
       />);
       break;
     case "product":
-      return (<FishPicker
+      return (<AutoSuggestPicker
                 onChange={(value) => {
                   onChange(attribute.id, value);
                 }}
@@ -291,7 +291,7 @@ const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEn
                 focus={focus}
               />);
     case "container":
-      return (<ContainerPicker
+      return (<AutoSuggestPicker
                 onChange={(value) => {
                   onChange(attribute.id, value);
                 }}

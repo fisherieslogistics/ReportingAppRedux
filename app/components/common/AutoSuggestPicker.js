@@ -6,21 +6,21 @@ import{
   TextInput,
 } from 'react-native';
 
-import Validator from '../utils/Validator';
 
 import React from 'react';
-import AutoSuggestBar from './common/AutoSuggestBar';
-import {inputStyles, textStyles} from '../styles/styles';
-import ViewActions from '../actions/ViewActions';
 import reactMixin from 'react-mixin';
 import Subscribable from 'Subscribable';
 import {connect} from 'react-redux';
-import colors from '../styles/colors';
-import FocusOnDemandTextInput from './common/FocusOnDemandTextInput';
+
+import Validator from '../../utils/Validator';
+import {inputStyles, textStyles, colors} from '../../styles/styles';
+import ViewActions from '../../actions/ViewActions';
+import AutoSuggestBar from './AutoSuggestBar';
+import FocusOnDemandTextInput from './FocusOnDemandTextInput';
 
 const viewActions = new ViewActions();
 
-class ContainerPicker extends React.Component {
+class AutoSuggestPicker extends React.Component {
 
   constructor(props){
     super(props);
@@ -47,6 +47,18 @@ class ContainerPicker extends React.Component {
                        this.autoSuggestEmitted);
   }
 
+  componentWillReceiveProps(props){
+    if(this.state.inputId !== props.inputId || (this.state.changedByEvent)){
+      this.setState({
+        value: props.value
+      });
+    }
+    this.setState({
+      changedByEvent: false,
+      inputId: props.inputId,
+    });
+  }
+
   autoSuggestEmitted(event){
     if(event.inputId == this.props.inputId){
       this.setState({
@@ -54,7 +66,9 @@ class ContainerPicker extends React.Component {
         value: event.value
       });
       this.props.onChange(event.value);
-      this.props.onEnterPress(this.props.attributeId);
+      setTimeout(() => {
+        this.onBlur(event);
+      })
     }
   }
 
@@ -65,6 +79,10 @@ class ContainerPicker extends React.Component {
   }
 
   onFocus(){
+    let userFavourites = this.props.favourites[this.props.attributeId];
+    let favourites = userFavourites ? Object.keys(userFavourites).sort((k1, k2) => {
+      return userFavourites[k1] - userFavourites[k2];
+    }) : [];
     this.props.dispatch(viewActions.initAutoSuggestBarChoices(this.props.choices,
                                                               [],
                                                               this.props.value,
@@ -94,8 +112,7 @@ class ContainerPicker extends React.Component {
   }
 
   render () {
-    let style = [{fontSize: 16, flex: 1, height: 30, color: colors.black},
-                  textStyles.font, this.props.textStyle];
+    let style = [inputStyles.textInput, this.props.styles | {}];
     return(
       <FocusOnDemandTextInput
         style={style}
@@ -106,7 +123,7 @@ class ContainerPicker extends React.Component {
         placeholder={this.props.placeholder}
         placeholderTextColor={colors.black}
         selectTextOnFocus={true}
-        autoCapitalize={'none'}
+        autoCapitalize={this.props.autoCapitalize || 'none'}
         autoCorrect={false}
         ref={'textInput'}
         editable={!this.props.disabled}
@@ -116,7 +133,7 @@ class ContainerPicker extends React.Component {
   }
 };
 
-reactMixin(ContainerPicker.prototype, Subscribable.Mixin);
+reactMixin(AutoSuggestPicker.prototype, Subscribable.Mixin);
 
 const select = (State, dispatch) => {
   let state = State.default;
@@ -126,4 +143,4 @@ const select = (State, dispatch) => {
   };
 }
 
-export default connect(select)(ContainerPicker);
+export default connect(select)(AutoSuggestPicker);
