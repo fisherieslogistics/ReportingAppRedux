@@ -26,13 +26,13 @@ const productActions = new ProductActions();
 
 const inputOrder = [
   'code',
-  'numberOfContainers',
   'weight',
 ];
 
 const optionalInputOrder = [
   'state',
   'containerType',
+  'numberOfContainers',
   'grade',
   'treatment',
 ];
@@ -71,15 +71,30 @@ class EventProductsEditor extends React.Component{
         extraProps.name = "__product" + "__" + index + "__container";
         extraProps.attributeId = attribute.id;
       }
-      if(attribute.id == "code"){
+      if(attribute.id === "code"){
         extraProps.choices = speciesCodesDesc;
         extraProps.autoCapitalize = "characters";
+        extraProps.maxLength = 3;
       }
-      const enterPressed = (attrId) => { this.onEnterPress(attrId, index) };
+      let onChange = (name, v) => this.onChange(name, v, index);
+      if(value === 'OTH'){
+        extraProps.maxLength = 34;
+        extraProps.value = 'Other Species Weight';
+        onChange = (name, v) => {
+          if(v.length === 3) this.onChange(name, v, index);
+        };
+      }
+
+      const enterPressed = (nativeEvent, value) => {
+        if(attribute.id === 'code'){
+          onChange('code', value);
+        }
+        this.onEnterPress(attribute.id, index)
+      };
       return {
         attribute,
-        value,
-        onChange: (name, v) => this.onChange(name, v, index),
+        value: value,
+        onChange: onChange,
         extraProps: extraProps,
         inputId,
         onEnterPress: enterPressed,
@@ -143,28 +158,26 @@ class EventProductsEditor extends React.Component{
     }
 
     onEnterPress(attributeId, productIndex){
-      const orderOfinputs = this.props.optionalFields ? inputOrder.concat(optionalInputOrder) : inputOrder;
+      //const orderOfinputs = this.props.optionalFields ? inputOrder.concat(optionalInputOrder) : inputOrder;
+      let orderOfinputs = [...inputOrder];
       const index = orderOfinputs.indexOf(attributeId);
-      if(index === -1) {
-        this.setState({
-          nextInput: '',
-        });
-        return;
-      }
-
-      const isLastInput = (index === (orderOfinputs.length - 1));
-      const input = isLastInput ? orderOfinputs[0] : orderOfinputs[index + 1];
-
-      if((productIndex === (this.props.products.length - 1)) && isLastInput){
+      let nextInput = '';
+      let inputName = orderOfinputs[index + 1];
+      let lastProduct = (productIndex === (this.props.products.length - 1));
+      console.log("beast", inputName, attributeId, productIndex);
+      if(inputName){
+        console.log("not adding", `${inputName}__${productIndex}`);
+        nextInput = `${inputName}__${productIndex}`;
+      } else if (lastProduct) {
         this.addProduct();
-        this.setState({
-          nextInput: input + '__' + (productIndex + 1),
-        });
-        return;
-      };
-
+        console.log(`${orderOfinputs[0]}__${productIndex + 1}`);
+        nextInput = `${orderOfinputs[0]}__${productIndex + 1}`;
+      } else {
+        console.log(`${orderOfinputs[0]}__${productIndex + 1}`);
+        nextInput = `${orderOfinputs[0]}__${productIndex + 1}`;
+      }
       this.setState({
-        nextInput: input + '__' + (isLastInput ? (productIndex + 1) : productIndex),
+        nextInput,
       });
     }
 

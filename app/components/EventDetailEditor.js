@@ -25,8 +25,8 @@ const tcerOrder = [
   'bottomDepth',
   //'groundropeDepth',
   'averageSpeed',
-  'wingSpread',
-  'headlineHeight',
+  /*'wingSpread',
+  'headlineHeight',*/
 ];
 
 const lcerOrder = [
@@ -111,7 +111,8 @@ class EventDetailEditor extends React.Component{
       const extraProps =  {};
       if(attribute.id == 'targetSpecies'){
         extraProps.choices = speciesCodesDesc;
-        extraProps.autoCapitalize = 'characters'
+        extraProps.autoCapitalize = 'characters';
+        extraProps.maxLength = 3;
       }
       return {
         attribute,
@@ -119,7 +120,7 @@ class EventDetailEditor extends React.Component{
         onChange: attribute.type === 'bool' ? this.onNonFishChange : this.onChange,
         extraProps: extraProps,
         inputId,
-        onEnterPress: inputOrder[this.props.formType].indexOf(attribute.id) === -1 ? null : this.onEnterPress,
+        onEnterPress: inputOrder[this.props.formType].indexOf(attribute.id) === -1 ? null : () => this.onEnterPress(attribute.id),
       };
     }
 
