@@ -11,7 +11,7 @@ function up(state) {
     endPort: oldTrip.estimatedReturnPort,
     startDate: oldTrip.sailingTime,
     endDate: oldTrip.ETA,
-    complete: oldTrip.completed,
+    complete: oldTrip.complete,
   }
   let newTrip = Object.assign({}, oldTrip, changes);
   delete newTrip.leavingPort;
@@ -19,7 +19,7 @@ function up(state) {
   delete newTrip.sailingTime;
   delete newTrip.ETA;
   delete newTrip.lastSubmitted;
-  delete newTrip.completed;
+  delete newTrip.complete;
   return Object.assign({}, newState, { trip: newTrip });
 }
 
