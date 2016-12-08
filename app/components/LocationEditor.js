@@ -11,10 +11,10 @@ import {
 } from 'react-native';
 
 import React from 'react';
-import {inputStyles, textStyles, colors} from '../styles/styles';
+import {inputStyles, textStyles, colors } from '../styles/styles';
 import Sexagesimal from 'sexagesimal';
 import moment from 'moment';
-import {LongButton} from './common/Buttons';
+import { LongButton } from './common/Buttons';
 import Helper from '../utils/Helper';
 import FocusOnDemandTextInput from './common/FocusOnDemandTextInput';
 import Icon8 from './common/Icon8';
@@ -38,17 +38,17 @@ class LocationEditor extends React.Component {
   renderLocation(){
     let posText = `${Sexagesimal.format(this.props.value.lat, 'lat')}  -  ${Sexagesimal.format(this.props.value.lon, 'lon')}`;
     return (
-      <View style={{ flexDirection: 'row', flex: 1, alignItems: 'stretch'}}>
+      <View style={ [styles.wrapper] }>
         <TouchableOpacity
           onPress={() => this.setState({modalVisible: true}) }
           style={{flexDirection: 'row', flex: 1 }}
         >
           <Icon name={ "pencil" }
                 size={ 20 }
-                color={ "black" }
+                color={ colors.lightBlue }
                 style={{ marginTop: 8, left: -24 }}
           />
-        <Text style={ [inputStyles.textInput, {fontSize: 18, left: -18}] }>
+          <Text style={ [inputStyles.textInput, {fontSize: 18, left: -18}] }>
             { posText }
           </Text>
         </TouchableOpacity>
@@ -75,6 +75,11 @@ class LocationEditor extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'stretch',
+  },
   inputsWrapper: {
     flex: 1,
     flexDirection: 'column',

@@ -11,7 +11,7 @@ import Helper from '../utils/Helper';
 import MasterListView from './common/MasterListView';
 import Icon8 from './common/Icon8';
 
-import {colors, listViewStyles, iconStyles, textStyles} from '../styles/styles';
+import { darkColors as colors, listViewStyles, iconStyles, textStyles} from '../styles/styles';
 import {IconButton} from './common/Buttons';
 
 const fishingEventActions = new FishingEventActions();
@@ -44,7 +44,14 @@ class FishingEventList extends React.Component {
 
     getIcon(fishingEvent){
       let status = this.eventStatus(fishingEvent);
-      return (<Icon8 name={status.icon} size={30} color="white"  style={[iconStyles, {backgroundColor: status.color}]}/>)
+      return (
+        <Icon8
+          name={status.icon}
+          size={30}
+          color="white"
+          style={[iconStyles, {backgroundColor: status.color}]}
+        />
+      );
     }
 
     getDescription(fishingEvent, sectionID, rowID) {

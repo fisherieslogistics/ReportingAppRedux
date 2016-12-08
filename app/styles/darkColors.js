@@ -1,5 +1,6 @@
 export default {
   white: "white",
+  transparent: 'rgba(0, 0, 0, 0)',
   lightestGray: 'rgba(100, 100, 100, 1)',
   midGray: 'rgba(90, 90, 90, 1)',
   gray: 'rgba(80, 80, 80, 1)',
@@ -12,7 +13,7 @@ export default {
   green: "#0DD03C",
   pastelGreen: "#78F7C6",
   darkGray: "rgba(40, 40, 40, 1)",
-  pink: "#FF2D55",
+  pink: "#C06361",
   black: 'rgba(0, 0, 0, 0.5)',
   backgrounds: {
     dark: 'rgba(40, 40, 40, 1)',

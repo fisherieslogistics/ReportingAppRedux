@@ -14,21 +14,21 @@ export default StyleSheet.create({
   midLabel2:{
     fontSize: 24,
     fontWeight: "300",
-      color: '#fff',
+    color: '#fff',
   },
   largeLabel: {
     lineHeight: 35,
     fontSize: 30,
-      color: '#fff',
+    color: '#fff',
   },
   font: {
-    fontFamily: 'System'
+    fontFamily: 'System',
   },
   light: {
-    color: colors.midGray,
+    color: colors.lightBlue,
   },
   dark: {
-    color: colors.darkGray,
+    color: colors.green,
   },
   black: {
     color: colors.black,

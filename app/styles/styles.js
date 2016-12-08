@@ -11,6 +11,7 @@ import masterDetailStyles from './masterDetail';
 
 export {
   colors,
+  darkColors,
   shadowStyles,
   iconStyles,
   inputStyles,

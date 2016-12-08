@@ -37,14 +37,6 @@ const optionalInputOrder = [
   'treatment',
 ];
 
-const DeleteButton = (props) => {
-  return (
-    <TouchableOpacity onPress={() => props.onPress(props.index)} style={styles.deleteButtonWrapper}>
-      <Icon8 name="delete" size={20} color="white" style={styles.deleteView} />
-    </TouchableOpacity>
-  );
-}
-
 class EventProductsEditor extends React.Component{
     constructor (props){
         super(props);
@@ -53,13 +45,6 @@ class EventProductsEditor extends React.Component{
           nextInput: ''
         };
         this.onEnterPress = this.onEnterPress.bind(this);
-        this.deleteProduct = this.deleteProduct.bind(this);
-        this.undoDeleteProduct = this.undoDeleteProduct.bind(this);
-        this.addProduct = this.addProduct.bind(this);
-    }
-
-    addProduct(){
-      this.props.dispatch(productActions.addProduct(this.props.fishingEvent.id, this.props.fishingEvent.objectId));
     }
 
     getEditor(attribute, product, index){
@@ -149,10 +134,16 @@ class EventProductsEditor extends React.Component{
       return (
         <View key={"product" + product.objectId}>
           {inputs}
-          <DeleteButton
-            onPress={this.deleteProduct}
-            index={index}
-          />
+          <TouchableOpacity
+            onPress={ () => this.props.deleteProduct(index) }
+            style={[styles.deleteButtonWrapper, styles.deleteView]}
+          >
+            <Icon8
+              name={"delete"}
+              size={ 14 }
+              color={"white"}
+            />
+          </TouchableOpacity>
         </View>
       );
     }
@@ -217,37 +208,6 @@ class EventProductsEditor extends React.Component{
       }
     }
 
-    deleteProduct(index){
-      this.props.dispatch(productActions.deleteProduct(index, this.props.fishingEvent.id, this.props.fishingEvent.objectId));
-    }
-
-    undoDeleteProduct(){
-      if(this.props.deletedProducts.length){
-        this.props.dispatch(productActions.undoDeleteProduct(this.props.fishingEvent.id, this.props.fishingEvent.objectId));
-      }
-    }
-
-    getBottomRow(){
-      return (
-        <View style={[styles.bottomRow]}>
-          <View style={styles.buttonWrapper}>
-            <LongButton
-               bgColor={colors.pink}
-               text={"Undo"}
-               onPress={this.undoDeleteProduct}
-               disabled={!this.props.deletedProducts.length}
-            />
-            <LongButton
-              bgColor={colors.blue}
-              text={"Add Catch"}
-              disabled={false}
-              onPress={this.addProduct}
-            />
-          </View>
-        </View>
-      )
-    }
-
     getInputs(){
       if(!this.props.products.length){
         return this.props.renderMessage("No Catches");
@@ -261,11 +221,18 @@ class EventProductsEditor extends React.Component{
 
     render() {
       return (
-        <View style={[styles.col, styles.fill, {alignItems: 'stretch', marginTop: 3}]}>
-            {this.getBottomRow()}
-          <KeyboardAwareScrollView style={[styles.scroll]} viewIsInsideTabBar={true} extraHeight={ 230 } alwaysBounceVertical={false} bouncesZoom={false}>
+        <View
+          style={[styles.col, styles.fill, {alignItems: 'stretch' }]}
+        >
+          <KeyboardAwareScrollView
+            style={[styles.scroll]}
+            viewIsInsideTabBar={true}
+            extraHeight={ 230 }
+            alwaysBounceVertical={false}
+            bouncesZoom={false}
+          >
             {this.getInputs()}
-            <View style={{height: 550}}></View>
+            <View style={{height: 550}} />
           </KeyboardAwareScrollView>
         </View>
       );
@@ -273,21 +240,9 @@ class EventProductsEditor extends React.Component{
 };
 
 const pStyle = {
-  scroll: {
-    backgroundColor: colors.lightGray
-  },
   addProduct:{
     marginLeft: 10,
     backgroundColor: colors.blue
-  },
-  bottomRow: {
-    height: 40,
-    paddingTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    //backgroundColor: colors.white,
-    //borderTopWidth: 1,
-    //borderColor: colors.midGray
   },
   buttonWrapper:{
     width: 360,
@@ -301,13 +256,15 @@ const pStyle = {
   deleteButtonWrapper:{
     position: 'absolute',
     right: 8,
-    top: 8
+    top: 16,
   },
   deleteView: {
-    borderRadius: 10,
-    width: 20,
-    height: 20,
-    backgroundColor: colors.red,
+    borderRadius: 15,
+    width: 25,
+    height: 25,
+    padding: 5,
+    borderWidth: 0,
+    backgroundColor: colors.pink,
   },
   labelRow: {
     flex: 0.50,
@@ -337,5 +294,4 @@ const pStyle = {
 }
 
 const styles = StyleSheet.create(Object.assign({}, eventEditorStyles, pStyle));
-export { DeleteButton }
 export default EventProductsEditor;

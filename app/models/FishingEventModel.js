@@ -5,6 +5,7 @@ const FishingEventModel = [
     type: 'number', readOnly: true,
   },
   { id: 'targetSpecies', valid: valid.targetProduct,
+    'label': 'Target Species',
     type: 'picker', defaultValue: "",
     editorDisplay: {editor: 'event', type: 'combined', siblings: ['bottomDepth']}
   },
@@ -12,19 +13,24 @@ const FishingEventModel = [
     type: 'datetime',
     combinedValid: {attributes: ["datetimeAtStart", "datetimeAtEnd"],
                     func: Validator.combined.orderedLessThan},
-    //editorDisplay: {editor: 'event', type: 'combined', siblings: [/*'locationAtStart'*/]}
+    editorDisplay: {editor: 'event', type: 'combined', siblings: ['locationAtStart']},
+    optionalRender: true,
   },
   {label: 'Date/Time at End',    id: 'datetimeAtEnd',      valid: valid.anyValue,
     type: 'datetime',
     combinedValid: {attributes: ["datetimeAtEnd", "datetimeAtStart"],
                     func: Validator.combined.orderedGreaterThan},
-    //editorDisplay: {editor: 'event', type: 'combined', siblings: ['locationAtEnd'], hideUndefined: true}
+    editorDisplay: {editor: 'event', type: 'combined',
+    siblings: ['locationAtEnd'], hideUndefined: true },
+    optionalRender: true
   },
   {label: 'Location at Start', id: 'locationAtStart', valid: valid.anyValue,
    type: 'location', defaultValue: {}, hidden: true,
+   optionalRender: true
   },
   {label: 'Location at End', id: 'locationAtEnd', valid: valid.anyValue,
    type: 'location', readOnly: true, defaultValue: {},  hidden: true,
+   optionalRender: true
   },
   {label: 'Products Valid', id: 'eventValid', valid: valid.alwaysValid,
    defaultValue: false,

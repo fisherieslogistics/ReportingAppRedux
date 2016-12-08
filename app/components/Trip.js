@@ -40,7 +40,7 @@ class Trip extends React.Component {
   }
 
   updateTrip(attribute, value){
-    this.props.dispatch(tripActions.updateTrip(attribute, value, false));
+    this.props.dispatch(tripActions.updateTrip(attribute, value, this.props.trip.started));
   }
 
   totalSelected(total, rowId){
@@ -100,6 +100,7 @@ class Trip extends React.Component {
         ports={this.props.ports}
         startTrip={this.startTrip}
         orientation={this.props.orientation}
+        onChange={this.updateTrip}
       />
     );
   }

@@ -157,25 +157,24 @@ class EventDetailEditor extends React.Component{
     }
     return (
       <KeyboardAwareScrollView
-        style={{marginTop: 3}}
         viewIsInsideTabBar={ true }
         extraHeight={ 150 }
-        bouncesZoom={false}
-        alwaysBounceVertical={false}
+        bouncesZoom={ false }
+        alwaysBounceVertical={ false }
       >
         <EditorView
-          styles={styles}
-          getCallback={this.getCallback}
+          styles={ styles }
+          getCallback={ this.getCallback }
           toFocusAttributeId={ this.state.nextInput }
-          getEditor={this.getEditor}
-          editorType={"event"}
-          name={"eventDetail"}
-          model={model}
-          obj={this.props.fishingEvent}
-          values={this.props.fishingEvent}
+          getEditor={ this.getEditor }
+          editorType={ "event" }
+          name={ "eventDetail" }
+          model={ model }
+          obj={ this.props.fishingEvent }
+          values={ this.props.fishingEvent }
         />
-      { this.renderToggleShowMore() }
-      <View style={{height: 600}}></View>
+        { this.renderToggleShowMore() }
+      <View style={{ height: 600 }} />
     </KeyboardAwareScrollView>);
   }
 };

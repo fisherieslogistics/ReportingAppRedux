@@ -31,7 +31,7 @@ class TripActions{
       type: 'updateTrip',
       update: update,
       attr: attribute,
-      started: started
+      started: started,
     }
   }
 }

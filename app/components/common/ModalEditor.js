@@ -8,6 +8,7 @@ import {
 
 import React, { Component } from 'react';
 import { BlurView } from 'react-native-blur';
+import { colors, textStyles, inputStyles } from '../../styles/styles';
 
 export class FormContainer extends Component {
 
@@ -77,7 +78,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    //ackgroundColor: 'orange',
     borderWidth: 1,
   },
   formControls: {
@@ -91,10 +91,8 @@ const styles = StyleSheet.create({
   topSection: {
     flex: 0.5,
     flexDirection: 'row',
-    backgroundColor: "#fff",
   },
   bottomSection: {
-    //backgroundColor: "white",
     flex: 0.5,
   },
   clearfix1: {
@@ -102,6 +100,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1,
+    backgroundColor: colors.backgrounds.dark,
   },
   blurViewInner: {
     flex: 1,
@@ -112,6 +111,5 @@ const styles = StyleSheet.create({
   formWrapper: {
     alignItems: 'stretch',
     flex: 1,
-    //backgroundColor: 'orange',
   },
 });

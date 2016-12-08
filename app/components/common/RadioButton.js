@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
   },
   radioButtonText: {
     fontSize: 18,
+    color: colors.green,
     alignSelf: 'flex-start',
     flex: 0.7,
   },

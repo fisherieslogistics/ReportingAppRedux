@@ -12,14 +12,14 @@ import {TextButton, IconButton} from '../common/Buttons';
 
 const renderButton = (button, textAlign) => {
   if( button.icon){
-    const iconStyle = {width: 50, marginTop:29, height: 50, marginRight: 0, backgroundColor: 'transparent'}
     return (
       <IconButton
         icon={button.icon}
         color={button.color}
         onPress={button.onPress}
-        style={ button.style || iconStyle }
-        disabled={!button.enabled} />
+        style={ style.iconStyle }
+        disabled={!button.enabled}
+      />
     );
   }
   const textButtonStyle = {marginTop: 34, marginRight: 15, marginLeft: 22, width: 70};
@@ -46,15 +46,18 @@ const MasterToolbar = (props) => {
 };
 
 const DetailToolbar = (props) => {
+  const viewStyles = [ detailStyles.toolbar, shadowStyles.shadow, props.style ];
   return (
-    <View style={[detailStyles.toolbar, shadowStyles.shadow, props.style || {}]}>
+    <View
+      style={viewStyles}
+    >
       <View style={[detailStyles.center]}>
         <View style={[detailStyles.center]}>
           {props.center}
         </View>
       </View>
       <View style={[detailStyles.right]}>
-        {props.right ? renderButton(props.right) : null}
+        { props.right ? renderButton(props.right) : null }
       </View>
     </View>
   );
@@ -83,12 +86,22 @@ const masterStyles = StyleSheet.create({
    }
 });
 
+const style = StyleSheet.create({
+  iconStyle: {
+    width: 50,
+    marginTop:29,
+    height: 50,
+    marginRight: 0,
+    backgroundColor: 'transparent'
+  },
+});
+
 const detailStyles = StyleSheet.create({
    toolbar:{
      backgroundColor: colors.backgrounds.veryDark,
      flexDirection: 'row',
      flex: 0.1,
-     height: 70
+     height: 70,
    },
    right:{
      alignSelf: 'stretch',

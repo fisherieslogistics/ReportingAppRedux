@@ -7,7 +7,7 @@ import{
   Image
 } from 'react-native';
 import React from 'react';
-import {textStyles, iconStyles, colors} from '../../styles/styles';
+import { textStyles, iconStyles, colors } from '../../styles/styles';
 import Icon8 from './Icon8';
 
 const getActiveOpacity = (disabled) => {
@@ -18,26 +18,29 @@ const getTextStyle = (color, disabled) =>{
   return [
     textStyles.font,
     textStyles.button,
-    {color: !disabled ? color : colors.midGray},
+    {color: ! disabled ? color : colors.midGray},
   ];
 }
 
-const getLongButtonStyle = (bgColor, disabled) =>{
-  return disabled ? {borderWidth: 1, borderColor: colors.midGray} : {backgroundColor: bgColor, borderColor: bgColor};
-}
-
-const Button = ({onPress, content, disabled}) => {
+const Button = ({onPress, content, disabled }) => {
   return (
     <TouchableOpacity
-      activeOpacity={getActiveOpacity(disabled)}
-      onPress={disabled ? () => {} : onPress}>
-        {content}
+      activeOpacity={ getActiveOpacity(disabled) }
+      onPress={ disabled ? () => {} : onPress }>
+        { content }
     </TouchableOpacity>
   )
 }
 
 const IconButton = ({icon, onPress, style, disabled, color}) => {
-  let content = <Icon8 name={icon} size={30} color={color||'red'} style={style}/>
+  let content = (
+    <Icon8
+      name={icon}
+      size={30}
+      color={color || 'red'}
+      style={style}
+    />
+  );
   return (
     <Button
       disabled={disabled}
@@ -48,27 +51,12 @@ const IconButton = ({icon, onPress, style, disabled, color}) => {
 }
 
 const TextButton = ({text, color, style, onPress, disabled}) => {
-  let textStyle = getTextStyle(color, disabled);
-  let content = (<View style={style}><Text style={textStyle}>{text}</Text></View>);
-  return (
-    <Button
-      disabled={disabled}
-      onPress={onPress}
-      content={content}
-    />
-  );
-}
-
-const LongButton = ({text, bgColor, onPress, disabled, _style={}}) => {
-  let textStyle = {
-    fontSize: 14,
-    color: !disabled ? colors.white : colors.midGray,
-  };
-  let vStyle = [styles.longButton, getLongButtonStyle(bgColor, disabled), _style];
-
+  const textStyle = getTextStyle(color, disabled);
   let content = (
-    <View style={vStyle}>
-      <Text style={[textStyle, textStyles.font]}>{text}</Text>
+    <View style={style}>
+      <Text style={textStyle}>
+        {text}
+      </Text>
     </View>
   );
   return (
@@ -76,21 +64,44 @@ const LongButton = ({text, bgColor, onPress, disabled, _style={}}) => {
       disabled={disabled}
       onPress={onPress}
       content={content}
-      >
-      {content}
+    >
+    { content }
     </Button>
+  );
+}
+
+const LongButton = ({ text, bgColor, onPress, disabled, _style } ) => {
+  const colorStyle = {
+    backgroundColor: disabled ? colors.transparent : bgColor,
+    borderColor: bgColor,
+  };
+  const txtStyle = { color: '#000', fontSize: 13 };
+  const content = (
+    <View style={[ colorStyle, _style || {}, styles.longButton ]}>
+      <Text style={[txtStyle, textStyles.font]}>
+        { text }
+      </Text>
+    </View>
+  );
+  return (
+    <Button
+      disabled={ disabled }
+      onPress={ onPress }
+      content={ content }
+    />
   );
 }
 
 const styles = StyleSheet.create({
   longButton: {
-    width: 140,
-    padding: 5,
     borderWidth: 1,
-    flexDirection: 'row',
+    height: 28,
+    alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 3
-  }
+  },
+  disabled: {
+    borderColor: colors.midGray,
+  },
 });
 
 export {IconButton, TextButton, LongButton}

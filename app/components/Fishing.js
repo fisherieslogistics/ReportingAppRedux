@@ -16,20 +16,23 @@ import FishingEventActions from '../actions/FishingEventActions';
 import EventGearEditor from './EventGearEditor';
 import PositionDisplay from './PositionDisplay';
 import EventProductsEditor from './EventProductsEditor';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import moment from 'moment';
 import Sexagesimal from 'sexagesimal';
 import PlaceholderMessage from './common/PlaceholderMessage';
+import { LongButton } from './common/Buttons';
 
-import {TextButton, IconButton} from './common/Buttons';
-import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
-import {colors, textStyles, iconStyles, masterDetailStyles} from '../styles/styles';
+import ProductActions from '../actions/ProductActions';
+import { TextButton } from './common/Buttons';
+import { MasterToolbar, DetailToolbar } from './layout/Toolbar';
+import { colors, textStyles, iconStyles, masterDetailStyles } from '../styles/styles';
 import Icon8 from './common/Icon8';
 import UnsoughtCatch from './UnsoughtCatch';
 const fishingEventActions = new FishingEventActions();
 
 const segMents = ["details", "catches"]/*, "discards", "Accident", "protecteds"];*/
 //TODO optional discard etc
+const productActions = new ProductActions();
 
 const toBind = [
   'endFishingEvent',
@@ -41,6 +44,11 @@ const toBind = [
   'renderSegementedControl',
   'selectedDetailView',
   'toggleOptionalFields',
+  'renderProductButtons',
+  'deleteProduct',
+  'undoDeleteProduct',
+  'renderProductButtons',
+  'addProduct',
 ];
 
 class Fishing extends React.Component{
@@ -172,6 +180,20 @@ class Fishing extends React.Component{
     );
   }
 
+  deleteProduct(index){
+    this.props.dispatch(productActions.deleteProduct(index, this.props.viewingEvent.id, this.props.viewingEvent.objectId));
+  }
+
+  undoDeleteProduct(){
+    if(this.props.deletedProducts.length){
+      this.props.dispatch(productActions.undoDeleteProduct(this.props.viewingEvent.id, this.props.viewingEvent.objectId));
+    }
+  }
+
+  addProduct() {
+    this.props.dispatch(productActions.addProduct(this.props.viewingEvent.id, this.props.viewingEvent.objectId));
+  }
+
   setViewingFishingEvent(fishingEvent){
     this.props.dispatch(fishingEventActions.setViewingFishingEvent(fishingEvent.id));
   }
@@ -183,38 +205,37 @@ class Fishing extends React.Component{
   }
 
   selectedDetailView(){
-    if(!this.props.viewingEvent){
-      return this.renderMessage("No shots to edit");
-    }
-    if(this.props.viewingEvent.signature){
-      return this.renderMessage("This shot has been signed and cannot be edited");
-    }
     switch (this.state.selectedDetail){
       case 0:
-        return (<EventDetailEditor
-                 renderMessage={this.renderMessage}
-                 fishingEvent={this.props.viewingEvent}
-                 editorType={'event'}
-                 dispatch={this.props.dispatch}
-                 formType={this.props.formType}
-                 optionalFieldsPress={this.toggleOptionalFields}
-                 showOptionalFields={this.state.showOptionalFields}
-                 />);
+        return (
+          <EventDetailEditor
+            renderMessage={this.renderMessage}
+            fishingEvent={this.props.viewingEvent}
+            editorType={'event'}
+            dispatch={this.props.dispatch}
+            formType={this.props.formType}
+            optionalFieldsPress={this.toggleOptionalFields}
+            showOptionalFields={this.state.showOptionalFields}
+          />
+        );
       case 1:
         if(!this.props.viewingEvent.datetimeAtEnd){
           return this.renderMessage("Haul before adding catch");
         }
-        return (<EventProductsEditor
-                 fishingEvent={this.props.viewingEvent}
-                 deletedProducts={this.props.deletedProducts}
-                 products={this.props.viewingEvent.products}
-                 dispatch={this.props.dispatch}
-                 editorType={'event'}
-                 orientation={this.props.orientation}
-                 renderMessage={this.renderMessage}
-                 containerChoices={this.props.containerChoices}
-                 optionalFields={this.props.catchDetailsExpanded}
-                />);
+        return (
+          <EventProductsEditor
+            fishingEvent={this.props.viewingEvent}
+            deletedProducts={this.props.deletedProducts}
+            products={this.props.viewingEvent.products}
+            dispatch={this.props.dispatch}
+            editorType={'event'}
+            orientation={this.props.orientation}
+            renderMessage={this.renderMessage}
+            containerChoices={this.props.containerChoices}
+            optionalFields={this.props.catchDetailsExpanded}
+            deleteProduct={this.deleteProduct}
+          />
+        );
         case 2:
         case 3:
         case 4:
@@ -234,25 +255,78 @@ class Fishing extends React.Component{
   }
 
   renderSegementedControl() {
+    let enabled = !!this.props.viewingEvent.datetimeAtEnd;
+    const controlColor = enabled ? colors.lightBlue : colors.darkGray;
     return (
       <SegmentedControlIOS
+        enabled={ enabled }
         values={segMents}
         selectedIndex={this.state.selectedDetail}
-        style={styles.detailSelector}
+        style={ styles.detailSelector }
+        tintColor={ controlColor }
         onChange={({nativeEvent}) => {
           this.setState({selectedDetail: nativeEvent.selectedSegmentIndex});
         }}
       />);
   }
 
+  renderProductButtons() {
+    if(this.state.selectedDetail !==  1){
+      return null;
+    }
+    const btnStyle = {
+      flex: 1,
+      margin: 0,
+    };
+    const undoColor = this.props.deletedProducts.length ? colors.pink : colors.midGray;
+    const buttonWrapper = { alignItems: 'stretch', flex: 0.5 };
+    return (
+      <View style={{ flexDirection: 'row', flex: 1 }}>
+        <View style={[ buttonWrapper ]}>
+          <LongButton
+            bgColor={ undoColor }
+            text={ "Undo" }
+            onPress={ this.undoDeleteProduct }
+            disabled={ !this.props.deletedProducts.length }
+            _style={ btnStyle }
+          />
+       </View>
+       <View style={[ buttonWrapper ] }>
+         <LongButton
+           bgColor={ colors.blue }
+           text={ "Add Catch" }
+           disabled={ false }
+           onPress={ this.addProduct }
+           _style={ btnStyle }
+         />
+      </View>
+    </View>
+    );
+  }
+
   renderDetailView(){
+    if(!this.props.viewingEvent){
+      return this.renderMessage("Welcome Back Skip");
+    }
+    if(this.props.viewingEvent.signature){
+      return this.renderMessage("This shot has been signed and cannot be edited");
+    }
     return(
       <View style={[styles.detailView, styles.col]}>
-        <View style={[styles.col]}>
-          <View style={[{paddingTop: 6}]}>
-            {this.renderSegementedControl()}
+        <View style={[{ height: 50 }]}>
+          <View style={[styles.row, { flex: 1 }]}>
+            <View style={[ { flex: 0.5 }, styles.row ]}>
+              { this.renderSegementedControl() }
+            </View>
+            <View style={[ { flex: 0.5 }, styles.row ]}>
+              <View style={[ styles.productButtonsWrapper ]}>
+                { this.renderProductButtons() }
+              </View>
+            </View>
           </View>
-          {this.selectedDetailView()}
+        </View>
+        <View style={[styles.row, { flex: 1, padding: 15 }]}>
+          { this.selectedDetailView() }
         </View>
     </View>);
   }
@@ -276,22 +350,29 @@ class Fishing extends React.Component{
 
   getDetailToolbar(){
     let deleteActive = this.props.lastEvent && (!this.props.lastEvent.datetimeAtEnd);
-    const posDisplay = (<PositionDisplay provider={this.props.positionProvider} />);
+    const posDisplay = (
+      <PositionDisplay
+        provider={this.props.positionProvider}
+      />
+    );
+    const rightProps = {
+      color: colors.red,
+      text: "Delete",
+      onPress: this.removeFishingEvent,
+      enabled: deleteActive
+    };
     return (
       <DetailToolbar
         left={null}
-        right={{color: colors.red, text: "Delete", onPress: this.removeFishingEvent, enabled: deleteActive}}
+        right={ rightProps }
         center={ posDisplay }
       />
     );
   }
 
   getFishingButton(){
-    const btnStyle =  {width: 150, left: 20 };
     let startEventButton = (
       <TextButton
-        text={"Start Fishing"}
-        style={ btnStyle }
         color={ colors.green }
         textAlign={ "center" }
         onPress={ this.startFishingEvent }
@@ -300,8 +381,6 @@ class Fishing extends React.Component{
     );
     let endEventButton = (
       <TextButton
-        text={"Stop Fishing"}
-        style={ btnStyle }
         color={ colors.red }
         textAlign={ "center" }
         onPress={ this.endFishingEvent }
@@ -325,9 +404,9 @@ class Fishing extends React.Component{
       </TouchableOpacity>
     );
     return(
-        <MasterToolbar
-          center={eventButton}
-        />
+      <MasterToolbar
+        center={eventButton}
+      />
     );
   }
 
@@ -347,20 +426,32 @@ class Fishing extends React.Component{
 const styles = {
   detailView: {
     padding: 0,
+    flex: 1,
   },
   col: {
     flexDirection: 'column',
-    flex: 1
   },
   row: {
     flexDirection: 'row',
-    flex: 1,
   },
-  detailSelector:{
-    width: 350,
-    height: 23,
-    alignSelf: 'center'
-  }
+  halfway: {
+    flex: 0.5,
+  },
+  detailSelector: {
+    borderRadius: 0,
+    borderWidth: 1,
+    borderColor: colors.lightBlue,
+    alignSelf: 'flex-start',
+    margin: 10,
+    flex: 0.5,
+  },
+  productButtonsWrapper: {
+    flexDirection: 'column',
+    margin: 10,
+    flex: 0.5,
+    alignSelf: 'flex-end',
+    alignItems: 'stretch',
+  },
 }
 
 const select = (State, dispatch) => {

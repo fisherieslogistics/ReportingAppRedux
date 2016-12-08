@@ -138,7 +138,7 @@ class InputView extends Component {
             focus={ this.isToFocus() }
             keyboardType={ 'number-pad' }
             value={ this.state.text }
-            style={ [ styles.textInput ] }
+            style={ [ inputStyles.textInput ] }
             onChangeText={ this.onChangeText }
             onKeyPress={ this.onKeyPress }
             onBlur={ this.onBlur }
@@ -193,17 +193,18 @@ export default class CoordinateEditor extends Component {
     return ['Degrees', 'Minutes', 'Seconds'].map((part, i) => {
       const attributeName = `${editorProps.prepend}${part}`;
       return (
-        <InputView key={ `${attributeName}_${i}_part` }
-                   name={ attributeName }
-                   index={i}
-                   label={ part }
-                   maxVal={ editorProps[`max${part}`] }
-                   onChange={ this.props.onChange }
-                   attribute={ this.props.attribute }
-                   location={ this.props.location }
-                   coordType={ this.props.coordType }
-                   onEnterPress={ this.props.onEnterPress }
-                   nextInput={ this.props.nextInput }
+        <InputView
+          key={ `${attributeName}_${i}_part` }
+          name={ attributeName }
+          index={i}
+          label={ part }
+          maxVal={ editorProps[`max${part}`] }
+          onChange={ this.props.onChange }
+          attribute={ this.props.attribute }
+          location={ this.props.location }
+          coordType={ this.props.coordType }
+          onEnterPress={ this.props.onEnterPress }
+          nextInput={ this.props.nextInput }
         />
       );
     });
@@ -226,8 +227,10 @@ export default class CoordinateEditor extends Component {
     const degMin = helper.getDegreesMinutesFromLocation(this.props.location);
     const hemisphere = this.props.coordType == 'latitude' ? degMin.ns : degMin.ew;
     return (
-      <View style={ [styles.formWrapper] }
-            key={ 'coords_edit_' + this.props.label }>
+      <View
+        style={ [styles.formWrapper] }
+        key={ 'coords_edit_' + this.props.label }
+      >
         <View style={ [styles.formSectionTop] }>
           <Text style={[inputStyles.labelText, styles.coordLabel ]}>
             { _props.label }

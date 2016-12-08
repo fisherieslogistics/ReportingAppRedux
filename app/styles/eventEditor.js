@@ -1,15 +1,12 @@
 import colors from './darkColors';
 
 export default {
-  innerWrapper:{
-   paddingTop: 6,
-   paddingLeft: 5,
-   paddingBottom: 3,
+
+  innerWrapper: {
+    paddingTop: 6,
+    paddingBottom: 3,
   },
   outerWrapper: {
-    marginTop: 5,
-    marginLeft: 5,
-    marginRight: 5,
     overflow: "hidden"
   },
   topWrapper: {
@@ -54,8 +51,10 @@ export default {
     alignSelf: 'stretch',
     flex: 1,
     borderBottomWidth: 1,
-    paddingTop: 2,
-    paddingBottom: 2,
     borderBottomColor: colors.lightestGray
-  }
+  },
+  combinedRow: {
+    flex: 1,
+    alignSelf: 'stretch',
+  },
 }

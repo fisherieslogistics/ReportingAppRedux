@@ -65,7 +65,7 @@ class TripEditor extends React.Component {
       return choices;
     }
 
-    renderStartTrip(){
+    renderStartTrip() {
       return (
         <StartTripEditor
           trip={this.props.trip}
@@ -99,11 +99,11 @@ class TripEditor extends React.Component {
     }
 
     onChangePort(id, value){
-      this.props.dispatch(tripActions.updateTrip(id, value, this.props.trip.started));
+      this.props.dispatch(tripActions.updateTrip(id, value));
     }
 
     onChangeTime(id, value){
-      this.props.dispatch(tripActions.updateTrip(id, value, this.props.trip.started));
+      this.props.dispatch(tripActions.updateTrip(id, value));
     }
 
     renderTripEditor(){
