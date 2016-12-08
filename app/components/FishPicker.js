@@ -64,7 +64,6 @@ class FishPicker extends React.Component {
   }
 
   autoSuggestEmitted(event){
-    console.log(event.inputId == this.props.inputId, event.inputId, this.props.inputId)
     if(event.inputId == this.props.inputId){
       this.setState({
         changedByEvent: true,

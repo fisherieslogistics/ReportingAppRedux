@@ -4,8 +4,8 @@ const FishingEventModel = [
   {label: 'Number of in Trip', id: 'id', valid: valid.anyValue,
     type: 'number', readOnly: true,
   },
-  {label: 'Target Species', id: 'targetSpecies', valid: valid.targetProduct,
-    type: 'product', defaultValue: "",
+  { id: 'targetSpecies', valid: valid.targetProduct,
+    type: 'picker', defaultValue: "",
     editorDisplay: {editor: 'event', type: 'combined', siblings: ['bottomDepth']}
   },
   {label: 'Date/Time at Start',  id: 'datetimeAtStart', valid: valid.anyValue,

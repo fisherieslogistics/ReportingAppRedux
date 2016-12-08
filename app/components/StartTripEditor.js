@@ -11,91 +11,93 @@ import {
 
 import React from 'react';
 import moment from 'moment';
-import TripActions from '../actions/TripActions';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import TripModel from '../models/TripModel';
-import Helper from '../utils/Helper';
-import colors from '../styles/colors';
-import {textStyles, inputStyles} from '../styles/styles';
-import {LongButton} from './common/Buttons';
-import {AttributeEditor} from './common/AttributeEditor';
-import PortPicker from './PortPicker';
-import UserActions from '../actions/UserActions';
-import PlaceholderMessage from './common/PlaceholderMessage';
-import ViewActions from '../actions/ViewActions';
+import { eventEditorStyles, textStyles, inputStyles, colors } from '../styles/styles';
+import EditorView from './common/EditorView';
 
-const viewActions = new ViewActions();
-const userActions = new UserActions();
-const helper = new Helper();
-const tripActions = new TripActions();
-const PickerItemIOS = PickerIOS.Item;
+const styles = StyleSheet.create(eventEditorStyles);
+const dayChoices = [...Array(45).keys()].map(i => {
+  return {
+    value: i.toString(),
+    description: ` ${i.toString()} days `,
+  }
+});
 
 class StartTripEditor extends React.Component {
 
-  render(){
-    time = time || new moment(new Date().getTime());
-    let placeTimeStyle = StyleSheet.create({
-      wrapper:{
-        backgroundColor: colors.pastelGreen,
-        flex: 0.5,
-        alignItems: 'flex-start',
-        paddingLeft: 5
-      },
-    });
-    let dateAttr = TripModel.find((a) => a.id == timeType);
-    let dateProps = {
-      customStyles: {
-        dateIcon: {
-          height: 0,
-          opacity: 0
-        },
-        dateInput:{
-          borderWidth: 0,
-          opacity: 0,
-          flexDirection: 'row',
-          flex: 1,
-        },
-      },
-      disabled: false
+  constructor(props){
+    super(props);
+    this.getEditor = this.getEditor.bind(this);
+    this.getEditorExtraProps = this.getEditorExtraProps.bind(this);
+    this.onChange = this.onChange.bind(this);
+  }
+
+  onChange(name, value){
+
+  }
+
+  getEditor(attribute) {
+    const extraProps = this.getEditorExtraProps(attribute);
+    const value = this.props.trip[attribute.id];
+    const inputId = attribute.id + "__trip__";
+    return {
+      attribute,
+      value: value,
+      onChange: this.onChange,
+      extraProps,
+      inputId,
+      onEnterPress: null,
     };
-      let dateStyle = [textStyles.font];
+  }
 
-
-    return (
-      <View style={[styles.halfway, styles.placeAndTime]}>
-        <View style={{left: -22,}}>
-          <View>
-             <Text style={{color: colors.blue}}>
-              {timeType === 'startDate'? 'Start Time' : 'Estimated Return Time'}
-            </Text>
-              <Text style={[textStyles.font, {fontSize: 16}]}>{!time || isNaN(time.unix()) ? "  " : time.format("DD MMM HH:mm") }</Text>
-              <Text style={[dateStyle, {color: colors.darkGray, fontSize: 12, top: 2}]}>{ (!time || isNaN(time.unix()) ) ? "Select date" : time.fromNow() }</Text>
-          </View>
-         <View style={{ position: 'absolute', top: 14, borderBottomWidth: 1, borderColor: colors.gray}}>
-          {AttributeEditor({
-            attribute: dateAttr,
-            value: time,
-            onChange: onChangeTime,
-            extraProps: dateProps
-          }, () => { console.warn('This should store that we are editing a field')})}
-          </View>
-        </View>
-        <View style={[{width: 120, left: 13, marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderColor: colors.gray }]}>
-               <Text style={{color: colors.blue}}>
-              {timeType === 'startDate'? 'Start Port' : 'End Port'}
-            </Text>
-          <PortPicker
-            name={portType + "__picker"}
-            choices={choices}
-            portType={portType}
-            value={port || ""}
-            placeholder={"Select a port"}
-            textStyle={{color: colors.black}}
-            style={{borderBottomWidth: 1, borderColor: colors.midGray }}
-            onChange={(value) => onChangePort(portType, value)}
-            inputId={"TripEditor__" + portType}
-            disabled={false}
-          />
-        </View>
-      </View>);
+  getEditorExtraProps(attribute){
+    const extraProps = {};
+    switch (attribute.id) {
+      case "startPort":
+      case "endPort":
+        return extraProps.choices = this.props.ports;
+        break;
+      case "startDate":
+        extraProps.mode = "date";
+        extraProps.disabled = true;
+        extraProps.format = "Do MM YYYY";
+        break;
+      case "endDate":
+        const date = this.props.trip.startDate || new moment();
+        const endDate = this.props.trip.endDate || date.add(2, "days");
+        const tripDays = moment.duration(endDate.diff(date)).asDays();
+        extraProps.choices = dayChoices;
+        extraProps.value = tripDays.toFixed(0);
+        break;
     }
+    return extraProps;
+  }
+
+  render() {
+    return (
+      <KeyboardAwareScrollView
+        style={{marginTop: 3}}
+        viewIsInsideTabBar={ true }
+        extraHeight={ 150 }
+        bouncesZoom={false}
+        alwaysBounceVertical={false}
+      >
+        <EditorView
+          top={ null }
+          styles={styles}
+          getCallback={(key, value) => { console.log(arguments); } }
+          getEditor={ this.getEditor }
+          editorType={"trip"}
+          name={ "tripEdit" }
+          model={ TripModel }
+          obj={ this.props.trip }
+          values={ this.props.trip }
+        />
+        <View style={{height: 600}}></View>
+      </KeyboardAwareScrollView>
+    );
+  }
 }
+
+export default StartTripEditor;

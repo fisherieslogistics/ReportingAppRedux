@@ -39,7 +39,6 @@ class EditingState extends React.Component {
     }
 
     render() {
-
       const editingCallback = (attributeId) => {
         if(this.state.focusedAttributeId === attributeId){
           this.setFocus( '' );
@@ -48,10 +47,14 @@ class EditingState extends React.Component {
         }
       }
 
-      return <EditorView {...this.props}
-                         focusedAttributeId={ this.state.focusedAttributeId ||  this.props.toFocusAttributeId }
-                         editingCallback={ editingCallback }
-                         onEnterPress={ this.props.onEnterPress } />
+      return (
+        <EditorView
+          { ...this.props }
+          focusedAttributeId={ this.state.focusedAttributeId ||  this.props.toFocusAttributeId }
+          editingCallback={ editingCallback }
+          onEnterPress={ this.props.onEnterPress }
+        />
+      );
     }
 }
 

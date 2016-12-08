@@ -4,7 +4,7 @@ export default {
   dateText: {
     fontSize: 22,
     flex: 1,
-    color: "#707070",
+    color: colors.green,
     width: 190,
     marginRight: 10,
     textAlign: 'right'
@@ -17,7 +17,7 @@ export default {
     marginTop: 10,
   },
   locationContainer: {
-    backgroundColor: '#f80046',
+    backgroundColor: colors.backgrounds.dark,
     flexDirection: 'row',
     justifyContent: 'space-around',
   },

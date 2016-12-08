@@ -200,7 +200,7 @@ class ReportingApp extends Component {
           choices={this.props.autoSuggestBar.choices}
           favouritesChangedAt={this.props.autoSuggestBar.favouritesChangedAt}
           name={this.props.autoSuggestBar.name}
-          text={this.props.autoSuggestBar.text}
+          text={this.props.autoSuggestBar.text || ""}
           maxResults={MAX_AUTOSUGGEST_RESULTS}
           inputId={this.props.autoSuggestBar.inputId}
           width={this.props.width}

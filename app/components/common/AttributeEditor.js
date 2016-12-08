@@ -136,7 +136,6 @@ const renderEditor = (attribute, props, isTopRow) => {
       case "combined":
         const combinedEditors = getCombinedEditors(attribute, props.model, props.getEditor);
         return renderCombinedEditors(combinedEditors, props.styles, props.editingCallback, props.focusedAttributeId, isTopRow);
-      default:
     }
   }
 }
@@ -256,6 +255,8 @@ const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEn
     case "labelOnly":
       return (<Text>{value}</Text>);
     case "displayOnly":
+    case "date":
+
     case "datetime":
       return (
         <DatePicker
@@ -273,36 +274,24 @@ const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEn
           }}
           {...extraProps}
           editingCallback={editingCallback}
-      />);
-      break;
-    case "product":
-      return (<AutoSuggestPicker
-                onChange={(value) => {
-                  onChange(attribute.id, value);
-                }}
-                value={value}
-                name={attribute.id}
-                inputId={inputId}
-                editingCallback={editingCallback}
-                focusedAttributeId={focusedAttributeId}
-                onEnterPress={onEnterPress}
-                focus={focus}
-                {...extraProps}
-              />);
-    case "container":
-      return (<AutoSuggestPicker
-                onChange={(value) => {
-                  onChange(attribute.id, value);
-                }}
-                value={value}
-                name={attribute.id}
-                inputId={inputId}
-                {...extraProps}
-                editingCallback={editingCallback}
-                focusedAttributeId={focusedAttributeId}
-                onEnterPress={onEnterPress}
-                focus={focus}
-              />);
+        />
+      );
+    case "picker":
+      return (
+        <AutoSuggestPicker
+          onChange={(value) => {
+            onChange(attribute.id, value);
+          }}
+          value={value}
+          name={attribute.id}
+          inputId={inputId}
+          editingCallback={editingCallback}
+          focusedAttributeId={focusedAttributeId}
+          onEnterPress={onEnterPress}
+          focus={focus}
+          {...extraProps}
+        />
+      );
     case "location":
       return (
         <LocationEditor
@@ -313,7 +302,6 @@ const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEn
           editingCallback={editingCallback}
         />
       );
-      break;
     case "bool":
       return (<Switch
                 onValueChange={(bool) => {
@@ -331,11 +319,11 @@ const AttributeEditor = ({ attribute, value, onChange, extraProps, inputId, onEn
           callback={onChange}
           extraProps={extraProps}
           inputId={inputId}
-          {...extraProps}
           editingCallback={editingCallback}
           focusedAttributeId={focusedAttributeId}
           focus={focus}
           onEnterPress={onEnterPress}
+          {...extraProps}
         />
       );
   }

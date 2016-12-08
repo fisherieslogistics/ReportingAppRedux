@@ -68,11 +68,10 @@ class TripEditor extends React.Component {
     renderStartTrip(){
       return (
         <StartTripEditor
-          trip={this.props.trip.startPort}
-          time={this.props.trip.startDate}
+          trip={this.props.trip}
           onChangePort={this.onChangePort}
           onChangeTime={this.onChangeTime}
-          choices={this.state.portChoices}
+          ports={this.state.portChoices}
         />
       );
     }
@@ -108,41 +107,28 @@ class TripEditor extends React.Component {
     }
 
     renderTripEditor(){
+      return this.renderStartTrip();
       if(this.props.tripCanEnd){
         return this.renderEndTrip();
       }
       return this.renderStartTrip();
     }
 
+    renderStartTripButton() {
+      /*</View>
+      <View style={[styles.bottomRow, { padding: 10}]}>
+        <LongButton
+          text={ this.props.tripCanStart ? "Start Trip" : "End Trip" }
+          bgColor={ colors.blue }
+          onPress={ this.props.tripCanStart ? this.startTrip : this.endTrip }
+          disabled={ !(this.props.tripCanStart || this.props.tripCanEnd) }
+        />
+      </View>
+      </View>*/
+    }
+
     render() {
-      let LANDSCAPE = (this.props.orientation.indexOf("LANDSCAPE") !== -1);
-      return (
-        <View style={[styles.wrapper]}>
-          <View style={[styles.row, styles.bottomRow]}>
-            { this.renderTripEditor() }
-          </View>
-          <View style={[styles.row, styles.topRow]}>
-            <View style={[styles.halfway]}>
-              <LongButton
-                text={"Start Trip"}
-                bgColor={colors.blue}
-                onPress={this.startTrip}
-                disabled={!this.props.tripCanStart}
-              />
-            </View>
-            <View style={[styles.halfway]}>
-              <LongButton
-                text={"End Trip"}
-                bgColor={this.props.tripCanEnd ? colors.blue : colors.midGray}
-                onPress={this.endTrip}
-                disabled={!this.props.tripCanEnd}
-              />
-            </View>
-          </View>
-          <View style={[styles.bottomRow, {alignItems: 'center', padding: 10, marginTop: 20}]}>
-          </View>
-        </View>
-      );
+      return this.renderTripEditor()
     }
 };
 

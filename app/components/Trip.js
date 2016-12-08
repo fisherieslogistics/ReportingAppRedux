@@ -33,17 +33,10 @@ class Trip extends React.Component {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
     };
     this.isSelected = this.isSelected.bind(this);
-    this.endTrip = this.endTrip.bind(this);
     this.startTrip = this.startTrip.bind(this);
   }
 
-  componentDidMount(){
-    if(!this.props.trip.startDate){
-      this.updateTrip("startDate", new moment());
-    }
-    if(!this.props.trip.endDate){
-      this.updateTrip("endDate", new moment().add(2, 'day'));
-    }
+  componentWillMount(){
   }
 
   updateTrip(attribute, value){
@@ -59,31 +52,14 @@ class Trip extends React.Component {
   }
 
   renderListView(){
-    return (<TotalsList
-              data={this.state.ds.cloneWithRows(this.props.totals)}
-              selectedTotal={this.props.selectedTotal}
-              onPress={this.totalSelected}
-              isSelected={this.isSelected}
-            />);
-  }
-
-  endTrip(){
-    if(this.props.tripCanEnd){
-
-      AlertIOS.alert(
-        "Unloading " + this.props.trip.endDate.fromNow() + " at " + this.props.trip.endPort,
-        "Confirm ?",
-        [
-          {text: 'Cancel', onPress: () => { }, style: 'cancel'},
-          {text: 'OK', onPress: () => {
-            this.props.dispatch(tripActions.endTrip(this.props.trip,
-                                                    this.props.fishingEvents,
-                                                    this.props.vesselId,
-                                                    ""));
-          }}
-        ]
-      );
-    }
+    return (
+      <TotalsList
+        data={this.state.ds.cloneWithRows(this.props.totals)}
+        selectedTotal={this.props.selectedTotal}
+        onPress={this.totalSelected}
+        isSelected={this.isSelected}
+      />
+    );
   }
 
   startTrip(){
@@ -115,25 +91,16 @@ class Trip extends React.Component {
 
   renderDetailView(){
     return (
-      <View style={{top: 0, left: 0}}>
-        <TripEditor
-          trip={this.props.trip}
-          dispatch={this.props.dispatch}
-          tripCanStart={this.props.tripCanStart}
-          tripCanEnd={this.props.tripCanEnd}
-          endTrip={this.endTrip}
-          ports={this.props.ports}
-          startTrip={this.startTrip}
-          orientation={this.props.orientation}
-        />
-        <View style={{flexDirection: 'row',
-                      flex: 1,
-                      height: 50,
-                      alignItems: 'flex-end',
-                      paddingLeft: 10,
-                      paddingBottom: 5}}>
-        </View>
-      </View>
+      <TripEditor
+        trip={this.props.trip}
+        dispatch={this.props.dispatch}
+        tripCanStart={this.props.tripCanStart}
+        tripCanEnd={this.props.tripCanEnd}
+        endTrip={this.endTrip}
+        ports={this.props.ports}
+        startTrip={this.startTrip}
+        orientation={this.props.orientation}
+      />
     );
   }
 

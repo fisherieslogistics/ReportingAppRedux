@@ -164,16 +164,12 @@ class EventProductsEditor extends React.Component{
       let nextInput = '';
       let inputName = orderOfinputs[index + 1];
       let lastProduct = (productIndex === (this.props.products.length - 1));
-      console.log("beast", inputName, attributeId, productIndex);
       if(inputName){
-        console.log("not adding", `${inputName}__${productIndex}`);
         nextInput = `${inputName}__${productIndex}`;
       } else if (lastProduct) {
         this.addProduct();
-        console.log(`${orderOfinputs[0]}__${productIndex + 1}`);
         nextInput = `${orderOfinputs[0]}__${productIndex + 1}`;
       } else {
-        console.log(`${orderOfinputs[0]}__${productIndex + 1}`);
         nextInput = `${orderOfinputs[0]}__${productIndex + 1}`;
       }
       this.setState({

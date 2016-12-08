@@ -147,30 +147,37 @@ class EventDetailEditor extends React.Component{
       );
     }
 
-    render() {
-      if(!this.props.fishingEvent){
-        return this.props.renderMessage("No shots to edit");
-      }
-      let model = getFishingEventModelByTypeCode(this.props.formType).complete;
-      if(!this.props.showOptionalFields) {
-        model = model.filter(field => !field.optionalRender);
-      }
-      return (<KeyboardAwareScrollView style={{marginTop: 3}} viewIsInsideTabBar={ true } extraHeight={ 150 } bouncesZoom={false} alwaysBounceVertical={false}>
-                <EditorView
-                  styles={styles}
-                  getCallback={this.getCallback}
-                  toFocusAttributeId={ this.state.nextInput }
-                  getEditor={this.getEditor}
-                  editorType={"event"}
-                  name={"eventDetail"}
-                  model={model}
-                  obj={this.props.fishingEvent}
-                  values={this.props.fishingEvent}
-                />
-              { this.renderToggleShowMore() }
-              <View style={{height: 600}}></View>
-            </KeyboardAwareScrollView>);
+  render() {
+    if(!this.props.fishingEvent){
+      return this.props.renderMessage("No shots to edit");
     }
+    let model = getFishingEventModelByTypeCode(this.props.formType).complete;
+    if(!this.props.showOptionalFields) {
+      model = model.filter(field => !field.optionalRender);
+    }
+    return (
+      <KeyboardAwareScrollView
+        style={{marginTop: 3}}
+        viewIsInsideTabBar={ true }
+        extraHeight={ 150 }
+        bouncesZoom={false}
+        alwaysBounceVertical={false}
+      >
+        <EditorView
+          styles={styles}
+          getCallback={this.getCallback}
+          toFocusAttributeId={ this.state.nextInput }
+          getEditor={this.getEditor}
+          editorType={"event"}
+          name={"eventDetail"}
+          model={model}
+          obj={this.props.fishingEvent}
+          values={this.props.fishingEvent}
+        />
+      { this.renderToggleShowMore() }
+      <View style={{height: 600}}></View>
+    </KeyboardAwareScrollView>);
+  }
 };
 
 const styles = StyleSheet.create(eventEditorStyles);

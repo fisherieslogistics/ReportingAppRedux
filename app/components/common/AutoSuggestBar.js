@@ -120,7 +120,7 @@ class AutoSuggestBar extends React.Component {
       if(!(result && result.value)){
         return null;
       }
-      let isSelected = (result.value.toUpperCase() === text.toUpperCase());
+      let isSelected = (result.value.toUpperCase() === text.toUpperCase()) || (this.state.results === 1);
       let resultTextStyle = isSelected ? styles.resultTextSelected : styles.resultText;
       let backgroundStyle = isSelected ? styles.resultBackgroundSelected : styles.resultBackground;
       return (

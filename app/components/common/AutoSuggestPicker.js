@@ -106,7 +106,7 @@ class AutoSuggestPicker extends React.Component {
 
   onChangeText(text) {
     this.setState({
-      value: text
+      value: text,
     });
     this.props.dispatch(viewActions.changeAutoSuggestBarText(text, this.props.name));
   }
