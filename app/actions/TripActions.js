@@ -6,7 +6,7 @@ class TripActions{
     return{
       type: 'startTrip',
       timestamp: moment(),
-      vesselId: vesselId
+      vesselId
     }
   }
 
@@ -15,23 +15,23 @@ class TripActions{
       dispatch({
         type: 'endTrip',
         timestamp: moment(),
-        trip: trip,
-        fishingEvents: fishingEvents,
-        vesselId: vesselId,
-        message: message,
+        trip,
+        fishingEvents,
+        vesselId,
+        message,
         formType: getState().default.me.formType,
       });
     }
   }
 
-  updateTrip(attribute, value, started){
-    let update = {}
-    update[attribute] = value;
+  updateTrip(name, value, started){
+    const update = {}
+    update[name] = value;
     return {
       type: 'updateTrip',
-      update: update,
-      attr: attribute,
-      started: started,
+      update,
+      attr: name,
+      started,
     }
   }
 }
