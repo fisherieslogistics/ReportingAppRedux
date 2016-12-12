@@ -36,19 +36,18 @@ export default {
         if(!value){
           return false;
         }
-        return speciesCodes.indexOf(value.toLowerCase()) !== -1;
+        return speciesCodes.indexOf(value.toUpperCase()) !== -1;
       },
       errorMessage: strings.generic.invalidSpeciesCode
     },
     productCode: {
       func: (value = "") => {
-        if(value === 'OTH'){
+        if(value === 'OTH' || value === 'Other Species Weight'){
           return true;
         }
         if(value.length === 0){
           return true;
         }
-        return speciesCodes.indexOf(value.toLowerCase()) !== -1;
         return speciesCodes.indexOf(value.toUpperCase()) !== -1;
       },
       errorMessage: strings.generic.invalidSpeciesCode
