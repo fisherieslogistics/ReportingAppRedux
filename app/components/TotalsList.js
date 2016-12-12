@@ -24,7 +24,7 @@ class TotalsList extends React.Component {
     }
 
     renderRow(item, sectionId, rowId, props) {
-      const rowStyle = { backgroundColor: colors.black };
+      const rowStyle = { backgroundColor: colors.transparent };
       return (
         <View style={[styles.listRow, rowStyle]}>
           { props.getDescription(item, sectionId, rowId) }
@@ -37,9 +37,6 @@ class TotalsList extends React.Component {
         color: colors.green,
         fontSize: 18,
       }
-      const wrapStyle = {
-        backgroundColor: colors.black,
-      };
       const details = [
         total.code,
         total.weight,
@@ -47,7 +44,7 @@ class TotalsList extends React.Component {
 
       return details.map((detail, i) => (
         <View
-          style={ [styles.listRowItemNarrow, wrapStyle] }
+          style={ [styles.listRowItemNarrow, {backgroundColor: colors.transparent}] }
           key={"totals_list" + i}
         >
           <Text style={ textStyle }>
