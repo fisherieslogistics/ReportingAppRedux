@@ -2,6 +2,7 @@ import shadowStyles from './shadow';
 import colors from './darkColors';
 import darkColors from './colors';
 import iconStyles from './icon';
+import formsStyles from './forms';
 import inputStyles from './input';
 import modelEditorStyles from './modelEditor';
 import productEditorStyles from './productEditor';
@@ -22,4 +23,5 @@ export {
   listViewStyles,
   masterDetailStyles,
   productEditorStyles,
+  formsStyles,
 }
