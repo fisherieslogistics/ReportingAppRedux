@@ -182,12 +182,28 @@ class Trip extends React.Component {
   }
 
   renderMessage(){
-    let message = "";
-    if(this.props.trip.started){
-      message = this.props.tripCanEnd ? "OK To End Trip" : "Complete all shots and sign all forms before ending trip";
-    }else {
-      message = this.props.tripCanStart ? "Ready to start trip" :  "Select ports and ETA before starting trip";
+    const messages = [];
+    let color = colors.green;
+
+    if(this.props.tripCanStart){
+      messages.push("Ready to go press Start Trip");
+    } else if (this.props.tripCanEnd) {
+      messages.push("Press End Trip when heading in");
+    } else if (this.props.trip.started){
+
+      color = colors.orange;
+
+      messages.push("Trip Incomplete");
+      if(this.props.incompleteShots) {
+        messages.push(`${this.props.incompleteShots} Shots to complete & sign`);
+      } else if(!this.props.allSigned) {
+        messages.push("Please sign all Forms");
+      }
+    } else {
+      color = colors.orange;
+      messages.push("Select ports and ETA before starting trip");
     }
+
     const style = {
       flex: 1,
       flexDirection: 'column',
@@ -196,17 +212,20 @@ class Trip extends React.Component {
       padding: 4,
     };
     const textStyle = {
-      color: colors.green,
-      marginTop: 0,
+      color,
+      marginTop: 5,
       fontSize: 20,
     };
+    const msgs = messages.map(m => (
+      <Text style={textStyle} key={m}>
+        {m}
+      </Text>
+    ));
     return (
       <View style={[style]}>
-        <Text style={textStyle}>
-          {message}
-        </Text>
+        { msgs }
       </View>
-    );
+    )
   }
 
   getTripDescription(trip, sectionId, rowId) {
@@ -214,19 +233,19 @@ class Trip extends React.Component {
     const textColor = isSelected ? colors.white : colors.black;
     const myStyles = [
       textStyles.font,
-      { color: textColor, fontSize: 18 },
+      { color: textColor, fontSize: 14 },
     ];
     const viewStyles = { alignItems: 'flex-start', paddingTop: 0};
-    const date = trip.startDate || new moment();
     const parts = [
       `${trip.startPort}`,
-      date.format('DD MM YYYY'),
+      `Sail ${trip.startDate.format('DD/MM/YY')}`,
+      `${trip.endPort}`,
+      `Unload ${trip.endDate.format('DD/MM/YY')}`,
     ];
-    const start = date.unix();
     return parts.map((p, i) => (
         <View
           style={ [myListViewStyles.listRowItem, viewStyles] }
-          key={ `${start}___${rowId}Trip_${sectionId}_list_${i}` }>
+          key={ `${rowId}_Trip_${sectionId}_list_${i}` }>
           <Text style={ myStyles }>
             { p }
           </Text>
@@ -244,13 +263,15 @@ class Trip extends React.Component {
       Object.assign(this.props.trip, { fishingEvents: this.props.fishingEvents }));
     const allTrips = [currentTrip, ...trips.reverse()].filter(pt => !!pt.fishingEvents);
     return (
-      <MasterListView
-        getDescription={ this.getTripDescription }
-        isSelected={ this.isTripSelected }
-        onPress={ this.tripsListOnPress }
-        dataSource={ this.state.dsPage.cloneWithRows(allTrips) }
-        getIcon={ null }
-      />
+      <View style={{flex: 1}}>
+        <MasterListView
+          getDescription={ this.getTripDescription }
+          isSelected={ this.isTripSelected }
+          onPress={ this.tripsListOnPress }
+          dataSource={ this.state.dsPage.cloneWithRows(allTrips) }
+          getIcon={ null }
+        />
+      </View>
     );
   }
 
@@ -266,9 +287,9 @@ class Trip extends React.Component {
   }
 
   renderMasterView(){
-    const outerStyle = {padding: 0, flexDirection: 'column', flex: 1 };
-    const innerStyle = { flexDirection: 'row', flex: 0.3 };
-    const innerStyleBelow = { flexDirection: 'row', flex: 0.7 };
+    const outerStyle = {padding: 0, margin: 0, flexDirection: 'column', flex: 1, alignItems: 'flex-start' };
+    const innerStyle = { padding: 0, margin: 0, flexDirection: 'row', flex: 0.2 };
+    const midStyle = { flex: 0.8, alignItems: 'flex-start' };
 
     const masterListView = this.renderMasterListView();
     const lowerList = this.renderLowerList();
@@ -277,7 +298,7 @@ class Trip extends React.Component {
         <View style={[innerStyle]}>
           { masterListView }
         </View>
-        <View style={[innerStyleBelow]}>
+        <View style={[innerStyle, midStyle]}>
           { lowerList }
         </View>
       </View>
@@ -286,9 +307,9 @@ class Trip extends React.Component {
 
   getMasterToolbar() {
     let onPress = () => {};
-    let backgroundColor = colors.darkGray;
+    let backgroundColor = colors.black;
     let text = "Start Trip";
-    let textColor = colors.gray;
+    let textColor = 'rgba(255, 255, 255, 0.2)';
 
     if(this.props.tripCanStart) {
       onPress = this.startTrip
@@ -353,6 +374,8 @@ class Trip extends React.Component {
 
 const select = (State) => {
   const state = State.default;
+  const allSigned = !state.fishingEvents.events.find(f => !f.signature);
+  const incompleteShots = state.fishingEvents.events.filter(f => !(f.eventValid && f.productsValid)).length;
   return {
     fishingEvents: state.fishingEvents.events,
     height: state.view.height,
@@ -361,7 +384,9 @@ const select = (State) => {
     ports: state.me.ports,
     tripStarted: state.trip.started,
     tripCanStart: helper.tripCanStart(state.trip),
-    tripCanEnd: state.trip.started && (state.fishingEvents.events.find(f => !f.signature) === undefined),
+    tripCanEnd: state.trip.started &&  allSigned && (incompleteShots === 0),
+    allSigned,
+    incompleteShots,
     orientation: state.view.orientation,
     vesselId: state.me.vessel.id,
     history: state.history,
