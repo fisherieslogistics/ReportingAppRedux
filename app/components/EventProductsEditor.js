@@ -50,7 +50,6 @@ class EventProductsEditor extends React.Component{
       if(usedChoices.indexOf(product.code) !== -1){
         extraProps.error = true;
       }
-      if(product.code === 'OTH'){
       if(product.code === 'OTH' || product.code === 'Other Species Weight'){
         extraProps.maxLength = 34;
         extraProps.value = 'Other Species Weight';
