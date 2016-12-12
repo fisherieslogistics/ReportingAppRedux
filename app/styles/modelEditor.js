@@ -1,17 +1,12 @@
 import colors from './darkColors';
 
 export default {
-
+  wrapper: {
+    alignSelf: 'stretch',
+    flex: 1,
+  },
   innerWrapper: {
-    paddingTop: 6,
     paddingBottom: 3,
-  },
-  outerWrapper: {
-    overflow: "hidden"
-  },
-  topWrapper: {
-  },
-  bottomWrapper: {
   },
   col:{
     flexDirection: 'column',
@@ -19,19 +14,25 @@ export default {
   row:{
     flexDirection: 'row',
   },
-  editorRow: {
-    flex: 0.8,
-    paddingBottom: 4
+  singleInput: {
+    paddingBottom: 4,
+    height: 50,
+    marginLeft: 15,
+  },
+  combinedInput: {
+    paddingBottom: 4,
+    height: 50,
+    marginLeft: 15,
   },
   fill: {
     flex: 1,
   },
   labelRow: {
-    flex: 0.5,
+    height: 20,
   },
   labelText: {
     color: colors.blue,
-    fontSize: 17,
+    fontSize: 15,
   },
   labelError: {
     marginLeft: 4,
@@ -52,9 +53,5 @@ export default {
     flex: 1,
     borderBottomWidth: 1,
     borderBottomColor: colors.lightestGray
-  },
-  combinedRow: {
-    flex: 1,
-    alignSelf: 'stretch',
   },
 }
