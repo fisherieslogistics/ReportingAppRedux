@@ -7,7 +7,7 @@ const model = [
     display: { type: 'combined', siblings: ['weight'] }
   },
   {
-    label: 'Weight', id: 'weight', valid: valid.alwaysValid, type: 'number', defaultValue: "0", unit: 'kg',
+    label: 'Weight', id: 'weight', valid: valid.greaterThanZero, type: 'number', defaultValue: "0", unit: 'kg',
     display: { type: 'child' },
   },
 ];
