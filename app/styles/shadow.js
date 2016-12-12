@@ -1,8 +1,6 @@
 'use strict';
-import {
-  StyleSheet,
-} from 'react-native';
-export default StyleSheet.create({
+
+export default {
   shadowDown:{
     shadowColor: "#ffffff",
     shadowOpacity: 0.25,
@@ -39,4 +37,4 @@ export default StyleSheet.create({
       width: 1
     }
   }
-});
+};
