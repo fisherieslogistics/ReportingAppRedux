@@ -15,7 +15,7 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case "fishingEventSynced":
-      let updatedAt = state.fishingEvents[action.objectId];
+      const updatedAt = state.fishingEvents[action.objectId];
       if(updatedAt && updatedAt.unix() < action.time.unix()){
         delete state.fishingEvents[action.objectId];
       }
@@ -40,7 +40,6 @@ export default (state = initialState, action) => {
     case 'addProduct':
     case 'deleteProduct':
     case 'undoDeleteProduct':
-    case 'changeEventGear':
     case 'syncEvent':
       if(action.objectId){
         state.fishingEvents[action.objectId] = new moment();
@@ -56,7 +55,7 @@ export default (state = initialState, action) => {
       return state;
     case "endTrip":
       state.trip = null;
-      let _trip = Object.assign({}, action.trip);
+      const _trip = Object.assign({}, action.trip);
       _trip.message = action.message;
       _trip.complete = true;
       state.queues.pastTrips.push({
