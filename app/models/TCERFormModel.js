@@ -5,10 +5,10 @@ const helper = new Helper();
 const meta = {
   formCode: 'tcer',
   compatible: (event1, event2) => {
-    let daysMatch = (event1.datetimeAtStart.diff(event2.datetimeAtStart, 'days') === 0);
-    let wingSpreadsMatch = (event2.wingSpread == event1.wingSpread);
-    let headlineHeightsMatch = (event2.headlineHeight == event1.headlineHeight);
-    let signaturesMatch =(event2.signature === event1.signature);
+    const daysMatch = (event1.datetimeAtStart.diff(event2.datetimeAtStart, 'days') === 0);
+    const wingSpreadsMatch = (event2.wingSpread == event1.wingSpread);
+    const headlineHeightsMatch = (event2.headlineHeight == event1.headlineHeight);
+    const signaturesMatch =(event2.signature === event1.signature);
     return (daysMatch && wingSpreadsMatch && headlineHeightsMatch && signaturesMatch);
   },
   eventsPerForm: 4,
@@ -36,15 +36,15 @@ const meta = {
         multiple: true,
         parts:[
           {id: 'lat', x: 190, y: 175, resolve: (fe) => {
-            let lat = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
+            const lat = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
             return `${lat.latDegrees}  ${lat.latMinutes}`;
           }},
           {id: 'lon', x: 197, y: 204, resolve: (fe) => {
-            let lon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
+            const lon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
             return `${lon.lonDegrees}  ${lon.lonMinutes}`;
           }},
           {id: 'ew', x: 310, y: 204, resolve: (fe) => {
-            let latLon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
+            const latLon = helper.getDegreesMinutesFromLocation(fe.locationAtStart);
             return latLon.ew;
           }}
         ]
@@ -52,18 +52,12 @@ const meta = {
       datetimeAtStart: {
         multiple: true,
         parts: [
-          {x: 188, y: 115, resolve: (fe) => {
-            return fe.datetimeAtStart.format("DD   MM    YYYY");
-          }},
-          {x: 184, y: 140, resolve: (fe) => {
-            return fe.datetimeAtStart.format("HH   mm");
-          }}
+          {x: 188, y: 115, resolve: (fe) => fe.datetimeAtStart.format("DD   MM    YYYY")},
+          {x: 184, y: 140, resolve: (fe) => fe.datetimeAtStart.format("HH   mm")}
         ]
       },
       datetimeAtEnd: {
-        resolve: (fe) => {
-          return fe.datetimeAtEnd ? fe.datetimeAtEnd.format("HH   mm") : "";
-        },
+        resolve: (fe) => fe.datetimeAtEnd ? fe.datetimeAtEnd.format("HH   mm") : "",
         x: 180, y: 282
       },
       products: {
@@ -71,25 +65,20 @@ const meta = {
         repeating: true,
         prep: (products) => {
           //sort highest to lowest take the highest 8 by weight
-          return helper.getTotals([...products]).sort((c1, c2) => {
-            return c2.weight - c1.weight;
-          }).slice(0, 8);
+          const prods = products.filter(p => p.code !== 'OTH');
+          return helper.getTotals(prods).sort((c1, c2) => c2.weight - c1.weight).slice(0, 8);
         },
         parts: [
           {
             id: 'code',
-            resolve: (fe, i, key) => {
-              return fe[key][i] ? fe[key][i].code : "";
-            },
+            resolve: (fe, i, key) => fe[key][i] ? fe[key][i].code : "",
             x: 172,
             y: 342,
             ymultiple: 19
           },
           {
             id: 'weight',
-            resolve: (fe, i, key) => {
-              return fe[key][i] ? fe[key][i].weight : "";
-            },
+            resolve: (fe, i, key) => fe[key][i] ? fe[key][i].weight : "",
             x: 244,
             y: 342 ,
             ymultiple: 19
