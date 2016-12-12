@@ -30,7 +30,7 @@ export default {
     },
     targetProduct: {
       func: (value) => {
-        if(value === 'OTH'){
+        if(value === 'OTH' || value === 'Other Species Weight'){
           return true;
         }
         if(!value){
@@ -49,6 +49,7 @@ export default {
           return true;
         }
         return speciesCodes.indexOf(value.toLowerCase()) !== -1;
+        return speciesCodes.indexOf(value.toUpperCase()) !== -1;
       },
       errorMessage: strings.generic.invalidSpeciesCode
     },
