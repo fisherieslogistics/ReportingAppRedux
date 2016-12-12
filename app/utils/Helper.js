@@ -21,8 +21,8 @@ class Helper {
       lonDegrees: parseInt(lon[0].replace(/\D/g,'')),
       lonMinutes: lon.length >= 3 ? parseInt(lon[1].replace(/\D/g,'')) : 0,
       lonSeconds: lon.length >= 4 ? parseInt(lon[2].replace(/\D/g,'')) : 0,
-      ew: ew,
-      ns: ns
+      ew,
+      ns
     };
   }
   formatLocation(location){
@@ -35,8 +35,8 @@ class Helper {
     return this.parseLocation(degMin);
   }
   parseLocation(degMin, lonHemisphere, latHemisphere){
-    let lat = parseInt(degMin.latDegrees) + (parseFloat(degMin.latMinutes) / 60) + (parseFloat(degMin.latSeconds) / 3600);
-    let lon = parseInt(degMin.lonDegrees) + (parseFloat(degMin.lonMinutes) / 60) + (parseFloat(degMin.lonSeconds) / 3600);
+    const lat = parseInt(degMin.latDegrees) + (parseFloat(degMin.latMinutes) / 60) + (parseFloat(degMin.latSeconds) / 3600);
+    const lon = parseInt(degMin.lonDegrees) + (parseFloat(degMin.lonMinutes) / 60) + (parseFloat(degMin.lonSeconds) / 3600);
     return {
       lon: lonHemisphere == 'East' ? lon : (lon * -1),
       lat: latHemisphere == 'North' ? lat : (lat * -1)
@@ -67,7 +67,7 @@ class Helper {
       if(state.savedMoment) {
         return moment(state.savedMoment);
       } else {
-        for (let key in state) {
+        for (const key in state) {
           if (state.hasOwnProperty(key)) {
             state[key] = this.inflate(state[key]);
           }
@@ -92,7 +92,7 @@ class Helper {
         return { savedMoment: state.toISOString() };
       } else {
         var clone = {};
-        for (let key in state) {
+        for (const key in state) {
           if (state.hasOwnProperty(key) && key.slice(0, 2) != 'ui') {
             clone[key] = this.deflate(state[key]);
           }
@@ -111,12 +111,12 @@ class Helper {
       console.warn(e);
       return this.inflate(jsonData);
     }
-  };
+  }
 
   serialize(state) {
-    let deflated = this.deflate(state);
+    const deflated = this.deflate(state);
     return JSON.stringify(deflated);
-  };
+  }
 
   clearLocalStorage(){
     AsyncStorage.clear(() => null);
@@ -138,15 +138,15 @@ class Helper {
       if(err){
         console.warn(err);
       }
-      let savedState = this.deserialize(state);
+      const savedState = this.deserialize(state);
       callback(savedState);
     });
-  };
+  }
 
   saveErrorToLocalStorage(state, err) {
-    let serializedState = this.serialize({
+    const serializedState = this.serialize({
       error: err,
-      state: state,
+      state,
     });
     return AsyncStorage.setItem('errorState', serializedState, () => {});
   }
@@ -164,32 +164,32 @@ class Helper {
     if(actionType.indexOf('@@redux') !== -1){
       return;
     }
-    let serializedState = this.serialize(state);
+    const serializedState = this.serialize(state);
     return await AsyncStorage.setItem('savedState', serializedState, (err, something) => {
       if(err){
         console.warn(err);
       }
     });
-  };
+  }
 
   assign(obj, change){
     return Object.assign({}, obj, change);
-  };
+  }
 
   timeAgo(date){
-    var now = new Date();
-    var rightNow = moment(now);
-    var before = moment(date);
+    const now = new Date();
+    const rightNow = moment(now);
+    const before = moment(date);
     return before.from(rightNow);
-  };
+  }
 
   mostCommon(list, attribute){
-    var occurances = {};
-    var max = 0;
-    var result;
+    const occurances = {};
+    let max = 0;
+    let result;
     list.forEach((t) => {
-      let val = attribute ? t[attribute] : t;
-      let key = JSON.stringify(val);
+      const val = attribute ? t[attribute] : t;
+      const key = JSON.stringify(val);
       occurances[key]=(occurances[key] || 0)+1;
       if(occurances[key] > max) {
         max = occurances[key];
@@ -197,31 +197,29 @@ class Helper {
       }
     });
     return result;
-  };
+  }
 
   concatArrays(arrays){
     return [].concat.apply([], arrays);
   }
 
   getTotals(products){
-    let totals = {};
+    const totals = {};
     products.forEach((p) => {
       if(p.weight){
         totals[p.code] = ((totals[p.code] || 0) + parseInt(p.weight));
       }
     });
-    return Object.keys(totals).map((k) => {
-      return {code: k, weight: parseInt(totals[k])};
-    });
+    return Object.keys(totals).map((k) => ({code: k, weight: parseInt(totals[k])}));
   }
 
   getUncountedWeight(products, numberOfCounted){
-    let totals = this.getTotals(products);
+    const totals = this.getTotals(products);
     //sort highest to lowest - take the sum of the lowest remaining past the numberOfCounted
     return totals.sort((c1, c2) => parseInt(c2.weight) - parseInt(c1.weight))
     .map(t => t.weight)
     .slice(numberOfCounted, totals.length)
-    .reduce((n, b) => { return parseInt(n) + parseInt(b)}, 0);
+    .reduce((n, b) => parseInt(n) + parseInt(b), 0);
   }
 
   isA(typeStr, obj){
@@ -229,7 +227,7 @@ class Helper {
   }
 
   updateAuth(oldAuth, newAuth){
-    let expiryTime = new moment();
+    const expiryTime = new moment();
     expiryTime.add(newAuth.expires_in, 'second');
     return Object.assign({}, oldAuth, {
       accessToken: newAuth.access_token,
@@ -244,6 +242,17 @@ class Helper {
       return (trip.startPort && trip.startDate && trip.endDate && trip.endPort && (!trip.started))
     }
 
-  };
+    getHistoryTrip(_trip){
+      return {
+        startDate: _trip.startDate,
+        startPort: _trip.startPort,
+        endPort: _trip.endPort,
+        endDate: _trip.endDate,
+        fishingEvents: _trip.fishingEvents,
+        objectId: _trip.objectId,
+      };
+    }
+
+  }
 
   export default Helper;
