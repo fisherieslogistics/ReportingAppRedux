@@ -16,28 +16,25 @@ let initialState = {
     favourites: [],
     taken: [],
     text: "",
-    name: null,
     uivisible: false,
     inputId: null
   },
 }
 
-const update = (obj, change) => {
-  return Object.assign({}, obj, change);
-}
+const update = (obj, change) => Object.assign({}, obj, change)
 
 initialState = getOrientationDetail(initialState, Orientation.getInitialOrientation());
 
 export default (state = initialState, action) => {
     if(!state.orientation){
       state = getOrientationDetail(state, Orientation.getInitialOrientation());
-    };
+    }
     switch (action.type) {
       case 'setViewingFishingEvent':
         return update(state, {viewingEventId: action.fishingEventId});
       case 'initAutoSuggestBarChoices':
         //use a name change to tell it to re initialise
-        return update(state, {autoSuggestBar: update(state.autoSuggestBar, action)});
+        return update(state, { autoSuggestBar: update(state.autoSuggestBar, action) });
       case 'changeAutoSuggestBarText':
         return update(state, {autoSuggestBar: update(state.autoSuggestBar, {
           text: action.text,
@@ -57,11 +54,11 @@ function getOrientationDetail(state, orientation){
   switch (orientation) {
     case 'PORTRAIT':
     case 'PORTRAITUPSIDEDOWN':
-      return update(state, {width: 768, height: 1024, orientation: orientation});
+      return update(state, {width: 768, height: 1024, orientation});
     case 'LANDSCAPE':
     case 'LANDSCAPEUPSIDEDOWN':
-      return update(state, {width: 1024, height: 768, orientation: orientation});
+      return update(state, {width: 1024, height: 768, orientation});
     default:
       return state;
   }
-};
+}
