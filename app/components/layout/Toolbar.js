@@ -2,12 +2,10 @@
 import {
   StyleSheet,
   View,
-  Text,
-  TouchableOpacity,
 } from 'react-native';
 
 import React from 'react';
-import {colors, shadowStyles, textStyles} from '../../styles/styles';
+import {colors, shadowStyles } from '../../styles/styles';
 import {TextButton, IconButton} from '../common/Buttons';
 
 const renderButton = (button, textAlign) => {
@@ -46,11 +44,17 @@ const MasterToolbar = (props) => {
 };
 
 const DetailToolbar = (props) => {
+  const left = props.left ? (
+    <View style={[detailStyles.left]}>
+      { renderButton(props.left) }
+    </View>
+  ) : null;
   const viewStyles = [ detailStyles.toolbar, shadowStyles.shadow, props.style ];
   return (
     <View
       style={viewStyles}
     >
+      { left }
       <View style={[detailStyles.center]}>
         <View style={[detailStyles.center]}>
           {props.center}
@@ -68,16 +72,6 @@ const masterStyles = StyleSheet.create({
      backgroundColor: colors.backgrounds.veryDark,
      flexDirection: 'row',
      height: 70,
-   },
-   left: {
-     alignSelf: 'stretch',
-     flex: 0.2,
-     alignItems: 'flex-start'
-   },
-   right:{
-     alignSelf: 'stretch',
-     flex: 0.2,
-     alignItems: 'flex-end'
    },
    center:{
      alignSelf: 'stretch',
@@ -108,9 +102,14 @@ const detailStyles = StyleSheet.create({
      flex: 0.2,
      alignItems: 'flex-end'
    },
+   left: {
+     alignSelf: 'stretch',
+     flex: 0.2,
+     alignItems: 'flex-start'
+   },
    center:{
      paddingTop: 10,
-     flex: 0.8,
+     flex: 0.6,
      alignItems: 'flex-start',
    },
 });
