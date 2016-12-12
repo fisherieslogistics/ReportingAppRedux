@@ -42,12 +42,16 @@ class EventProductsEditor extends React.Component{
     const extraProps = {};
 
     if(attribute.id === "code"){
+      const usedChoices = this.props.fishingEvent.products.map(pt => pt.code);
+      extraProps.choices = speciesCodesDesc.filter(
+        c => (c.value === product.code) || (usedChoices.indexOf(c.value) === -1));
       extraProps.autoCapitalize = "characters";
       extraProps.maxLength = 3;
       if(usedChoices.indexOf(product.code) !== -1){
         extraProps.error = true;
       }
       if(product.code === 'OTH'){
+      if(product.code === 'OTH' || product.code === 'Other Species Weight'){
         extraProps.maxLength = 34;
         extraProps.value = 'Other Species Weight';
       }
