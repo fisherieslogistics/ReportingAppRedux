@@ -16,7 +16,12 @@ export function globalId(type){
   return toGlobalId(type, mongoObjectId())
 }
 
+function attributeShouldRender(attr) {
+  return !!attr.display;
+}
+
 export default {
+
   blankModel: (model, type) => {
     const blankModel = {};
     model.forEach(value => {
@@ -31,5 +36,9 @@ export default {
       blankModel[value.id] = value.defaultValue;
     });
     return blankModel;
-  }
+  },
+  getRenderableAttributes: (model) => {
+    return model.filter(attributeShouldRender);
+  },
+
 };
