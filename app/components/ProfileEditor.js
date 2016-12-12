@@ -5,11 +5,11 @@ import {
 import React from 'react';
 
 import UserModel from '../models/UserModel';
-import EditorView from './common/EditorView';
+import ModelEditor from './common/ModelEditor';
 import UserActions from '../actions/UserActions';
 const userActions = new UserActions();
 
-import {eventEditorStyles} from '../styles/styles';
+import {modelEditorStyles} from '../styles/styles';
 
 
 
@@ -18,7 +18,7 @@ class ProfileEditor extends React.Component {
     constructor(props) {
       super(props);
        this.onChange = this.onChange.bind(this);
-       this.getEditor = this.getEditor.bind(this);
+       this.getEditorProps = this.getEditorProps.bind(this);
     }
 
     onChange(key, value){
@@ -27,7 +27,7 @@ class ProfileEditor extends React.Component {
       this.props.dispatch(userActions.editUser(change));*/
     }
 
-    getEditor(attribute){
+    getEditorProps(attribute){
       return {
         attribute,
         value: this.props.user[attribute.id],
@@ -39,20 +39,20 @@ class ProfileEditor extends React.Component {
 
     render() {
       return (
-        <EditorView
+        <ModelEditor
           styles={styles}
           getCallback={() => this.onChange}
-          getEditor={this.getEditor}
+          getEditorProps={this.getEditorProps}
           editorType={"profile"}
           name={"profileEdit"}
           model={UserModel}
-          obj={this.props.user}
+          modelValues={this.props.user}
           values={this.props.user}
         />
     );
   }
 };
 
-const styles = StyleSheet.create(eventEditorStyles);
+const styles = StyleSheet.create(modelEditorStyles);
 
 module.exports = ProfileEditor;
