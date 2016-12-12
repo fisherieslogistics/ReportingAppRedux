@@ -19,7 +19,7 @@ function getCustom(fEvent){
 
 function parseProducts(products){
   const catches = products.filter((x) => !!x.code).map((c) => {
-    let prod = Object.assign({}, c, {
+    const prod = Object.assign({}, c, {
       weight: parseInt(c.weight || 0),
       numberOfContainers: parseInt(c.numberOfContainers || 0),
       containerType: c.containerType || "",
@@ -27,7 +27,7 @@ function parseProducts(products){
       treatment: c.treatment || "iced",
       grade: c.grade || "",
     });
-    delete prod["objectId"];
+    delete prod.objectId;
     return prod;
   });
   return catches;
@@ -68,14 +68,14 @@ function upsertFishingEvent(fEvent, tripId) {
     groundropeDepth: parseInt(fEvent.groundropeDepth || 0),
     targetSpecies: fEvent.targetSpecies,
     committed: !!fEvent.committed,
-    custom: custom,
+    custom,
     locationStart: startLoc,
     locationEnd: endLoc,
-    catches: catches,
+    catches,
     discards: otherCatches.discards,
     protecteds: otherCatches.protecteds,
     incidents: otherCatches.incidents,
-    version: version,
+    version,
     __legacyId: fEvent.__legacyId || null,
   };
   return {
@@ -97,20 +97,21 @@ function upsertFishingEvent(fEvent, tripId) {
 }
 
 const upsertTrip = (trip) => {
-  let _trip = Object.assign({}, trip, {
+  const _trip = {
     id: trip.objectId,
     startDate: trip.startDate.toISOString(),
     endDate: trip.endDate.toISOString(),
     vessel_id: trip.vesselId,
-    complete: trip.complete,
+    complete: !!trip.complete,
     endPort: trip.endPort,
     startPort: trip.startPort,
     __legacyId: trip.__legacyId || null,
-  });
+  };
   delete _trip.started;
   delete _trip.objectId;
   delete _trip.vesselId;
   delete _trip.message;
+  delete _trip.fishingEvents;
   return {
     query: `
       mutation($data: UpsertTripMutation2Input!){
