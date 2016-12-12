@@ -30,6 +30,12 @@ class AutoSuggestPicker extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
+    if(nextProps.choices.length !== this.props.choices.length) {
+      this.initChoices();
+    }
+    if(nextProps.isFocused !== this.props.isFocused) {
+      this.dispatchChange(nextProps.value.toString());
+    }
     this.setState({
       value: nextProps.value,
     });
@@ -55,7 +61,7 @@ class AutoSuggestPicker extends React.Component {
     }
   }
 
-  onFocus(){
+  initChoices(){
     const userFavourites = this.props.favourites[this.props.attributeId];
     const favourites = userFavourites ? Object.keys(userFavourites).sort((k1, k2) => userFavourites[k1] - userFavourites[k2]) : [];
     this.props.dispatch(viewActions.initAutoSuggestBarChoices(this.props.choices,
@@ -64,6 +70,10 @@ class AutoSuggestPicker extends React.Component {
                                                               this.props.inputId,
                                                               ));
 
+  }
+
+  onFocus(){
+    this.initChoices();
     this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
     this.props.handleFocus(this.props.inputId);
   }
@@ -78,11 +88,15 @@ class AutoSuggestPicker extends React.Component {
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
   }
 
+  dispatchChange(text){
+    this.props.dispatch(viewActions.changeAutoSuggestBarText(this.props.showAll ? "" :  text, this.props.inputId));
+  }
+
   onChangeText(text) {
+    this.dispatchChange(text);
     this.setState({
       value: text,
     });
-    this.props.dispatch(viewActions.changeAutoSuggestBarText(this.props.showAll ? "" :  text, this.props.name));
   }
 
   render () {
