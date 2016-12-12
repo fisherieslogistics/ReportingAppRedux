@@ -258,6 +258,11 @@ class Fishing extends React.Component{
   renderProductButtons() {
     const buttonWrapper = { alignItems: 'stretch', flex: 1 };
     const catchesOpen = this.state.selectedDetail === 'catches';
+    if(!catchesOpen){
+      return (
+        <View style={[styles.row, styles.fill]} />
+      );
+    }
     const haveDeleted = !!this.props.deletedProducts.length;
     const canUndo = (catchesOpen && haveDeleted);
     return (
