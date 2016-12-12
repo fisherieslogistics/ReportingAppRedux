@@ -42,10 +42,6 @@ class EventProductsEditor extends React.Component{
     const extraProps = {};
 
     if(attribute.id === "code"){
-      const usedChoices = this.props.fishingEvent.products.filter(
-        p => p.id !== product.id).map(
-          pt => pt.code);
-      extraProps.choices = speciesCodesDesc.filter(c => (usedChoices.indexOf(c.value) === -1));
       extraProps.autoCapitalize = "characters";
       extraProps.maxLength = 3;
       if(usedChoices.indexOf(product.code) !== -1){
@@ -166,6 +162,7 @@ class EventProductsEditor extends React.Component{
         extraHeight={ 240 }
         bouncesZoom={ false }
         alwaysBounceVertical={ false }
+        keyboardShouldPersistTaps
       >
         <View
           style={spacer}
