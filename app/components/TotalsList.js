@@ -2,58 +2,81 @@
 import{
   View,
   Text,
-  ListView,
-  Image
 } from 'react-native';
 import React from 'react';
-import Helper from '../utils/Helper';
-import colors from '../styles/colors.js';
-const helper = new Helper();
+import colors from '../styles/darkColors.js';
 import MasterListView from './common/MasterListView';
 import styles from '../styles/listView';
-import textStyles from '../styles/text';
 
-class FishingEventList extends React.Component {
+class TotalsList extends React.Component {
 
     constructor(props){
       super(props);
+      this.state = {
+        selectedCode: "",
+      }
       this.getDescription = this.getDescription.bind(this);
       this.isSelected = this.isSelected.bind(this);
     }
 
     isSelected(code){
-      return false;
+      return this.state.selectedCode === code;
     }
 
-    getDescription(total, sectionID, rowID) {
-      let code = (total.code || "").toUpperCase();
-      let textStyle = this.isSelected(total) ? textStyles.active : textStyles.dark;
-      let details = [
-        {text: code, style: [textStyles.black, styles.text, styles.detail, {marginLeft: 12}]},
-        {text: total.weight, style: [textStyle, styles.detail, styles.text]}
+    renderRow(item, sectionId, rowId, props) {
+      const rowStyle = { backgroundColor: colors.black };
+      return (
+        <View style={[styles.listRow, rowStyle]}>
+          { props.getDescription(item, sectionId, rowId) }
+        </View>
+      )
+    }
+
+    getDescription(total) {
+      const textStyle = {
+        color: colors.green,
+        fontSize: 18,
+      }
+      const wrapStyle = {
+        backgroundColor: colors.black,
+      };
+      const details = [
+        total.code,
+        total.weight,
       ];
 
-      return details.map((detail, i) => {
-        return (
-        <View style={[textStyles.font, styles.listRowItemNarrow]} key={"eventDetail" + i}>
-          <Text style={[textStyles.font, detail.style]}>
-            {detail.text}
+      return details.map((detail, i) => (
+        <View
+          style={ [styles.listRowItemNarrow, wrapStyle] }
+          key={"totals_list" + i}
+        >
+          <Text style={ textStyle }>
+            { detail }
           </Text>
-        </View>);
-      });
+        </View>
+      ));
+    }
+
+    renderIcon(){
+      return null;
+    }
+
+    onPress() {
+      return null;
     }
 
     render () {
       return (
         <MasterListView
-          getDescription={this.getDescription}
-          isSelected={this.isSelected}
-          onPress={this.props.onPress}
-          dataSource={this.props.data}
-          getIcon={() => null}
+          getDescription={ this.getDescription }
+          isSelected={ this.isSelected }
+          onPress={ this.props.onPress }
+          dataSource={ this.props.data }
+          getIcon={ this.renderIcon }
+          renderRow={ this.renderRow }
         />
       );
     }
-};
+}
 
-export default FishingEventList;
+export default TotalsList;
