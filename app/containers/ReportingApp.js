@@ -101,7 +101,7 @@ class ReportingApp extends Component {
       if(key == "trip"){
         displayKey = this.props.trip.started ? "End Trip" : "Start Trip";
       }
-      let selected = !!(this.state.selectedTab == key);
+      const selected = !!(this.state.selectedTab == key);
       return (
         <Icon8.TabBarItemIOS
           key={key}
@@ -117,7 +117,7 @@ class ReportingApp extends Component {
               key = _key
             }
             if(_key === "forms"){
-              let forms = createForms(this.props.fishingEvents, this.props.formType);
+              const forms = createForms(this.props.fishingEvents, this.props.formType);
               this.props.dispatch(formActions.setViewingForm(forms[forms.length-1]));
             }
             setTimeout(() => {
@@ -161,7 +161,7 @@ class ReportingApp extends Component {
   }
 
   renderForms(){
-    let forms = createForms(this.props.fishingEvents, this.props.formType);
+    const forms = createForms(this.props.fishingEvents, this.props.formType);
     return (
       <View style={[styles.col, styles.fill]}>
         <Forms
@@ -194,16 +194,15 @@ class ReportingApp extends Component {
             {this.renderTabs()}
         </TabBarIOS>
         <AutoSuggestBar
-          eventEmitter={this.props.eventEmitter}
-          visible={this.props.autoSuggestBar.uivisible}
-          favourites={this.props.autoSuggestBar.favourites}
-          choices={this.props.autoSuggestBar.choices}
-          favouritesChangedAt={this.props.autoSuggestBar.favouritesChangedAt}
-          name={this.props.autoSuggestBar.name}
-          text={this.props.autoSuggestBar.text || ""}
-          maxResults={MAX_AUTOSUGGEST_RESULTS}
-          inputId={this.props.autoSuggestBar.inputId}
-          width={this.props.width}
+          eventEmitter={ this.props.eventEmitter }
+          visible={ this.props.autoSuggestBar.uivisible }
+          favourites={ this.props.autoSuggestBar.favourites }
+          choices={ this.props.autoSuggestBar.choices }
+          favouritesChangedAt={ this.props.autoSuggestBar.favouritesChangedAt }
+          text={ this.props.autoSuggestBar.text || "" }
+          maxResults={ MAX_AUTOSUGGEST_RESULTS }
+          inputId={ this.props.autoSuggestBar.inputId }
+          width={ this.props.width }
         />
       </View>
     );
@@ -211,10 +210,8 @@ class ReportingApp extends Component {
 }
 
 const select = (State, dispatch) => {
-    let state = State.default;
-    let hasCatches = !!state.fishingEvents.events.find((fe) => {
-      return fe.eventValid;
-    });
+    const state = State.default;
+    const hasCatches = !!state.fishingEvents.events.find((fe) => fe.eventValid);
     return {
       trip: state.trip,
       autoSuggestBar: state.view.autoSuggestBar,

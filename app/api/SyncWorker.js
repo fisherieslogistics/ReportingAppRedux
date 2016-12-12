@@ -47,15 +47,13 @@ class SyncWorker {
     }
 
     state.sync.queues.pastTrips.forEach((t) => {
-      let pastRequests = [];
+      const pastRequests = [];
       t.fishingEvents.forEach(fe => pastRequests.push(this.mutateFishingEvent(fe, t.trip.objectId, t.formType)));
-      return this.mutatePastTrip(t.trip, t.vesselId).then((res) => {
-        Promise.all(pastRequests).then();
-      })
+      return this.mutatePastTrip(t.trip, t.vesselId).then(() => Promise.all(pastRequests));
     });
 
     if(this.requests.length){
-      Promise.all(this.requests).then((responses) => {
+      Promise.all(this.requests).then(() => {
         this.requests = [];
         apiActions.checkMe(this.getState().default.auth, this.dispatch);
       });
@@ -63,13 +61,16 @@ class SyncWorker {
   }
 
   dispatchMutatePastTrip(res){
-    let time = new moment();
-    let callback = (res) => {
+    const time = new moment();
+    const callback = (res) => {
+      if(res.errors.length){
+        throw new Error(res.errors);
+      }
       try{
         this.dispatch({
           type: "removeFromQueue",
           name: "pastTrips",
-          time: time
+          time
         });
       }catch(e) {
         console.warn(e);
@@ -80,16 +81,16 @@ class SyncWorker {
 
   mutatePastTrip(trip){
     const state = this.getState().default;
-    let mutation = upsertTrip(trip);
-    return this.performMutation(mutation.query, mutation.variables, this.dispatchMutateTrip);
+    const mutation = upsertTrip(trip);
+    return this.performMutation(mutation.query, mutation.variables, this.dispatchMutatePastTrip);
   }
 
   dispatchMutateTrip(res){
-    let time = new moment();
+    const time = new moment();
     try{
       this.dispatch({
         type: "tripSynced",
-        time: time,
+        time,
         objectId: res.data.upsertTrip2.trip.id
       });
     }catch(e) {
@@ -100,15 +101,15 @@ class SyncWorker {
 
   mutateTrip(trip){
     const state = this.getState().default;
-    let mutation = upsertTrip(trip);
+    const mutation = upsertTrip(trip);
     return this.performMutation(mutation.query, mutation.variables, this.dispatchMutateTrip);
   }
 
   dispatchMutateFishingEvent(fishingEvent, res){
-    let time = new moment();
+    const time = new moment();
     this.dispatch({
       type: "fishingEventSynced",
-      time: time,
+      time,
       objectId: fishingEvent.objectId
     });
     return {response: res};
@@ -133,7 +134,7 @@ class SyncWorker {
           this.dispatch({
             type: "syncError",
             time: new moment(),
-            err: err
+            err
           });
           resolve(false);
         });

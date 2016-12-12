@@ -1,21 +1,16 @@
 'use strict';
 import{
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
 } from 'react-native';
 
 
 import React from 'react';
 import reactMixin from 'react-mixin';
-import Subscribable from 'Subscribable';
 import {connect} from 'react-redux';
-
-import Validator from '../../utils/Validator';
-import {inputStyles, textStyles, colors} from '../../styles/styles';
+/* eslint-disable */
+import Subscribable from 'Subscribable';
+/* eslint-enable */
+import {inputStyles, colors} from '../../styles/styles';
 import ViewActions from '../../actions/ViewActions';
-import AutoSuggestBar from './AutoSuggestBar';
 import FocusOnDemandTextInput from './FocusOnDemandTextInput';
 
 const viewActions = new ViewActions();
@@ -25,10 +20,7 @@ class AutoSuggestPicker extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      value: "",
-      inputId: props.inputId,
-      changedByEvent: false,
-      error: false
+      value: props.value ? props.value.toString() : "",
     }
     this.autoSuggestEmitted = this.autoSuggestEmitted.bind(this);
     this.onFocus = this.onFocus.bind(this);
@@ -37,38 +29,29 @@ class AutoSuggestPicker extends React.Component {
     this.onKeyPress = this.onKeyPress.bind(this);
   }
 
-  componentWillMount(){
-    this.__mounted = true;
+  componentWillReceiveProps(nextProps){
+    if(nextProps.choices.length !== this.props.choices.length) {
+      this.initChoices();
+    }
+    if(nextProps.isFocused !== this.props.isFocused) {
+      this.dispatchChange(nextProps.value.toString());
+    }
     this.setState({
-      value: this.props.value
+      value: nextProps.value,
     });
+  }
+
+  componentWillMount(){
+    this.__mounted = true
     this.addListenerOn(this.props.eventEmitter,
                        'AutoSuggestResultPress',
                        this.autoSuggestEmitted);
   }
 
-  componentWillReceiveProps(props){
-    if(this.state.inputId === props.inputId || (this.state.changedByEvent)){
-      this.setState({
-        value: props.value
-      });
-    }
-    this.setState({
-      changedByEvent: false,
-      inputId: props.inputId,
-    });
-  }
-
   autoSuggestEmitted(event){
-    if(event.inputId == this.props.inputId){
-      this.setState({
-        changedByEvent: true,
-        value: event.value
-      });
-      this.props.onChange(event.value);
-      setTimeout(() => {
-        this.onBlur(event);
-      })
+    if(event.inputId === this.props.inputId){
+      this.onBlur(null, event.value);
+      this.refs.textInput.blur();
     }
   }
 
@@ -78,66 +61,71 @@ class AutoSuggestPicker extends React.Component {
     }
   }
 
-  onFocus(){
-    let userFavourites = this.props.favourites[this.props.attributeId];
-    let favourites = userFavourites ? Object.keys(userFavourites).sort((k1, k2) => {
-      return userFavourites[k1] - userFavourites[k2];
-    }) : [];
+  initChoices(){
+    const userFavourites = this.props.favourites[this.props.attributeId];
+    const favourites = userFavourites ? Object.keys(userFavourites).sort((k1, k2) => userFavourites[k1] - userFavourites[k2]) : [];
     this.props.dispatch(viewActions.initAutoSuggestBarChoices(this.props.choices,
                                                               [],
-                                                              this.props.value,
-                                                              this.props.name,
+                                                              this.props.showAll ? "" : this.props.value,
                                                               this.props.inputId,
                                                               ));
-    this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
-    this.props.editingCallback(this.props.name);
+
   }
 
-  onBlur(event){
-    this.props.onChange(this.state.value);
+  onFocus(){
+    this.initChoices();
+    this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
+    this.props.handleFocus(this.props.inputId);
+  }
+
+  onBlur(event, eventValue){
+    this.props.onChange(eventValue || this.state.value);
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
-    this.props.editingCallback();
+    this.props.handleBlur(this.props.inputId);
   }
 
   componentWillUnmount(){
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
-    this.props.editingCallback();
+  }
+
+  dispatchChange(text){
+    this.props.dispatch(viewActions.changeAutoSuggestBarText(this.props.showAll ? "" :  text, this.props.inputId));
   }
 
   onChangeText(text) {
+    this.dispatchChange(text);
     this.setState({
       value: text,
     });
-    this.props.dispatch(viewActions.changeAutoSuggestBarText(text, this.props.name));
   }
 
   render () {
-    let style = [inputStyles.textInput, this.props.styles | {}];
+    const style = [inputStyles.textInput, this.props.styles | {}];
     return(
       <FocusOnDemandTextInput
         style={style}
-        onFocus={this.onFocus}
-        onBlur={this.onBlur}
+        onFocus={ this.onFocus }
+        onBlur={ this.onBlur }
         onChangeText={this.onChangeText}
-        value={this.state.value}
+        value={ this.state.value }
         placeholder={this.props.placeholder}
         placeholderTextColor={colors.black}
-        selectTextOnFocus={true}
+        selectTextOnFocus
         autoCapitalize={this.props.autoCapitalize || 'none'}
         autoCorrect={false}
         ref={'textInput'}
-        editable={!this.props.disabled}
-        focus={ this.props.focus }
+        editable={ !this.props.disabled }
+        isFocused={ this.props.isFocused }
         onKeyPress={ this.onKeyPress }
         maxLength={ this.props.maxLength || 900 }
       />)
   }
-};
+}
 
 reactMixin(AutoSuggestPicker.prototype, Subscribable.Mixin);
 
 const select = (State, dispatch) => {
-  let state = State.default;
+  const state = State.default;
   return {
     eventEmitter: state.uiEvents.eventEmitter,
     favourites: state.me.autoSuggestFavourites

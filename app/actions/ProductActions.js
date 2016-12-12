@@ -3,13 +3,16 @@ import moment from 'moment';
 
 class ProductActions{
   changeSpecies(id, catchId, value, objectId) {
+      if(value === 'Other Species Wieght') {
+        value = 'OTH';
+      }
       return (dispatch, getState) => {
         dispatch({
           type: 'changeSpecies',
           fishingEventId: id,
-          objectId: objectId,
+          objectId,
           catchIndex: catchId,
-          value: value,
+          value,
           timestamp: moment(),
           formType: getState().default.me.formType,
       });
@@ -24,9 +27,9 @@ class ProductActions{
       dispatch({
         type: 'changeWeight',
         fishingEventId: id,
-        objectId: objectId,
+        objectId,
         catchIndex: catchId,
-        value: value,
+        value,
         timestamp: moment(),
         formType: getState().default.me.formType,
       });
@@ -40,11 +43,11 @@ class ProductActions{
     return (dispatch, getState) => {
       dispatch({
         type: 'changeCustom',
-        name: name,
+        name,
         fishingEventId: id,
-        objectId: objectId,
+        objectId,
         catchIndex: catchId,
-        value: value,
+        value,
         timestamp: moment(),
         formType: getState().default.me.formType,
       });
@@ -59,7 +62,7 @@ class ProductActions{
       dispatch({
         type: 'addProduct',
         fishingEventId: id,
-        objectId: objectId,
+        objectId,
         formType: getState().default.me.formType,
       });
       dispatch({
@@ -72,9 +75,9 @@ class ProductActions{
     return (dispatch, getState) => {
       dispatch({
         type: 'deleteProduct',
-        fishingEventId: fishingEventId,
-        productIndex: productIndex,
-        objectId: objectId,
+        fishingEventId,
+        productIndex,
+        objectId,
         formType: getState().default.me.formType,
       });
       dispatch({
@@ -87,8 +90,8 @@ class ProductActions{
     return (dispatch, getState) => {
       dispatch({
         type: 'undoDeleteProduct',
-        fishingEventId: fishingEventId,
-        objectId: objectId,
+        fishingEventId,
+        objectId,
         formType: getState().default.me.formType,
       });
       dispatch({

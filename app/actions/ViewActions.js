@@ -2,37 +2,37 @@
 import moment from 'moment';
 
 class ViewActions{
-    initAutoSuggestBarChoices(choices, favourites, text, name, inputId){
+
+    initAutoSuggestBarChoices(choices, favourites, text, inputId){
       //use a name change to tell it to re initialise
       return {
         type: 'initAutoSuggestBarChoices',
-        choices: choices,
-        favourites: favourites,
-        text: text,
-        name: name,
-        inputId: inputId
+        choices,
+        favourites,
+        text,
+        inputId
       }
     }
 
     changeAutoSuggestBarText(text, name){
       return {
         type: 'changeAutoSuggestBarText',
-        text: text,
-        name: name
+        text,
+        name
       }
     }
 
     orientation(orientation){
       return {
         type: 'orientation',
-        orientation: orientation
+        orientation
       }
     }
 
     toggleAutoSuggestBar(visible){
       return {
         type: 'toggleAutoSuggestBar',
-        visible: visible
+        visible
       }
     }
 }

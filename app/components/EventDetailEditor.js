@@ -1,24 +1,22 @@
 'use strict';
 import {
-  StyleSheet,
   View,
   AlertIOS,
   Text,
-  ScrollView,
   TouchableOpacity,
 } from 'react-native';
 
 import React from 'react';
-import Errors from './common/Errors';
-import EditorView from './common/EditorView';
-import FishingEventActions from '../actions/FishingEventActions';
-import {eventEditorStyles, colors} from '../styles/styles';
-import {getFishingEventModelByTypeCode} from '../utils/FormUtils';
-const fishingEventActions = new FishingEventActions();
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import speciesCodesDesc from '../constants/speciesDesc.json';
+import ModelEditor from './common/ModelEditor';
+import FishingEventActions from '../actions/FishingEventActions';
+import {getFishingEventModelByTypeCode} from '../utils/FormUtils';
 
+/* eslint-disable */
+import speciesCodesDesc from '../constants/speciesDesc';
+/* eslint-enable */
 
+const fishingEventActions = new FishingEventActions();
 
 const tcerOrder = [
   'targetSpecies',
@@ -47,33 +45,30 @@ class EventDetailEditor extends React.Component{
       this.onEnterPress = this.onEnterPress.bind(this);
       this.onNonFishChange = this.onNonFishChange.bind(this);
       this.onChange = this.onChange.bind(this);
-      this.getCallback = this.getCallback.bind(this);
-      this.getEditor = this.getEditor.bind(this);
+      this.getEditorProps = this.getEditorProps.bind(this);
       this.state = {
         nextInput: '',
         showMore: false,
       }
     }
 
-    setNextInput(name){
-      this.setState({
-        nextInput: name,
-      });
+    getNextInputId(attrId) {
+      const inputOrder = this.getInputOrder();
+      const index = inputOrder.indexOf(attrId);
+      const attr = inputOrder[index + 1];
+      if(attr) {
+        this.setState({
+          nextInput: attr,
+        });
+      }
     }
 
-    onEnterPress(inputName){
-      const ordering = inputOrder[this.props.formType];
-      const index = ordering.indexOf(inputName);
-      if(index === -1){
-        this.setNextInput('');
-        return;
-      }
+    onEnterPress(attrId) {
+      this.getNextInputId(attrId);
+    }
 
-      let isLast = (index === ordering.length - 1);
-
-      if(!isLast){
-        this.setNextInput(ordering[index + 1]);
-      }
+    getInputOrder(){
+      return inputOrder[this.props.formType];
     }
 
     onChange(name, value){
@@ -86,7 +81,7 @@ class EventDetailEditor extends React.Component{
       }
     }
 
-    onChangeText(name, value, fihingEventId) {
+    onChangeText(name, value) {
         this.props.dispatch(
           fishingEventActions.setfishingEventValue(this.props.fishingEvent.id, name, value));
     }
@@ -106,42 +101,36 @@ class EventDetailEditor extends React.Component{
       }
     }
 
-    getEditor(attribute){
-      const inputId = attribute.id + "__event__" + this.props.fishingEvent.id;
-      const extraProps =  {};
-      if(attribute.id == 'targetSpecies'){
+    getEditorProps(attribute){
+      if(!attribute){
+        console.log("Meeer");
+        debugger;
+      }
+      const extraProps = {};
+      if(attribute.id === 'targetSpecies') {
         extraProps.choices = speciesCodesDesc;
         extraProps.autoCapitalize = 'characters';
         extraProps.maxLength = 3;
       }
       return {
         attribute,
-        value: this.props.fishingEvent[attribute.id],
-        onChange: attribute.type === 'bool' ? this.onNonFishChange : this.onChange,
-        extraProps: extraProps,
-        inputId,
-        onEnterPress: inputOrder[this.props.formType].indexOf(attribute.id) === -1 ? null : () => this.onEnterPress(attribute.id),
+        extraProps,
+        onEnterPress: this.onEnterPress,
       };
     }
 
-    getCallback(attr){
-      switch (attr.type) {
-        case "bool":
-          return this.onNonFishChange
-        default:
-          return this.onChangeText
-      }
-    }
-
     renderToggleShowMore(){
-      const viewStyle = {position: 'absolute', right: 0, top: 0, height: 30, width: 60};
+      const viewStyle = {position: 'absolute', right: 0, top: 0, height: 30, width: 45};
+      const textStyle = {fontSize: 18, color: '#33F9FF'};
       return (
         <TouchableOpacity
           style={viewStyle}
           onPress={ this.props.optionalFieldsPress }
         >
           <View>
-            <Text style={{fontSize: 18, color: '#33F9FF'}} >{ this.props.showOptionalFields ? 'Less' : 'More' }</Text>
+            <Text style={textStyle}>
+              { this.props.showOptionalFields ? 'Less' : 'More' }
+            </Text>
           </View>
         </TouchableOpacity>
       );
@@ -153,32 +142,39 @@ class EventDetailEditor extends React.Component{
     }
     let model = getFishingEventModelByTypeCode(this.props.formType).complete;
     if(!this.props.showOptionalFields) {
-      model = model.filter(field => !field.optionalRender);
+      model = model.filter(f => {
+        if(f.optionalRender ){
+          const value = this.props.fishingEvent[f.id];
+          return !f.valid.func(value);
+        }
+        return true;
+      });
     }
+    if(!this.props.fishingEvent.datetimeAtEnd){
+      model = model.filter(field => field.displayStage !== 'Haul');
+    }
+    const spacer = { height: 50 };
+    const mass = { height: 600 };
+    const showMore = this.renderToggleShowMore();
     return (
       <KeyboardAwareScrollView
-        viewIsInsideTabBar={ true }
+        viewIsInsideTabBar
         extraHeight={ 150 }
         bouncesZoom={ false }
         alwaysBounceVertical={ false }
       >
-        <EditorView
-          styles={ styles }
-          getCallback={ this.getCallback }
-          toFocusAttributeId={ this.state.nextInput }
-          getEditor={ this.getEditor }
-          editorType={ "event" }
-          name={ "eventDetail" }
+        <View style={spacer} />
+        <ModelEditor
+          getEditorProps={ this.getEditorProps }
           model={ model }
-          obj={ this.props.fishingEvent }
-          values={ this.props.fishingEvent }
+          index={this.props.fishingEvent.id }
+          modelValues={ this.props.fishingEvent }
+          onChange={ this.onChange }
         />
-        { this.renderToggleShowMore() }
-      <View style={{ height: 600 }} />
+        { showMore }
+      <View style={mass} />
     </KeyboardAwareScrollView>);
   }
-};
-
-const styles = StyleSheet.create(eventEditorStyles);
+}
 
 export default EventDetailEditor;

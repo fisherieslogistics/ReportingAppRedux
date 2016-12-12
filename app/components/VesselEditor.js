@@ -9,33 +9,31 @@ import {
 
 import React from 'react';
 import VesselModel from '../models/VesselModel';
-import {AttributeEditor} from './common/AttributeEditor';
-import EditorView from './common/EditorView';
-import eventEditorStyles from '../styles/eventEditor';
+import AttributeEditor from './common/AttributeEditor';
+import ModelEditor from './common/ModelEditor';
+import { modelEditorStyles } from '../styles/styles';
 import UserActions from '../actions/UserActions';
 import ModelUtils from '../utils/ModelUtils';
 const userActions = new UserActions();
 const PickerItemIOS = PickerIOS.Item;
 
 const onChange = (key, value, {dispatch}) => {
-  var change = {};
+  const change = {};
   change[key] = value
   dispatch(userActions.editVessel(change));
 }
 
-const getEditor = (attribute, props) => {
-  return {
+const getEditorProps = (attribute, props) => ({
     attribute,
     value: props.vessel[attribute.id],
     onChange: (key, value) => onChange(key, value, props),
     extraProps: {editable: false},
     inputId: attribute.id + "__vessel__" + props.vessel.id
-  };
-}
+  })
 
 const VesselEditor = (props) => {
 
-  let formTypeItems = ["tcer", "lcer"].map(ft => (
+  const formTypeItems = ["tcer", "lcer"].map(ft => (
      <PickerItemIOS
       key={ft + "__formTypeChoice"}
       value={ft}
@@ -43,7 +41,7 @@ const VesselEditor = (props) => {
     />
   ));
 
-  let formTypePicker = (
+  const formTypePicker = (
     <PickerIOS
       selectedValue={props.formType}
       onValueChange={(formType) => props.dispatch(userActions.setFormType(formType))}
@@ -52,14 +50,14 @@ const VesselEditor = (props) => {
     </PickerIOS>
   );
 
-  let vesselItems = props.vessels.map((v) => (
+  const vesselItems = props.vessels.map((v) => (
     <PickerItemIOS
       key={v.id}
       value={v.id}
       label={v.name}
     />));
 
-  let vesselPicker = (
+  const vesselPicker = (
     <PickerIOS
       selectedValue={props.vessel.id}
       onValueChange={(vesselId, i) => props.dispatch(userActions.setVessel(props.vessels[i]))}
@@ -68,7 +66,7 @@ const VesselEditor = (props) => {
     </PickerIOS>
   );
 
-  let catchExpand = (
+  const catchExpand = (
     <View style={{marginLeft: 30}}>
       <Text>Enter Containers - state - and treatment?</Text>
       <Switch
@@ -80,7 +78,7 @@ const VesselEditor = (props) => {
     </View>
 );
 
-  let top = (
+  const top = (
     <View>
       {vesselPicker}
       {formTypePicker}
@@ -89,20 +87,20 @@ const VesselEditor = (props) => {
   );
 
   return (
-      <EditorView
+      <ModelEditor
         top={props.tripStarted ? null : top}
         styles={styles}
         getCallback={(key, value) => onChange(key, value, props)}
-        getEditor={(attribute) => getEditor(attribute, props)}
+        getEditorProps={(attribute) => getEditorProps(attribute, props)}
         editorType={"vessel"}
         name={"vesselEdit"}
         model={[]}
-        obj={props.vessel}
+        modelValues={props.vessel}
         values={props.vessel}
       />
   );
 }
 
-const styles = StyleSheet.create(eventEditorStyles);
+const styles = StyleSheet.create(modelEditorStyles);
 
 module.exports = VesselEditor;

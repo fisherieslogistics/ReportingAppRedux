@@ -4,232 +4,28 @@ import {
   ListView,
   Text,
   AlertIOS,
-  Image,
   StyleSheet,
   Modal,
-  ScrollView,
   TextInput,
-  Switch,
   TouchableOpacity,
   TouchableWithoutFeedback,
   PickerIOS
 } from 'react-native';
 import React from 'react';
 const PickerItemIOS = PickerIOS.Item;
-import ProfileEditor from './ProfileEditor';
-import VesselEditor from './VesselEditor';
 import MasterDetailView from './layout/MasterDetailView';
 import AuthActions from '../actions/AuthActions';
 import MasterListView from './common/MasterListView';
-import EditorView from './common/EditorView';
-import GPSControlActions from '../actions/GPSControlActions';
-import version from '../constants/version';
 import moment from 'moment';
-
-import Validator from '../utils/Validator';
-const valid = Validator.valid;
 
 import {LongButton} from './common/Buttons';
 import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
-import {colors, listViewStyles, textStyles, iconStyles, eventEditorStyles} from '../styles/styles';
+import {colors, listViewStyles, textStyles, iconStyles } from '../styles/styles';
 import {connect} from 'react-redux';
-
-import Icon8 from './common/Icon8';
-import AddPort from './AddPort';
-
 import { EndpointLookup } from '../reducers/APIReducer';
+import Icon8 from './common/Icon8';
 
 const authActions = new AuthActions();
-const editorStyles = StyleSheet.create(eventEditorStyles);
-const gpsControlActions = new GPSControlActions();
-
-const GPSSettings = ({currentPosition, positionType, gpsUrl, gpsPort, gpsBaud, dispatch} ) => {
-  return <View style={{paddingTop: 10, paddingLeft: 10}}><Text>No settings here currently.</Text></View>;
-  let textInputStyle = {width: 360,
-                          marginTop: 10,
-                          height: 30,
-                          backgroundColor: colors.white,
-                          borderColor: colors.darkGray,
-                          borderWidth: 1,
-                        }
-  let styles = eventEditorStyles;
-  let lastUpdated = (<Text>No Position updated</Text>);
-  if(currentPosition && currentPosition.timestamp)
-  lastUpdated = (
-     <View>
-       <Text>{ currentPosition.timestamp.toString() }</Text>
-       <Text>{ new Date(currentPosition.timestamp).toString() }</Text>
-    </View>
-  );
-
-  let ipGPSSettings = (
-   <View>
-    <View>
-        <Text>IP GPS URL</Text>
-        <TextInput
-          value={gpsUrl}
-          style={textInputStyle}
-          autoCapitalize={"none"}
-          autoCorrect={false}
-          onChangeText={(url) => {
-          dispatch(gpsControlActions.setGpsUrl(url))
-        }} />
-      </View>
-      <View>
-        <Text>IP GPS HTTP Port</Text>
-        <TextInput
-          style={textInputStyle}
-          autoCapitalize={"none"}
-          autoCorrect={false}
-          value={gpsPort}
-          onChangeText={(text) => {
-          dispatch(gpsControlActions.setGpsPort(text))
-        }} />
-      </View>
-      <View>
-        <Text>IP GPS Baud rate</Text>
-        <TextInput
-          style={textInputStyle}
-          autoCapitalize={"none"}
-          autoCorrect={false}
-          value={gpsBaud}
-          onChangeText={(text) => {
-          dispatch(gpsControlActions.setGpsBaud(text))
-        }} />
-      </View>
-      <View>
-        <LongButton
-          text={"Apply changes"}
-          bgColor={colors.pink}
-          onPress={() => {
-            dispatch(gpsControlActions.applyGpsSettings(gpsUrl, gpsPort, gpsBaud));
-          }}
-        />
-      </View>
-    </View>
-  )
-
-  return (
-    <View style={[styles.col, styles.fill, styles.outerWrapper, {alignSelf: 'flex-start'}]}>
-      <View style={styles.innerWrapper}>
-        <Text>last updated</Text>
-        {lastUpdated}
-          <View style={{flexDirection: "row"}}>
-          <Text>IP GPS - custom</Text>
-          <Switch
-            onValueChange={(bool) => {
-              if(bool){
-                dispatch(gpsControlActions.nativeGPSOn());
-              }else{
-                dispatch(gpsControlActions.ipGpsOn());
-              }
-            }}
-            value={(positionType=='native')}
-          />
-          <Text>Native GPS - standard ios</Text>
-        </View>
-        {positionType == 'IP' ? ipGPSSettings : null }
-      </View>
-  </View>
-  );
-}
-
-
-const Login = ({onLoginPress, loggedIn, disabled, sync }) => {
-  const tripsToSync = sync.queues.pastTrips.length + (sync.trip ? 1 : 0);
-
-  const eventsToSync = Object.keys(sync.fishingEvents).length;
-  const SyncModel = [
-    {id: 'tripsToSync', defaultValue: 0, label: "Trips to Sync", type: "labelOnly", valid: valid.alwaysValid,
-      editorDisplay: {editor: "account", type: 'combined', siblings: ["eventsToSync"]}},
-    {id: 'eventsToSync', defaultValue: 0, label: "Events to Sync",  type: "labelOnly", valid: valid.alwaysValid}
-  ];
-  let syncData = {tripsToSync: tripsToSync, eventsToSync: eventsToSync};
-  const getEditor = (attribute) => {
-    return { attribute, value: syncData[attribute.id] };
-  }
-  const topStyle = {
-    backgroundColor: colors.darkBlue,
-    flexDirection: 'row',
-    padding: 10,
-  }
-  const bottomStyle = {
-    padding: 10,
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  }
-  let top = (
-    <View style={topStyle}>
-      <Text style={[textStyles.logo1, textStyles.font]}>Fishery </Text>
-      <Text style={[textStyles.logo2, textStyles.font]}>Logistics</Text>
-    </View>
-  );
-  let bottom = (
-    <View style={bottomStyle}>
-      <LongButton
-        text={loggedIn ? "logout" : "login"}
-        bgColor={colors.pink}
-        onPress={onLoginPress}
-        disabled={disabled}
-      />
-    {disabled &&(<Text style={{color: colors.orange, paddingLeft: 20, paddingTop: 5}}>Cannot logout during active trip.</Text>)}
-    </View>
-  );
-  return (
-    <EditorView
-      top={top}
-      bottom={bottom}
-      styles={editorStyles}
-      getCallback={() => {}}
-      getEditor={getEditor}
-      editorType={"account"}
-      name={"account"}
-      model={SyncModel}
-      obj={syncData}
-      values={syncData}
-    />
-  );
-}
-
-const DevScreen = (props) => {
-  return(
-      <View>
-        <UrlPicker dispatch={props.dispatch} ApiEndpoint={props.ApiEndpoint || ""} />
-        <TouchableOpacity onPress={() => {throw new Error("Alert Error has been thrown by the user What the fuck?")}}>
-          <Text>Throw an Error</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={props.exitDevMode}>
-          <Text>Exit Dev Mode</Text>
-        </TouchableOpacity>
-      </View>
-    );
-}
-
-function UrlPicker(props) {
-  const urls = Object.keys(EndpointLookup).map(key => { return { name: key, value: EndpointLookup[key].ApiEndpoint } });
-  let urlItems = urls.map((url) => (
-    <PickerItemIOS
-      key={url.name}
-      value={url.name}
-      label={url.name}
-    />));
-  const selected = urls.find(url => url.value == props.ApiEndpoint)
-
-  return(
-    <PickerIOS
-      selectedValue={ selected ? selected.name: ''}
-      onValueChange={(u) => {
-        props.dispatch({type: 'devMode', payload: u});
-      }}
-    >
-      {urlItems}
-    </PickerIOS>
-  )
-}
-
-
-
 
 class Profile extends React.Component{
   constructor (props){
@@ -297,7 +93,7 @@ class Profile extends React.Component{
   }
 
   login(){
-    let email = this.state.email === null ? this.props.user.email : this.state.email;
+    const email = this.state.email === null ? this.props.user.email : this.state.email;
     this.props.dispatch(this.props.apiActions.login(
       email, this.state.password));
     this.setState({
@@ -347,27 +143,21 @@ class Profile extends React.Component{
       defaultItems.push({name: "vessel", icon: 'fishing-boat', label: "Vessel", color: this.props.vessels.length ?  colors.blue : colors.midGray});
     }
 
-    let devItem = (this.state.devMode?[{name: "dev", icon: 'cloud', label: "Dev", color: colors.orange}]:[]);
+    const devItem = (this.state.devMode?[{name: "dev", icon: 'cloud', label: "Dev", color: colors.orange}]:[]);
 
-    let items = [...defaultItems, ...devItem];
+    const items = [...defaultItems, ...devItem];
 
-    const isSelected = (items) => {
-      return (items.name == this.state.selectedEditor);
-    }
+    const isSelected = (items) => (items.name == this.state.selectedEditor)
 
-    const getIcon = (editor, active) => {
-      return (<Icon8 name={editor.icon} size={30} color="white"  style={[iconStyles, {backgroundColor: editor.color}]}/>);
-    }
+    const getIcon = (editor, active) => (<Icon8 name={editor.icon} size={30} color="white"  style={[iconStyles, {backgroundColor: editor.color}]}/>)
 
-    const getDescription = (editor, sectionID, rowID) => {
-        return (
+    const getDescription = (editor, sectionID, rowID) => (
           <View style={listViewStyles.listRowItem}>
             <Text style={[textStyles.font, textStyles.black, listViewStyles.detail, textStyles.listView]}>
               {editor.label}
             </Text>
           </View>
-        );
-    }
+        )
 
     return (
       <MasterListView
@@ -415,11 +205,11 @@ class Profile extends React.Component{
   }
 
   getModal(){
-    let textInputStyle = {width: 360,
+    const textInputStyle = {width: 360,
                           marginTop: 10,
                           height: 30
                         }
-    let textInputWrapper = {
+    const textInputWrapper = {
       borderBottomColor: colors.lightBlue,
       borderBottomWidth: 0.5,
     };
@@ -475,12 +265,12 @@ class Profile extends React.Component{
           </View>
       </TouchableWithoutFeedback>
     );
-    let detailToolbar = (
+    const detailToolbar = (
       <DetailToolbar
         center={button}
       />
     );
-    let masterToolbar = (
+    const masterToolbar = (
       <MasterToolbar
         center={<View style={{marginTop: 36}}><Text style={[textStyles.font, textStyles.midLabel]}>Settings</Text></View>}
       />
@@ -490,20 +280,19 @@ class Profile extends React.Component{
           modal={this.getModal()}
           master={this.renderListView()}
           detail={
-            <ScrollView>
-              <View style={[this.props.styles.detailView, this.props.styles.col]}>
-              <View style={[this.props.styles.row]}>
-                {this.renderDetail()}
-              </View>
-            </View>
-          </ScrollView>
+            (<LongButton
+                text={ "login"}
+                bgColor={colors.pink}
+                onPress={this.onLoginPress}
+                disabled={ false }
+            />)
           }
           detailToolbar={detailToolbar}
           masterToolbar={masterToolbar}
         />
     );
   }
-};
+}
 
 const modalStyle = StyleSheet.create({
   container: {
@@ -518,7 +307,7 @@ const modalStyle = StyleSheet.create({
 })
 
 const select = (State, dispatch) => {
-  let state = State.default;
+  const state = State.default;
   return {
     user: state.me.user,
     message: state.auth.message,

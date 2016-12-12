@@ -10,11 +10,11 @@ export default {
     textAlign: 'right'
   },
   textInput: {
-    fontSize: 22,
+    fontSize: 20,
     flex: 1,
     color: colors.green,
-    height: 22,
-    marginTop: 10,
+    height: 20,
+    marginTop: 8,
   },
   locationContainer: {
     backgroundColor: colors.backgrounds.dark,

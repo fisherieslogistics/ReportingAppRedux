@@ -67,24 +67,24 @@ function firstEventValue(fishingEvents, id){
     return id(fishingEvents[0]);
   }
   return fishingEvents[0][id];
-};
+}
 
 function createForms(fishingEvents, formType) {
-  let formModel = formModels[formType];
-  let forms = [];
+  const formModel = formModels[formType];
+  const forms = [];
   const newForm = (fe) => {
-    let values = {
+    const values = {
       id: forms.length + 1,
       created: new moment(fe.datetimeAtStart.unix()),
       fishingEvents: [helper.assign({}, fe)]
     }
-    let form = helper.assign(ModelUtils.blankModel(formModel), values);
+    const form = helper.assign(ModelUtils.blankModel(formModel), values);
     newForm.signature = fe.signature;
     forms.push(form);
   }
-  let addFishingEvent = (fe, shotNumber) => {
-    let _form = forms[forms.length -1];
-    let formReady = (_form && _form.fishingEvents.length !== _form.meta.eventsPerForm) ? true : false;
+  const addFishingEvent = (fe) => {
+    const _form = forms[forms.length -1];
+    const formReady = (_form && _form.fishingEvents.length !== _form.meta.eventsPerForm);
     if(formReady && _form.meta.compatible(_form.fishingEvents[_form.fishingEvents.length -1], fe)){
       _form.fishingEvents.push(helper.assign(fe, {numberInForm: _form.fishingEvents.length + 1}));
     }else {
@@ -92,21 +92,21 @@ function createForms(fishingEvents, formType) {
     }
   }
   fishingEvents.forEach((fe, i) => {
-    let shotNum = i+1;
+    const shotNum = i+1;
     addFishingEvent(helper.assign(fe, {shotNumber: shotNum}));
   });
   return forms;
 }
 
 function getFormModelByTypeCode(typeCode){
-  if(! typeCode in formModels){
+  if(!( typeCode in formModels)){
     throw new Error("invalid type code for form model");
   }
   return formModels[typeCode];
 }
 
 function getFishingEventModelByTypeCode(typeCode){
-  if(! typeCode in fishingEventModels){
+  if(!( typeCode in fishingEventModels)){
     throw new Error("invalid type code for fishing event model");
   }
   return fishingEventModels[typeCode];

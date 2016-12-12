@@ -7,10 +7,10 @@ const formModel = [
     {id: 'permitHolderNumber', type: 'number', resource: 'user'},
     {id: 'firstName', type: 'string', resource: 'user'},
     {id: 'lastName', type: 'string', resource: 'user'},
-    {id: 'submitted', type: 'bool', defaultValue: false, hidden: true},
-    {id: 'id', type: 'number', defaultValue: 0, hidden: true},
-    {id: 'dateSigned', type: 'datetime',  hidden: true},
-    {id: 'signature',  hidden: true}
+    {id: 'submitted', type: 'bool', defaultValue: false},
+    {id: 'id', type: 'number', defaultValue: 0},
+    {id: 'dateSigned', type: 'datetime'},
+    {id: 'signature'}
 ];
 
 export default formModel;

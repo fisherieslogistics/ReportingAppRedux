@@ -1,0 +1,12 @@
+{
+  "extends": ["react-native"],
+  "rules": {
+     "no-invalid-this": "off",
+     "react/prop-types": 0,
+     "no-case-declarations": 0,
+     "jsx-handler-names": 0,
+     "react/jsx-handler-names": 0,
+     "react/prefer-stateless-function": 0,
+     "class-methods-use-this": 0,
+   }
+}

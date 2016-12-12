@@ -1,74 +1,98 @@
 'use strict';
 import {
-  StyleSheet,
-  View,
-  Text,
-  AlertIOS,
-  TouchableOpacity,
-  TextInput,
-  PickerIOS,
 } from 'react-native';
 
 import React from 'react';
 import moment from 'moment';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import TripModel from '../models/TripModel';
-import { eventEditorStyles, textStyles, inputStyles, colors } from '../styles/styles';
-import EditorView from './common/EditorView';
+import ModelEditor from './common/ModelEditor';
+import TripActions from '../actions/TripActions';
+import ports from '../constants/ports';
 
-const styles = StyleSheet.create(eventEditorStyles);
-const dayChoices = [...Array(45).keys()].map(i => {
-  return {
-    value: i.toString(),
-    description: ` ${i.toString()} days `,
-  }
-});
+const portChoices = [];
+Object.keys(ports).forEach((k) => ports[k].forEach((p) => {
+        portChoices.push({value:p, description: k, render: () => ({value: k, description: p })});
+      }));
+const tripActions = new TripActions();
 
 class StartTripEditor extends React.Component {
 
   constructor(props){
     super(props);
-    this.getEditor = this.getEditor.bind(this);
-    this.getEditorExtraProps = this.getEditorExtraProps.bind(this);
+    this.getEditorProps = this.getEditorProps.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.getExtraProps = this.getExtraProps.bind(this);
+    this.state = {
+      portChoices: this.getPortChoices(props),
+    }
   }
 
   onChange(name, value){
-
+    switch (name) {
+      case "endDate":
+        const date = this.props.trip.startDate.clone().add(parseInt(value), "days");
+        this.props.dispatch(tripActions.updateTrip(name, date));
+        break;
+      case "startPort":
+      case "endPort":
+        this.props.dispatch(tripActions.updateTrip(name, value));
+        break
+    }
   }
 
-  getEditor(attribute) {
-    const extraProps = this.getEditorExtraProps(attribute);
+  getPortChoices(){
+    return portChoices;
+  }
+
+  getDayChoices(startDate) {
+    const choices = [...Array(14).keys()].map((i) => {
+      const date = startDate.clone().add(i, "days");
+      return {
+        value: i,
+        description: date.format("MMM Do YY"),
+      };
+    });
+    return choices;
+  }
+
+  getEditorProps(attribute) {
+    const extraProps = this.getExtraProps(attribute);
     const value = this.props.trip[attribute.id];
-    const inputId = attribute.id + "__trip__";
+    const inputId = `${attribute.id}__tripstart__`;
     return {
       attribute,
-      value: value,
+      value,
+      inputId,
       onChange: this.onChange,
       extraProps,
-      inputId,
-      onEnterPress: null,
     };
   }
 
-  getEditorExtraProps(attribute){
-    const extraProps = {};
+  getExtraProps(attribute){
+    const extraProps = {
+      inputId: `${attribute.id}__tripstart__`,
+    };
     switch (attribute.id) {
       case "startPort":
+        extraProps.choices = this.state.portChoices;
+        break;
       case "endPort":
-        return extraProps.choices = this.props.ports;
+        extraProps.choices = this.state.portChoices;
         break;
       case "startDate":
         extraProps.mode = "date";
-        extraProps.disabled = true;
         extraProps.format = "Do MM YYYY";
         break;
       case "endDate":
-        const date = this.props.trip.startDate || new moment();
-        const endDate = this.props.trip.endDate || date.add(2, "days");
-        const tripDays = moment.duration(endDate.diff(date)).asDays();
-        extraProps.choices = dayChoices;
-        extraProps.value = tripDays.toFixed(0);
+        const date = this.props.trip.startDate;
+        const endDate = this.props.trip.endDate;
+        extraProps.choices = this.getDayChoices(date.clone());
+        extraProps.sortResultsBy = (a, b) => parseInt(a.value) - parseInt(b.value);
+        const days = moment.duration(endDate.diff(date)).asDays();
+        extraProps.value = days.toString();
+        extraProps.maxResults = 15;
+        extraProps.showAll = true;
         break;
     }
     return extraProps;
@@ -77,24 +101,18 @@ class StartTripEditor extends React.Component {
   render() {
     return (
       <KeyboardAwareScrollView
-        style={{marginTop: 3}}
-        viewIsInsideTabBar={ true }
+        viewIsInsideTabBar
         extraHeight={ 150 }
         bouncesZoom={false}
         alwaysBounceVertical={false}
       >
-        <EditorView
-          top={ null }
-          styles={styles}
-          getCallback={(key, value) => { console.log(arguments); } }
-          getEditor={ this.getEditor }
-          editorType={"trip"}
-          name={ "tripEdit" }
+        <ModelEditor
+          getEditorProps={ this.getEditorProps }
           model={ TripModel }
-          obj={ this.props.trip }
-          values={ this.props.trip }
+          modelValues={ this.props.trip }
+          index={ 1 }
+          onChange={ this.onChange }
         />
-        <View style={{height: 600}}></View>
       </KeyboardAwareScrollView>
     );
   }

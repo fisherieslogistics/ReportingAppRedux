@@ -2,32 +2,38 @@
 import {
   TextInput,
 } from 'react-native';
-import React from 'react';
 
 export default class FocusOnDemandTextInput extends TextInput {
 
   constructor(props){
-    super(props)
+    super(props);
   }
 
   focus() {
+    this.clearTimeout(this.focusTimeout);
     if(this._component){
-      this._component.focus;
+      this.focusTimeout = setTimeout(this._component.focus);
+      this.props.onFocus()
     }
   }
 
-  componentWillUnmount(){
+  makeBlur(){
     this.clearTimeout(this.blurTimeout);
     if(this._component){
       this.blurTimeout = setTimeout(this._component.blur);
     }
   }
 
+  componentWillUnmount(){
+    this.makeBlur();
+  }
+
   componentWillReceiveProps(nextProps) {
-    const { focus } = nextProps;
-    this.clearTimeout(this.focusTimeout);
-    if(focus) {
-      this.focusTimeout = setTimeout(this.focus);
+    if(nextProps.isFocused) {
+      this.focus();
+    }
+    if((!nextProps.isFocused) && this.props.isFocused){
+      this.makeBlur();
     }
   }
 

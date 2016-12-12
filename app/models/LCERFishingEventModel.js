@@ -5,16 +5,16 @@ let model = [];
 
 model = [
   {label: 'Number of Hooks', id: 'numberOfHooks', valid: valid.greaterThanZero, type: 'number',
-    editorDisplay: {editor: 'event', type: 'single'}
+    display: { type: 'single'}
   },
   {label: 'Hook Spacing', id: 'hookSpacing', valid: valid.greaterThanZero, type: 'float', repeating: true,
-    editorDisplay: {editor: 'event', type: 'single'}, unit: 'm'
+    display: { type: 'single'}, unit: 'm'
   },
   {label: 'Bottom Depth', id: 'bottomDepth', valid: valid.greaterThanZero, type: 'number',
-    editorDisplay: {editor: 'event', type: 'single'}, unit: 'm'
+    display: { type: 'single'}, unit: 'm'
   },
   {label: 'Non Fish Protected Species',  type: 'bool', id: 'nonFishProtected', valid: valid.alwaysValid, type: 'bool',
-    editorDisplay: {editor: 'event', type: 'single', hideUndefined: true}
+    display: { type: 'single', hideUndefined: true }
   },
 ];
 

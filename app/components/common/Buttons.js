@@ -4,36 +4,39 @@ import{
   TouchableOpacity,
   View,
   Text,
-  Image
 } from 'react-native';
 import React from 'react';
-import { textStyles, iconStyles, colors } from '../../styles/styles';
+import { textStyles, colors } from '../../styles/styles';
 import Icon8 from './Icon8';
 
-const getActiveOpacity = (disabled) => {
-  return disabled ? 1 : 0.6;
-}
 
-const getTextStyle = (color, disabled) =>{
-  return [
+const styles = StyleSheet.create({
+  longButton: {
+    borderWidth: 1,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+const getActiveOpacity = (disabled) => disabled ? 1 : 0.6
+
+const getTextStyle = (color, disabled) =>[
     textStyles.font,
     textStyles.button,
     {color: ! disabled ? color : colors.midGray},
-  ];
-}
+];
 
-const Button = ({onPress, content, disabled }) => {
-  return (
+const Button = ({onPress, content, disabled }) => (
     <TouchableOpacity
       activeOpacity={ getActiveOpacity(disabled) }
       onPress={ disabled ? () => {} : onPress }>
         { content }
     </TouchableOpacity>
   )
-}
 
 const IconButton = ({icon, onPress, style, disabled, color}) => {
-  let content = (
+  const content = (
     <Icon8
       name={icon}
       size={30}
@@ -52,7 +55,7 @@ const IconButton = ({icon, onPress, style, disabled, color}) => {
 
 const TextButton = ({text, color, style, onPress, disabled}) => {
   const textStyle = getTextStyle(color, disabled);
-  let content = (
+  const content = (
     <View style={style}>
       <Text style={textStyle}>
         {text}
@@ -70,15 +73,27 @@ const TextButton = ({text, color, style, onPress, disabled}) => {
   );
 }
 
-const LongButton = ({ text, bgColor, onPress, disabled, _style } ) => {
+const LongButton = ({ text, bgColor, onPress, disabled, active, error } ) => {
+  const backgroundColor = active ? bgColor : colors.transparent;
   const colorStyle = {
-    backgroundColor: disabled ? colors.transparent : bgColor,
+    backgroundColor,
     borderColor: bgColor,
   };
-  const txtStyle = { color: '#000', fontSize: 13 };
+  let textColor = active ? colors.white : bgColor;
+  if(disabled){
+    textColor = colors.transparent;
+  }
+  const txtStyle = { color: textColor, fontSize: 16 };
+  if(active){
+    txtStyle.fontWeight = '600';
+  }
+  if(error){
+    colorStyle.borderBottomColor = colors.orange;
+    colorStyle.borderTopColor = colors.orange;
+  }
   const content = (
-    <View style={[ colorStyle, _style || {}, styles.longButton ]}>
-      <Text style={[txtStyle, textStyles.font]}>
+    <View style={[ colorStyle, styles.longButton ]}>
+      <Text style={[textStyles.font, txtStyle]}>
         { text }
       </Text>
     </View>
@@ -91,17 +106,5 @@ const LongButton = ({ text, bgColor, onPress, disabled, _style } ) => {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  longButton: {
-    borderWidth: 1,
-    height: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  disabled: {
-    borderColor: colors.midGray,
-  },
-});
 
 export {IconButton, TextButton, LongButton}

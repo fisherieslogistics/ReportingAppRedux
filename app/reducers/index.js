@@ -8,13 +8,13 @@ import TripReducer from './TripReducer';
 import FormReducer from './FormReducer';
 import Helper from '../utils/Helper';
 import EventsReducer from './EventsReducer';
-import GearReducer from './GearReducer';
 import SyncReducer from './SyncReducer';
 import APIReducer from './APIReducer';
 import MigrationReducer from './MigrationReducer';
+import HistoryReducer from './HistoryReducer';
 
 const helper = new Helper();
-var AsyncStorage = require('AsyncStorage');
+const AsyncStorage = require('AsyncStorage');
 
 const reducers = {
   auth: AuthReducer,
@@ -24,19 +24,19 @@ const reducers = {
   trip: TripReducer,
   forms: FormReducer,
   uiEvents: EventsReducer,
-  gear: GearReducer,
   sync: SyncReducer,
   api: APIReducer,
   migrations: MigrationReducer,
+  history: HistoryReducer,
 }
 
-let MainReducer = combineReducers(reducers);
+const MainReducer = combineReducers(reducers);
 
 const mutateState = (state, action) => {
   const newState = MainReducer(state, action);
   if(action.type == 'loadSavedState'){
-    let loadedState = MainReducer(undefined, {type: 'init'});
-    let savedState = action.savedState
+    const loadedState = MainReducer(undefined, {type: 'init'});
+    const savedState = action.savedState
     if(!savedState){
       return newState;
     }
@@ -52,6 +52,6 @@ const mutateState = (state, action) => {
 }
 
 export default (state, action) => {
-  let State = mutateState(state, action);
+  const State = mutateState(state, action);
   return State;
 };
