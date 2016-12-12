@@ -1,17 +1,14 @@
 'use strict';
-import{
-  StyleSheet,
-} from 'react-native';
 
 import colors from './colors'
 
-export default StyleSheet.create({
+export default {
   listRow: {
     flexDirection: 'row',
     flex: 1,
-    paddingLeft: 15,
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingLeft: 9,
+    paddingTop: 6,
+    paddingBottom: 6,
     backgroundColor: colors.white,
   },
   selectedListRow: {
@@ -41,4 +38,4 @@ export default StyleSheet.create({
     height: 1,
     backgroundColor: colors.midGray,
   }
-});
+};
