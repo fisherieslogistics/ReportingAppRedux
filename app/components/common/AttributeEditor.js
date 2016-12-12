@@ -26,8 +26,19 @@ class AttributeEditor extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return (nextProps.value !== this.props.value) ||
-           (nextProps.isFocused !== this.props.isFocused);
+    switch(nextProps.attribute.type) {
+      case 'picker':
+        if( nextProps.isFocused && nextProps.extraProps.choices ) {
+          if( nextProps.extraProps.choices.length !== this.props.extraProps.choices.length ){
+            return true;
+          }
+        }
+      default:
+        if((nextProps.value !== this.props.value) || (nextProps.isFocused !== this.props.isFocused)){
+          return true;
+        }
+      }
+      return false;
   }
 
   onDateChange(datetime) {
