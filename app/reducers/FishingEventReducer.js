@@ -197,11 +197,11 @@ const newFishingEvent = (state, location, formType) => {
   newEvent.datetimeAtStart = moment();
   newEvent.locationAtStart = Object.assign({}, location);
   newEvent.products = [];
-  for(let i = 0; i < 8; i++) {
+  for(let i = 0; i < 9; i++) {
     newEvent.products.push(ModelUtils.blankModel(ProductModel));
   }
-  newEvent.products[7].code = 'OTH';
-  newEvent.products[7].weight = 0;
+  newEvent.products[8].code = 'OTH';
+  newEvent.products[8].weight = 0;
   const previousEvent = state.events[newEvent.id - 2];
   if(previousEvent){
     fishingEventModel.complete.filter(attr => attr.repeating).forEach((attribute) => {
