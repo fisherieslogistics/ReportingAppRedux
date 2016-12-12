@@ -5,34 +5,45 @@ import {
   AlertIOS,
   SegmentedControlIOS,
   TouchableOpacity,
+  StyleSheet,
   Text,
-  Image,
 } from 'react-native';
-import React, { Component } from 'react';
+import React from 'react';
 import EventDetailEditor from './EventDetailEditor';
 import FishingEventList from './FishingEventList';
 import MasterDetailView from './layout/MasterDetailView';
 import FishingEventActions from '../actions/FishingEventActions';
-import EventGearEditor from './EventGearEditor';
 import PositionDisplay from './PositionDisplay';
 import EventProductsEditor from './EventProductsEditor';
 import { connect } from 'react-redux';
-import moment from 'moment';
-import Sexagesimal from 'sexagesimal';
 import PlaceholderMessage from './common/PlaceholderMessage';
 import { LongButton } from './common/Buttons';
 
 import ProductActions from '../actions/ProductActions';
-import { TextButton } from './common/Buttons';
 import { MasterToolbar, DetailToolbar } from './layout/Toolbar';
-import { colors, textStyles, iconStyles, masterDetailStyles } from '../styles/styles';
+import { colors } from '../styles/styles';
 import Icon8 from './common/Icon8';
-import UnsoughtCatch from './UnsoughtCatch';
 const fishingEventActions = new FishingEventActions();
 
-const segMents = ["details", "catches"]/*, "discards", "Accident", "protecteds"];*/
 //TODO optional discard etc
 const productActions = new ProductActions();
+
+const styles = StyleSheet.create({
+  detailView: {
+    padding: 0,
+    flex: 1,
+  },
+  col: {
+    flexDirection: 'column',
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  fill: {
+    flex: 1,
+  },
+});
+
 
 const toBind = [
   'endFishingEvent',
@@ -41,14 +52,15 @@ const toBind = [
   'removeFishingEvent',
   'setViewingFishingEvent',
   'renderMessage',
-  'renderSegementedControl',
+  'renderDetailViewButtons',
   'selectedDetailView',
   'toggleOptionalFields',
-  'renderProductButtons',
   'deleteProduct',
   'undoDeleteProduct',
   'renderProductButtons',
   'addProduct',
+  'showCatches',
+  'showDetail',
 ];
 
 class Fishing extends React.Component{
@@ -56,36 +68,30 @@ class Fishing extends React.Component{
     super(props);
     this.state = {
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
-      selectedDetail: 0,
+      selectedDetail: "detail",
       showOptionalFields: false,
     };
     toBind.forEach(funcName => {this[funcName] = this[funcName].bind(this)});
   }
 
   getCurrentLocation(){
-    let pos = this.props.positionProvider.getPosition()
-    let parsedPos;
-
+    const pos = this.props.positionProvider.getPosition()
     if(pos && pos.coords){
-      parsedPos = {
+      return {
         lat: pos.coords.latitude,
         lon: pos.coords.longitude
       }
-    }else{
-      AlertIOS.alert("No location fix - please remember to edit the location");
-      parsedPos = {
-        lat: 0,
-        lon: 0
-      }
     }
-
-    return parsedPos;
+    AlertIOS.alert("No location fix - please remember to edit the location");
+    return {
+      lat: 0,
+      lon: 0
+    }
   }
 
   startFishingEvent(){
     const pos = this.getCurrentLocation();
-
-    if(this.props.formType == 'tcer'){
+    if(this.props.formType === 'tcer'){
       this.startEvent(pos);
     }else{
       this.startLCEREvent(pos);
@@ -93,58 +99,26 @@ class Fishing extends React.Component{
   }
 
   startEvent(position){
-    //TODO alert if not position so you can type it in
     if(this.props.enableStartEvent){
       this.props.dispatch(fishingEventActions.startFishingEvent(position));
-      setTimeout(() => {
-        this.props.dispatch(fishingEventActions.setViewingFishingEvent(this.props.fishingEvents.length));
-      }, 300);
-
+      setTimeout(() => this.props.dispatch(
+        fishingEventActions.setViewingFishingEvent(
+          this.props.fishingEvents.length)), 300);
     }
-  }
-
-  startLCEREvent(position){
-    AlertIOS.alert(
-      'Start new Set',
-      'Click OK to confirm that you are starting a new set',
-      [
-        {text: 'Cancel', onPress: () => {}, style: 'cancel'},
-        {text: 'OK', onPress: () => {
-          this.startEvent(position);
-        }}
-      ]
-    );
   }
 
   endTCEREvent(position){
     AlertIOS.alert(
-          "Hauling",
-          'Touch yes to confirm - you cannot delete a shot after you haul it.',
-          [
-            {text: 'No', onPress: () => {
-              return;
-            }, style: 'cancel'},
-            {text: 'Yes', onPress: () => {
-              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, position));
-              this.props.dispatch(fishingEventActions.setViewingFishingEvent(this.props.fishingEvents.length));
-            }}
-          ]
-        );
-  }
-
-  endLCEREvent(position){
-    AlertIOS.alert(
-          "Hauling Set " + this.props.viewingEvent.id,
-          "Touch yes to confirm - you are hauling set " + this.props.viewingEvent.id,
-          [
-            {text: 'No', onPress: () => {
-              return;
-            }, style: 'cancel'},
-            {text: 'Yes', onPress: () => {
-              this.props.dispatch(fishingEventActions.endFishingEvent(this.props.viewingEvent.id, position));
-            }}
-          ]
-        );
+      "Hauling",
+      'Touch yes to confirm - you cannot delete a shot after you haul it.',
+      [
+        {text: 'No', onPress: () => null, style: 'cancel'},
+        {text: 'Yes', onPress: () => {
+          this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, position));
+          this.props.dispatch(fishingEventActions.setViewingFishingEvent(this.props.fishingEvents.length));
+        }}
+      ]
+    );
   }
 
   endFishingEvent(){
@@ -152,7 +126,7 @@ class Fishing extends React.Component{
       return;
     }
     const pos = this.getCurrentLocation();
-    if(this.props.formType == 'tcer'){
+    if(this.props.formType === 'tcer'){
       this.endTCEREvent(pos);
     }else{
       this.endLCEREvent(pos);
@@ -169,12 +143,10 @@ class Fishing extends React.Component{
       "Delete",
       'Delete the latest shot?',
       [
-        {text: 'Cancel', onPress: () => {
-          return;
-        }, style: 'cancel'},
+        {text: 'Cancel', onPress: () => null, style: 'cancel'},
         {text: 'Delete', onPress: () => {
           this.props.dispatch(fishingEventActions.setViewingFishingEvent(null));
-          return this.props.dispatch(fishingEventActions.cancelFishingEvent(this.props.lastEvent.id));
+          this.props.dispatch(fishingEventActions.cancelFishingEvent(this.props.lastEvent.id));
         }}
       ]
     );
@@ -206,19 +178,18 @@ class Fishing extends React.Component{
 
   selectedDetailView(){
     switch (this.state.selectedDetail){
-      case 0:
+      case "detail":
         return (
           <EventDetailEditor
             renderMessage={this.renderMessage}
             fishingEvent={this.props.viewingEvent}
-            editorType={'event'}
             dispatch={this.props.dispatch}
             formType={this.props.formType}
             optionalFieldsPress={this.toggleOptionalFields}
             showOptionalFields={this.state.showOptionalFields}
           />
         );
-      case 1:
+      case "catches":
         if(!this.props.viewingEvent.datetimeAtEnd){
           return this.renderMessage("Haul before adding catch");
         }
@@ -227,6 +198,7 @@ class Fishing extends React.Component{
             fishingEvent={this.props.viewingEvent}
             deletedProducts={this.props.deletedProducts}
             products={this.props.viewingEvent.products}
+            addProduct={ this.addProduct }
             dispatch={this.props.dispatch}
             editorType={'event'}
             orientation={this.props.orientation}
@@ -236,69 +208,77 @@ class Fishing extends React.Component{
             deleteProduct={this.deleteProduct}
           />
         );
-        case 2:
-        case 3:
-        case 4:
-        const unsoughtType = segMents[this.state.selectedDetail];
-        return (<UnsoughtCatch
-                 fishingEvent={ this.props.viewingEvent }
-                 items={ this.props.viewingEvent[unsoughtType] || [] }
-                 dispatch={ this.props.dispatch }
-                 editorType={ 'event' }
-                 orientation={ this.props.orientation }
-                 renderMessage={ this.renderMessage }
-                 deletedProducts={ [] }
-                 unsoughtType={ unsoughtType }
-                 formType={ this.props.formType }
-                />);
     }
   }
 
-  renderSegementedControl() {
-    let enabled = !!this.props.viewingEvent.datetimeAtEnd;
-    const controlColor = enabled ? colors.lightBlue : colors.darkGray;
+  showDetail(){
+    this.setState({
+      selectedDetail: "detail",
+    });
+  }
+
+  showCatches(){
+    this.setState({
+      selectedDetail: "catches",
+    });
+  }
+
+  renderDetailViewButtons() {
+    const buttonWrapper = { alignItems: 'stretch', flex: 1};
+    const activeColor = colors.blue;
+    const catchesDisabled = !this.props.viewingEvent.datetimeAtEnd;
+    const detailError = !this.props.viewingEvent.eventValid;
+    const productsError = !this.props.viewingEvent.productsValid;
     return (
-      <SegmentedControlIOS
-        enabled={ enabled }
-        values={segMents}
-        selectedIndex={this.state.selectedDetail}
-        style={ styles.detailSelector }
-        tintColor={ controlColor }
-        onChange={({nativeEvent}) => {
-          this.setState({selectedDetail: nativeEvent.selectedSegmentIndex});
-        }}
-      />);
+      <View style={[styles.row, styles.fill]}>
+        <View style={[ buttonWrapper ]}>
+          <LongButton
+            bgColor={ activeColor }
+            text={ "Detail" }
+            onPress={ this.showDetail }
+            disabled={ false }
+            error={ detailError }
+            active={ this.state.selectedDetail === 'detail' }
+          />
+         </View>
+         <View style={[ buttonWrapper ] }>
+           <LongButton
+             bgColor={ activeColor }
+             text={ "Catches" }
+             active={ this.state.selectedDetail === 'catches' }
+             disabled={ catchesDisabled }
+             onPress={ this.showCatches }
+             error={ productsError }
+           />
+        </View>
+      </View>
+    );
   }
 
   renderProductButtons() {
-    if(this.state.selectedDetail !==  1){
-      return null;
-    }
-    const btnStyle = {
-      flex: 1,
-      margin: 0,
-    };
-    const undoColor = this.props.deletedProducts.length ? colors.pink : colors.midGray;
-    const buttonWrapper = { alignItems: 'stretch', flex: 0.5 };
+    const buttonWrapper = { alignItems: 'stretch', flex: 1 };
+    const catchesOpen = this.state.selectedDetail === 'catches';
+    const haveDeleted = !!this.props.deletedProducts.length;
+    const canUndo = (catchesOpen && haveDeleted);
     return (
-      <View style={{ flexDirection: 'row', flex: 1 }}>
+      <View style={[styles.row, styles.fill]}>
         <View style={[ buttonWrapper ]}>
           <LongButton
-            bgColor={ undoColor }
+            bgColor={ colors.pink }
             text={ "Undo" }
             onPress={ this.undoDeleteProduct }
-            disabled={ !this.props.deletedProducts.length }
-            _style={ btnStyle }
+            disabled={ !canUndo }
+            active={ canUndo }
           />
        </View>
        <View style={[ buttonWrapper ] }>
          <LongButton
-           bgColor={ colors.blue }
+           bgColor={ colors.green }
            text={ "Add Catch" }
-           disabled={ false }
+           disabled={ !catchesOpen }
            onPress={ this.addProduct }
-           _style={ btnStyle }
-         />
+           active={ catchesOpen }
+        />
       </View>
     </View>
     );
@@ -311,22 +291,28 @@ class Fishing extends React.Component{
     if(this.props.viewingEvent.signature){
       return this.renderMessage("This shot has been signed and cannot be edited");
     }
+    const productButtons = this.renderProductButtons();
+    const detailView = this.selectedDetailView();
+    const viewButtons = this.renderDetailViewButtons();
+    const spacer = { height: 40 };
+    const halfway = { flex: 0.45 };
+    const detailWrap = { padding: 15 };
+    const separator = { flex: 0.1 };
     return(
       <View style={[styles.detailView, styles.col]}>
-        <View style={[{ height: 50 }]}>
-          <View style={[styles.row, { flex: 1 }]}>
-            <View style={[ { flex: 0.5 }, styles.row ]}>
-              { this.renderSegementedControl() }
+        <View style={[spacer]}>
+          <View style={[styles.row, styles.fill]}>
+            <View style={[ halfway, styles.row ]}>
+              { viewButtons }
             </View>
-            <View style={[ { flex: 0.5 }, styles.row ]}>
-              <View style={[ styles.productButtonsWrapper ]}>
-                { this.renderProductButtons() }
-              </View>
+            <View style={separator} />
+            <View style={[ halfway, styles.row ]}>
+              { productButtons }
             </View>
           </View>
         </View>
-        <View style={[styles.row, { flex: 1, padding: 15 }]}>
-          { this.selectedDetailView() }
+        <View style={[styles.row, styles.fill, detailWrap]}>
+          { detailView }
         </View>
     </View>);
   }
@@ -349,7 +335,7 @@ class Fishing extends React.Component{
   }
 
   getDetailToolbar(){
-    let deleteActive = this.props.lastEvent && (!this.props.lastEvent.datetimeAtEnd);
+    const deleteActive = this.props.lastEvent && (!this.props.lastEvent.datetimeAtEnd);
     const posDisplay = (
       <PositionDisplay
         provider={this.props.positionProvider}
@@ -370,35 +356,18 @@ class Fishing extends React.Component{
     );
   }
 
-  getFishingButton(){
-    let startEventButton = (
-      <TextButton
-        color={ colors.green }
-        textAlign={ "center" }
-        onPress={ this.startFishingEvent }
-        disabled={ false }
-      />
-    );
-    let endEventButton = (
-      <TextButton
-        color={ colors.red }
-        textAlign={ "center" }
-        onPress={ this.endFishingEvent }
-        disabled={ false }
-      />
-    );
-    return this.props.enableStartEvent ? startEventButton : endEventButton;
-  }
-
   getMasterToolbar(){
     const onPress = this.props.enableStartEvent ? this.startFishingEvent : this.endFishingEvent;
     const backgroundColor = this.props.enableStartEvent ? colors.green : colors.red;
     const buttonStyle = { flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor, alignSelf: 'stretch'};
+    const innerWrap = {alignItems: 'center'};
+    const textStyle = { fontSize: 30, fontWeight: '500', color: '#fff', textAlign: 'center', marginTop: 20 };
+    const text = this.props.enableStartEvent ? "Start Fishing" : "Haul";
     const eventButton = (
-      <TouchableOpacity onPress={onPress} style={[buttonStyle]}>
-         <View style={{alignItems: 'center'}}>
-          <Text style={ { fontSize: 30, fontWeight: '500', color: '#fff', textAlign: 'center', marginTop: 20 } }>
-            { this.props.enableStartEvent ? "Start Fishing" : "Haul" }
+      <TouchableOpacity onPress={onPress} style={ buttonStyle }>
+         <View style={innerWrap}>
+          <Text style={ textStyle }>
+            { text }
           </Text>
         </View>
       </TouchableOpacity>
@@ -421,42 +390,11 @@ class Fishing extends React.Component{
       />
     );
   }
-};
-
-const styles = {
-  detailView: {
-    padding: 0,
-    flex: 1,
-  },
-  col: {
-    flexDirection: 'column',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  halfway: {
-    flex: 0.5,
-  },
-  detailSelector: {
-    borderRadius: 0,
-    borderWidth: 1,
-    borderColor: colors.lightBlue,
-    alignSelf: 'flex-start',
-    margin: 10,
-    flex: 0.5,
-  },
-  productButtonsWrapper: {
-    flexDirection: 'column',
-    margin: 10,
-    flex: 0.5,
-    alignSelf: 'flex-end',
-    alignItems: 'stretch',
-  },
 }
 
 const select = (State, dispatch) => {
-    let state = State.default;
-    let props = {
+    const state = State.default;
+    const props = {
       fishingEventType: "tcer",
       orientation: state.view.orientation,
       height: state.view.height,
@@ -470,8 +408,8 @@ const select = (State, dispatch) => {
     if(!state.fishingEvents.events.length){
       return props;
     }
-    let fEvents = state.fishingEvents.events;
-    let lastEvent = fEvents[fEvents.length -1];
+    const fEvents = state.fishingEvents.events;
+    const lastEvent = fEvents[fEvents.length -1];
     props.lastEvent = lastEvent;
     props.viewingEvent = fEvents[state.view.viewingEventId -1];
     props.fishingEvents = fEvents;
