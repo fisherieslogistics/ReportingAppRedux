@@ -36,6 +36,7 @@
 		B68CF2E8E66B475998C60170 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4CFAE4579BD9405CA2C0E136 /* Entypo.ttf */; };
 		BBAAA5A88EF748D89B6D57F7 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57F70EF26B4E4277BDA64A82 /* libRNVectorIcons.a */; };
 		C46A090721134DC4934D9FA6 /* libRNLocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 10F359723A79486F93AEDEF6 /* libRNLocation.a */; };
+		CFD3D988DCA94B4BBBEBB0F7 /* libTcpSockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CCC6D0FEFA654F10B9FCEEE9 /* libTcpSockets.a */; };
 		DB79A5208AFC4971A394002A /* libRNMail.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA21AFD5F70D44198A8FC708 /* libRNMail.a */; };
 		E661BBAD1D8631E20028DB87 /* AppIcon.appiconset in Resources */ = {isa = PBXBuildFile; fileRef = E661BBAC1D8631E20028DB87 /* AppIcon.appiconset */; };
 		F64C644114C84D68A0414141 /* libRNBlur.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C23BD1664624D09B3DE39F5 /* libRNBlur.a */; };
@@ -85,6 +86,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
 			remoteInfo = FLLReporting;
+		};
+		0326092D1DFF60A40096B82F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F41E7048CBC54D3C9D7AFF78 /* TcpSockets.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = TcpSockets;
 		};
 		035EDAEF1D77988900C2F725 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -232,8 +240,10 @@
 		B9C7300491A44EF594E122B7 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		BC99F55020D74836BB888F42 /* libRSSignatureCapture.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRSSignatureCapture.a; sourceTree = "<group>"; };
 		CC2FECF0F5F943859C1D6626 /* RCTOrientation.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTOrientation.xcodeproj; path = "../node_modules/react-native-orientation/iOS/RCTOrientation.xcodeproj"; sourceTree = "<group>"; };
+		CCC6D0FEFA654F10B9FCEEE9 /* libTcpSockets.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libTcpSockets.a; sourceTree = "<group>"; };
 		E661BBAC1D8631E20028DB87 /* AppIcon.appiconset */ = {isa = PBXFileReference; lastKnownFileType = folder; path = AppIcon.appiconset; sourceTree = "<group>"; };
 		EA21AFD5F70D44198A8FC708 /* libRNMail.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNMail.a; sourceTree = "<group>"; };
+		F41E7048CBC54D3C9D7AFF78 /* TcpSockets.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = TcpSockets.xcodeproj; path = "../node_modules/react-native-tcp/ios/TcpSockets.xcodeproj"; sourceTree = "<group>"; };
 		FC48473826FB4BD9AA8D9F0F /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -269,6 +279,7 @@
 				744C33E4767F4536842C3F3A /* libRCTRestart.a in Frameworks */,
 				35A0E0925E74480BB682E237 /* libCodePush.a in Frameworks */,
 				FC4D4CBE055B40E0A21DB6B4 /* libz.tbd in Frameworks */,
+				CFD3D988DCA94B4BBBEBB0F7 /* libTcpSockets.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,6 +341,14 @@
 				00E356F11AD99517003FC87E /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		032609171DFF60A40096B82F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0326092E1DFF60A40096B82F /* libTcpSockets.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		035EDAE21D77988900C2F725 /* Products */ = {
@@ -456,6 +475,7 @@
 				3F468A72EA5C4EAAB80BB1DB /* RNMail.xcodeproj */,
 				619CD09A46E547C296E425BF /* RCTRestart.xcodeproj */,
 				7A434E3C1A8B41CCB1AC5044 /* CodePush.xcodeproj */,
+				F41E7048CBC54D3C9D7AFF78 /* TcpSockets.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -665,6 +685,10 @@
 					ProductGroup = 035EDAFB1D77988900C2F725 /* Products */;
 					ProjectRef = 8C4FE34931B047D6BD4AA124 /* RSSignatureCapture.xcodeproj */;
 				},
+				{
+					ProductGroup = 032609171DFF60A40096B82F /* Products */;
+					ProjectRef = F41E7048CBC54D3C9D7AFF78 /* TcpSockets.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -708,6 +732,13 @@
 			fileType = archive.ar;
 			path = libRCTVibration.a;
 			remoteRef = 00C302E31ABCB9EE00DB3ED1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0326092E1DFF60A40096B82F /* libTcpSockets.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTcpSockets.a;
+			remoteRef = 0326092D1DFF60A40096B82F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		035EDAF01D77988900C2F725 /* libRNBlur.a */ = {
@@ -911,6 +942,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -928,6 +960,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
@@ -957,6 +990,7 @@
 					"$(SRCROOT)/../node_modules/react-native-restart/**",
 					"$(SRCROOT)/../node_modules/react-native-restart/ios/RCTRestart",
 					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
+					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 				);
 				INFOPLIST_FILE = FLLReporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -993,6 +1027,7 @@
 					"$(SRCROOT)/../node_modules/react-native-restart/**",
 					"$(SRCROOT)/../node_modules/react-native-restart/ios/RCTRestart",
 					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
+					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 				);
 				INFOPLIST_FILE = FLLReporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1060,6 +1095,7 @@
 					"$(SRCROOT)/../node_modules/react-native-restart/ios/RCTRestart",
 					"$(SRCROOT)/../node_modules/react-native-restart/ios/RCTRestart",
 					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
+					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1112,6 +1148,7 @@
 					"$(SRCROOT)/../node_modules/react-native-restart/ios/RCTRestart",
 					"$(SRCROOT)/../node_modules/react-native-restart/ios/RCTRestart",
 					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
+					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
