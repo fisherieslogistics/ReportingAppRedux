@@ -120,11 +120,10 @@ class AttributeEditor extends Component {
             attribute={ attribute }
             value={ value }
             onChange={ this.onChange }
-            extraProps={ extraProps }
             inputId={ inputId }
             isFocused={ isFocused }
             onEnterPress={ onEnterPress }
-            { ...extraProps }
+            extraProps={ extraProps }
           />
         );
     }
