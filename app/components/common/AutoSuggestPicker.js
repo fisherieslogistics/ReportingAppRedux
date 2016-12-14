@@ -62,8 +62,6 @@ class AutoSuggestPicker extends React.Component {
   }
 
   initChoices(){
-    const userFavourites = this.props.favourites[this.props.attributeId];
-    const favourites = userFavourites ? Object.keys(userFavourites).sort((k1, k2) => userFavourites[k1] - userFavourites[k2]) : [];
     this.props.dispatch(viewActions.initAutoSuggestBarChoices(this.props.choices,
                                                               [],
                                                               this.props.showAll ? "" : this.props.value,
