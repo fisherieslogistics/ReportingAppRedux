@@ -197,24 +197,22 @@ const newFishingEvent = (state, location, formType) => {
   newEvent.datetimeAtStart = moment();
   newEvent.locationAtStart = Object.assign({}, location);
   newEvent.products = [];
-  for(let i = 0; i < 9; i++) {
-    newEvent.products.push(ModelUtils.blankModel(ProductModel));
-  }
-  newEvent.products[8].code = 'OTH';
-  newEvent.products[8].weight = 0;
   const previousEvent = state.events[newEvent.id - 2];
   if(previousEvent){
     fishingEventModel.complete.filter(attr => attr.repeating).forEach((attribute) => {
       newEvent[attribute.id] = previousEvent[attribute.id];
     });
-    for(let i = 0; i < previousEvent.products.length; i++) {
-      if(previousEvent.products[i].code !== 'OTH'){
-        newEvent.products[i].code = previousEvent.products[i].code;
-      }
-    }
+    newEvent.products = previousEvent.products.filter(
+      p => !['OTH', 'Other Species Weight'].includes(p.code)).map(
+        p => Object.assign({}, p, { weight: 0 }));
   }
-  newEvent.eventValid = calculateEventValid(newEvent, formType);
-  newEvent.productsValid = calculateEventProductsValid(newEvent);
+  for(let i = newEvent.products.length; i < 9; i++) {
+    newEvent.products.push(ModelUtils.blankModel(ProductModel));
+  }
+  newEvent.products[8].code = 'OTH';
+  newEvent.products[8].weight = 0;
+  newEvent.eventValid = false;
+  newEvent.productsValid = false;
   return Object.assign({}, state, {
       events: [
           ...state.events,
