@@ -72,6 +72,7 @@ class StartTripEditor extends React.Component {
   getExtraProps(attribute){
     const extraProps = {
       inputId: `${attribute.id}__tripstart__`,
+      value: this.props.trip[attribute.id] || "",
     };
     switch (attribute.id) {
       case "startPort":
@@ -87,8 +88,8 @@ class StartTripEditor extends React.Component {
       case "endDate":
         const date = this.props.trip.startDate;
         const endDate = this.props.trip.endDate;
-        extraProps.choices = this.getDayChoices(date.clone());
         extraProps.sortResultsBy = (a, b) => parseInt(a.value) - parseInt(b.value);
+        extraProps.choices = this.getDayChoices(date.clone());
         const days = moment.duration(endDate.diff(date)).asDays();
         extraProps.value = days.toString();
         extraProps.maxResults = 15;

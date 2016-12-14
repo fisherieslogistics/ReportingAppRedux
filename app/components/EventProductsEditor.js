@@ -40,13 +40,16 @@ class EventProductsEditor extends React.Component{
   getEditorProps(attribute, product, index) {
 
     const extraProps = {};
-
+    const inputId = `${attribute.id}__edit_product_${index}_${this.props.fishingEvent.objectId}`;
     if(attribute.id === "code"){
       const usedChoices = this.props.fishingEvent.products.map(pt => pt.code);
-      extraProps.choices = speciesCodesDesc.filter(
-        c => (c.value === product.code) || (usedChoices.indexOf(c.value) === -1));
+      const choices = speciesCodesDesc.filter(
+        c => (c.value === product.code) ||
+             (usedChoices.indexOf(c.value) === -1));
+      extraProps.choices = choices;
       extraProps.autoCapitalize = "characters";
       extraProps.maxLength = 3;
+
       if(usedChoices.indexOf(product.code) !== -1){
         extraProps.error = true;
       }
@@ -59,25 +62,12 @@ class EventProductsEditor extends React.Component{
       attribute,
       extraProps,
       index,
+      inputId,
     }
   }
 
-  validateCode(code) {
-    if(!code.length < 3) {
-      return true;
-    }
-    if(this.props.fishingEvent.products.find(p => p.code === code)){
-      AlertIOS.alert("Only one catch per species code is allowed.");
-      return false;
-    }
-    return true;
-  }
 
-  validateInput(name, value) {
-    switch (name) {
-      case "code":
-        return this.validateCode(value);
-    }
+  validateInput() {
     return true;
   }
 
@@ -87,7 +77,7 @@ class EventProductsEditor extends React.Component{
     }
     switch (name) {
       case "code":
-        if(!this.props.fishingEvent.products.find(p => p.code === value)){
+        if(!value || !this.props.fishingEvent.products.find(p => p.code === value)){
           this.props.dispatch(productActions.changeSpecies(
             this.props.fishingEvent.id, index, value, this.props.fishingEvent.objectId));
         }

@@ -9,8 +9,8 @@ import React from 'react';
 import {shadowStyles, colors, styles, masterDetailStyles } from '../../styles/styles';
 
 const MasterDetail = (props) => {
-  let masterFlex = 0.3;
-  let detailFlex = 0.7;
+  const masterFlex = 0.3;
+  const detailFlex = 0.7;
   return (
     <View style={[masterDetailStyles.wrapper]}>
       {props.modal}
@@ -27,7 +27,7 @@ const MasterDetail = (props) => {
           <View style={[shadowStyles.shadowDown, {borderLeftWidth: 1, borderLeftColor: colors.midGray}]}>
             {props.detailToolbar}
           </View>
-          <View style={[masterDetailStyles.col]}>
+          <View style={[masterDetailStyles.col, { padding: 5 }]}>
             {props.detail}
           </View>
         </View>

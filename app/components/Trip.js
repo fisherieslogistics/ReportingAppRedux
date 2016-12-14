@@ -5,13 +5,14 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  AlertIOS,
 } from 'react-native';
 
 import React from 'react';
 import MasterDetailView from './layout/MasterDetailView';
 import TripActions from '../actions/TripActions';
 
-import { darkColors as colors, listViewStyles, iconStyles, textStyles} from '../styles/styles';
+import { colors, listViewStyles, iconStyles, textStyles} from '../styles/styles';
 import Icon8 from '../components/common/Icon8';
 
 import {connect} from 'react-redux';
@@ -20,22 +21,33 @@ import { MasterToolbar, DetailToolbar } from './layout/Toolbar';
 import StartTripEditor from './StartTripEditor';
 import TotalsList from './TotalsList';
 import MasterListView from './common/MasterListView';
-import moment from 'moment';
-
-
-//let user add a new port if the port is not there
-//let the user know why they cant start or end trip
+import AuthActions from '../actions/AuthActions';
+import ProfileEditor from './ProfileEditor';
 
 const helper = new Helper();
 const tripActions = new TripActions();
+const authActions = new AuthActions();
 const masterListChoices = [
   'Trip',
   'Totals',
+  'Profile',
 ];
 const iconNames = {
   'Totals': 'fishing',
   'Trip': 'fishing-boat-filled',
+  'Profile': 'user',
 }
+const style = {
+  flex: 1,
+  flexDirection: 'column',
+  alignSelf: 'stretch',
+  alignItems: 'center',
+  padding: 4,
+};
+const textStyle = {
+  marginTop: 5,
+  fontSize: 20,
+};
 const myListViewStyles = StyleSheet.create(listViewStyles);
 
 class Trip extends React.Component {
@@ -45,13 +57,11 @@ class Trip extends React.Component {
       dsTotals: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
       dsPage: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 }),
       dsTrips: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 }),
+      dsDetail: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 }),
       pastTrips: {},
       selectedDetail: 'Trip',
       totals: [],
     };
-    if(!props.trip.startDate){
-      this.updateTrip("startDate", new moment());
-    }
     this.startTrip = this.startTrip.bind(this);
     this.endTrip = this.endTrip.bind(this);
     this.renderMasterListView = this.renderMasterListView.bind(this);
@@ -65,6 +75,7 @@ class Trip extends React.Component {
     this.tripsListOnPress = this.tripsListOnPress.bind(this);
     this.isTripSelected = this.isTripSelected.bind(this);
     this.getTripDescription = this.getTripDescription.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   updateTrip(attribute, value){
@@ -112,7 +123,7 @@ class Trip extends React.Component {
   }
 
   getMasterDescription(choice) {
-    const textColor = this.isDetailSelected(choice) ? colors.white : colors.black;
+    const textColor = this.isDetailSelected(choice) ? colors.white : '#000';
     const myStyles = [
       textStyles.font,
       { color: textColor, fontSize: 18 },
@@ -173,12 +184,21 @@ class Trip extends React.Component {
   }
 
   endTrip(){
-    this.props.dispatch(tripActions.endTrip(
-      this.props.trip,
-      this.props.fishingEvents,
-      this.props.vesselId,
-      "",
-    ));
+    AlertIOS.alert(
+      `Heading to ${this.props.trip.endPort}`,
+      `Arriving in about ${this.props.trip.endDate.fromNow(true)}`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'OK', onPress: () => {
+          this.props.dispatch(tripActions.endTrip(
+            this.props.trip,
+            this.props.fishingEvents,
+            this.props.vesselId,
+            "",
+          ));
+        }},
+      ]
+    );
   }
 
   renderMessage(){
@@ -203,21 +223,9 @@ class Trip extends React.Component {
       color = colors.orange;
       messages.push("Select ports and ETA before starting trip");
     }
-
-    const style = {
-      flex: 1,
-      flexDirection: 'column',
-      alignSelf: 'stretch',
-      alignItems: 'center',
-      padding: 4,
-    };
-    const textStyle = {
-      color,
-      marginTop: 5,
-      fontSize: 20,
-    };
+    const colorStyle = { color };
     const msgs = messages.map(m => (
-      <Text style={textStyle} key={m}>
+      <Text style={[textStyle, colorStyle]} key={m}>
         {m}
       </Text>
     ));
@@ -230,17 +238,16 @@ class Trip extends React.Component {
 
   getTripDescription(trip, sectionId, rowId) {
     const isSelected = this.isTripSelected(trip);
-    const textColor = isSelected ? colors.white : colors.black;
+    const textColor = isSelected ? colors.white : '#000';
     const myStyles = [
       textStyles.font,
-      { color: textColor, fontSize: 14 },
+      { color: textColor, fontSize: 16 },
     ];
     const viewStyles = { alignItems: 'flex-start', paddingTop: 0};
     const parts = [
-      `${trip.startPort}`,
-      `Sail ${trip.startDate.format('DD/MM/YY')}`,
-      `${trip.endPort}`,
-      `Unload ${trip.endDate.format('DD/MM/YY')}`,
+      `${trip.startPort || ""}`,
+      `${trip.startDate.format('DD-MM-YY')}`,
+      `${trip.endDate.format('DD-MM-YY')}`,
     ];
     return parts.map((p, i) => (
         <View
@@ -259,11 +266,15 @@ class Trip extends React.Component {
 
   renderTripsList(){
     const trips = [...this.props.history.pastTrips];
-    const currentTrip = helper.getHistoryTrip(
-      Object.assign(this.props.trip, { fishingEvents: this.props.fishingEvents }));
-    const allTrips = [currentTrip, ...trips.reverse()].filter(pt => !!pt.fishingEvents);
+    const allTrips = [...trips.reverse()].filter(pt => !!pt.fishingEvents);
+    if(this.props.tripStarted){
+      const currentTrip = helper.getHistoryTrip(
+        Object.assign(this.props.trip, { fishingEvents: this.props.fishingEvents }));
+      allTrips.unshift(currentTrip);
+    }
+    const f1 = {flex: 1, paddingBottom: 50}
     return (
-      <View style={{flex: 1}}>
+      <View style={f1}>
         <MasterListView
           getDescription={ this.getTripDescription }
           isSelected={ this.isTripSelected }
@@ -288,8 +299,8 @@ class Trip extends React.Component {
 
   renderMasterView(){
     const outerStyle = {padding: 0, margin: 0, flexDirection: 'column', flex: 1, alignItems: 'flex-start' };
-    const innerStyle = { padding: 0, margin: 0, flexDirection: 'row', flex: 0.2 };
-    const midStyle = { flex: 0.8, alignItems: 'flex-start' };
+    const innerStyle = { padding: 0, margin: 0, flexDirection: 'row', flex: 0.3 };
+    const midStyle = { flex: 0.7, alignItems: 'flex-start' };
 
     const masterListView = this.renderMasterListView();
     const lowerList = this.renderLowerList();
@@ -306,20 +317,23 @@ class Trip extends React.Component {
   }
 
   getMasterToolbar() {
-    let onPress = () => {};
-    let backgroundColor = colors.black;
-    let text = "Start Trip";
+    let onPress = null;
+    let backgroundColor = colors.backgrounds.dark;
+    let text = "Log out";
     let textColor = 'rgba(255, 255, 255, 0.2)';
-
+    onPress = this.logout;
     if(this.props.tripCanStart) {
       onPress = this.startTrip
       backgroundColor = colors.green;
       textColor = colors.white;
+      text = "Start Trip";
     }
     if(this.props.tripCanEnd) {
       onPress = this.endTrip
       backgroundColor = colors.red;
       textColor = colors.white;
+    }
+    if(this.props.trip.started){
       text = "End Trip";
     }
 
@@ -352,7 +366,14 @@ class Trip extends React.Component {
           />
         );
       case 'Totals':
-        return this.renderTotalsListView()
+        return this.renderTotalsListView();
+      case 'Profile':
+        return (
+          <ProfileEditor
+            user={this.props.user}
+            vessel={this.props.vessel}
+          />
+        );
       default:
     }
   }
@@ -370,6 +391,21 @@ class Trip extends React.Component {
       />
     );
   }
+
+  logout(){
+    AlertIOS.alert(
+      "Logout",
+      'Logout from FLL - You will need internet to log back in',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Logout', onPress: () => {
+            this.props.dispatch(authActions.logout());
+          }
+        }
+      ]
+    );
+  }
 }
 
 const select = (State) => {
@@ -380,6 +416,7 @@ const select = (State) => {
     fishingEvents: state.fishingEvents.events,
     height: state.view.height,
     user: state.me.user,
+    vessel: state.me.vessel,
     trip: state.trip,
     ports: state.me.ports,
     tripStarted: state.trip.started,

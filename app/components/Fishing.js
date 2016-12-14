@@ -61,6 +61,7 @@ const toBind = [
   'addProduct',
   'showCatches',
   'showDetail',
+  'toggleOptionalFields',
 ];
 
 class Fishing extends React.Component{
@@ -101,9 +102,13 @@ class Fishing extends React.Component{
   startEvent(position){
     if(this.props.enableStartEvent){
       this.props.dispatch(fishingEventActions.startFishingEvent(position));
-      setTimeout(() => this.props.dispatch(
-        fishingEventActions.setViewingFishingEvent(
-          this.props.fishingEvents.length)), 300);
+      setTimeout(() => {
+        this.props.dispatch(fishingEventActions.setViewingFishingEvent(
+          this.props.fishingEvents.length));
+        this.setState({
+          selectedDetail: "detail",
+        });
+      }, 100);
     }
   }
 
@@ -116,6 +121,9 @@ class Fishing extends React.Component{
         {text: 'Yes', onPress: () => {
           this.props.dispatch(fishingEventActions.endFishingEvent(this.props.lastEvent.id, position));
           this.props.dispatch(fishingEventActions.setViewingFishingEvent(this.props.fishingEvents.length));
+          this.setState({
+            selectedDetail: "detail",
+          });
         }}
       ]
     );
@@ -227,8 +235,18 @@ class Fishing extends React.Component{
     const buttonWrapper = { alignItems: 'stretch', flex: 1};
     const activeColor = colors.blue;
     const catchesDisabled = !this.props.viewingEvent.datetimeAtEnd;
-    const detailError = !this.props.viewingEvent.eventValid;
-    const productsError = !this.props.viewingEvent.productsValid;
+    const detailError = (!this.props.viewingEvent.eventValid && this.props.viewingEvent.datetimeAtEnd);
+    const productsError = !catchesDisabled && !this.props.viewingEvent.productsValid;
+    const catches = (
+      <LongButton
+        bgColor={ activeColor }
+        text={ "Catches" }
+        active={ this.state.selectedDetail === 'catches' }
+        disabled={ catchesDisabled }
+        onPress={ this.showCatches }
+        error={ productsError }
+      />
+    );
     return (
       <View style={[styles.row, styles.fill]}>
         <View style={[ buttonWrapper ]}>
@@ -242,14 +260,7 @@ class Fishing extends React.Component{
           />
          </View>
          <View style={[ buttonWrapper ] }>
-           <LongButton
-             bgColor={ activeColor }
-             text={ "Catches" }
-             active={ this.state.selectedDetail === 'catches' }
-             disabled={ catchesDisabled }
-             onPress={ this.showCatches }
-             error={ productsError }
-           />
+          { catchesDisabled ? null : catches }
         </View>
       </View>
     );
@@ -265,16 +276,19 @@ class Fishing extends React.Component{
     }
     const haveDeleted = !!this.props.deletedProducts.length;
     const canUndo = (catchesOpen && haveDeleted);
+    const undo = canUndo ? (
+      <LongButton
+        bgColor={ colors.pink }
+        text={ "Undo" }
+        onPress={ this.undoDeleteProduct }
+        disabled={ !canUndo }
+        active={ canUndo }
+      />
+    ) : null;
     return (
       <View style={[styles.row, styles.fill]}>
         <View style={[ buttonWrapper ]}>
-          <LongButton
-            bgColor={ colors.pink }
-            text={ "Undo" }
-            onPress={ this.undoDeleteProduct }
-            disabled={ !canUndo }
-            active={ canUndo }
-          />
+          { undo }
        </View>
        <View style={[ buttonWrapper ] }>
          <LongButton
@@ -290,6 +304,9 @@ class Fishing extends React.Component{
   }
 
   renderDetailView(){
+    if(!this.props.tripStarted){
+      return this.renderMessage("Trip hasn't started");
+    }
     if(!this.props.viewingEvent){
       return this.renderMessage("Welcome Back Skip");
     }
@@ -363,11 +380,17 @@ class Fishing extends React.Component{
 
   getMasterToolbar(){
     const onPress = this.props.enableStartEvent ? this.startFishingEvent : this.endFishingEvent;
-    const backgroundColor = this.props.enableStartEvent ? colors.green : colors.red;
-    const buttonStyle = { flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor, alignSelf: 'stretch'};
-    const innerWrap = {alignItems: 'center'};
-    const textStyle = { fontSize: 30, fontWeight: '500', color: '#fff', textAlign: 'center', marginTop: 20 };
+    let backgroundColor = this.props.enableStartEvent ? colors.green : colors.red;
     const text = this.props.enableStartEvent ? "Start Fishing" : "Haul";
+    let textColor = colors.white;
+    if(!this.props.tripStarted) {
+      backgroundColor = colors.backgrounds.dark;
+      textColor = colors.backgrounds.light;
+    }
+    const buttonStyle = { flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor, alignSelf: 'stretch'};
+    const innerWrap = { alignItems: 'center' };
+    const textStyle = { fontSize: 30, fontWeight: '500', color: textColor, textAlign: 'center', marginTop: 20 };
+
     const eventButton = (
       <TouchableOpacity onPress={onPress} style={ buttonStyle }>
          <View style={innerWrap}>
@@ -397,7 +420,7 @@ class Fishing extends React.Component{
   }
 }
 
-const select = (State, dispatch) => {
+const select = (State) => {
     const state = State.default;
     const props = {
       fishingEventType: "tcer",
@@ -419,7 +442,7 @@ const select = (State, dispatch) => {
     props.viewingEvent = fEvents[state.view.viewingEventId -1];
     props.fishingEvents = fEvents;
     props.deletedProducts = state.fishingEvents.deletedProducts[state.view.viewingEventId];
-    if(state.me.formType == 'tcer'){
+    if(state.me.formType === 'tcer'){
       props.enableStartEvent = state.trip.started && ((!lastEvent) || lastEvent.datetimeAtEnd);
       props.enableHaul = lastEvent && (!lastEvent.datetimeAtEnd);
     }else{
