@@ -91,11 +91,6 @@ class AutoSuggestBar extends React.Component {
     }
 
     initSuggestions(choices){
-      /*const ratingOrNegative = (a) => {
-        const iA = favourites.indexOf(a);
-        return iA === -1 ? iA : (favourites.length - iA);
-      }*/
-      //choices = choices.sort((a, b) => ratingOrNegative(b.value) - ratingOrNegative(a.value));
       const { valueStore, descriptionStore } = this.setup(choices);
       this.setState({
         valueStore,
@@ -133,7 +128,6 @@ class AutoSuggestBar extends React.Component {
       if(this.props.sortResultsBy){
         results.sort(this.props.sortBy);
       }
-
       return results;
     }
 
