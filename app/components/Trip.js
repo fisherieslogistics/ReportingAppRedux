@@ -45,7 +45,7 @@ const style = {
   padding: 4,
 };
 const textStyle = {
-  marginTop: 5,
+  marginTop: 2,
   fontSize: 20,
 };
 const myListViewStyles = StyleSheet.create(listViewStyles);
@@ -201,30 +201,28 @@ class Trip extends React.Component {
     );
   }
 
-  renderMessage(){
-    const messages = [];
-    let color = colors.green;
-
-    if(this.props.tripCanStart){
-      messages.push("Ready to go press Start Trip");
-    } else if (this.props.tripCanEnd) {
-      messages.push("Press End Trip when heading in");
-    } else if (this.props.trip.started){
-
-      color = colors.orange;
-
-      messages.push("Trip Incomplete");
-      if(this.props.incompleteShots) {
-        messages.push(`${this.props.incompleteShots} Shots to complete & sign`);
-      } else if(!this.props.allSigned) {
-        messages.push("Please sign all Forms");
-      }
-    } else {
-      color = colors.orange;
-      messages.push("Select ports and ETA before starting trip");
+  getMessages() {
+    const { tripCanStart, tripCanEnd, incompleteShots, allSigned } = this.props;
+    if (tripCanStart) {
+     return ["Ready to go press Start Trip"];
     }
+    if (tripCanEnd) {
+      return ["Press End Trip your heading in"];
+    }
+    if(allSigned){
+      return ["Select ports and ETA before starting trip"];
+    }
+    return [
+      "Trip Incomplete",
+      `${incompleteShots} Shots to complete & sign`,
+    ];
+  }
+
+  renderMessage(){
+    const color = (!this.props.incompleteShots &&
+                    this.props.allSigned) ? colors.green : colors.orange;
     const colorStyle = { color };
-    const msgs = messages.map(m => (
+    const msgs = this.getMessages().map(m => (
       <Text style={[textStyle, colorStyle]} key={m}>
         {m}
       </Text>
@@ -241,13 +239,13 @@ class Trip extends React.Component {
     const textColor = isSelected ? colors.white : '#000';
     const myStyles = [
       textStyles.font,
-      { color: textColor, fontSize: 16 },
+      { color: textColor, fontSize: 14, fontWeight: '500' },
     ];
-    const viewStyles = { alignItems: 'flex-start', paddingTop: 0};
+    const viewStyles = { alignItems: 'center', padding: 0};
     const parts = [
       `${trip.startPort || ""}`,
-      `${trip.startDate.format('DD-MM-YY')}`,
-      `${trip.endDate.format('DD-MM-YY')}`,
+      `${trip.startDate.format('ll')}`,
+      `${trip.endDate.format('ll')}`,
     ];
     return parts.map((p, i) => (
         <View
@@ -272,7 +270,7 @@ class Trip extends React.Component {
         Object.assign(this.props.trip, { fishingEvents: this.props.fishingEvents }));
       allTrips.unshift(currentTrip);
     }
-    const f1 = {flex: 1, paddingBottom: 50}
+    const f1 = { flex: 1 }
     return (
       <View style={f1}>
         <MasterListView
@@ -299,8 +297,8 @@ class Trip extends React.Component {
 
   renderMasterView(){
     const outerStyle = {padding: 0, margin: 0, flexDirection: 'column', flex: 1, alignItems: 'flex-start' };
-    const innerStyle = { padding: 0, margin: 0, flexDirection: 'row', flex: 0.3 };
-    const midStyle = { flex: 0.7, alignItems: 'flex-start' };
+    const innerStyle = { padding: 0, margin: 0, flexDirection: 'row', height: 150 };
+    const midStyle = { alignItems: 'flex-start', marginTop: 25 };
 
     const masterListView = this.renderMasterListView();
     const lowerList = this.renderLowerList();
