@@ -5,29 +5,24 @@ import {
   ScrollView,
   StyleSheet,
   ListView,
-  AlertIOS,
   Image,
   TouchableOpacity
 } from 'react-native';
 
 import React from 'react';
-import moment from 'moment';
-import Helper from '../utils/Helper';
 import FormsList from './FormsList';
 import MasterDetailView from './layout/MasterDetailView';
 import ModelUtils from '../utils/ModelUtils';
 import SignatureView from './SignatureView';
-import AsyncStorage from 'AsyncStorage';
 import FormActions from '../actions/FormActions';
 const formActions = new FormActions();
 
 import {connect} from 'react-redux';
-import {createForms} from '../utils/FormUtils';
 import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
-import {colors, listViewStyles, textStyles, shadowStyles} from '../styles/styles';
-import {getFormModelByTypeCode, renderForm} from '../utils/FormUtils';
+import {colors, textStyles, shadowStyles} from '../styles/styles';
+import {getFormModelByTypeCode, renderForm, createForms } from '../utils/FormUtils';
 
-const helper = new Helper();
+let styles = null;
 
 class FormView extends React.Component {
   constructor(props){ //icon ans sign form fix it
@@ -75,13 +70,13 @@ class FormView extends React.Component {
     this.setState({
       showSignature: false,
     });
-    //TODO something better when using events
     setTimeout(() => {
       const forms = createForms(this.props.fishingEvents, this.props.formType);
       this.setState({
         forms
       })
-      this.props.dispatch(formActions.setViewingForm(null));
+      this.props.dispatch(formActions.setViewingForm(forms.find(
+        f => f.id === this.props.viewingForm.id)));
     }, 300);
  }
 
@@ -120,6 +115,7 @@ class FormView extends React.Component {
     try {
       val = resolve(obj);
     } catch (e) {
+      console.log(e);
     }
     return val;
   }
@@ -183,15 +179,23 @@ class FormView extends React.Component {
     if(!(this.props.viewingForm && this.props.viewingForm.fishingEvents[0].signature)){
       return null;
     }
-    const signStyle = this.props.formType == 'tcer' ? styles.signImageTCER : styles.signImageLCER;
-    const dateStyle = this.props.formType == 'tcer' ? styles.dateSignedTCER : styles.dateSignedLCER;
+    const signStyle = styles.signImageTCER;
+    const dateStyle = styles.dateSignedTCER;
     return [
-      (<Image source={{uri: "data:image/png;base64," + this.props.viewingForm.fishingEvents[0].signature.toString()}}
-              style={[signStyle, {width: 120, height: 40}]}
-              key={"SignatureImage"} />),
-      (<View style={[dateStyle]} key={"DateSignedText"}>
-         <Text style={[{color: colors.red}]}>{this.props.viewingForm.fishingEvents[0].dateSigned.format("DD  MM   YYYY")}</Text>
-       </View>)
+      (
+        <Image
+          source={{uri: "data:image/png;base64," + this.props.viewingForm.fishingEvents[0].signature.toString()}}
+          style={[signStyle, {width: 120, height: 35}]}
+          key={"SignatureImage"}
+        />
+      ),
+      (
+        <View style={[dateStyle]} key={"DateSignedText"}>
+          <Text style={[{color: colors.red}]}>
+            {this.props.viewingForm.fishingEvents[0].dateSigned.format("DD       MM          YY")}
+          </Text>
+        </View>
+      )
     ];
   }
 
@@ -292,7 +296,7 @@ class FormView extends React.Component {
   }
 }
 
-const select = (State, dispatch) => {
+const select = (State) => {
     const state = State.default;
     return {
       user: state.me.user,
@@ -305,7 +309,7 @@ const select = (State, dispatch) => {
     };
 }
 
-const styles = StyleSheet.create({
+styles = StyleSheet.create({
   wrapper:{
    backgroundColor: colors.backgrounds.veryDark,
    margin: 5,
@@ -394,7 +398,7 @@ const styles = StyleSheet.create({
   },
   signImageTCER: {
     position: 'absolute',
-    top: 410,
+    top: 420,
     left: 550,
     height: 40,
     width: 120,
