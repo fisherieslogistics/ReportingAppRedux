@@ -10,7 +10,6 @@ import LocationEditor from '../LocationEditor';
 import AutoSuggestPicker from './AutoSuggestPicker';
 import EditOnBlurInput from './EditOnBlurInput';
 
-//const AttributeEditor = (attribute, value, onChange, extraProps = {}, inputId, onEnterPress }, editingCallback, focusedAttributeId, index) => {
 const dateStyles = {
   dateText: Object.assign(inputStyles.dateText, { left: 45 }),
   dateInput: inputStyles.dateInput,
@@ -123,7 +122,7 @@ class AttributeEditor extends Component {
             inputId={ inputId }
             isFocused={ isFocused }
             onEnterPress={ onEnterPress }
-            extraProps={ extraProps }
+            { ...extraProps }
           />
         );
     }
