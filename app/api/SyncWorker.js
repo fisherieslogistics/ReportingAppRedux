@@ -1,15 +1,12 @@
 'use strict';
-import Queries, {
+import {
   upsertTrip,
   upsertFishingEvent,
 } from './Queries';
 
-import Helper from '../utils/Helper';
 import moment from 'moment';
 import ApiActions from '../actions/ApiActions.js';
 const apiActions = new ApiActions();
-const helper = new Helper();
-const TIMEOUT = 6000;
 
 class SyncWorker {
 
@@ -125,12 +122,11 @@ class SyncWorker {
     return this.performMutation(q.query, q.variables, (res) => { this.dispatchMutateFishingEvent(fishingEvent, res); });
   }
 
-  performMutation(query, variables, success, dispatch){
-    return new Promise((resolve, reject) => {
+  performMutation(query, variables, success){
+    return new Promise((resolve) => {
       this.api.mutate(query, variables, this.getState().default.auth)
         .then((res) => resolve(success(res)))
         .catch((err) => {
-          console.warn("performed with error", JSON.stringify(err), err, query, "Chicken");
           this.dispatch({
             type: "syncError",
             time: new moment(),
