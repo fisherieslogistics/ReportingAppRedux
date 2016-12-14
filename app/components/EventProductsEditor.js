@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  AlertIOS,
 } from 'react-native';
 
 import React from 'react';
@@ -43,10 +42,7 @@ class EventProductsEditor extends React.Component{
     const inputId = `${attribute.id}__edit_product_${index}_${this.props.fishingEvent.objectId}`;
     if(attribute.id === "code"){
       const usedChoices = this.props.fishingEvent.products.map(pt => pt.code);
-      const choices = speciesCodesDesc.filter(
-        c => (c.value === product.code) ||
-             (usedChoices.indexOf(c.value) === -1));
-      extraProps.choices = choices;
+      extraProps.choices = speciesCodesDesc;
       extraProps.autoCapitalize = "characters";
       extraProps.maxLength = 3;
       if(usedChoices.indexOf(product.code) !== -1){
