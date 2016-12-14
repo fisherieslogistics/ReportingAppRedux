@@ -6,7 +6,7 @@ const initialUser = ModelUtils.blankModel(UserModel);
 const initialVessel = ModelUtils.blankModel(VesselModel);
 
 const initialState = {
-  ports: ports,
+  ports,
   vessel: initialVessel,
   containers: [
     {value: 'Tubs # 16', description: "t", weight: 26},
@@ -22,14 +22,9 @@ const initialState = {
   vessels: [],
   user: initialUser,
   formType: 'tcer',
-  gpsUrl: null,
-  gpsPort: null,
-  gpsBaud: null,
-  applyGpsSettings: null,
-  positionType: 'native',
-  catchDetailsExpanded: true,
   autoSuggestFavourites: {
-  }
+    species: [],
+  },
 }
 
 export default (state = initialState, action) => {
@@ -43,37 +38,32 @@ export default (state = initialState, action) => {
       }
       return update(state, {user: action.user});
     case 'editUser':
-      let user = update(state.user, action.change);
-      return update(state,  { user: user });
+      const user = update(state.user, action.change);
+      return update(state,  { user });
     case 'devMode':
       return initialState;
     case 'setUser':
+      console.log(user);
       return update(state,  { user: action.user, containers: action.user.bins || initialState.containers });
     case 'setVessel':
       return update(state, { vessel: action.vessel });
     case 'setFormType':
       return update(state, { formType: action.formType });
     case 'setVessels':
-      return update(state, { vessels: action.vessels });
+      return update(state, { vessels: action.vessels, vessel: action.vessels[0] });
     case 'addPort':
       state.ports[action.region].push(action.port);
       return state;
-    case 'addFavourite':
-      switch (action.favouriteName) {
-        case "targetSpecies":
-        case "species":
-          let faves = update({}, state.autoSuggestFavourites);
-          let change = faves[action.favouriteName] || {};
-          change[action.value] = (change[action.value] || 0) + 1;
-          faves[action.favouriteName] = change;
-          return update(state, {autoSuggestFavourites: faves});
-        default:
+    case 'changeSpecies':
+      if(action.value !== 'OTH' && action.value !== 'Other Species Weight'){
+        const faves = state.autoSuggestFavourites.species.filter(s => s !== action.value);
+        faves.unshift(action.value);
+        state.autoSuggestFavourites.species = faves;
       }
+      return state;
     default:
       return state;
   }
 };
 
-const update = (obj, change) => {
-  return Object.assign({}, obj, change);
-}
+const update = (obj, change) => Object.assign({}, obj, change)
