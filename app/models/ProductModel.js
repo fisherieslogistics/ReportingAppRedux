@@ -3,7 +3,7 @@ const valid = Validator.valid;
 
 const model = [
   {
-    label: 'Species', id: 'code', valid: valid.targetProduct, defaultValue: "", type:"picker",
+    label: 'Species', id: 'code', valid: valid.targetProduct, defaultValue: "", type:"speciesCodePicker",
     display: { type: 'combined', siblings: ['weight'] }
   },
   {
