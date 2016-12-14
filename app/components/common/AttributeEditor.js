@@ -8,6 +8,7 @@ import moment from 'moment';
 import { inputStyles } from '../../styles/styles';
 import LocationEditor from '../LocationEditor';
 import AutoSuggestPicker from './AutoSuggestPicker';
+import SpeciesCodePicker from '../SpeciesCodePicker';
 import EditOnBlurInput from './EditOnBlurInput';
 
 const dateStyles = {
@@ -73,6 +74,20 @@ class AttributeEditor extends Component {
             cancelBtnText="Cancel"
             customStyles={ dateStyles }
             onDateChange={ this.onDateChange }
+            { ...extraProps }
+          />
+        );
+      case "speciesCodePicker":
+        return (
+          <SpeciesCodePicker
+            onChange={ this.onChange }
+            value={ value}
+            name={ attribute.id }
+            inputId={ inputId }
+            handleBlur={ handleBlur }
+            handleFocus={ handleFocus }
+            isFocused={ isFocused }
+            onEnterPress={ onEnterPress }
             { ...extraProps }
           />
         );
