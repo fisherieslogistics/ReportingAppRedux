@@ -3,7 +3,7 @@ import{
 } from 'react-native';
 
 
-import React from 'react';
+import React, { Component } from 'react';
 import reactMixin from 'react-mixin';
 import {connect} from 'react-redux';
 /* eslint-disable */
@@ -15,7 +15,7 @@ import FocusOnDemandTextInput from './FocusOnDemandTextInput';
 
 const viewActions = new ViewActions();
 
-class AutoSuggestPicker extends React.Component {
+class AutoSuggestPicker extends Component {
 
   constructor(props){
     super(props);
@@ -27,6 +27,7 @@ class AutoSuggestPicker extends React.Component {
     this.onBlur = this.onBlur.bind(this);
     this.onChangeText = this.onChangeText.bind(this);
     this.onKeyPress = this.onKeyPress.bind(this);
+    this.initChoices = this.initChoices.bind(this);
   }
 
   componentWillReceiveProps(nextProps){
@@ -62,18 +63,19 @@ class AutoSuggestPicker extends React.Component {
   }
 
   initChoices(){
-    this.props.dispatch(viewActions.initAutoSuggestBarChoices(this.props.choices,
-                                                              this.props.name,
-                                                              this.props.showAll ? "" : this.props.value,
-                                                              this.props.inputId,
-                                                              ));
-
+    this.props.dispatch(
+      viewActions.initAutoSuggestBarChoices(
+        this.props.choices,
+        this.props.showAll ? "" : this.props.value,
+        this.props.inputId,
+    ));
   }
 
-  onFocus(){
-    this.initChoices();
-    this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
+  onFocus() {
+    this.props.onChange('');
     this.props.handleFocus(this.props.inputId);
+    this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
+    setTimeout(this.initChoices);
   }
 
   onBlur(event, eventValue){
@@ -122,11 +124,13 @@ class AutoSuggestPicker extends React.Component {
 
 reactMixin(AutoSuggestPicker.prototype, Subscribable.Mixin);
 
-const select = (State, dispatch) => {
+const select = (State) => {
   const state = State.default;
   return {
     eventEmitter: state.uiEvents.eventEmitter,
   };
 }
+
+export { AutoSuggestPicker }
 
 export default connect(select)(AutoSuggestPicker);
