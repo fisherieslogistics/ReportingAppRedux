@@ -23,9 +23,11 @@ const initialState = {
   user: initialUser,
   formType: 'tcer',
   autoSuggestFavourites: {
-    code: [],
+    speciesCode: [],
   },
 }
+
+const update = (obj, change) => Object.assign({}, obj, change)
 
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -43,7 +45,6 @@ export default (state = initialState, action) => {
     case 'devMode':
       return initialState;
     case 'setUser':
-      console.log(user);
       return update(state,  { user: action.user, containers: action.user.bins || initialState.containers });
     case 'setVessel':
       return update(state, { vessel: action.vessel });
@@ -58,19 +59,18 @@ export default (state = initialState, action) => {
       if(action.value.length !== 3 || action.value === 'OTH'){
         return state;
       }
-      if(!state.autoSuggestFavourites.code){
-        state.autoSuggestFavourites.code = [];
+      if(!state.autoSuggestFavourites.speciesCode){
+        state.autoSuggestFavourites.speciesCode = [];
       }
-      const faves = state.autoSuggestFavourites.code.filter(s => s !== action.value);
+      const faves = state.autoSuggestFavourites.speciesCode.filter(s => s !== action.value);
       faves.unshift(action.value);
-      if(faves.length > 12){
+      if(faves.length >= 10){
         faves.pop();
       }
-      state.autoSuggestFavourites.code = faves;
+      state.autoSuggestFavourites.speciesCode = faves;
       state.autoSuggestFavourites.targetSpecies = faves;
+      return state;
     default:
       return state;
   }
 };
-
-const update = (obj, change) => Object.assign({}, obj, change)
