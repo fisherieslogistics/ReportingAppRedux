@@ -23,7 +23,6 @@ const apiActions = new ApiActions();
 const gpsControlActions = new GPSControlActions();
 const viewActions = new ViewActions();
 const formActions = new FormActions();
-const MAX_AUTOSUGGEST_RESULTS = 12;
 
 const styles = {
   wrapper: {
@@ -187,15 +186,8 @@ class ReportingApp extends Component {
           {this.renderTabs()}
         </TabBarIOS>
         <AutoSuggestBar
-          eventEmitter={ this.props.eventEmitter }
-          visible={ this.props.autoSuggestBar.uivisible }
-          favourites={ this.props.autoSuggestFavourites }
-          choices={ this.props.autoSuggestBar.choices || [] }
-          text={ this.props.autoSuggestBar.text || "" }
-          name={ this.props.autoSuggestBar.name}
-          maxResults={ MAX_AUTOSUGGEST_RESULTS }
-          inputId={ this.props.autoSuggestBar.inputId }
           width={ this.props.width }
+          height={ this.props.height }
         />
       </View>
     );
@@ -207,9 +199,6 @@ const select = (State) => {
   return {
     trip: state.trip,
     auth: state.auth,
-    autoSuggestFavourites: state.me.autoSuggestFavourites,
-    autoSuggestBar: state.view.autoSuggestBar,
-    eventEmitter: state.uiEvents.eventEmitter,
     orientation: state.view.orientation,
     height: state.view.height,
     width: state.view.width,
@@ -218,10 +207,6 @@ const select = (State) => {
     fishingEvents: state.fishingEvents.events,
     viewingForm: state.view.viewingForm,
     formType: state.me.formType,
-    positionType: state.me.positionType,
-    gpsUrl: state.me.gpsUrl,
-    gpsPort: state.me.gpsPort,
-    gpsBaud: state.me.gpsBaud,
     ApiEndpoint: state.api.ApiEndpoint,
     AuthEndpoint: state.api.AuthEndpoint,
   };
