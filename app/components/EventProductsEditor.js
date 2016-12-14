@@ -49,7 +49,6 @@ class EventProductsEditor extends React.Component{
       extraProps.choices = choices;
       extraProps.autoCapitalize = "characters";
       extraProps.maxLength = 3;
-
       if(usedChoices.indexOf(product.code) !== -1){
         extraProps.error = true;
       }

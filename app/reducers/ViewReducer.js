@@ -13,8 +13,7 @@ let initialState = {
   height: 1024,
   autoSuggestBar: {
     choices: [],
-    favourites: [],
-    taken: [],
+    name: "",
     text: "",
     uivisible: false,
     inputId: null

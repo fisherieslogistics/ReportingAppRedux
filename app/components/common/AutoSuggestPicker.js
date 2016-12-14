@@ -63,7 +63,7 @@ class AutoSuggestPicker extends React.Component {
 
   initChoices(){
     this.props.dispatch(viewActions.initAutoSuggestBarChoices(this.props.choices,
-                                                              [],
+                                                              this.props.name,
                                                               this.props.showAll ? "" : this.props.value,
                                                               this.props.inputId,
                                                               ));
@@ -126,7 +126,6 @@ const select = (State, dispatch) => {
   const state = State.default;
   return {
     eventEmitter: state.uiEvents.eventEmitter,
-    favourites: state.me.autoSuggestFavourites
   };
 }
 

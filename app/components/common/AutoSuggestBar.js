@@ -128,10 +128,15 @@ class AutoSuggestBar extends React.Component {
       if(this.props.sortResultsBy){
         results.sort(this.props.sortBy);
       }
+      if(!term || !term.length){
+        const favs = this.props.favourites[this.props.name] || [];
+        return favs.map(f => this.props.choices.find(r => r.value === f)).concat(results);
+      }
       return results;
     }
 
     searchChoices(term){
+
       this.setState({
         results: this.getSearchResults(term),
       });

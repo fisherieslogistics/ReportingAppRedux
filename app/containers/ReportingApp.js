@@ -189,9 +189,10 @@ class ReportingApp extends Component {
         <AutoSuggestBar
           eventEmitter={ this.props.eventEmitter }
           visible={ this.props.autoSuggestBar.uivisible }
-          favourites={ this.props.autoSuggestBar.favourites }
+          favourites={ this.props.autoSuggestFavourites }
           choices={ this.props.autoSuggestBar.choices || [] }
           text={ this.props.autoSuggestBar.text || "" }
+          name={ this.props.autoSuggestBar.name}
           maxResults={ MAX_AUTOSUGGEST_RESULTS }
           inputId={ this.props.autoSuggestBar.inputId }
           width={ this.props.width }
@@ -206,6 +207,7 @@ const select = (State) => {
   return {
     trip: state.trip,
     auth: state.auth,
+    autoSuggestFavourites: state.me.autoSuggestFavourites,
     autoSuggestBar: state.view.autoSuggestBar,
     eventEmitter: state.uiEvents.eventEmitter,
     orientation: state.view.orientation,

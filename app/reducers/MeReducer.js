@@ -23,7 +23,7 @@ const initialState = {
   user: initialUser,
   formType: 'tcer',
   autoSuggestFavourites: {
-    species: [],
+    code: [],
   },
 }
 
@@ -55,12 +55,19 @@ export default (state = initialState, action) => {
       state.ports[action.region].push(action.port);
       return state;
     case 'changeSpecies':
-      if(action.value !== 'OTH' && action.value !== 'Other Species Weight'){
-        const faves = state.autoSuggestFavourites.species.filter(s => s !== action.value);
-        faves.unshift(action.value);
-        state.autoSuggestFavourites.species = faves;
+      if(action.value.length !== 3 || action.value === 'OTH'){
+        return state;
       }
-      return state;
+      if(!state.autoSuggestFavourites.code){
+        state.autoSuggestFavourites.code = [];
+      }
+      const faves = state.autoSuggestFavourites.code.filter(s => s !== action.value);
+      faves.unshift(action.value);
+      if(faves.length > 12){
+        faves.pop();
+      }
+      state.autoSuggestFavourites.code = faves;
+      state.autoSuggestFavourites.targetSpecies = faves;
     default:
       return state;
   }
