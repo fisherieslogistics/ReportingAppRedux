@@ -4,11 +4,9 @@ import PositionProvider from '../providers/NativeLocation';
 const pos = new PositionProvider();
 pos.startUpdatingLocation();
 
-let initialState = {
+const initialState = {
   eventEmitter: new EventEmitter(),
   uipositionProvider: pos,
 }
 
-export default (state, action) => {
-  return initialState;
-}
+export default (state) => initialState
