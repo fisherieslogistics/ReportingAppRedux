@@ -22,9 +22,19 @@ export default {
   master: {
     flexDirection: 'column',
     alignSelf: 'stretch',
+    flex: 0.3,
   },
   detail:{
     flex: 0.7,
     flexDirection: 'column',
+  },
+  detailInner: {
+    padding: 5,
+  },
+  bigButton: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    alignSelf: 'stretch',
   },
 };

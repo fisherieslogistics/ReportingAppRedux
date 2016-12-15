@@ -11,7 +11,7 @@ import {
 
 import React from 'react';
 import FormsList from './FormsList';
-import MasterDetailView from './layout/MasterDetailView';
+import { MasterDetail } from './layout/MasterDetailView';
 import ModelUtils from '../utils/ModelUtils';
 import SignatureView from './SignatureView';
 import FormActions from '../actions/FormActions';
@@ -286,7 +286,7 @@ class FormView extends React.Component {
     );
 
     return (
-      <MasterDetailView
+      <MasterDetail 
         master={master}
         detail={detailView}
         detailToolbar={detailToolbar}
