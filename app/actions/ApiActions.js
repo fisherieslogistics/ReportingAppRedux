@@ -10,23 +10,23 @@ const authActions = new AuthActions();
 const helper = new Helper();
 let client;
 
+const flatten = list => list.reduce(
+    (a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []
+);
+
 const parseUser = (viewer) => {
-  const dummy = {
-    firstName: 'First name',
-    lastName: 'Last Name',
-    permitHolderName: 'Permit Holder Name',
-    permitHolderNumber: 'Permit Holder Number',
-    email: 'test@test.com',
-    bins: [],
-  };
-  return viewer ? {
+  const customers = flatten(viewer.organisation.customerGroups.edges.map(e => flatten(e.node.customers.edges.map(cu => cu.node))));
+  const contacts = customers.map(c => Object.assign({}, c, { messages: c.messageThread.messages.edges.map(m => m.node) }));
+  return {
     firstName: viewer.firstName,
     lastName: viewer.lastName,
     permitHolderName: viewer.formData.permit_holder_name,
     permitHolderNumber: viewer.formData.permit_holder_number,
     email: viewer.email,
     bins: viewer.bins,
-  } : dummy;
+    organisationId: viewer.organisation.id,
+    contacts,
+  };
 }
 
 class ApiActions {
@@ -36,10 +36,18 @@ class ApiActions {
   }
 
   checkMe(auth, dispatch){
+    if(!auth.loggedIn){
+      return;
+    }
     client.query(queries.getMe, auth).then((res) => {
       if(res && res.data){
-        dispatch(userActions.setUser(parseUser(res.data.viewer)));
+        const user = parseUser(res.data.viewer);
+        dispatch(userActions.setUser(user));
+      } else {
+        throw new Error(res);
       }
+    }).catch((e) => {
+      console.log(e);
     });
   }
 
