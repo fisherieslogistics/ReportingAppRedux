@@ -83,14 +83,14 @@ class MasterDetailView extends React.Component {
     this.renderMasterToolbar = this.renderMasterToolbar.bind(this);
     this.renderDetailToolbar = this.renderDetailToolbar.bind(this);
     this.dsDetail = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2 });
-    this.masterChoices = ['a', 'b', 'c'];
     this.state = {
       selectedDetail: 'a',
       icons: {
         a: 'user',
         b: 'fishing',
         c: 'fishing-boat-filled',
-      }
+      },
+      masterChoices: ['a', 'b', 'c']
     }
   }
 
@@ -147,7 +147,7 @@ class MasterDetailView extends React.Component {
         getDescription={ this.getMasterDescription }
         isSelected={ this.isDetailSelected }
         onPress={ this.masterListOnPress }
-        dataSource={ this.dsDetail.cloneWithRows(this.masterChoices) }
+        dataSource={ this.dsDetail.cloneWithRows(this.state.masterChoices) }
         getIcon={ this.renderMasterIcon }
       />
     );
@@ -164,7 +164,7 @@ class MasterDetailView extends React.Component {
     );
   }
 
-  onMasterButtonPress(){
+  onMasterButtonPress() {
 
   }
 

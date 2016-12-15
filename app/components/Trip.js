@@ -64,8 +64,8 @@ class Trip extends MasterDetailView {
       selectedDetail: 'Trip',
       totals: [],
       icons: iconNames,
+      masterChoices,
     };
-    this.masterChoices = masterChoices;
     this.startTrip = this.startTrip.bind(this);
     this.endTrip = this.endTrip.bind(this);
     this.renderTotalsListView = this.renderTotalsListView.bind(this);

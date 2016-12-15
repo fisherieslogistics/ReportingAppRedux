@@ -17,6 +17,7 @@ const glyphMap = {
   'sign-up': 61709,
   'upload-to-cloud': 61710,
   'user': 61711,
+  'user-filled': 61712,
 };
 const Icon8 = createIconSet(glyphMap, 'Reporting-App', 'Reporting-App.ttf');
 export{ glyphMap };
