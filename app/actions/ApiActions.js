@@ -11,12 +11,33 @@ const helper = new Helper();
 let client;
 
 const flatten = list => list.reduce(
-    (a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []
+  (a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []
 );
 
+const parseMessage = (msg) => ({
+  _id: msg.id,
+  text: msg.text,
+  createdAt: new Date(msg.created),
+  image: msg.image,
+  user: {
+    _id: msg.createdBy.id,
+    name: msg.createdBy.name,
+  }
+});
+
 const parseUser = (viewer) => {
-  const customers = flatten(viewer.organisation.customerGroups.edges.map(e => flatten(e.node.customers.edges.map(cu => cu.node))));
-  const contacts = customers.map(c => Object.assign({}, c, { messages: c.messageThread.messages.edges.map(m => m.node) }));
+  const customers = flatten(viewer.organisation.customerGroups.edges.map(
+    e => flatten(e.node.customers.edges.map(
+      cu => cu.node))));
+
+  const contacts = customers.map(
+    c => Object.assign({}, c,
+      {
+        messages: c.messageThread.messages.edges.map(m => parseMessage(m.node)),
+        messageThread_id: c.messageThread.id,
+      }
+    ));
+
   return {
     firstName: viewer.firstName,
     lastName: viewer.lastName,
@@ -35,17 +56,16 @@ class ApiActions {
     client = new Client(dispatch, ApiEndpoint, AuthEndpoint);
   }
 
-  checkMe(auth, dispatch){
-    if(!auth.loggedIn){
-      return;
+  checkMe(auth, dispatch) {
+    if(!auth.loggedIn) {
+      Promise.reject();
     }
-    client.query(queries.getMe, auth).then((res) => {
+    return client.query(queries.getMe, auth).then((res) => {
       if(res && res.data){
         const user = parseUser(res.data.viewer);
-        dispatch(userActions.setUser(user));
-      } else {
-        throw new Error(res);
+        return dispatch(userActions.setUser(user));
       }
+      throw new Error(res);
     }).catch((e) => {
       console.log(e);
     });
@@ -58,7 +78,7 @@ class ApiActions {
           return dispatch(authActions.loginError("please try that again "));
         }
         dispatch(authActions.setAuth(auth));
-        client.query(queries.getMe, helper.updateAuth({}, auth))
+        return client.query(queries.getMe, helper.updateAuth({}, auth))
           .then((res) => {
             if(res && res.data){
               const viewer = res.data.viewer;
@@ -73,10 +93,9 @@ class ApiActions {
     }
   }
 
-  mutate(mutation, variables, auth){
+  mutate(mutation, variables, auth) {
     return client.mutate(mutation, variables, auth);
   }
-
 }
 
 export default ApiActions;
