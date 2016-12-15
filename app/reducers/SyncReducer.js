@@ -8,6 +8,7 @@ const initialState = {
     pastTrips: [],
     geopoints:[],
     ports: [],
+    messages: [],
   },
   updatedAt: new moment()
 }
@@ -15,15 +16,13 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case "fishingEventSynced":
-      const updatedAt = state.fishingEvents[action.objectId];
-      if(updatedAt && updatedAt.unix() < action.time.unix()){
-        delete state.fishingEvents[action.objectId];
-      }
+      delete state.fishingEvents[action.objectId];
+      return state;
+    case 'pastTripSynced':
+      state.queues.pastTrips.shift();
       return state;
     case "tripSynced":
-      if(state.trip && state.trip.unix() < action.time.unix()){
-        state.trip = null;
-      }
+      state.trip = null;
       return state;
     case 'addToQueue':
       state.queues[action.name].push(action.obj);
@@ -68,7 +67,12 @@ export default (state = initialState, action) => {
       return state;
     case "syncError":
       state.updatedAt = new moment();
-    //  console.warn(action.err);
+      return state;
+    case "sendMessage":
+      state.queues.messages.push(action.message);
+      return state;
+    case "messageSent":
+      state.queues.messages.shift();
       return state;
     default:
       return state;

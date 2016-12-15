@@ -75,7 +75,8 @@ class ReportingApp extends Component {
     apiActions.setUpClient(props.dispatch, props.ApiEndpoint, props.AuthEndpoint);
     this.SyncWorker = new SyncWorker(props.dispatch,
                                      props.store.getState,
-                                     apiActions);
+                                     apiActions,
+                                     2000);
 
     this.props.dispatch(gpsControlActions.nativeGPSOn());
     this.orientationDidChange = this.orientationDidChange.bind(this);

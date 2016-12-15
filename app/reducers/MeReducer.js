@@ -9,15 +9,15 @@ const initialState = {
   ports,
   vessel: initialVessel,
   containers: [
-    {value: 'Tubs # 16', description: "t", weight: 26},
-    {value: "Iki Bins #10 Packed", description: "i", weight: 14},
-    {value: "Iki Bins flat packed", description: "u", weight: 20},
-    {value: "Individual fish", description: "f", weight: 2},
-    {value: "Fish in Slurry", description: "s", weight: 26},
-    {value: "Bulk Kgs", description: "k", weight: 1},
-    {value: "Dolav", description: "d", weight: 350},
-    {value: "Iki Bins export", description: "x", weight: 14},
-    {value: "Bins", description: "b", weight: 35},
+    { value: 'Tubs # 16', description: "t", weight: 26 },
+    { value: "Iki Bins #10 Packed", description: "i", weight: 14 },
+    { value: "Iki Bins flat packed", description: "u", weight: 20 },
+    { value: "Individual fish", description: "f", weight: 2 },
+    { value: "Fish in Slurry", description: "s", weight: 26 },
+    { value: "Bulk Kgs", description: "k", weight: 1 },
+    { value: "Dolav", description: "d", weight: 350 },
+    { value: "Iki Bins export", description: "x", weight: 14 },
+    { value: "Bins", description: "b", weight: 35 },
   ],
   vessels: [],
   user: initialUser,
@@ -25,7 +25,7 @@ const initialState = {
   autoSuggestFavourites: {
     speciesCode: [],
   },
-}
+};
 
 const update = (obj, change) => Object.assign({}, obj, change)
 
@@ -39,9 +39,6 @@ export default (state = initialState, action) => {
         return state;
       }
       return update(state, {user: action.user});
-    case 'editUser':
-      const user = update(state.user, action.change);
-      return update(state,  { user });
     case 'devMode':
       return initialState;
     case 'setUser':

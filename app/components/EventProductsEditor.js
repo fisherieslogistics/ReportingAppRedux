@@ -10,7 +10,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import ProductActions from '../actions/ProductActions';
 import ProductModel from '../models/ProductModel';
-import { modelEditorStyles, productEditorStyles } from '../styles/styles';
+import { colors, modelEditorStyles, productEditorStyles } from '../styles/styles';
 import ModelEditor from './common/ModelEditor';
 /* eslint-disable */
 import speciesCodesDesc from '../constants/speciesDesc.json';
@@ -119,16 +119,17 @@ class EventProductsEditor extends React.Component{
 
   renderDeleteButton(index){
     const deleteProduct = () => this.props.deleteProduct(index);
+    const delStyle = [styles.deleteButtonWrapper]
     return (
       <TouchableOpacity
         onPress={ deleteProduct }
-        style={[styles.deleteButtonWrapper, styles.deleteView]}
+        style={ delStyle }
       >
         <Icon8
-          name={"delete"}
-          size={ 14 }
-          color={"white"}
-          />
+          name={ 'delete' }
+          size={ 20 }
+          color={ colors.red }
+        />
       </TouchableOpacity>
     );
   }

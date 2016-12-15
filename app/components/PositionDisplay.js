@@ -1,6 +1,5 @@
 'use strict';
 import {
-  StyleSheet,
   View,
   Text
 } from 'react-native';
@@ -16,7 +15,6 @@ class PositionDisplay extends React.Component{
     this.state={
       position: null,
     }
-
   }
 
   componentWillMount(){
@@ -35,8 +33,8 @@ class PositionDisplay extends React.Component{
     if(!this.state.position || !this.state.position.coords){
       return "awaiting position";
     }
-    let coords = this.state.position.coords;
-    let posText = `${Sexagesimal.format(coords.latitude, 'lat')}   ${Sexagesimal.format(coords.longitude, 'lon')}`;
+    const coords = this.state.position.coords;
+    const posText = `${Sexagesimal.format(coords.latitude, 'lat')}   ${Sexagesimal.format(coords.longitude, 'lon')}`;
     return posText;
   }
 
@@ -58,6 +56,6 @@ class PositionDisplay extends React.Component{
       </View>
     );
   }
-};
+}
 
 export default PositionDisplay

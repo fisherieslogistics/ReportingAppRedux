@@ -238,8 +238,8 @@ class Trip extends MasterDetailView {
     const masterListView = this.renderMasterListView();
     const lowerList = this.renderLowerList();
     return (
-      <View style={[outerStyle]}>
-        <View style={[innerStyle]}>
+      <View style={ outerStyle }>
+        <View style={ innerStyle }>
           { masterListView }
         </View>
         <View style={[innerStyle, midStyle]}>
@@ -292,25 +292,30 @@ class Trip extends MasterDetailView {
   }
 
   renderDetailView(){
+    let view = (
+      <View />
+    );
     switch (this.state.selectedDetail) {
       case 'Trip':
-        return (
-          <StartTripEditor
-            trip={this.props.trip}
-            dispatch={this.props.dispatch}
-          />
-        );
+        view = (<StartTripEditor
+                  trip={this.props.trip}
+                  dispatch={this.props.dispatch} />);
+        break;
       case 'Totals':
-        return this.renderTotalsListView();
+        view = this.renderTotalsListView();
+        break;
       case 'Profile':
-        return (
-          <ProfileEditor
-            user={this.props.user}
-            vessel={this.props.vessel}
-          />
-        );
-      default:
+        view = (<ProfileEditor
+                  user={this.props.user}
+                  vessel={this.props.vessel} />);
+        break;
     }
+    const padStyle = { padding: 5 };
+    return (
+      <View style={padStyle}>
+        { view }
+      </View>
+    );
   }
 
   logout(){

@@ -279,7 +279,7 @@ class Fishing extends MasterDetailView {
     const canUndo = (catchesOpen && haveDeleted);
     const undo = canUndo ? (
       <LongButton
-        bgColor={ colors.pink }
+        bgColor={ colors.red }
         text={ "Undo" }
         onPress={ this.undoDeleteProduct }
         disabled={ !canUndo }

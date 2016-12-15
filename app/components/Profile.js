@@ -242,7 +242,7 @@ class Profile extends React.Component{
                <View style={{paddingLeft: 90, marginTop: 20}}>
                  <LongButton
                    text={"login"}
-                   bgColor={colors.pink}
+                   bgColor={colors.red}
                    onPress={this.login}
                    disabled={false}
                  />
@@ -282,7 +282,7 @@ class Profile extends React.Component{
           detail={
             (<LongButton
                 text={ "login"}
-                bgColor={colors.pink}
+                bgColor={colors.red}
                 onPress={this.onLoginPress}
                 disabled={ false }
             />)
