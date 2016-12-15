@@ -1,24 +1,64 @@
 'use strict';
 import {
   View,
+  Text,
 } from 'react-native';
 
 import React from 'react';
 import {connect} from 'react-redux';
-
+import { GiftedChat } from 'react-native-gifted-chat';
 import MasterDetailView from './layout/MasterDetailView';
 import Icon8 from '../components/common/Icon8';
-import { colors, iconStyles } from '../styles/styles';
+import { colors, iconStyles, listViewStyles } from '../styles/styles';
 import { MasterToolbar } from './layout/Toolbar';
 import { BigButton } from './common/Buttons';
+import UserActions from '../actions/UserActions';
+
+const userActions = new UserActions();
+const chatWrapperStyle = { flex: 1, alignItems: 'stretch', paddingBottom: 50 };
+const viewStyles = {
+  marginLeft: 2,
+  alignItems: 'flex-start',
+  paddingTop: 5
+};
+const listTextStyle = {
+  fontSize: 18,
+};
 
 class Chat extends MasterDetailView {
   constructor (props){
     super(props);
+    this.onSend = this.onSend.bind(this);
+    this.sendMessage = this.sendMessage.bind(this);
     this.state = {
-      selectedDetail: props.contacts[0],
-      masterChoices: props.contacts,
+      masterChoices: props.masterChoices,
     };
+  }
+
+  getMasterDescription(choice) {
+    const textColor = {
+      color: this.isDetailSelected(choice) ? colors.white : colors.black,
+    };
+    return (
+      <View
+        style={ [listViewStyles.listRowItem, viewStyles] }
+        key={`${choice.id}___Chat_Page` }>
+        <Text style={ [listTextStyle, textColor] }>
+          { choice.name }
+        </Text>
+      </View>
+    );
+  }
+
+  isDetailSelected(choice) {
+    return this.state.selectedDetail && (choice.id === this.state.selectedDetail.id);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      masterChoices: nextProps.masterChoices,
+      selectedDetail: nextProps.masterChoices.find(this.isDetailSelected),
+    });
   }
 
   renderMasterToolbar() {
@@ -57,10 +97,44 @@ class Chat extends MasterDetailView {
     );
   }
 
+  onSend(messages = []) {
+    const detail = this.state.selectedDetail;
+    if(!detail){
+      return;
+    }
+    this.sendMessage(messages[0]);
+    this.setState({
+      selectedDetail: Object.assign({}, detail, { messages: messages.concat(detail.messages)}),
+    });
+  }
+
+  sendMessage(msg) {
+    const contact = this.state.selectedDetail;
+    const message = {
+      text: msg.text,
+      messageThread_id: contact.messageThread.id,
+      organisation_id: this.props.user.organisationId,
+      image: null,
+    };
+    this.props.dispatch(userActions.sendMessage(message));
+  }
+
   renderDetailView() {
+    if(!this.state.selectedDetail){
+      return (<View />);
+    }
+    const messages = this.state.selectedDetail.messages;
     return (
-      <View />
-    )
+      <View style={chatWrapperStyle}>
+        <GiftedChat
+          messages={messages}
+          onSend={this.onSend}
+          user={{
+            _id: this.props.user.organisationId,
+          }}
+        />
+      </View>
+    );
   }
 
 }
@@ -69,11 +143,7 @@ const select = (State) => {
   const state = State.default;
   return {
     user: state.me.user,
-    contacts: [
-      'Atlantis',
-      'Venture',
-      'Columbia',
-    ],
+    masterChoices: state.me.user.contacts,
   };
 }
 
