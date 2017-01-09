@@ -186,15 +186,25 @@ class Trip extends MasterDetailView {
       `${trip.startDate.format('ll')}`,
       `${trip.endDate.format('ll')}`,
     ];
-    return parts.map((p, i) => (
+    const renderedParts = parts.map((p, i) => (
         <View
-          style={ [listViewStyles.listRowItem, viewStyles] }
-          key={ `${rowId}_Trip_${sectionId}_list_${i}` }>
-          <Text style={ myStyles }>
+          style={ [myListViewStyles.listRowItem, viewStyles] }
+          key={ `${rowId}_Trip_${sectionId}_list_${i}` }
+        >
+          <Text
+            style={ myStyles }
+            elipsizeMode={ 'clip'}
+            numberOfLines={ 1 }
+          >
             { p }
           </Text>
         </View>
       ));
+    return (
+      <View>
+        { renderedParts }
+      </View>
+    )
   }
 
   isTripSelected(trip) {

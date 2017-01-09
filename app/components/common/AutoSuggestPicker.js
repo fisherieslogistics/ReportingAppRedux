@@ -31,14 +31,15 @@ class AutoSuggestPicker extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    if(nextProps.choices.length !== this.props.choices.length) {
+    const nextValue = (nextProps.value || "").toString();
+    if(JSON.stringify(nextProps.choices) !== JSON.stringify(this.props.choices)) {
       this.initChoices();
     }
     if(nextProps.isFocused !== this.props.isFocused) {
-      this.dispatchChange(nextProps.value.toString());
+      this.dispatchChange(nextValue);
     }
     this.setState({
-      value: nextProps.value,
+      value: nextValue,
     });
   }
 

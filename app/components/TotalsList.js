@@ -47,7 +47,9 @@ class TotalsList extends React.Component {
           style={ [styles.listRowItemNarrow, {backgroundColor: colors.transparent}] }
           key={"totals_list" + i}
         >
-          <Text style={ textStyle }>
+          <Text
+            style={ textStyle }
+          >
             { detail }
           </Text>
         </View>
