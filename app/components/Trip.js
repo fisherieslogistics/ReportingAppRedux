@@ -243,19 +243,34 @@ class Trip extends React.Component {
     ];
     const viewStyles = { alignItems: 'center', padding: 0};
     const parts = [
+//<<<<<<< Updated upstream
       `${trip.startPort || ""}`,
       `${trip.startDate.format('ll')}`,
       `${trip.endDate.format('ll')}`,
+/*=======
+      `${trip.startPort} - ${trip.endPort}`,
+      `${trip.startDate.format('DD/MM/YY')} - ${trip.endDate.format('DD/MM/YY')}`,
+>>>>>>> Stashed changes*/
     ];
-    return parts.map((p, i) => (
+    const renderedParts = parts.map((p, i) => (
         <View
           style={ [myListViewStyles.listRowItem, viewStyles] }
-          key={ `${rowId}_Trip_${sectionId}_list_${i}` }>
-          <Text style={ myStyles }>
+          key={ `${rowId}_Trip_${sectionId}_list_${i}` }
+        >
+          <Text
+            style={ myStyles }
+            elipsizeMode={ 'clip'}
+            numberOfLines={ 1 }
+          >
             { p }
           </Text>
         </View>
       ));
+    return (
+      <View>
+        { renderedParts }
+      </View>
+    )
   }
 
   isTripSelected(trip) {

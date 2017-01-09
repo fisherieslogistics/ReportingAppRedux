@@ -3,18 +3,19 @@ import React, { Component } from 'react';
 import { View, StatusBar, AlertIOS } from 'react-native';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
-import { Provider } from 'react-redux';
-import { connect } from 'react-redux';
-import AsyncStorage from 'AsyncStorage';
-import CodePush from 'react-native-code-push'
+import { Provider, connect } from 'react-redux';
+//import CodePush from 'react-native-code-push'
 import ReportingApp from './ReportingApp';
-import * as reducers from '../reducers';
 import StateLoadActions from '../actions/StateLoadActions';
 import Helper from '../utils/Helper';
 import StateMigratorizer from '../utils/StateMigratorizer';
-import ErrorUtils from 'ErrorUtils';
 
-var Mailer = require('NativeModules').RNMail;
+//eslint unfriendly imports
+/* eslint-disable */
+import * as reducers from '../reducers';
+import ErrorUtils from 'ErrorUtils';
+const Mailer = require('NativeModules').RNMail;
+/* eslint-enable */
 
 const helper = new Helper();
 const stateLoadActions = new StateLoadActions();
@@ -71,7 +72,7 @@ class App extends Component {
 
   email(to, subject, content, callback) {
     Mailer.mail({
-      subject: subject,
+      subject,
       recipients: [to],
       ccRecipients: [],
       bccRecipients: [],
@@ -166,6 +167,4 @@ class App extends Component {
   }
 }
 
-const MyApp = CodePush(App);
-
-export default MyApp;
+export default App;
