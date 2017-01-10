@@ -2,19 +2,22 @@
 import {
   upsertTrip,
   upsertFishingEvent,
+  createMessage,
 } from './Queries';
 
 import moment from 'moment';
-import ApiActions from '../actions/ApiActions.js';
+import ApiActions from '../actions/ApiActions';
+import UserActions from '../actions/UserActions';
 const apiActions = new ApiActions();
+const userActions = new UserActions();
 
 class SyncWorker {
 
-  constructor(dispatch, getState, api) {
+  constructor(dispatch, getState, api, timeToSync) {
     this.dispatch = dispatch;
     this.api = api;
     this.getState = getState;
-    this.timeToSync = 3000;
+    this.timeToSync = timeToSync;
     this.requests = [];
     this.dispatchMutateTrip = this.dispatchMutateTrip.bind(this);
     this.dispatchMutatePastTrip = this.dispatchMutatePastTrip.bind(this);
@@ -23,81 +26,78 @@ class SyncWorker {
     this.mutateTrip = this.mutateTrip.bind(this);
     this.mutateFishingEvent = this.mutateFishingEvent.bind(this);
     this.mutatePastTrip = this.mutatePastTrip.bind(this);
+    this.dispatchMessageSent = this.dispatchMessageSent.bind(this);
+    this.mutateMessage = this.mutateMessage.bind(this);
+    this.performMutation = this.performMutation.bind(this);
     this.startSync();
   }
 
   startSync(){
-    this.interval = setInterval(() => this.sync(), this.timeToSync);
+    clearTimeout(this.syncTime);
+    this.syncTime = setTimeout(this.sync, this.timeToSync);
   }
 
   sync(){
+
     const state = this.getState().default;
-    if(this.requests.length || (!state.auth.loggedIn)){
+    if(!state.auth.loggedIn){
       return;
     }
-    const formType = state.me.formType;
+    this.requests.push(apiActions.checkMe(this.getState().default.auth, this.dispatch));
     const fEventIds = Object.keys(state.sync.fishingEvents);
     this.requests = state.fishingEvents.events.filter(fe => (fEventIds.indexOf(fe.objectId) !== -1))
-                                              .map(fe => this.mutateFishingEvent(fe, state.trip.objectId, formType));
+                                              .map(fe => this.mutateFishingEvent(fe, state.trip.objectId,));
     if(state.sync.trip){
       this.requests.push(this.mutateTrip(state.trip, state.me.vessel.id));
     }
 
-    state.sync.queues.pastTrips.forEach((t) => {
-      const pastRequests = [];
-      t.fishingEvents.forEach(fe => pastRequests.push(this.mutateFishingEvent(fe, t.trip.objectId, t.formType)));
-      return this.mutatePastTrip(t.trip, t.vesselId).then(() => Promise.all(pastRequests));
-    });
-
-    if(this.requests.length){
-      Promise.all(this.requests).then(() => {
-        this.requests = [];
-        apiActions.checkMe(this.getState().default.auth, this.dispatch);
-      });
+    const msg = state.sync.queues.messages.shift();
+    if(msg) {
+      this.requests.push(this.mutateMessage(msg));
     }
+
+    const allPastRequests = state.sync.queues.pastTrips.map(
+      (t) => new Promise(resolve => this.mutatePastTrip(t.trip, t.vesselId).then(
+        () => Promise.all(t.fishingEvents.map(fe => this.mutateFishingEvent(fe, t.trip.objectId))).then(resolve))));
+
+    Promise.all([ ...this.requests.concat(allPastRequests)]).then(() => {
+      this.requests = [];
+      this.syncTimeout = setTimeout(this.sync, this.timeToSync);
+    }).catch(() => {
+      this.requests = [];
+      this.syncTimeout = setTimeout(this.sync, this.timeToSync);
+    });
   }
 
-  dispatchMutatePastTrip(res){
-    const time = new moment();
-    const callback = (res) => {
-      if(res.errors.length){
-        throw new Error(res.errors);
-      }
-      try{
-        this.dispatch({
-          type: "removeFromQueue",
-          name: "pastTrips",
-          time
-        });
-      }catch(e) {
-        console.warn(e);
-      }
-      return {response: res};
-    }
+  dispatchMessageSent() {
+    this.dispatch(userActions.messageSent());
+  }
+
+  dispatchTrip(actionType) {
+    this.dispatch({
+      type: actionType,
+    });
+  }
+
+  dispatchMutatePastTrip(){
+    return this.dispatchTrip("pastTripSynced");
+  }
+
+  dispatchMutateTrip(){
+    return this.dispatchTrip("tripSynced");
   }
 
   mutatePastTrip(trip){
-    const state = this.getState().default;
     const mutation = upsertTrip(trip);
     return this.performMutation(mutation.query, mutation.variables, this.dispatchMutatePastTrip);
   }
 
-  dispatchMutateTrip(res){
-    const time = new moment();
-    try{
-      this.dispatch({
-        type: "tripSynced",
-        time,
-        objectId: res.data.upsertTrip2.trip.id
-      });
-    }catch(e) {
-      console.warn(e);
-    }
-    return {response: res};
+  mutateMessage(message) {
+    const { query, variables } = createMessage(message);
+    return this.performMutation(query, variables, this.dispatchMessageSent);
   }
 
   mutateTrip(trip){
-    const state = this.getState().default;
     const mutation = upsertTrip(trip);
     return this.performMutation(mutation.query, mutation.variables, this.dispatchMutateTrip);
   }
@@ -112,30 +112,20 @@ class SyncWorker {
     return {response: res};
   }
 
-  mutateFishingEvent(fishingEvent, tripId, formType){
-    let q;
-    if(formType == 'tcer'){
-      q = upsertFishingEvent(fishingEvent, tripId);
-    }else{
-      q = upsertFishingEvent(fishingEvent, tripId);
-    }
-    return this.performMutation(q.query, q.variables, (res) => { this.dispatchMutateFishingEvent(fishingEvent, res); });
+  mutateFishingEvent(fishingEvent, tripId){
+    const query = upsertFishingEvent(fishingEvent, tripId);
+    return this.performMutation(query.query, query.variables, (res) => { this.dispatchMutateFishingEvent(fishingEvent, res); });
   }
 
   performMutation(query, variables, success){
-    return new Promise((resolve) => {
-      this.api.mutate(query, variables, this.getState().default.auth)
-        .then((res) => resolve(success(res)))
-        .catch((err) => {
-          this.dispatch({
-            type: "syncError",
-            time: new moment(),
-            err
-          });
-          resolve(false);
-        });
-      });
-    }
+    return new Promise((resolve, reject) => this.api.mutate(
+      query, variables, this.getState().default.auth).then(
+        (res) => {
+          const diso = success(res);
+          resolve(diso);
+        }).catch(
+          (err) => reject(err)));
+  }
 
 }
 

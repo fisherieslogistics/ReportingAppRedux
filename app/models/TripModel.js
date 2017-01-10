@@ -25,6 +25,9 @@ const tripModel = [
     {
       id: 'vesselId', defaultValue: "", valid: Validator.valid.alwaysValid,
     },
+    {
+      id: 'contacts', defaultValue: [], valid: Validator.valid.alwaysValid,
+    }
 ];
 
 export default tripModel

@@ -10,23 +10,44 @@ const authActions = new AuthActions();
 const helper = new Helper();
 let client;
 
+const flatten = list => list.reduce(
+  (a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []
+);
+
+const parseMessage = (msg) => ({
+  _id: msg.id,
+  text: msg.text,
+  createdAt: new Date(msg.created),
+  image: msg.image,
+  user: {
+    _id: msg.createdBy.id,
+    name: msg.createdBy.name,
+  }
+});
+
 const parseUser = (viewer) => {
-  const dummy = {
-    firstName: 'First name',
-    lastName: 'Last Name',
-    permitHolderName: 'Permit Holder Name',
-    permitHolderNumber: 'Permit Holder Number',
-    email: 'test@test.com',
-    bins: [],
-  };
-  return viewer ? {
+  const customers = flatten(viewer.organisation.customerGroups.edges.map(
+    e => flatten(e.node.customers.edges.map(
+      cu => cu.node))));
+
+  const contacts = customers.map(
+    c => Object.assign({}, c,
+      {
+        messages: c.messageThread.messages.edges.map(m => parseMessage(m.node)),
+        messageThread_id: c.messageThread.id,
+      }
+    ));
+
+  return {
     firstName: viewer.firstName,
     lastName: viewer.lastName,
     permitHolderName: viewer.formData.permit_holder_name,
     permitHolderNumber: viewer.formData.permit_holder_number,
     email: viewer.email,
     bins: viewer.bins,
-  } : dummy;
+    organisationId: viewer.organisation.id,
+    contacts,
+  };
 }
 
 class ApiActions {
@@ -35,11 +56,18 @@ class ApiActions {
     client = new Client(dispatch, ApiEndpoint, AuthEndpoint);
   }
 
-  checkMe(auth, dispatch){
-    client.query(queries.getMe, auth).then((res) => {
+  checkMe(auth, dispatch) {
+    if(!auth.loggedIn) {
+      Promise.reject();
+    }
+    return client.query(queries.getMe, auth).then((res) => {
       if(res && res.data){
-        dispatch(userActions.setUser(parseUser(res.data.viewer)));
+        const user = parseUser(res.data.viewer);
+        return dispatch(userActions.setUser(user));
       }
+      throw new Error(res);
+    }).catch((e) => {
+      console.log(e);
     });
   }
 
@@ -50,7 +78,7 @@ class ApiActions {
           return dispatch(authActions.loginError("please try that again "));
         }
         dispatch(authActions.setAuth(auth));
-        client.query(queries.getMe, helper.updateAuth({}, auth))
+        return client.query(queries.getMe, helper.updateAuth({}, auth))
           .then((res) => {
             if(res && res.data){
               const viewer = res.data.viewer;
@@ -65,10 +93,9 @@ class ApiActions {
     }
   }
 
-  mutate(mutation, variables, auth){
+  mutate(mutation, variables, auth) {
     return client.mutate(mutation, variables, auth);
   }
-
 }
 
 export default ApiActions;

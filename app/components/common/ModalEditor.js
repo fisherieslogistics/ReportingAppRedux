@@ -44,25 +44,26 @@ export default class FormContainer extends Component {
 
   render() {
     const { height, width } = Dimensions.get('window');
+    const size = { width, height };
     return (
-      <View style={ { width, height }, styles.formContainer }>
+      <View style={ size }>
 
         <BlurView blurType="d" style={ styles.blurViewInner  }>
 
-          <View style={[ styles.formWrapper ]}>
+          <View style={ styles.formWrapper }>
 
-            <View style={[ styles.topSection ]}>
-              <View style={[ styles.inputWrapper ]} >
+            <View style={ styles.topSection }>
+              <View style={ styles.inputWrapper } >
                 { this.props.inputs }
-              </View>
-              <View style={[ styles.formControls ]} >
-                <View style={ [styles.formControlsInner] }>
-                  { this.props.controls }
-                </View>
               </View>
             </View>
 
-            <View style={[ styles.bottomSection ]} >
+            <View style={ styles.bottomSection } >
+              <View style={ styles.formControls } >
+                <View style={ styles.formControlsInner }>
+                  { this.props.controls }
+                </View>
+              </View>
             </View>
 
           </View>

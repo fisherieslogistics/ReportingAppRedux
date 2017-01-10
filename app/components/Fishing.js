@@ -3,30 +3,28 @@ import {
   View,
   ListView,
   AlertIOS,
-  SegmentedControlIOS,
-  TouchableOpacity,
   StyleSheet,
-  Text,
 } from 'react-native';
 import React from 'react';
+import { connect } from 'react-redux';
 import EventDetailEditor from './EventDetailEditor';
 import FishingEventList from './FishingEventList';
 import MasterDetailView from './layout/MasterDetailView';
 import FishingEventActions from '../actions/FishingEventActions';
 import PositionDisplay from './PositionDisplay';
 import EventProductsEditor from './EventProductsEditor';
-import { connect } from 'react-redux';
 import PlaceholderMessage from './common/PlaceholderMessage';
-import { LongButton } from './common/Buttons';
-
 import ProductActions from '../actions/ProductActions';
+import { LongButton, TextButton, BigButton } from './common/Buttons';
 import { MasterToolbar, DetailToolbar } from './layout/Toolbar';
-import { colors } from '../styles/styles';
-import Icon8 from './common/Icon8';
-const fishingEventActions = new FishingEventActions();
+import { colors, toolbarStyles } from '../styles/styles';
 
-//TODO optional discard etc
+const fishingEventActions = new FishingEventActions();
 const productActions = new ProductActions();
+const spacer = { height: 40 };
+const halfway = { flex: 0.45 };
+const detailWrap = { padding: 15 };
+const separator = { flex: 0.1 };
 
 const styles = StyleSheet.create({
   detailView: {
@@ -50,7 +48,6 @@ const toBind = [
   'startFishingEvent',
   'renderDetailView',
   'removeFishingEvent',
-  'setViewingFishingEvent',
   'renderMessage',
   'renderDetailViewButtons',
   'selectedDetailView',
@@ -64,7 +61,7 @@ const toBind = [
   'toggleOptionalFields',
 ];
 
-class Fishing extends React.Component{
+class Fishing extends MasterDetailView {
   constructor (props){
     super(props);
     this.state = {
@@ -174,8 +171,12 @@ class Fishing extends React.Component{
     this.props.dispatch(productActions.addProduct(this.props.viewingEvent.id, this.props.viewingEvent.objectId));
   }
 
-  setViewingFishingEvent(fishingEvent){
+  masterListOnPress(fishingEvent) {
     this.props.dispatch(fishingEventActions.setViewingFishingEvent(fishingEvent.id));
+  }
+
+  isDetailSelected(choice) {
+    return choice === this.state.selectedDetail
   }
 
   toggleOptionalFields() {
@@ -278,7 +279,7 @@ class Fishing extends React.Component{
     const canUndo = (catchesOpen && haveDeleted);
     const undo = canUndo ? (
       <LongButton
-        bgColor={ colors.pink }
+        bgColor={ colors.red }
         text={ "Undo" }
         onPress={ this.undoDeleteProduct }
         disabled={ !canUndo }
@@ -316,10 +317,6 @@ class Fishing extends React.Component{
     const productButtons = this.renderProductButtons();
     const detailView = this.selectedDetailView();
     const viewButtons = this.renderDetailViewButtons();
-    const spacer = { height: 40 };
-    const halfway = { flex: 0.45 };
-    const detailWrap = { padding: 15 };
-    const separator = { flex: 0.1 };
     return(
       <View style={[styles.detailView, styles.col]}>
         <View style={[spacer]}>
@@ -339,11 +336,11 @@ class Fishing extends React.Component{
     </View>);
   }
 
-  renderFishingEventLists(){
+  renderMasterListView(){
     return (
       <FishingEventList
         fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents || []].reverse())}
-        onPress={this.setViewingFishingEvent}
+        onPress={this.masterListOnPress}
         selectedFishingEvent={this.props.viewingEvent}
     />);
   }
@@ -356,19 +353,23 @@ class Fishing extends React.Component{
       />);
   }
 
-  getDetailToolbar(){
+  renderDetailToolbar(){
     const deleteActive = this.props.lastEvent && (!this.props.lastEvent.datetimeAtEnd);
     const posDisplay = (
       <PositionDisplay
         provider={this.props.positionProvider}
       />
     );
-    const rightProps = {
-      color: colors.red,
-      text: "Delete",
-      onPress: this.removeFishingEvent,
-      enabled: deleteActive
-    };
+    const rightProps = (
+      <TextButton
+        text={ "Delete" }
+        style={ toolbarStyles.textButton }
+        color={ colors.red }
+        textAlign={ "left"}
+        onPress={ this.removeFishingEvent }
+        disabled={ !deleteActive }
+      />
+    );
     return (
       <DetailToolbar
         left={null}
@@ -378,8 +379,12 @@ class Fishing extends React.Component{
     );
   }
 
-  getMasterToolbar(){
+  onMasterButtonPress(){
     const onPress = this.props.enableStartEvent ? this.startFishingEvent : this.endFishingEvent;
+    onPress();
+  }
+
+  renderMasterToolbar(){
     let backgroundColor = this.props.enableStartEvent ? colors.green : colors.red;
     const text = this.props.enableStartEvent ? "Start Fishing" : "Haul";
     let textColor = colors.white;
@@ -387,34 +392,18 @@ class Fishing extends React.Component{
       backgroundColor = colors.backgrounds.dark;
       textColor = colors.backgrounds.light;
     }
-    const buttonStyle = { flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor, alignSelf: 'stretch'};
-    const innerWrap = { alignItems: 'center' };
-    const textStyle = { fontSize: 30, fontWeight: '500', color: textColor, textAlign: 'center', marginTop: 20 };
 
-    const eventButton = (
-      <TouchableOpacity onPress={onPress} style={ buttonStyle }>
-         <View style={innerWrap}>
-          <Text style={ textStyle }>
-            { text }
-          </Text>
-        </View>
-      </TouchableOpacity>
+    const button = (
+      <BigButton
+        text={text}
+        backgroundColor={backgroundColor}
+        textColor={textColor}
+        onPress={this.onMasterButtonPress }
+      />
     );
     return(
       <MasterToolbar
-        center={eventButton}
-      />
-    );
-  }
-
-  render(){
-
-    return (
-      <MasterDetailView
-        master={ this.renderFishingEventLists() }
-        detail={this.renderDetailView()}
-        detailToolbar={this.getDetailToolbar()}
-        masterToolbar={this.getMasterToolbar()}
+        center={ button }
       />
     );
   }

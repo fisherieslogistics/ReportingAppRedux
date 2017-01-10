@@ -96,7 +96,7 @@ class AttributeEditor extends Component {
           <AutoSuggestPicker
             onChange={ this.onChange }
             value={ value}
-            name={ attribute.id }
+            attribute={ attribute }
             inputId={ inputId }
             handleBlur={ handleBlur }
             handleFocus={ handleFocus }

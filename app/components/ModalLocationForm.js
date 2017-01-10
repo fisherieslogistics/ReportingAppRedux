@@ -26,17 +26,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingLeft: 20,
   },
-  formControl: {
-    flex: 1,
-    paddingTop: 20,
-    height: 40,
-    alignSelf: 'stretch',
+  doneButton: {
+    alignSelf: 'flex-end',
   },
   button: {
-    marginTop: 30,
     alignItems: 'center',
     justifyContent: 'center',
-  }
+    marginRight: 25,
+    marginTop: 10,
+  },
 });
 
 
@@ -55,7 +53,6 @@ export default class ModalLocationForm extends Component {
     this.setState({
       nextInput: inputName ? input : null,
     });
-
   }
 
   render(){
@@ -83,16 +80,20 @@ export default class ModalLocationForm extends Component {
       </View>
     );
     const controls = (
-      <View style={ [styles.formControl, { marginTop: 150 }] }>
+      <View style={ styles.doneButton }>
         <TextButton text={ 'Done' }
-                     color={ colors.blue }
-                     style={ [styles.button, { marginTop: 20 }] }
-                     textStyle={{ fontSize: 24 }}
-                     onPress={ this.props.onRequestClose }
+                    color={ colors.blue }
+                    style={ styles.button }
+                    onPress={ this.props.onRequestClose }
          />
       </View>
     );
-    const form = (<FormContainer inputs={ inputs } controls={ controls } />);
+    const form = (
+      <FormContainer
+        inputs={ inputs }
+        controls={ controls }
+      />
+    );
     return (
       <Modal
         animationType={ 'fade' }

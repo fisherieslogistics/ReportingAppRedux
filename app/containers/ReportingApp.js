@@ -4,14 +4,16 @@ import {
   TabBarIOS,
 } from 'react-native';
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
+
 import Fishing from '../components/Fishing';
 import FormView from '../components/FormView';
-import {connect} from 'react-redux';
+import Chat from '../components/Chat';
+import Trip from '../components/Trip';
 import AutoSuggestBar from '../components/common/AutoSuggestBar';
 import Orientation from 'react-native-orientation';
 import ViewActions from '../actions/ViewActions';
 import FormActions from '../actions/FormActions';
-import Trip from '../components/Trip';
 import SyncWorker from '../api/SyncWorker';
 import Icon8 from '../components/common/Icon8';
 import Login from '../components/Login';
@@ -73,7 +75,8 @@ class ReportingApp extends Component {
     apiActions.setUpClient(props.dispatch, props.ApiEndpoint, props.AuthEndpoint);
     this.SyncWorker = new SyncWorker(props.dispatch,
                                      props.store.getState,
-                                     apiActions);
+                                     apiActions,
+                                     2000);
 
     this.props.dispatch(gpsControlActions.nativeGPSOn());
     this.orientationDidChange = this.orientationDidChange.bind(this);
@@ -84,13 +87,15 @@ class ReportingApp extends Component {
     this.startTripCallback = this.startTripCallback.bind(this);
     this.setupForms = this.setupForms.bind(this);
     this.setSelectedTab = this.setSelectedTab.bind(this);
+    this.renderChat = this.renderChat.bind(this);
     this.tabs = {
-      trip: {render: this.renderTrip, icon: 'fishing-boat', onPress: () => this.setSelectedTab('trip')},
-      fishing: {render: this.renderFishing, icon: 'fishing', onPress: () => this.setSelectedTab('fishing') },
-      forms: {render: this.renderForms, icon: 'form', onPress: () => {
+      trip: { render: this.renderTrip, icon: 'fishing-boat', onPress: () => this.setSelectedTab('trip') },
+      fishing: { render: this.renderFishing, icon: 'fishing', onPress: () => this.setSelectedTab('fishing') },
+      forms: { render: this.renderForms, icon: 'form', onPress: () => {
         this.setupForms();
         setTimeout(() => this.setSelectedTab('forms'), 150);
       }},
+      chat: { render: this.renderChat, icon: 'user', onPress: () => this.setSelectedTab('chat') },
     };
   }
 
@@ -119,8 +124,8 @@ class ReportingApp extends Component {
   }
 
   renderTabs(){
-
-    return Object.keys(this.tabs).map((tab)=> (
+    return Object.keys(this.tabs).map(
+      (tab) => (
         <Icon8.TabBarItemIOS
           key={ tab }
           title={ tab.capitalize() }
@@ -131,8 +136,11 @@ class ReportingApp extends Component {
           style={ styles.tab }
           onPress={this.tabs[tab].onPress}
         >
-        { this.tabs[tab].render() }
-      </Icon8.TabBarItemIOS>));
+          <View style={[styles.col, styles.fill]}>
+            { this.tabs[tab].render() }
+          </View>
+      </Icon8.TabBarItemIOS>)
+    );
   }
 
   startTripCallback(){
@@ -143,47 +151,48 @@ class ReportingApp extends Component {
 
   renderTrip(){
     return (
-      <View style={[styles.col, styles.fill]}>
-        <Trip
-          startTripCallback = { this.startTripCallback }
-        />
-      </View>
+      <Trip
+        startTripCallback = { this.startTripCallback }
+      />
+    );
+  }
+
+  renderChat() {
+    return (
+      <Chat />
     )
   }
 
   renderForms(){
     const forms = createForms(this.props.fishingEvents, this.props.formType);
     return (
-      <View style={[styles.col, styles.fill]}>
-        <FormView forms={forms} />
-      </View>
-    )
+      <FormView forms={forms} />
+    );
   }
 
   renderFishing(){
     return (
-      <View style={[styles.col, styles.fill]}>
-        <Fishing
-          position={this.props.position}
-          formType={this.props.formType}
-        />
-      </View>
-    )
+      <Fishing
+        position={this.props.position}
+        formType={this.props.formType}
+      />
+    );
   }
 
   render(){
     if(!this.props.loggedIn) {
       return (<Login dispatch={this.props.dispatch} />);
     }
+    const wrapStyles = [styles.wrapper, {width: this.props.width, height: this.props.height}];
     return (
-      <View style={[styles.wrapper, {width: this.props.width, height: this.props.height}]}>
+      <View style={wrapStyles}>
         <TabBarIOS
           unselectedTintColor="#bbbbbb"
           tintColor="#007aff"
           barTintColor="#000"
           style={styles.tabBar}
         >
-          {this.renderTabs()}
+          { this.renderTabs() }
         </TabBarIOS>
         <AutoSuggestBar
           width={ this.props.width }

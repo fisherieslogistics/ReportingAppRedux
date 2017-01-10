@@ -1,36 +1,28 @@
 import colors from './darkColors';
 
 export default {
-  addProduct:{
+  addProduct: {
     marginLeft: 10,
-    backgroundColor: colors.blue
+    backgroundColor: colors.blue,
   },
-  buttonWrapper:{
+  buttonWrapper: {
     width: 360,
     flexDirection: 'row',
     justifyContent: "space-between",
   },
-  undoDelete:{
+  undoDelete: {
     borderWidth: 1,
-    borderColor: colors.midGray
+    borderColor: colors.midGray,
   },
-  deleteButtonWrapper:{
+  deleteButtonWrapper: {
     position: 'absolute',
-    right: 8,
-    top: 8,
-  },
-  deleteView: {
-    borderRadius: 15,
-    width: 25,
-    height: 25,
-    padding: 5,
-    borderWidth: 0,
-    backgroundColor: colors.pink,
+    right: 10,
+    top: 14,
   },
   rowSection: {
-    flex: 0.24
+    flex: 0.24,
   },
-  innerWrapper:{
+  innerWrapper: {
    paddingTop: 2,
    paddingLeft: 20,
    paddingBottom: 5,
@@ -39,8 +31,8 @@ export default {
     marginTop: 5,
     marginLeft: 5,
     marginRight: 5,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderRadius: 10,
-    overflow: "hidden"
+    overflow: 'hidden',
   },
 }

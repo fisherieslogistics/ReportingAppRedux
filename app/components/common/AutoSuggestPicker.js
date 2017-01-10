@@ -101,20 +101,20 @@ class AutoSuggestPicker extends Component {
   }
 
   render () {
-    const style = [inputStyles.textInput, this.props.styles | {}];
+    const style = [inputStyles.textInput, this.props.styles];
     return(
       <FocusOnDemandTextInput
-        style={style}
+        style={ style }
         onFocus={ this.onFocus }
         onBlur={ this.onBlur }
-        onChangeText={this.onChangeText}
+        onChangeText={ this.onChangeText }
         value={ this.state.value }
-        placeholder={this.props.placeholder}
-        placeholderTextColor={colors.black}
+        placeholder={ this.props.placeholder }
+        placeholderTextColor={ colors.black }
         selectTextOnFocus
-        autoCapitalize={this.props.autoCapitalize || 'none'}
-        autoCorrect={false}
-        ref={'textInput'}
+        autoCapitalize={ this.props.autoCapitalize || 'none' }
+        autoCorrect={ false }
+        ref={ 'textInput' }
         editable={ !this.props.disabled }
         isFocused={ this.props.isFocused }
         onKeyPress={ this.onKeyPress }

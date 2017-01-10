@@ -93,7 +93,7 @@ export default class Login extends React.Component {
            <View style={styles.buttonWrapper}>
              <LongButton
                text={"login"}
-               bgColor={colors.pink}
+               bgColor={colors.red}
                onPress={this.login}
                disabled={false}
              />

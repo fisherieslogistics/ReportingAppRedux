@@ -4,12 +4,10 @@ import { View, StatusBar, AlertIOS } from 'react-native';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux';
-//import CodePush from 'react-native-code-push'
 import ReportingApp from './ReportingApp';
 import StateLoadActions from '../actions/StateLoadActions';
 import Helper from '../utils/Helper';
 import StateMigratorizer from '../utils/StateMigratorizer';
-
 //eslint unfriendly imports
 /* eslint-disable */
 import * as reducers from '../reducers';
