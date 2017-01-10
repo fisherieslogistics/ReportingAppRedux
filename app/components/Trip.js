@@ -188,7 +188,7 @@ class Trip extends MasterDetailView {
     ];
     const renderedParts = parts.map((p, i) => (
         <View
-          style={ [myListViewStyles.listRowItem, viewStyles] }
+          style={ [listViewStyles.listRowItem, viewStyles] }
           key={ `${rowId}_Trip_${sectionId}_list_${i}` }
         >
           <Text
