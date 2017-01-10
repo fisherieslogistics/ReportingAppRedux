@@ -2,14 +2,11 @@
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
-  Icon,
 } from 'react-native';
 
 import React, { Component } from 'react';
-import {inputStyles, textStyles, colors} from '../styles/styles';
+import {inputStyles, colors} from '../styles/styles';
 import { renderRadioButton } from './common/RadioButton';
 import { RadioButtons } from 'react-native-radio-buttons';
 import Helper from '../utils/Helper';
@@ -91,7 +88,7 @@ class InputView extends Component {
     }
   }
 
-  onBlur(e){
+  onBlur(){
     if(this.isValid){
       const degMin = helper.getDegreesMinutesFromLocation(this.props.location);
       degMin[this.props.name] = parseInt(this.state.text);
