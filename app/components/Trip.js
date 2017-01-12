@@ -146,7 +146,7 @@ class Trip extends MasterDetailView {
      return ["Ready to go press Start Trip"];
     }
     if (tripCanEnd) {
-      return ["Press End Trip your heading in"];
+      return ["Press End Trip when your heading in"];
     }
     if(allSigned){
       return ["Select ports and ETA before starting trip"];
