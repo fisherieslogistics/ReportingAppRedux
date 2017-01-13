@@ -6,6 +6,7 @@ import {
 } from './Queries';
 
 import moment from 'moment';
+<<<<<<< HEAD
 import ApiActions from '../actions/ApiActions.js';
 import net from 'react-native-tcp';
 import msgpack from 'msgpack-lite';
@@ -34,6 +35,14 @@ function generateSetances(type, input, payloadLength = 250) {
   }
   return output;
 }
+
+
+=======
+import ApiActions from '../actions/ApiActions';
+import UserActions from '../actions/UserActions';
+const apiActions = new ApiActions();
+const userActions = new UserActions();
+>>>>>>> master
 
 class SyncWorker {
 
@@ -147,6 +156,48 @@ class SyncWorker {
       objectId: fishingEvent.objectId
     });
     return {response: res};
+=======
+    this.requests = state.fishingEvents.events.filter(fe => (fEventIds.indexOf(fe.objectId) !== -1))
+                                              .map(fe => this.mutateFishingEvent(fe, state.trip.objectId,));
+    if(state.sync.trip){
+      this.requests.push(this.mutateTrip(state.trip, state.me.vessel.id));
+    }
+
+    const msg = state.sync.queues.messages.shift();
+    if(msg) {
+      this.requests.push(this.mutateMessage(msg));
+    }
+
+    const allPastRequests = state.sync.queues.pastTrips.map(
+      (t) => new Promise(resolve => this.mutatePastTrip(t.trip, t.vesselId).then(
+        () => Promise.all(t.fishingEvents.map(fe => this.mutateFishingEvent(fe, t.trip.objectId))).then(resolve))));
+
+    Promise.all([ ...this.requests.concat(allPastRequests)]).then(() => {
+      this.requests = [];
+      this.syncTimeout = setTimeout(this.sync, this.timeToSync);
+    }).catch(() => {
+      this.requests = [];
+      this.syncTimeout = setTimeout(this.sync, this.timeToSync);
+    });
+  }
+
+  dispatchMessageSent() {
+    this.dispatch(userActions.messageSent());
+  }
+
+  dispatchTrip(actionType) {
+    this.dispatch({
+      type: actionType,
+    });
+  }
+
+  dispatchMutatePastTrip(){
+    return this.dispatchTrip("pastTripSynced");
+  }
+
+  dispatchMutateTrip(){
+    return this.dispatchTrip("tripSynced");
+>>>>>>> master
   }
 
   mutatePastTrip(trip){
@@ -154,6 +205,7 @@ class SyncWorker {
     return this.performMutation(mutation.query, mutation.variables, this.dispatchMutatePastTrip);
   }
 
+<<<<<<< HEAD
   dispatchMutateTrip(res){
     const time = new moment();
     try{
@@ -169,7 +221,20 @@ class SyncWorker {
 
   mutateFishingEvent(fishingEvent, tripId, formType){
     const q = upsertFishingEvent(fishingEvent, tripId);
+=======
+  mutateMessage(message) {
+    const { query, variables } = createMessage(message);
+    return this.performMutation(query, variables, this.dispatchMessageSent);
+  }
+
+  mutateTrip(trip){
+    const mutation = upsertTrip(trip);
+    return this.performMutation(mutation.query, mutation.variables, this.dispatchMutateTrip);
+  }
+>>>>>>> master
+
     const time = new moment();
+<<<<<<< HEAD
     const callback = (res) => {
       this.dispatch({
         type: "fishingEventSynced",
@@ -182,6 +247,19 @@ class SyncWorker {
     //  client.write(`${sentance}\r\n`);
     })
     callback.bind(this)({});
+=======
+    this.dispatch({
+      type: "fishingEventSynced",
+      time,
+      objectId: fishingEvent.objectId
+    });
+    return {response: res};
+  }
+
+  mutateFishingEvent(fishingEvent, tripId){
+    const query = upsertFishingEvent(fishingEvent, tripId);
+    return this.performMutation(query.query, query.variables, (res) => { this.dispatchMutateFishingEvent(fishingEvent, res); });
+>>>>>>> master
   }
 
   performMutation(query, variables, success){
