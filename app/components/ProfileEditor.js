@@ -1,58 +1,45 @@
-'use strict';
-import {
-  StyleSheet,
-} from 'react-native';
-import React from 'react';
 
+import React, { Component } from 'react';
 import UserModel from '../models/UserModel';
 import ModelEditor from './common/ModelEditor';
-import UserActions from '../actions/UserActions';
-const userActions = new UserActions();
+import VesselModel from '../models/VesselModel';
 
-import {modelEditorStyles} from '../styles/styles';
+const ProfileModel = UserModel.concat(VesselModel);
 
-
-
-class ProfileEditor extends React.Component {
+class ProfileEditor extends Component {
 
     constructor(props) {
       super(props);
-       this.onChange = this.onChange.bind(this);
        this.getEditorProps = this.getEditorProps.bind(this);
     }
 
-    onChange(key, value){
-      /*var change = {};
-      change[key] = value
-      this.props.dispatch(userActions.editUser(change));*/
+    onChange() {
+
     }
 
     getEditorProps(attribute){
+      const profile = Object.assign({}, this.props.user, this.props.vessel);
       return {
         attribute,
-        value: this.props.user[attribute.id],
+        value: profile[attribute.id],
         onChange: this.onChange,
-        extraProps: {editable: false, focus: false},
-        inputId: attribute.id + "__profile__"
+        extraProps: { isFocused: false, editable: false },
+        inputId: attribute.id + "__profile__",
       };
     }
 
     render() {
+      const profile = Object.assign({}, this.props.user, this.props.vessel);
       return (
         <ModelEditor
-          styles={styles}
-          getCallback={() => this.onChange}
           getEditorProps={this.getEditorProps}
-          editorType={"profile"}
-          name={"profileEdit"}
-          model={UserModel}
-          modelValues={this.props.user}
-          values={this.props.user}
+          model={ ProfileModel }
+          modelValues={ profile }
+          index={1}
+          onChange={ this.onChange }
         />
     );
   }
-};
+}
 
-const styles = StyleSheet.create(modelEditorStyles);
-
-module.exports = ProfileEditor;
+export default ProfileEditor;

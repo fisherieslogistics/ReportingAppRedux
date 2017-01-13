@@ -1,94 +1,101 @@
-"use strict";
 
 import Client from '../api/Client';
 import queries from '../api/Queries';
 import AuthActions from './AuthActions';
 import UserActions from './UserActions';
 import Helper from '../utils/Helper';
-import {
-  AlertIOS,
-} from 'react-native';
 
 const userActions = new UserActions();
 const authActions = new AuthActions();
 const helper = new Helper();
 let client;
-class ApiActions {
 
-  setUpClient(dispatch, ApiEndpoint, AuthEndpoint){
-    client = new Client(dispatch, ApiEndpoint, AuthEndpoint);
+const flatten = list => list.reduce(
+  (a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []
+);
+
+const parseMessage = (msg) => ({
+  _id: msg.id,
+  text: msg.text,
+  createdAt: new Date(msg.created),
+  image: msg.image,
+  user: {
+    _id: msg.createdBy.id,
+    name: msg.createdBy.name,
   }
-
-  checkMe(auth, dispatch){
-    client.query(queries.getMe, auth)
-      .catch((err) => {
-        console.warn(err);
-      })
-      .then((res) => {
-        dispatch(userActions.setUser(parseUser(res.data.viewer)));
-      });
-  }
-
-  login(username, password){
-    return (dispatch, getState) => {
-      client.login(username, password)
-        .catch((err) => {
-          return dispatch(authActions.loginError("please try that again "));
-        })
-        .then((auth) => {
-          if(!auth){
-            return dispatch(authActions.loginError("please try that again " + auth));
-          }else{
-            //TODO: This needs to be in a popup dispatcher and not in the logic here
-            AlertIOS.alert(
-              "Login Succes!",
-              'Press Ok to continue',
-              [
-                {text: 'Ok', onPress: () => {
-                  return;
-                }, style: 'cancel'},
-              ]
-            );
-
-          }
-          dispatch(authActions.setAuth(auth));
-          client.query(queries.getMe, helper.updateAuth({}, auth))
-            .catch((err) => {
-              console.warn(err);
-            })
-            .then((res) => {
-              let viewer = res.data.viewer;
-              dispatch(userActions.setVessels(viewer.vessels));
-              if(viewer.vessels.length){
-                dispatch(userActions.setVessel(viewer.vessels[0]));
-              }
-              dispatch(userActions.setUser(parseUser(viewer)));
-            });
-
-        });
-     }
-  }
-
-  query(query, auth, callback){
-
-  }
-
-  mutate(mutation, variables, auth){
-    return client.mutate(mutation, variables, auth);
-  }
-
-}
+});
 
 const parseUser = (viewer) => {
-  const dummy = {};
-  return viewer ? {
+  const customers = flatten(viewer.organisation.customerGroups.edges.map(
+    e => flatten(e.node.customers.edges.map(
+      cu => cu.node))));
+
+  const contacts = customers.map(
+    c => Object.assign({}, c,
+      {
+        messages: c.messageThread.messages.edges.map(m => parseMessage(m.node)),
+        messageThread_id: c.messageThread.id,
+      }
+    ));
+
+  return {
     firstName: viewer.firstName,
     lastName: viewer.lastName,
     permitHolderName: viewer.formData.permit_holder_name,
     permitHolderNumber: viewer.formData.permit_holder_number,
     email: viewer.email,
     bins: viewer.bins,
-  } : dummy;
+    organisationId: viewer.organisation.id,
+    contacts,
+  };
+}
+
+class ApiActions {
+
+  setUpClient(dispatch, ApiEndpoint, AuthEndpoint){
+    client = new Client(dispatch, ApiEndpoint, AuthEndpoint);
+  }
+
+  checkMe(auth, dispatch) {
+    if(!auth.loggedIn) {
+      Promise.reject();
+    }
+    return client.query(queries.getMe, auth).then((res) => {
+      if(res && res.data){
+        const user = parseUser(res.data.viewer);
+        return dispatch(userActions.setUser(user));
+      }
+      throw new Error(res);
+    }).catch((e) => {
+      console.log(e);
+    });
+  }
+
+  login(username, password){
+    return (dispatch) => {
+      client.login(username, password).then((auth) => {
+        if(!auth){
+          return dispatch(authActions.loginError("please try that again "));
+        }
+        dispatch(authActions.setAuth(auth));
+        return client.query(queries.getMe, helper.updateAuth({}, auth))
+          .then((res) => {
+            if(res && res.data){
+              const viewer = res.data.viewer;
+              dispatch(userActions.setVessels(viewer.vessels));
+              if(viewer.vessels.length){
+                dispatch(userActions.setVessel(viewer.vessels[0]));
+              }
+              dispatch(userActions.setUser(parseUser(viewer)));
+            }
+          });
+      });
+    }
+  }
+
+  mutate(mutation, variables, auth) {
+    return client.mutate(mutation, variables, auth);
+  }
 }
 
 export default ApiActions;

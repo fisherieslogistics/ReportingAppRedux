@@ -5,10 +5,6 @@ import {
 
 export default class FocusOnDemandTextInput extends TextInput {
 
-  constructor(props){
-    super(props);
-  }
-
   focus() {
     this.clearTimeout(this.focusTimeout);
     if(this._component){

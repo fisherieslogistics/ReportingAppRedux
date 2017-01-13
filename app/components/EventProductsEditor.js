@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  AlertIOS,
 } from 'react-native';
 
 import React from 'react';
@@ -11,7 +10,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import ProductActions from '../actions/ProductActions';
 import ProductModel from '../models/ProductModel';
-import { modelEditorStyles, productEditorStyles } from '../styles/styles';
+import { colors, modelEditorStyles, productEditorStyles } from '../styles/styles';
 import ModelEditor from './common/ModelEditor';
 /* eslint-disable */
 import speciesCodesDesc from '../constants/speciesDesc.json';
@@ -40,11 +39,10 @@ class EventProductsEditor extends React.Component{
   getEditorProps(attribute, product, index) {
 
     const extraProps = {};
-
+    const inputId = `${attribute.id}__edit_product_${index}_${this.props.fishingEvent.objectId}`;
     if(attribute.id === "code"){
       const usedChoices = this.props.fishingEvent.products.map(pt => pt.code);
-      extraProps.choices = speciesCodesDesc.filter(
-        c => (c.value === product.code) || (usedChoices.indexOf(c.value) === -1));
+      extraProps.choices = speciesCodesDesc;
       extraProps.autoCapitalize = "characters";
       extraProps.maxLength = 3;
       if(usedChoices.indexOf(product.code) !== -1){
@@ -59,25 +57,12 @@ class EventProductsEditor extends React.Component{
       attribute,
       extraProps,
       index,
+      inputId,
     }
   }
 
-  validateCode(code) {
-    if(!code.length < 3) {
-      return true;
-    }
-    if(this.props.fishingEvent.products.find(p => p.code === code)){
-      AlertIOS.alert("Only one catch per species code is allowed.");
-      return false;
-    }
-    return true;
-  }
 
-  validateInput(name, value) {
-    switch (name) {
-      case "code":
-        return this.validateCode(value);
-    }
+  validateInput() {
     return true;
   }
 
@@ -87,7 +72,7 @@ class EventProductsEditor extends React.Component{
     }
     switch (name) {
       case "code":
-        if(!this.props.fishingEvent.products.find(p => p.code === value)){
+        if(!value || !this.props.fishingEvent.products.find(p => p.code === value)){
           this.props.dispatch(productActions.changeSpecies(
             this.props.fishingEvent.id, index, value, this.props.fishingEvent.objectId));
         }
@@ -134,16 +119,17 @@ class EventProductsEditor extends React.Component{
 
   renderDeleteButton(index){
     const deleteProduct = () => this.props.deleteProduct(index);
+    const delStyle = [styles.deleteButtonWrapper]
     return (
       <TouchableOpacity
         onPress={ deleteProduct }
-        style={[styles.deleteButtonWrapper, styles.deleteView]}
+        style={ delStyle }
       >
         <Icon8
-          name={"delete"}
-          size={ 14 }
-          color={"white"}
-          />
+          name={ 'delete' }
+          size={ 20 }
+          color={ colors.red }
+        />
       </TouchableOpacity>
     );
   }

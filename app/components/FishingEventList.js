@@ -2,20 +2,12 @@
 import{
   View,
   Text,
-  ListView,
-  Image
 } from 'react-native';
 import React from 'react';
-import FishingEventActions from '../actions/FishingEventActions';
-import Helper from '../utils/Helper';
 import MasterListView from './common/MasterListView';
 import Icon8 from './common/Icon8';
 
 import { darkColors as colors, listViewStyles, iconStyles, textStyles} from '../styles/styles';
-import {IconButton} from './common/Buttons';
-
-const fishingEventActions = new FishingEventActions();
-const helper = new Helper();
 
 class FishingEventList extends React.Component {
     constructor(props){
@@ -30,7 +22,7 @@ class FishingEventList extends React.Component {
         return {icon: 'fishing',
                 color: colors.blue}
       }
-      if(fishingEvent.datetimeAtEnd && !fishingEvent.eventValid){
+      if(fishingEvent.datetimeAtEnd && !(fishingEvent.eventValid && fishingEvent.productsValid)){
         return {icon: 'error',
                 color: colors.orange}
       }
@@ -43,7 +35,7 @@ class FishingEventList extends React.Component {
     }
 
     getIcon(fishingEvent){
-      let status = this.eventStatus(fishingEvent);
+      const status = this.eventStatus(fishingEvent);
       return (
         <Icon8
           name={status.icon}
@@ -54,28 +46,26 @@ class FishingEventList extends React.Component {
       );
     }
 
-    getDescription(fishingEvent, sectionID, rowID) {
-      let tSpecies = (fishingEvent.targetSpecies || "").toUpperCase();
+    getDescription(fishingEvent) {
+      const tSpecies = (fishingEvent.targetSpecies || "").toUpperCase();
       const isSelected = this.isSelected(fishingEvent);
-      let textStyle = isSelected ? textStyles.white : textStyles.black;
-      let details = [
+      const textStyle = isSelected ? textStyles.white : textStyles.black;
+      const details = [
         {text: fishingEvent.id, style: [textStyle, listViewStyles.text, listViewStyles.detail, {marginLeft: 12}]},
         {text: fishingEvent.datetimeAtStart.format("HH:mm"),style: [textStyle, listViewStyles.detail, textStyles.listView]},
         {text: tSpecies, style: [textStyle, listViewStyles.detail, listViewStyles.text]}
       ];
 
-      return details.map((detail, i) => {
-        return (
+      return details.map((detail, i) => (
         <View style={listViewStyles.listRowItemNarrow} key={"eventDetail" + i}>
           <Text style={[detail.style, textStyles.font, textStyles.listView]}>
             {detail.text}
           </Text>
-        </View>);
-      });
+        </View>));
     }
 
     isSelected(fishingEvent){
-      return this.props.selectedFishingEvent && (fishingEvent.id == this.props.selectedFishingEvent.id)
+      return this.props.selectedFishingEvent && (fishingEvent.id === this.props.selectedFishingEvent.id)
     }
 
     render () {
@@ -89,6 +79,6 @@ class FishingEventList extends React.Component {
         />
       );
     }
-};
+}
 
 export default FishingEventList;

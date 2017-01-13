@@ -3,7 +3,7 @@ import{
 } from 'react-native';
 
 
-import React from 'react';
+import React, { Component } from 'react';
 import reactMixin from 'react-mixin';
 import {connect} from 'react-redux';
 /* eslint-disable */
@@ -15,7 +15,7 @@ import FocusOnDemandTextInput from './FocusOnDemandTextInput';
 
 const viewActions = new ViewActions();
 
-class AutoSuggestPicker extends React.Component {
+class AutoSuggestPicker extends Component {
 
   constructor(props){
     super(props);
@@ -27,17 +27,19 @@ class AutoSuggestPicker extends React.Component {
     this.onBlur = this.onBlur.bind(this);
     this.onChangeText = this.onChangeText.bind(this);
     this.onKeyPress = this.onKeyPress.bind(this);
+    this.initChoices = this.initChoices.bind(this);
   }
 
   componentWillReceiveProps(nextProps){
-    if(nextProps.choices.length !== this.props.choices.length) {
+    const nextValue = (nextProps.value || "").toString();
+    if(JSON.stringify(nextProps.choices) !== JSON.stringify(this.props.choices)) {
       this.initChoices();
     }
     if(nextProps.isFocused !== this.props.isFocused) {
-      this.dispatchChange(nextProps.value.toString());
+      this.dispatchChange(nextValue);
     }
     this.setState({
-      value: nextProps.value,
+      value: nextValue,
     });
   }
 
@@ -62,20 +64,19 @@ class AutoSuggestPicker extends React.Component {
   }
 
   initChoices(){
-    const userFavourites = this.props.favourites[this.props.attributeId];
-    const favourites = userFavourites ? Object.keys(userFavourites).sort((k1, k2) => userFavourites[k1] - userFavourites[k2]) : [];
-    this.props.dispatch(viewActions.initAutoSuggestBarChoices(this.props.choices,
-                                                              [],
-                                                              this.props.showAll ? "" : this.props.value,
-                                                              this.props.inputId,
-                                                              ));
-
+    this.props.dispatch(
+      viewActions.initAutoSuggestBarChoices(
+        this.props.choices,
+        this.props.showAll ? "" : this.props.value,
+        this.props.inputId,
+    ));
   }
 
-  onFocus(){
-    this.initChoices();
-    this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
+  onFocus() {
+    this.props.onChange('');
     this.props.handleFocus(this.props.inputId);
+    this.props.dispatch(viewActions.toggleAutoSuggestBar(true));
+    setTimeout(this.initChoices);
   }
 
   onBlur(event, eventValue){
@@ -100,20 +101,20 @@ class AutoSuggestPicker extends React.Component {
   }
 
   render () {
-    const style = [inputStyles.textInput, this.props.styles | {}];
+    const style = [inputStyles.textInput, this.props.styles];
     return(
       <FocusOnDemandTextInput
-        style={style}
+        style={ style }
         onFocus={ this.onFocus }
         onBlur={ this.onBlur }
-        onChangeText={this.onChangeText}
+        onChangeText={ this.onChangeText }
         value={ this.state.value }
-        placeholder={this.props.placeholder}
-        placeholderTextColor={colors.black}
+        placeholder={ this.props.placeholder }
+        placeholderTextColor={ colors.black }
         selectTextOnFocus
-        autoCapitalize={this.props.autoCapitalize || 'none'}
-        autoCorrect={false}
-        ref={'textInput'}
+        autoCapitalize={ this.props.autoCapitalize || 'none' }
+        autoCorrect={ false }
+        ref={ 'textInput' }
         editable={ !this.props.disabled }
         isFocused={ this.props.isFocused }
         onKeyPress={ this.onKeyPress }
@@ -124,12 +125,13 @@ class AutoSuggestPicker extends React.Component {
 
 reactMixin(AutoSuggestPicker.prototype, Subscribable.Mixin);
 
-const select = (State, dispatch) => {
+const select = (State) => {
   const state = State.default;
   return {
     eventEmitter: state.uiEvents.eventEmitter,
-    favourites: state.me.autoSuggestFavourites
   };
 }
+
+export { AutoSuggestPicker }
 
 export default connect(select)(AutoSuggestPicker);

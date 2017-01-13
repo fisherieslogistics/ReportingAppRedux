@@ -13,8 +13,6 @@ let initialState = {
   height: 1024,
   autoSuggestBar: {
     choices: [],
-    favourites: [],
-    taken: [],
     text: "",
     uivisible: false,
     inputId: null
@@ -38,7 +36,6 @@ export default (state = initialState, action) => {
       case 'changeAutoSuggestBarText':
         return update(state, {autoSuggestBar: update(state.autoSuggestBar, {
           text: action.text,
-          name: action.name
         })});
       case 'toggleAutoSuggestBar':
         state.autoSuggestBar.uivisible = action.visible;

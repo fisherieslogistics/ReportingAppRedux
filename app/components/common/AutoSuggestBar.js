@@ -1,16 +1,17 @@
 'use strict';
 import{
-  StyleSheet,
   Text,
   View,
   TouchableOpacity
 } from 'react-native';
 
 import React from 'react';
+import {connect} from 'react-redux';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import {colors, textStyles} from '../../styles/styles';
 
-const styles = StyleSheet.create({
+const MAX_AUTOSUGGEST_RESULTS = 12;
+const styles = {
   row:{
     flexDirection: 'row',
     flex: 1,
@@ -25,12 +26,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     flexDirection: 'row',
     borderTopWidth: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.white,
     borderTopColor: colors.lightestGray,
     padding: 8
   },
   resultText: {
-    color: "white"
+    color: colors.white,
   },
   resultTextValue: {
     fontSize: 20,
@@ -51,171 +52,123 @@ const styles = StyleSheet.create({
     marginRight: 4,
     borderRadius: 8
   },
-});
+};
 
 class AutoSuggestBar extends React.Component {
 
-    constructor(props){
-      super(props);
-      this.__searchTimeout = null;
-      this.renderResult = this.renderResult.bind(this);
-      this.renderResults = this.renderResults.bind(this);
-      this.setup = this.setup.bind(this);
-      this.getSearchResults = this.getSearchResults.bind(this);
-      const { valueStore, descriptionStore, sortedValues } = this.setup(props.choices);
-      this.state = {
-        focus: false,
-        valueStore,
-        descriptionStore,
-        results: [],
-        sortedValues,
+  constructor(props){
+    super(props);
+    this.__searchTimeout = null;
+    this.renderResult = this.renderResult.bind(this);
+    this.renderResults = this.renderResults.bind(this);
+    this.getSearchResults = this.getSearchResults.bind(this);
+    this.state = {
+      results: [],
+      inputId: props.inputId,
+    }
+  }
+
+  regExp(term){
+    return new RegExp("\\b" + term.replace(/[^\w\s]/gi, ''), "gi");
+  }
+
+  getSearchResults(term){
+    const results = [];
+    const regExp = this.regExp(term);
+    for(let i = 0; i < this.props.choices.length && results.length < MAX_AUTOSUGGEST_RESULTS; i++){
+      const choice = this.props.choices[i];
+      const toTest = `${choice.value}${choice.description}`;
+      if(regExp.test(toTest)){
+        results.push(choice);
+      }
+    }
+    return results;
+  }
+
+  searchChoices(term){
+    this.setState({
+      results: this.getSearchResults(term),
+    });
+  }
+
+  onChangeText(text){
+    clearTimeout(this.__searchTimeout);
+    this.__searchTimeout = setTimeout(() => this.searchChoices(text));
+  }
+
+  onResultPress(value){
+    this.props.eventEmitter.emit('AutoSuggestResultPress', { value, inputId: this.props.inputId });
+  }
+
+  componentWillReceiveProps(props){
+    if(props.inputId !== this.props.inputId || (JSON.stringify(props.choices) !== JSON.stringify(this.props.choices))){
+      this.setState({
         inputId: props.inputId,
-      }
-    }
-
-    addSearchable(value, description, index, valueStore, descriptionStore) {
-      valueStore[value] = index;
-      descriptionStore[value] = description;
-    }
-
-    setup(choices){
-      const values = {};
-      const desc = {};
-      choices.forEach((c, i) => {
-        this.addSearchable(c.value, c.description, i, values, desc)
       });
-      return {
-        valueStore: values,
-        descriptionStore: desc,
-      }
+      this.onChangeText("");
+      return;
     }
 
-    initSuggestions(choices){
-      /*const ratingOrNegative = (a) => {
-        const iA = favourites.indexOf(a);
-        return iA === -1 ? iA : (favourites.length - iA);
-      }*/
-      //choices = choices.sort((a, b) => ratingOrNegative(b.value) - ratingOrNegative(a.value));
-      const { valueStore, descriptionStore } = this.setup(choices);
-      this.setState({
-        valueStore,
-        descriptionStore,
-        inputId: this.props.inputId,
-      });
+    if(props.text !== this.state.text){
+      this.onChangeText(props.text);
     }
 
-    componentWillUpdate(newProps){
-      if(newProps.inputId !== this.props.inputId){
-        return true;
-      }
-      if(newProps.choices.length !== this.props.choices.length){
-        return true;
-      }
-      return false;
-    }
+  }
 
-    regExp(term){
-      return new RegExp("\\b" + term.replace(/[^\w\s]/gi, ''), "gi");
-    }
-
-    getSearchResults(term){
-      const results = [];
-      const regExp = this.regExp(term);
-      const vStore = this.state.valueStore;
-
-      Object.keys(vStore).forEach((k, i) => {
-        if(results.length <= this.props.maxResults &&
-          (regExp.test(k) || regExp.test(this.state.descriptionStore[k]))){
-            results.push(this.props.choices[vStore[k]]);
-        }
-      });
-
-      if(this.props.sortResultsBy){
-        results.sort(this.props.sortBy);
-      }
-
-      return results;
-    }
-
-    searchChoices(term){
-      this.setState({
-        results: this.getSearchResults(term),
-      });
-    }
-
-    onChangeText(text){
-      clearTimeout(this.__searchTimeout);
-      this.__searchTimeout = setTimeout(() => this.searchChoices(text));
-    }
-
-    onResultPress(value){
-      this.props.eventEmitter.emit('AutoSuggestResultPress', {name: this.state.name, value, inputId: this.props.inputId});
-    }
-
-    shouldComponentUpdate(props) {
-      return !!props.choices;
-    }
-
-    componentWillReceiveProps(props){
-      if(props.inputId !== this.props.inputId || (props.choices.length !== this.props.choices.length)){
-        this.initSuggestions(props.choices, props.favourites);
-        this.setState({
-          inputId: props.inputId
-        });
-        this.onChangeText("");
-        return;
-      }
-
-      if(props.text !== this.state.text){
-        this.onChangeText(props.text);
-      }
-
-    }
-
-    renderResult(result, i){
-      const blank = "";
-      const text = this.props.text || blank;
-      if(!(result && result.value.toString())){
-        return null;
-      }
-      const isSelected = (result.value.toString().toUpperCase() === text.toUpperCase()) || (this.state.results === 1);
-      const resultTextStyle = isSelected ? styles.resultTextSelected : styles.resultText;
-      const backgroundStyle = isSelected ? styles.resultBackgroundSelected : styles.resultBackground;
-      return (
-        <TouchableOpacity key={i + "_autoSuggest"}
-          onPress={() => this.onResultPress(result.value)}
-        >
-          <View style={[styles.result, backgroundStyle]}>
-            <Text style={[textStyles.font,resultTextStyle, styles.resultTextValue]}>
-              {result.value}
-            </Text>
-            <Text style={[textStyles.font,resultTextStyle]}>
-              {result.description}
-            </Text>
-          </View>
-        </TouchableOpacity>);
-    }
-
-    renderResults(){
-      if(this.props.text.length){
-        return this.state.results.map(this.renderResult);
-      }
-      return this.getSearchResults("").map(this.renderResult);
-    }
-
-    render () {
-      if(!this.props.visible){
-        return null;
-      }
-      return (
-        <View style={styles.resultsBarWrapper}>
-          <View style={[styles.resultsBar, {width: this.props.width}]}>
-            {this.renderResults()}
-          </View>
-          <KeyboardSpacer />
+  renderResult(result, i){
+    const text = this.props.text || "";
+    const isSelected = (result.value.toString().toUpperCase() === text.toUpperCase()) || (this.state.results === 1);
+    const resultTextStyle = isSelected ? styles.resultTextSelected : styles.resultText;
+    const backgroundStyle = isSelected ? styles.resultBackgroundSelected : styles.resultBackground;
+    const onPress = () => this.onResultPress(result.value);
+    return (
+      <TouchableOpacity key={i + "_autoSuggest"}
+        onPress={onPress}
+      >
+        <View style={[styles.result, backgroundStyle]}>
+          <Text style={[textStyles.font,resultTextStyle, styles.resultTextValue]}>
+            {result.value}
+          </Text>
+          <Text style={[textStyles.font,resultTextStyle]}>
+            {result.description}
+          </Text>
         </View>
-      );
+      </TouchableOpacity>);
+  }
+
+  renderResults(){
+    if(this.props.text.length){
+      return this.state.results.map(this.renderResult);
     }
+    return this.getSearchResults("").map(this.renderResult);
+  }
+
+  render () {
+    if(!this.props.visible){
+      return null;
+    }
+    const style =  {width: this.props.width };
+    return (
+      <View style={styles.resultsBarWrapper }>
+        <View style={[styles.resultsBar, style]}>
+          {this.renderResults()}
+        </View>
+        <KeyboardSpacer />
+      </View>
+    );
+  }
 }
 
-export default AutoSuggestBar
+const select = (State) => {
+  const state = State.default;
+  const props = state.view.autoSuggestBar;
+  return {
+    visible: props.uivisible,
+    choices: props.choices,
+    text: props.text,
+    inputId:  props.inputId,
+    eventEmitter: state.uiEvents.eventEmitter,
+  };
+}
+
+export default connect(select)(AutoSuggestBar)

@@ -85,6 +85,7 @@ class EditOnBlurInput extends React.Component {
 
   render(){
     /* eslint-disable react/jsx-handler-names */
+    const editable = !!this.props.editable;
     const keypadType = this.getKeypad();
     return (
       <FocusOnDemandTextInput
@@ -100,7 +101,7 @@ class EditOnBlurInput extends React.Component {
         onChangeText={ this.onChangeText }
         isFocused={ this.props.isFocused }
         onKeyPress={ this.onKeyPress }
-        { ...this.props.extraProps }
+        editable={ editable }
      />
     );
   }

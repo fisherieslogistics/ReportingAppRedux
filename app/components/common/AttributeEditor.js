@@ -8,9 +8,9 @@ import moment from 'moment';
 import { inputStyles } from '../../styles/styles';
 import LocationEditor from '../LocationEditor';
 import AutoSuggestPicker from './AutoSuggestPicker';
+import SpeciesCodePicker from '../SpeciesCodePicker';
 import EditOnBlurInput from './EditOnBlurInput';
 
-//const AttributeEditor = (attribute, value, onChange, extraProps = {}, inputId, onEnterPress }, editingCallback, focusedAttributeId, index) => {
 const dateStyles = {
   dateText: Object.assign(inputStyles.dateText, { left: 45 }),
   dateInput: inputStyles.dateInput,
@@ -77,12 +77,26 @@ class AttributeEditor extends Component {
             { ...extraProps }
           />
         );
+      case "speciesCodePicker":
+        return (
+          <SpeciesCodePicker
+            onChange={ this.onChange }
+            value={ value}
+            name={ attribute.id }
+            inputId={ inputId }
+            handleBlur={ handleBlur }
+            handleFocus={ handleFocus }
+            isFocused={ isFocused }
+            onEnterPress={ onEnterPress }
+            { ...extraProps }
+          />
+        );
       case "picker":
         return (
           <AutoSuggestPicker
             onChange={ this.onChange }
             value={ value}
-            name={ attribute.id }
+            attribute={ attribute }
             inputId={ inputId }
             handleBlur={ handleBlur }
             handleFocus={ handleFocus }
@@ -120,7 +134,6 @@ class AttributeEditor extends Component {
             attribute={ attribute }
             value={ value }
             onChange={ this.onChange }
-            extraProps={ extraProps }
             inputId={ inputId }
             isFocused={ isFocused }
             onEnterPress={ onEnterPress }

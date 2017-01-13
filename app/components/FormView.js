@@ -5,29 +5,24 @@ import {
   ScrollView,
   StyleSheet,
   ListView,
-  AlertIOS,
   Image,
   TouchableOpacity
 } from 'react-native';
 
 import React from 'react';
-import moment from 'moment';
-import Helper from '../utils/Helper';
 import FormsList from './FormsList';
-import MasterDetailView from './layout/MasterDetailView';
+import { MasterDetail } from './layout/MasterDetailView';
 import ModelUtils from '../utils/ModelUtils';
 import SignatureView from './SignatureView';
-import AsyncStorage from 'AsyncStorage';
 import FormActions from '../actions/FormActions';
 const formActions = new FormActions();
 
 import {connect} from 'react-redux';
-import {createForms} from '../utils/FormUtils';
 import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
-import {colors, listViewStyles, textStyles, shadowStyles} from '../styles/styles';
-import {getFormModelByTypeCode, renderForm} from '../utils/FormUtils';
+import {colors, textStyles, shadowStyles} from '../styles/styles';
+import {getFormModelByTypeCode, renderForm, createForms } from '../utils/FormUtils';
 
-const helper = new Helper();
+let styles = null;
 
 class FormView extends React.Component {
   constructor(props){ //icon ans sign form fix it
@@ -40,6 +35,8 @@ class FormView extends React.Component {
       selectedIndex: 0
     };
     this._onSaveEvent = this._onSaveEvent.bind(this);
+    this.toggleSignature = this.toggleSignature.bind(this);
+    this.getMasterToolbar = this.getMasterToolbar.bind(this);
   }
 
   componentWillReceiveProps(props){
@@ -48,8 +45,8 @@ class FormView extends React.Component {
     })
   }
 
-  toggleSignature(canSignOne){
-    if(!canSignOne) {
+  toggleSignature(){
+    if(!this.formReadyToSign(this.props.viewingForm)) {
       return;
     }
     this.setState({
@@ -58,11 +55,11 @@ class FormView extends React.Component {
   }
 
   saveSign() {
-    this.refs["sign"].saveImage();
+    this.refs.sign.saveImage();
   }
 
   resetSign() {
-    this.refs["sign"].resetImage();
+    this.refs.sign.resetImage();
   }
 
 
@@ -73,13 +70,13 @@ class FormView extends React.Component {
     this.setState({
       showSignature: false,
     });
-    //TODO something better when using events
     setTimeout(() => {
-      let forms = createForms(this.props.fishingEvents, this.props.formType);
+      const forms = createForms(this.props.fishingEvents, this.props.formType);
       this.setState({
-        forms: forms
+        forms
       })
-      this.props.dispatch(formActions.setViewingForm(null));
+      this.props.dispatch(formActions.setViewingForm(forms.find(
+        f => f.id === this.props.viewingForm.id)));
     }, 300);
  }
 
@@ -98,7 +95,7 @@ class FormView extends React.Component {
     let items = obj[k];
     if(meta.prep){
       items = meta.prep(obj[k]);
-      key = key + "__prepped";
+      key += "__prepped";
       obj[key] = items;
     }
     items.forEach((v, i) => {
@@ -108,7 +105,7 @@ class FormView extends React.Component {
 
   renderMultiple(obj, parts, key, allText, eventIndex, itemIndex){
     parts.forEach((p) => {
-      let val = p.resolve(obj, itemIndex, key);
+      const val = p.resolve(obj, itemIndex, key);
       allText.push(this.renderText(val, p, eventIndex, itemIndex, key));
     });
   }
@@ -118,6 +115,7 @@ class FormView extends React.Component {
     try {
       val = resolve(obj);
     } catch (e) {
+      console.log(e);
     }
     return val;
   }
@@ -142,7 +140,7 @@ class FormView extends React.Component {
   }
 
   renderObj(obj, meta, eventIndex){
-    let allText = [];
+    const allText = [];
     Object.keys(meta).forEach((k) => {
       this.renderValue(obj, meta[k], k, allText, eventIndex);
     });
@@ -150,8 +148,8 @@ class FormView extends React.Component {
   }
 
   renderText(val, meta, xIndex=0, yIndex=0, key){
-    let _key = `${val} ${xIndex} ${yIndex} ${key} ${meta.x} ${meta.y}`;
-    let xy = {left: meta.x * 0.657, top: meta.y * 0.658};
+    const _key = `${val} ${xIndex} ${yIndex} ${key} ${meta.x} ${meta.y}`;
+    const xy = {left: meta.x * 0.657, top: meta.y * 0.658};
     if(meta.ymultiple){
       xy.top += (meta.ymultiple * yIndex);
     }
@@ -181,49 +179,68 @@ class FormView extends React.Component {
     if(!(this.props.viewingForm && this.props.viewingForm.fishingEvents[0].signature)){
       return null;
     }
-    let signStyle = this.props.formType == 'tcer' ? styles.signImageTCER : styles.signImageLCER;
-    let dateStyle = this.props.formType == 'tcer' ? styles.dateSignedTCER : styles.dateSignedLCER;
+    const signStyle = styles.signImageTCER;
+    const dateStyle = styles.dateSignedTCER;
     return [
-      (<Image source={{uri: "data:image/png;base64," + this.props.viewingForm.fishingEvents[0].signature.toString()}}
-              style={[signStyle, {width: 120, height: 40}]}
-              key={"SignatureImage"} />),
-      (<View style={[dateStyle]} key={"DateSignedText"}>
-         <Text style={[{color: colors.red}]}>{this.props.viewingForm.fishingEvents[0].dateSigned.format("DD  MM   YYYY")}</Text>
-       </View>)
+      (
+        <Image
+          source={{uri: "data:image/png;base64," + this.props.viewingForm.fishingEvents[0].signature.toString()}}
+          style={[signStyle, {width: 120, height: 35}]}
+          key={"SignatureImage"}
+        />
+      ),
+      (
+        <View style={[dateStyle]} key={"DateSignedText"}>
+          <Text style={[{color: colors.red}]}>
+            {this.props.viewingForm.fishingEvents[0].dateSigned.format("DD       MM          YY")}
+          </Text>
+        </View>
+      )
     ];
+  }
+
+  getMasterToolbar(){
+    const canSignOne = this.formReadyToSign(this.props.viewingForm);
+    const backgroundColor = canSignOne ? colors.blue : colors.darkGray;
+    const textColor = canSignOne ? colors.white : colors.backgrounds.light;
+    const buttonStyle = { flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor, alignSelf: 'stretch'};
+    const innerWrap = { alignItems: 'center' };
+    const textStyle = { fontSize: 30, fontWeight: '500', color: textColor, textAlign: 'center', marginTop: 20 };
+    const eventButton = (
+      <TouchableOpacity onPress={ this.toggleSignature } style={ buttonStyle }>
+         <View style={innerWrap}>
+          <Text style={ textStyle }>
+            { "Sign Form" }
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+    return(
+      <MasterToolbar
+        center={eventButton}
+      />
+    );
   }
 
   render() {
     let text = [];
-    let form = this.props.viewingForm;
+    const form = this.props.viewingForm;
     if(form){
       text = this.renderForm(form);
       text = this.renderFishingEvents(text, form);
     }
-
-    //let canSignAll = !this.props.forms.find(f => !this.formReadyToSign(f)) &! this.props.forms.every(f => f.signed);
-    let canSignOne = this.formReadyToSign(form);
-    let signColor = canSignOne ? colors.blue : colors.darkGray;
-    let detailToolbar = (
-      <DetailToolbar
-        right={{color: signColor, text: "Sign", onPress: () => this.toggleSignature(canSignOne), enabled: true}}
-        center={<Text style={[textStyles.font]}>{this.props.viewingForm ? this.props.viewingForm.id : null}</Text>}
-      />
+    const detailToolbar = (
+      <DetailToolbar />
     );
-    //right={{color: colors.blue, text: "Sign all", onPress: () => this.toggleSignature("all", canSignAll), enabled: canSignAll}}
-    let masterToolbar = (
+    const masterToolbar = (
       <MasterToolbar
-        center={
-          <View style={{marginTop: 36}}>
-            <Text style={[textStyles.font, textStyles.midLabel]}>
-              Forms
-            </Text>
-          </View>
-        }
+        center={ this.getMasterToolbar() }
       />
     );
 
-    let signatureView = this.state.showSignature ?
+    const master = this.renderFormsListView();
+
+    const signatureView = this.state.showSignature ?
       (<View style={[styles.signatureViewContainer, {backgroundColor: "white"}, shadowStyles.shadowDown]}>
         <SignatureView
           style={[{flex:1}, styles.signature]}
@@ -234,11 +251,11 @@ class FormView extends React.Component {
           viewMode={"landscape"}/>
         </View>) : null;
 //<View style={[styles.greyBackground]}></View>
-    let greyBackground = (this.state.showSignature || this.state.showSignatureWarning) ?
+    const greyBackground = (this.state.showSignature || this.state.showSignatureWarning) ?
       (<View style={[styles.greyBackground]}></View>):null;
 
 
-    let signatureWarningView = this.state.showSignatureWarning ?
+    const signatureWarningView = this.state.showSignatureWarning ?
       (<View style={[styles.signatureWarningViewContainer, {backgroundColor: "white"}, shadowStyles.shadowDown, ]}>
         <Text style={{color: 'red', textAlign: 'center', fontSize: 17, padding: 10}}>WARNING</Text>
         <Text>Once you tap continue, you will no longer be able to edit the shots on this form.</Text>
@@ -254,9 +271,9 @@ class FormView extends React.Component {
         </View>
         </View>) : null;
 
-    let renderedForm = renderForm(this.props.formType, text, styles);
+    const renderedForm = renderForm(this.props.formType, text, styles);
     const detailView = (
-      <ScrollView horizontal={true}>
+      <ScrollView horizontal>
         <View style={[styles.col, styles.fill, {alignSelf: 'flex-start'},
                       styles.wrapper, {opacity:this.props.viewingForm ? 1 : 0}]}>
           {renderedForm}
@@ -269,18 +286,18 @@ class FormView extends React.Component {
     );
 
     return (
-      <MasterDetailView
-        master={this.renderFormsListView()}
+      <MasterDetail 
+        master={master}
         detail={detailView}
         detailToolbar={detailToolbar}
         masterToolbar={masterToolbar}
       />
     );
   }
-};
+}
 
-const select = (State, dispatch) => {
-    let state = State.default;
+const select = (State) => {
+    const state = State.default;
     return {
       user: state.me.user,
       vessel: state.me.vessel,
@@ -292,7 +309,7 @@ const select = (State, dispatch) => {
     };
 }
 
-const styles = StyleSheet.create({
+styles = StyleSheet.create({
   wrapper:{
    backgroundColor: colors.backgrounds.veryDark,
    margin: 5,
@@ -381,7 +398,7 @@ const styles = StyleSheet.create({
   },
   signImageTCER: {
     position: 'absolute',
-    top: 410,
+    top: 420,
     left: 550,
     height: 40,
     width: 120,
@@ -407,4 +424,4 @@ const styles = StyleSheet.create({
   }
 });
 
-module.exports = connect(select)(FormView);
+export default connect(select)(FormView);

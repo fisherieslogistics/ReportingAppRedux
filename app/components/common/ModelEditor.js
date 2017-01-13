@@ -106,21 +106,21 @@ class ModelEditor extends React.Component {
     if(this.props.noLabelRow){
       labelView = null;
       errorView = null;
-      const err = (!attribute.valid.func(value) || editorProps.error)
-      if(err){
-        wrapperStyle.push({
-          borderBottomColor: colors.orange,
-          borderBottomWidth: 1,
-        });
-      }
-      if(isFocused){
+      if(isFocused) {
         wrapperStyle.push({
           borderBottomColor: colors.white,
           borderTopColor: colors.white,
-          borderTopWidth: 2,
-          borderBottomWidth: 2,
+          borderTopWidth: 1,
+          borderBottomWidth: 1,
         });
       }
+    }
+    const err = (!attribute.valid.func(value) || editorProps.error)
+    if(err){
+      wrapperStyle.push({
+        borderBottomColor: colors.orange,
+        borderBottomWidth: 1,
+      });
     }
     return (
       <TouchableOpacity

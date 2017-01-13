@@ -2,14 +2,11 @@
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
-  Icon,
 } from 'react-native';
 
 import React, { Component } from 'react';
-import {inputStyles, textStyles, colors} from '../styles/styles';
+import {inputStyles, colors} from '../styles/styles';
 import { renderRadioButton } from './common/RadioButton';
 import { RadioButtons } from 'react-native-radio-buttons';
 import Helper from '../utils/Helper';
@@ -62,7 +59,7 @@ const styles = StyleSheet.create({
 class InputView extends Component {
   constructor(props){
     super(props);
-    let degMin = helper.getDegreesMinutesFromLocation(this.props.location);
+    const degMin = helper.getDegreesMinutesFromLocation(this.props.location);
     this.state = {
       text: degMin[this.props.name].toString(),
     }
@@ -81,7 +78,7 @@ class InputView extends Component {
 
   onChangeText(text){
     this.setState({
-      text: text
+      text
     });
   }
 
@@ -91,9 +88,9 @@ class InputView extends Component {
     }
   }
 
-  onBlur(e){
+  onBlur(){
     if(this.isValid){
-      let degMin = helper.getDegreesMinutesFromLocation(this.props.location);
+      const degMin = helper.getDegreesMinutesFromLocation(this.props.location);
       degMin[this.props.name] = parseInt(this.state.text);
       const loc = helper.parseLocation(degMin,
                                        degMin.ew,
@@ -134,7 +131,7 @@ class InputView extends Component {
         </View>
         <View style={ [ styles.textInputWrapper, styles.centerItems ] }>
           <FocusOnDemandTextInput
-            selectTextOnFocus={true}
+            selectTextOnFocus
             focus={ this.isToFocus() }
             keyboardType={ 'number-pad' }
             value={ this.state.text }
@@ -240,7 +237,7 @@ export default class CoordinateEditor extends Component {
           { this.renderInputs(_props) }
         </View>
         <View style={ [styles.formSectionBottom] }>
-          <View style={{flex: 1, justifyContent: 'space-between', paddingTop: 10 }}>
+          <View style={{flex: 1, justifyContent: 'space-between', paddingTop: 10, marginTop: 80 }}>
             <RadioButtons
               options={ _props.hemisphereOptions }
               onSelection={ this.onHemisphereChange }

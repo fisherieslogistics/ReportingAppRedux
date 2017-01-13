@@ -76,7 +76,7 @@ const VesselEditor = (props) => {
         value={props.catchDetailsExpanded}
       />
     </View>
-);
+  );
 
   const top = (
     <View>
@@ -103,4 +103,4 @@ const VesselEditor = (props) => {
 
 const styles = StyleSheet.create(modelEditorStyles);
 
-module.exports = VesselEditor;
+export default VesselEditor;
