@@ -102,6 +102,10 @@ class EventDetailEditor extends React.Component{
     }
 
     getEditorProps(attribute){
+      if(!attribute){
+        console.log("Meeer");
+        debugger;
+      }
       const extraProps = {};
       if(attribute.id === 'targetSpecies') {
         extraProps.choices = speciesCodesDesc;

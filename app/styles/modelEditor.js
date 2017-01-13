@@ -17,10 +17,12 @@ export default {
   singleInput: {
     paddingBottom: 4,
     height: 50,
+    marginLeft: 15,
   },
   combinedInput: {
     paddingBottom: 4,
     height: 50,
+    marginLeft: 15,
   },
   fill: {
     flex: 1,

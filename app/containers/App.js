@@ -3,17 +3,17 @@ import React, { Component } from 'react';
 import { View, StatusBar, AlertIOS } from 'react-native';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
-import { Provider, connect } from 'react-redux';
+import { Provider } from 'react-redux';
+import { connect } from 'react-redux';
+import AsyncStorage from 'AsyncStorage';
 import ReportingApp from './ReportingApp';
+import * as reducers from '../reducers';
 import StateLoadActions from '../actions/StateLoadActions';
 import Helper from '../utils/Helper';
 import StateMigratorizer from '../utils/StateMigratorizer';
-//eslint unfriendly imports
-/* eslint-disable */
-import * as reducers from '../reducers';
 import ErrorUtils from 'ErrorUtils';
+
 const Mailer = require('NativeModules').RNMail;
-/* eslint-enable */
 
 const helper = new Helper();
 const stateLoadActions = new StateLoadActions();

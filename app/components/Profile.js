@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import React from 'react';
 const PickerItemIOS = PickerIOS.Item;
-import { MasterDetail } from './layout/MasterDetailView';
+import MasterDetailView from './layout/MasterDetailView';
 import AuthActions from '../actions/AuthActions';
 import MasterListView from './common/MasterListView';
 import moment from 'moment';
@@ -242,7 +242,7 @@ class Profile extends React.Component{
                <View style={{paddingLeft: 90, marginTop: 20}}>
                  <LongButton
                    text={"login"}
-                   bgColor={colors.red}
+                   bgColor={colors.pink}
                    onPress={this.login}
                    disabled={false}
                  />
@@ -276,13 +276,13 @@ class Profile extends React.Component{
       />
     )
     return (
-        <MasterDetail 
+        <MasterDetailView
           modal={this.getModal()}
           master={this.renderListView()}
           detail={
             (<LongButton
                 text={ "login"}
-                bgColor={colors.red}
+                bgColor={colors.pink}
                 onPress={this.onLoginPress}
                 disabled={ false }
             />)

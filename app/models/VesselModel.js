@@ -4,11 +4,11 @@ const valid = Validator.valid;
 
 const VesselModel = [
   {
-    id: 'name', label: "Vessel Name", valid: valid.anyValue, defaultValue: "no vessel",
+    id: 'name', defaultValue: "", label: "Name", valid: valid.anyValue,
     display: { type: 'single' },
   },
   {
-    id: 'registration', defaultValue: "no vessel", label: "Registration Number", valid: valid.anyValue,
+    id: 'registration', defaultValue: "", label: "Registration Number", valid: valid.anyValue,
     display: { type: 'single' },
   },
   {

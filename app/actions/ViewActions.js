@@ -3,11 +3,12 @@ import moment from 'moment';
 
 class ViewActions{
 
-    initAutoSuggestBarChoices(choices, text, inputId){
+    initAutoSuggestBarChoices(choices, favourites, text, inputId){
       //use a name change to tell it to re initialise
       return {
         type: 'initAutoSuggestBarChoices',
         choices,
+        favourites,
         text,
         inputId
       }
@@ -17,6 +18,7 @@ class ViewActions{
       return {
         type: 'changeAutoSuggestBarText',
         text,
+        name
       }
     }
 

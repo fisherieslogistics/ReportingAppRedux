@@ -7,7 +7,6 @@ import modelEditorStyles from './modelEditor';
 import productEditorStyles from './productEditor';
 import errorBubbleStyles from './errorBubble';
 import textStyles from './text';
-import toolbarStyles from './toolbar';
 import listViewStyles from './listView';
 import masterDetailStyles from './masterDetail';
 
@@ -23,5 +22,4 @@ export {
   listViewStyles,
   masterDetailStyles,
   productEditorStyles,
-  toolbarStyles,
 }

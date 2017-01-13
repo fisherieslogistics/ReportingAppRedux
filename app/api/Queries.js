@@ -129,46 +129,7 @@ const upsertTrip = (trip) => {
     }
   };
 }
-
-const createMessage = (msg) => {
-  const message = {
-    text: msg.text,
-    messageThread_id: msg.messageThread_id,
-    organisation_id: msg.organisation_id,
-  };
-  return {
-    query:`
-      mutation($data: CreateMessageInput!){
-        createMessage(input: $data)
-          {
-            messageThread {
-              id
-              messages(last: 40) {
-                edges {
-                  node {
-                    id
-                    text
-                    created
-                    createdBy {
-                      id
-                      name
-                    }
-                  }
-                }
-              }
-            }
-          }
-      }
-    `,
-    variables: {
-      ...message,
-      clientMutationId: "message" + new Date().getTime()
-    }
-  };
-}
-
-
-export { upsertTrip, upsertFishingEvent, createMessage};
+export {upsertTrip, upsertFishingEvent};
 
 export default {
   getMe:`
@@ -191,48 +152,6 @@ export default {
           name
           registration
           id
-        }
-        organisation {
-          id
-          name
-          customerGroups(first:9000) {
-            edges {
-              node {
-                id
-                name
-                supplierName
-                customers(first:9000) {
-                  edges {
-                    node {
-                      name
-                      id
-                      organisation {
-                        id
-                      }
-                      messageThread {
-                        id
-                        messages(first: 50) {
-                          edges {
-                            node{
-                              id
-                              text
-                              createdBy {
-                                id
-                                name
-                              }
-                              image
-                              created
-                              lastSeenAt
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
         }
       }
     }

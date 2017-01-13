@@ -38,8 +38,8 @@ class Helper {
     const lat = parseInt(degMin.latDegrees) + (parseFloat(degMin.latMinutes) / 60) + (parseFloat(degMin.latSeconds) / 3600);
     const lon = parseInt(degMin.lonDegrees) + (parseFloat(degMin.lonMinutes) / 60) + (parseFloat(degMin.lonSeconds) / 3600);
     return {
-      lon: lonHemisphere === 'East' ? lon : (lon * -1),
-      lat: latHemisphere === 'North' ? lat : (lat * -1)
+      lon: lonHemisphere == 'East' ? lon : (lon * -1),
+      lat: latHemisphere == 'North' ? lat : (lat * -1)
     };
   }
   locationToGeoJSON(location){

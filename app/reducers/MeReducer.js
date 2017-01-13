@@ -6,28 +6,31 @@ const initialUser = ModelUtils.blankModel(UserModel);
 const initialVessel = ModelUtils.blankModel(VesselModel);
 
 const initialState = {
-  ports,
+  ports: ports,
   vessel: initialVessel,
   containers: [
-    { value: 'Tubs # 16', description: "t", weight: 26 },
-    { value: "Iki Bins #10 Packed", description: "i", weight: 14 },
-    { value: "Iki Bins flat packed", description: "u", weight: 20 },
-    { value: "Individual fish", description: "f", weight: 2 },
-    { value: "Fish in Slurry", description: "s", weight: 26 },
-    { value: "Bulk Kgs", description: "k", weight: 1 },
-    { value: "Dolav", description: "d", weight: 350 },
-    { value: "Iki Bins export", description: "x", weight: 14 },
-    { value: "Bins", description: "b", weight: 35 },
+    {value: 'Tubs # 16', description: "t", weight: 26},
+    {value: "Iki Bins #10 Packed", description: "i", weight: 14},
+    {value: "Iki Bins flat packed", description: "u", weight: 20},
+    {value: "Individual fish", description: "f", weight: 2},
+    {value: "Fish in Slurry", description: "s", weight: 26},
+    {value: "Bulk Kgs", description: "k", weight: 1},
+    {value: "Dolav", description: "d", weight: 350},
+    {value: "Iki Bins export", description: "x", weight: 14},
+    {value: "Bins", description: "b", weight: 35},
   ],
   vessels: [],
   user: initialUser,
   formType: 'tcer',
+  gpsUrl: null,
+  gpsPort: null,
+  gpsBaud: null,
+  applyGpsSettings: null,
+  positionType: 'native',
+  catchDetailsExpanded: true,
   autoSuggestFavourites: {
-    speciesCode: [],
-  },
-};
-
-const update = (obj, change) => Object.assign({}, obj, change)
+  }
+}
 
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -39,6 +42,9 @@ export default (state = initialState, action) => {
         return state;
       }
       return update(state, {user: action.user});
+    case 'editUser':
+      let user = update(state.user, action.change);
+      return update(state,  { user: user });
     case 'devMode':
       return initialState;
     case 'setUser':
@@ -48,26 +54,26 @@ export default (state = initialState, action) => {
     case 'setFormType':
       return update(state, { formType: action.formType });
     case 'setVessels':
-      return update(state, { vessels: action.vessels, vessel: action.vessels[0] });
+      return update(state, { vessels: action.vessels });
     case 'addPort':
       state.ports[action.region].push(action.port);
       return state;
-    case 'changeSpecies':
-      if(action.value.length !== 3 || action.value === 'OTH'){
-        return state;
+    case 'addFavourite':
+      switch (action.favouriteName) {
+        case "targetSpecies":
+        case "species":
+          let faves = update({}, state.autoSuggestFavourites);
+          let change = faves[action.favouriteName] || {};
+          change[action.value] = (change[action.value] || 0) + 1;
+          faves[action.favouriteName] = change;
+          return update(state, {autoSuggestFavourites: faves});
+        default:
       }
-      if(!state.autoSuggestFavourites.speciesCode){
-        state.autoSuggestFavourites.speciesCode = [];
-      }
-      const faves = state.autoSuggestFavourites.speciesCode.filter(s => s !== action.value);
-      faves.unshift(action.value);
-      if(faves.length >= 10){
-        faves.pop();
-      }
-      state.autoSuggestFavourites.speciesCode = faves;
-      state.autoSuggestFavourites.targetSpecies = faves;
-      return state;
     default:
       return state;
   }
 };
+
+const update = (obj, change) => {
+  return Object.assign({}, obj, change);
+}
