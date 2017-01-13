@@ -87,6 +87,7 @@ class SyncWorker {
     }
     this.requests.push(apiActions.checkMe(this.getState().default.auth, this.dispatch));
     const fEventIds = Object.keys(state.sync.fishingEvents);
+<<<<<<< HEAD
     /*this.requests = state.fishingEvents.events.filter(fe => (fEventIds.indexOf(fe.objectId) !== -1))
                                               .map(fe => this.mutateFishingEvent(fe, state.trip.objectId, formType));*/
     //if(state.sync.trip){
