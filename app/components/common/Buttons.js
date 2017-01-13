@@ -10,27 +10,14 @@ import { textStyles, colors } from '../../styles/styles';
 import Icon8 from './Icon8';
 
 
-const styles = {
+const styles = StyleSheet.create({
   longButton: {
     borderWidth: 1,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bigButtonText: {
-    fontSize: 30,
-    fontWeight: '500',
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  BigButtonInner: {
-    alignItems: 'center',
-  },
-  BigButton: {
-    alignSelf: 'stretch', flex: 1,
-  }
-
-};
+});
 
 const getActiveOpacity = (disabled) => disabled ? 1 : 0.6
 
@@ -40,27 +27,10 @@ const getTextStyle = (color, disabled) =>[
     {color: ! disabled ? color : colors.midGray},
 ];
 
-const BigButton = ({onPress, backgroundColor, text, textColor}) => {
-  const textStyle = [
-    {color: textColor},
-    styles.bigButtonText,
-  ];
-  const buttonStyle = [styles.BigButton, { backgroundColor }]
-  return (
-      <TouchableOpacity onPress={onPress} style={buttonStyle}>
-         <View style={ styles.BigButtonInner }>
-          <Text style={ textStyle }>
-            { text }
-          </Text>
-        </View>
-      </TouchableOpacity>
-    )
-};
-
 const Button = ({onPress, content, disabled }) => (
     <TouchableOpacity
       activeOpacity={ getActiveOpacity(disabled) }
-      onPress={ disabled ? null : onPress }>
+      onPress={ disabled ? () => {} : onPress }>
         { content }
     </TouchableOpacity>
   )
@@ -137,4 +107,4 @@ const LongButton = ({ text, bgColor, onPress, disabled, active, error } ) => {
   );
 }
 
-export {IconButton, TextButton, LongButton, BigButton}
+export {IconButton, TextButton, LongButton}

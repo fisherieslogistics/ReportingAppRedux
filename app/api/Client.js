@@ -1,6 +1,14 @@
+'use strict';
 
 import request from 'superagent';
+import {connect} from 'react-redux';
 import moment from 'moment';
+import AuthActions from '../actions/AuthActions';
+//import ApiEndpoint from './ApiEndpoint';
+import Helper from '../utils/Helper';
+
+const helper = new Helper();
+const authActions = new AuthActions();
 
 class Client {
   constructor(dispatch, ApiEndpoint, AuthEndpoint) {
@@ -29,6 +37,8 @@ class Client {
   }
 
   performRefreshableRequest(func, auth){
+    let self = this;
+    const endpoint = this.apiEndpoint;
     if(this.refreshNeeded(auth)){
       return this.promisifyRequestBody(this._refresh(auth))
                  .catch((err) => {
@@ -36,14 +46,15 @@ class Client {
                })
                .then((newAuth) => {
                   const req = func();
-                  req.set("Authorization", `Bearer ${newAuth.refreshToken}`);
+                  req.set("Authorization", "Bearer " + newAuth.refreshToken);
                  return self.promisifyRequestBody(req);
                });
+    }else{
+      return this.promisifyRequestBody(func());
     }
-    return this.promisifyRequestBody(func());
   }
 
-  promisifyRequestBody(req){
+  promisifyRequestBody(req, newAuth){
       return new Promise((resolve, reject) => {
       req.end((err, res) => {
         if(err){
@@ -63,7 +74,7 @@ class Client {
     if(!auth){
       return true;
     }
-    const nearFuture = new moment();
+    let nearFuture = new moment();
     nearFuture.add(2, 'minute');
     return (auth.expiresAt.unix() < nearFuture.unix());
   }
@@ -72,7 +83,7 @@ class Client {
     return request.post(this.apiEndpoint + 'graphql')
       .type('application/json')
       .send(
-        {query, variables: {data: variables}}
+        {query: query, variables: {data: variables}}
       )
       .set("Authorization", "Bearer "  + auth.accessToken);
   }
@@ -88,8 +99,8 @@ class Client {
     return request.post(this.apiEndpoint + 'oauth/token')
              .type('form')
              .send({ 'grant_type': 'password' })
-             .send({ username })
-             .send({ password });
+             .send({ 'username': username })
+             .send({ 'password': password });
   }
 
   _refresh({ refreshToken }){

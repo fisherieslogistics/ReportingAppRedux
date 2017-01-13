@@ -1,12 +1,11 @@
 'use strict';
-import {
+import Queries, {
   upsertTrip,
   upsertFishingEvent,
-  createMessage,
 } from './Queries';
 
+import Helper from '../utils/Helper';
 import moment from 'moment';
-<<<<<<< HEAD
 import ApiActions from '../actions/ApiActions.js';
 import net from 'react-native-tcp';
 import msgpack from 'msgpack-lite';
@@ -37,20 +36,14 @@ function generateSetances(type, input, payloadLength = 250) {
 }
 
 
-=======
-import ApiActions from '../actions/ApiActions';
-import UserActions from '../actions/UserActions';
-const apiActions = new ApiActions();
-const userActions = new UserActions();
->>>>>>> master
 
 class SyncWorker {
 
-  constructor(dispatch, getState, api, timeToSync) {
+  constructor(dispatch, getState, api) {
     this.dispatch = dispatch;
     this.api = api;
     this.getState = getState;
-    this.timeToSync = timeToSync;
+    this.timeToSync = 3000;
     this.requests = [];
     this.dispatchMutateTrip = this.dispatchMutateTrip.bind(this);
     this.dispatchMutatePastTrip = this.dispatchMutatePastTrip.bind(this);
@@ -59,9 +52,6 @@ class SyncWorker {
     this.mutateTrip = this.mutateTrip.bind(this);
     this.mutateFishingEvent = this.mutateFishingEvent.bind(this);
     this.mutatePastTrip = this.mutatePastTrip.bind(this);
-    this.dispatchMessageSent = this.dispatchMessageSent.bind(this);
-    this.mutateMessage = this.mutateMessage.bind(this);
-    this.performMutation = this.performMutation.bind(this);
     this.startSync();
 
     this.client = new net.Socket();
@@ -84,19 +74,16 @@ class SyncWorker {
   }
 
   startSync(){
-    clearTimeout(this.syncTime);
-    this.syncTime = setTimeout(this.sync, this.timeToSync);
+    this.interval = setInterval(() => this.sync(), this.timeToSync);
   }
 
   sync(){
-
     const state = this.getState().default;
-    if(!state.auth.loggedIn){
+    if(this.requests.length || (!state.auth.loggedIn)){
       return;
     }
-    this.requests.push(apiActions.checkMe(this.getState().default.auth, this.dispatch));
+    const formType = state.me.formType;
     const fEventIds = Object.keys(state.sync.fishingEvents);
-<<<<<<< HEAD
     /*this.requests = state.fishingEvents.events.filter(fe => (fEventIds.indexOf(fe.objectId) !== -1))
                                               .map(fe => this.mutateFishingEvent(fe, state.trip.objectId, formType));*/
     //if(state.sync.trip){
@@ -156,48 +143,6 @@ class SyncWorker {
       objectId: fishingEvent.objectId
     });
     return {response: res};
-=======
-    this.requests = state.fishingEvents.events.filter(fe => (fEventIds.indexOf(fe.objectId) !== -1))
-                                              .map(fe => this.mutateFishingEvent(fe, state.trip.objectId,));
-    if(state.sync.trip){
-      this.requests.push(this.mutateTrip(state.trip, state.me.vessel.id));
-    }
-
-    const msg = state.sync.queues.messages.shift();
-    if(msg) {
-      this.requests.push(this.mutateMessage(msg));
-    }
-
-    const allPastRequests = state.sync.queues.pastTrips.map(
-      (t) => new Promise(resolve => this.mutatePastTrip(t.trip, t.vesselId).then(
-        () => Promise.all(t.fishingEvents.map(fe => this.mutateFishingEvent(fe, t.trip.objectId))).then(resolve))));
-
-    Promise.all([ ...this.requests.concat(allPastRequests)]).then(() => {
-      this.requests = [];
-      this.syncTimeout = setTimeout(this.sync, this.timeToSync);
-    }).catch(() => {
-      this.requests = [];
-      this.syncTimeout = setTimeout(this.sync, this.timeToSync);
-    });
-  }
-
-  dispatchMessageSent() {
-    this.dispatch(userActions.messageSent());
-  }
-
-  dispatchTrip(actionType) {
-    this.dispatch({
-      type: actionType,
-    });
-  }
-
-  dispatchMutatePastTrip(){
-    return this.dispatchTrip("pastTripSynced");
-  }
-
-  dispatchMutateTrip(){
-    return this.dispatchTrip("tripSynced");
->>>>>>> master
   }
 
   mutatePastTrip(trip){
@@ -205,7 +150,6 @@ class SyncWorker {
     return this.performMutation(mutation.query, mutation.variables, this.dispatchMutatePastTrip);
   }
 
-<<<<<<< HEAD
   dispatchMutateTrip(res){
     const time = new moment();
     try{
@@ -221,20 +165,8 @@ class SyncWorker {
 
   mutateFishingEvent(fishingEvent, tripId, formType){
     const q = upsertFishingEvent(fishingEvent, tripId);
-=======
-  mutateMessage(message) {
-    const { query, variables } = createMessage(message);
-    return this.performMutation(query, variables, this.dispatchMessageSent);
-  }
-
-  mutateTrip(trip){
-    const mutation = upsertTrip(trip);
-    return this.performMutation(mutation.query, mutation.variables, this.dispatchMutateTrip);
-  }
->>>>>>> master
 
     const time = new moment();
-<<<<<<< HEAD
     const callback = (res) => {
       this.dispatch({
         type: "fishingEventSynced",
@@ -247,30 +179,23 @@ class SyncWorker {
     //  client.write(`${sentance}\r\n`);
     })
     callback.bind(this)({});
-=======
-    this.dispatch({
-      type: "fishingEventSynced",
-      time,
-      objectId: fishingEvent.objectId
-    });
-    return {response: res};
   }
 
-  mutateFishingEvent(fishingEvent, tripId){
-    const query = upsertFishingEvent(fishingEvent, tripId);
-    return this.performMutation(query.query, query.variables, (res) => { this.dispatchMutateFishingEvent(fishingEvent, res); });
->>>>>>> master
-  }
-
-  performMutation(query, variables, success){
-    return new Promise((resolve, reject) => this.api.mutate(
-      query, variables, this.getState().default.auth).then(
-        (res) => {
-          const diso = success(res);
-          resolve(diso);
-        }).catch(
-          (err) => reject(err)));
-  }
+  performMutation(query, variables, success, dispatch){
+    return new Promise((resolve, reject) => {
+      this.api.mutate(query, variables, this.getState().default.auth)
+        .then((res) => resolve(success(res)))
+        .catch((err) => {
+          console.warn("performed with error", JSON.stringify(err), err, query, "Chicken");
+          this.dispatch({
+            type: "syncError",
+            time: new moment(),
+            err
+          });
+          resolve(false);
+        });
+      });
+    }
 
 }
 

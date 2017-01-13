@@ -19,7 +19,12 @@ class ErrorBubble extends Component {
   render(){
     const errKey = `error_${this.props.inputId}_error_`;
     if(!this.props.isFocused) {
-      return null;
+      return (
+        <View
+          key={ errKey }
+          style={ styles.errorDot }
+        />
+      );
     }
 
     const bubbleStyles = [styles.bubble, styles.shadow];

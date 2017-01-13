@@ -1,45 +1,58 @@
+'use strict';
+import {
+  StyleSheet,
+} from 'react-native';
+import React from 'react';
 
-import React, { Component } from 'react';
 import UserModel from '../models/UserModel';
 import ModelEditor from './common/ModelEditor';
-import VesselModel from '../models/VesselModel';
+import UserActions from '../actions/UserActions';
+const userActions = new UserActions();
 
-const ProfileModel = UserModel.concat(VesselModel);
+import {modelEditorStyles} from '../styles/styles';
 
-class ProfileEditor extends Component {
+
+
+class ProfileEditor extends React.Component {
 
     constructor(props) {
       super(props);
+       this.onChange = this.onChange.bind(this);
        this.getEditorProps = this.getEditorProps.bind(this);
     }
 
-    onChange() {
-
+    onChange(key, value){
+      /*var change = {};
+      change[key] = value
+      this.props.dispatch(userActions.editUser(change));*/
     }
 
     getEditorProps(attribute){
-      const profile = Object.assign({}, this.props.user, this.props.vessel);
       return {
         attribute,
-        value: profile[attribute.id],
+        value: this.props.user[attribute.id],
         onChange: this.onChange,
-        extraProps: { isFocused: false, editable: false },
-        inputId: attribute.id + "__profile__",
+        extraProps: {editable: false, focus: false},
+        inputId: attribute.id + "__profile__"
       };
     }
 
     render() {
-      const profile = Object.assign({}, this.props.user, this.props.vessel);
       return (
         <ModelEditor
+          styles={styles}
+          getCallback={() => this.onChange}
           getEditorProps={this.getEditorProps}
-          model={ ProfileModel }
-          modelValues={ profile }
-          index={1}
-          onChange={ this.onChange }
+          editorType={"profile"}
+          name={"profileEdit"}
+          model={UserModel}
+          modelValues={this.props.user}
+          values={this.props.user}
         />
     );
   }
-}
+};
 
-export default ProfileEditor;
+const styles = StyleSheet.create(modelEditorStyles);
+
+module.exports = ProfileEditor;

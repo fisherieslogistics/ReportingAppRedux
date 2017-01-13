@@ -13,7 +13,7 @@ const tripModel = [
      label: 'Sailing Date', id: 'startDate', valid: Validator.valid.anyValue, type: 'datetime',
     },
     {
-     label: 'Estimated Days Left In Trip', id: 'endDate', valid: Validator.valid.anyValue, type: 'picker', unit: 'days',
+     label: 'Estimated Days In Trip', id: 'endDate', valid: Validator.valid.anyValue, type: 'picker', unit: 'days',
      display: { type: 'single'},
     },
     {
@@ -25,9 +25,6 @@ const tripModel = [
     {
       id: 'vesselId', defaultValue: "", valid: Validator.valid.alwaysValid,
     },
-    {
-      id: 'contacts', defaultValue: [], valid: Validator.valid.alwaysValid,
-    }
 ];
 
 export default tripModel

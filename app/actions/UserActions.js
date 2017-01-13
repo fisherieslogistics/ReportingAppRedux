@@ -5,34 +5,28 @@ class UserActions{
   addPort(region, port){
     return {
       type: 'addPort',
-      region,
-      port
+      region: region,
+      port: port
+    }
+  }
+
+  editUser(change){
+    return {
+      type: 'editUser',
+      change: change
     }
   }
 
   setUser(user){
     return {
       type: 'setUser',
-      user
-    }
-  }
-
-  sendMessage(message) {
-    return {
-      type: 'sendMessage',
-      message,
-    }
-  }
-
-  messageSent() {
-    return {
-      type: 'messageSent',
+      user: user
     }
   }
 
   setCatchDetailsExpanded(expanded){
     return {
-      type: 'setCatchDetailsExpanded',
+      type: "setCatchDetailsExpanded",
       catchDetailsExpanded: expanded
     }
   }
@@ -40,21 +34,21 @@ class UserActions{
   setVessels(vessels){
     return {
       type: 'setVessels',
-      vessels
+      vessels: vessels
     }
   }
 
   setVessel(vessel){
     return {
       type: 'setVessel',
-      vessel
+      vessel: vessel
     }
   }
 
   setFormType(formType){
     return {
       type: 'setFormType',
-      formType,
+      formType: formType,
     }
   }
 

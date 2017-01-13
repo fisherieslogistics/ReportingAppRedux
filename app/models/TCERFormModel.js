@@ -6,8 +6,8 @@ const meta = {
   formCode: 'tcer',
   compatible: (event1, event2) => {
     const daysMatch = (event1.datetimeAtStart.diff(event2.datetimeAtStart, 'days') === 0);
-    const wingSpreadsMatch = (event2.wingSpread === event1.wingSpread);
-    const headlineHeightsMatch = (event2.headlineHeight === event1.headlineHeight);
+    const wingSpreadsMatch = (event2.wingSpread == event1.wingSpread);
+    const headlineHeightsMatch = (event2.headlineHeight == event1.headlineHeight);
     const signaturesMatch =(event2.signature === event1.signature);
     return (daysMatch && wingSpreadsMatch && headlineHeightsMatch && signaturesMatch);
   },
@@ -65,7 +65,7 @@ const meta = {
         repeating: true,
         prep: (products) => {
           //sort highest to lowest take the highest 8 by weight
-          const prods = products.filter(p => p.code !== 'OTH' && p.code !== 'Other Species Weight');
+          const prods = products.filter(p => p.code !== 'OTH');
           return helper.getTotals(prods).sort((c1, c2) => c2.weight - c1.weight).slice(0, 8);
         },
         parts: [
