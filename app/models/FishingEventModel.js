@@ -47,6 +47,9 @@ const FishingEventModel = [
     defaultValue: [],
   },
   {
+    label: 'otherSpeciesWeight', id: 'otherSpeciesWeight', valid: valid.alwaysValid, type: 'number', unit: 'kg', defaultValue: 0,
+  },
+  {
     label: 'formType', id: 'formType', valid: valid.alwaysValid,
   },
   {id: 'signature', valid: valid.alwaysValid, defaultValue: false},

@@ -22,6 +22,9 @@ const UserModel = [
     id: 'email', defaultValue: "", label: "Email", valid: valid.alwaysValid,
     display: { type: 'single'},
   },
+  {
+    id: 'contacts', defaultValue: [], valid: valid.alwaysValid,
+  },
 ];
 
 export default UserModel;

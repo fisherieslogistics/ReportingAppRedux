@@ -57,18 +57,18 @@ class ApiActions {
   }
 
   checkMe(auth, dispatch) {
-    // if(!auth.loggedIn) {
-    //   Promise.reject();
-    // }
-    // return client.query(queries.getMe, auth).then((res) => {
-    //   if(res && res.data){
-    //     const user = parseUser(res.data.viewer);
-    //     return dispatch(userActions.setUser(user));
-    //   }
-    //   throw new Error(res);
-    // }).catch((e) => {
-    //   console.log(e);
-    // });
+    /*if(!auth.loggedIn) {
+      Promise.reject();
+    }
+    return client.query(queries.getMe, auth).then((res) => {
+      if(res && res.data){
+        const user = parseUser(res.data.viewer);
+        return dispatch(userActions.setUser(user));
+      }
+      throw new Error(res);
+    }).catch((e) => {
+      console.log(e);
+    });*/
   }
 
   login(username, password){
