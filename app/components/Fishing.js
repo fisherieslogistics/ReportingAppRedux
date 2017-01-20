@@ -89,11 +89,7 @@ class Fishing extends MasterDetailView {
 
   startFishingEvent(){
     const pos = this.getCurrentLocation();
-    if(this.props.formType === 'tcer'){
-      this.startEvent(pos);
-    }else{
-      this.startLCEREvent(pos);
-    }
+    this.startEvent(pos);
   }
 
   startEvent(position){
@@ -131,11 +127,7 @@ class Fishing extends MasterDetailView {
       return;
     }
     const pos = this.getCurrentLocation();
-    if(this.props.formType === 'tcer'){
-      this.endTCEREvent(pos);
-    }else{
-      this.endLCEREvent(pos);
-    }
+    this.endTCEREvent(pos);
   }
 
   removeFishingEvent(){
@@ -193,7 +185,6 @@ class Fishing extends MasterDetailView {
             renderMessage={this.renderMessage}
             fishingEvent={this.props.viewingEvent}
             dispatch={this.props.dispatch}
-            formType={this.props.formType}
             optionalFieldsPress={this.toggleOptionalFields}
             showOptionalFields={this.state.showOptionalFields}
           />
@@ -420,7 +411,6 @@ const select = (State) => {
       containerChoices: state.me.containers,
       positionProvider: state.uiEvents.uipositionProvider,
       catchDetailsExpanded: state.me.catchDetailsExpanded,
-      formType: state.me.formType,
     }
     if(!state.fishingEvents.events.length){
       return props;
@@ -431,12 +421,8 @@ const select = (State) => {
     props.viewingEvent = fEvents[state.view.viewingEventId -1];
     props.fishingEvents = fEvents;
     props.deletedProducts = state.fishingEvents.deletedProducts[state.view.viewingEventId];
-    if(state.me.formType === 'tcer'){
-      props.enableStartEvent = state.trip.started && ((!lastEvent) || lastEvent.datetimeAtEnd);
-      props.enableHaul = lastEvent && (!lastEvent.datetimeAtEnd);
-    }else{
-      props.enableHaul = props.viewingEvent && (!props.viewingEvent.datetimeAtEnd);
-    }
+    props.enableStartEvent = state.trip.started && ((!lastEvent) || lastEvent.datetimeAtEnd);
+    props.enableHaul = lastEvent && (!lastEvent.datetimeAtEnd);
     return props;
 }
 

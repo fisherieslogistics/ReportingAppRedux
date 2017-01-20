@@ -5,7 +5,7 @@ class StateLoadActions {
   loadSavedState (savedState) {
     return {
       type: 'loadSavedState',
-      savedState: savedState
+      savedState,
     }
   }
 }
