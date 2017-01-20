@@ -25,31 +25,29 @@ class GPSControlActions{
     setGpsUrl(url){
       return {
         type: "setGpsUrl",
-        url: url
+        url
       };
     }
     setGpsPort(port){
       return {
         type: "setGpsPort",
-        port: port
+        port
       };
     }
     setGpsBaud(baud){
       return {
         type: "setGpsBaud",
-        baud: baud
+        baud
       };
     }
     applyGpsSettings(url, port, baud){
       return {
         type: "applyGpsSettings",
-        url: url,
-        port: port,
-        baud: baud
+        url,
+        port,
+        baud
       };
     }
 }
 
 export default GPSControlActions;
-
-
