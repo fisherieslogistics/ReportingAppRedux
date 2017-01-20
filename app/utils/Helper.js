@@ -154,11 +154,10 @@ class Helper {
   async saveToLocalStorage(state, actionType) {
     switch (actionType) {
       case 'loadSavedState':
-      case 'updateGps':
       case 'changeAutoSuggestBarText':
       case 'initAutoSuggestBarChoices':
       case 'toggleAutoSuggestBar':
-      case 'uiPositionUpdate':
+      case 'NMEAStringRecieved':
       return;
     }
     if(actionType.indexOf('@@redux') !== -1){
@@ -226,32 +225,42 @@ class Helper {
     return typeof obj === typeStr && obj !== null;
   }
 
-  updateAuth(oldAuth, newAuth){
-    const expiryTime = new moment();
-    expiryTime.add(newAuth.expires_in, 'second');
-    return Object.assign({}, oldAuth, {
-      accessToken: newAuth.access_token,
-      refreshToken : newAuth.refresh_token,
-      tokenType: newAuth.token_type,
-      expiresAt: expiryTime,
-      stormpathAccessTokenHref: newAuth.stormpath_access_token_href,
-      loggedIn: true});
+  tripCanStart(trip){
+    if(trip.started) {
+      return false;
     }
+    return [
+      'startPort',
+      'startDate',
+      'endDate',
+      'endPort',
+      'headlineHeight',
+      'wingSpread'
+    ].every(key => !!trip[key]);
+  }
 
-    tripCanStart(trip){
-      return (trip.startPort && trip.startDate && trip.endDate && trip.endPort && (!trip.started))
-    }
-
-    getHistoryTrip(_trip){
-      return {
-        startDate: _trip.startDate,
-        startPort: _trip.startPort,
-        endPort: _trip.endPort,
-        endDate: _trip.endDate,
-        fishingEvents: _trip.fishingEvents,
-        objectId: _trip.objectId,
-      };
-    }
+  getHistoryTrip(trip){
+    const {
+      startDate,
+      startPort,
+      endPort,
+      endDate,
+      fishingEvents,
+      objectId,
+      wingSpread,
+      headlineHeight,
+    } = trip;
+    return {
+      startDate,
+      startPort,
+      endPort,
+      endDate,
+      fishingEvents,
+      objectId,
+      wingSpread,
+      headlineHeight,
+    };
+  }
 
   }
 
