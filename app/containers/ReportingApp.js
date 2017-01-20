@@ -15,7 +15,6 @@ import Orientation from 'react-native-orientation';
 import ViewActions from '../actions/ViewActions';
 import FormActions from '../actions/FormActions';
 import Icon8 from '../components/common/Icon8';
-import Login from '../components/Login';
 import {createForms} from '../utils/FormUtils';
 //import GPSControlActions from '../actions/GPSControlActions';
 
@@ -91,7 +90,7 @@ class ReportingApp extends Component {
   }
 
   setupForms(){
-    const forms = createForms(this.props.fishingEvents, this.props.formType);
+    const forms = createForms(this.props.fishingEvents);
     this.props.dispatch(formActions.setViewingForm(forms[forms.length-1]));
   }
 
@@ -155,7 +154,7 @@ class ReportingApp extends Component {
   }
 
   renderForms(){
-    const forms = createForms(this.props.fishingEvents, this.props.formType);
+    const forms = createForms(this.props.fishingEvents);
     return (
       <FormView forms={forms} />
     );
@@ -165,15 +164,11 @@ class ReportingApp extends Component {
     return (
       <Fishing
         position={this.props.position}
-        formType={this.props.formType}
       />
     );
   }
 
   render(){
-    if(!this.props.loggedIn) {
-      return (<Login dispatch={this.props.dispatch} />);
-    }
     const wrapStyles = [styles.wrapper, {width: this.props.width, height: this.props.height}];
     return (
       <View style={wrapStyles}>
@@ -198,17 +193,12 @@ const select = (State) => {
   const state = State.default;
   return {
     trip: state.trip,
-    auth: state.auth,
     orientation: state.view.orientation,
     height: state.view.height,
     width: state.view.width,
     tripStarted: state.trip.started,
-    loggedIn: state.auth.loggedIn,
     fishingEvents: state.fishingEvents.events,
     viewingForm: state.view.viewingForm,
-    formType: state.me.formType,
-    ApiEndpoint: state.api.ApiEndpoint,
-    AuthEndpoint: state.api.AuthEndpoint,
   };
 }
 
