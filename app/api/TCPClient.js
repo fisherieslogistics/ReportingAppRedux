@@ -23,8 +23,7 @@ class TCPClient {
     this.setup();
   }
 
-  setup(err) {
-    console.log("setup");
+  setup() {
     if(this.client) {
       this.client.removeAllListeners();
     }
@@ -79,7 +78,7 @@ class TCPClient {
   }
 
   writeAll(messages) {
-    return messages.map((msg, index) => new Promise((resolve, reject) => {
+    return messages.map((msg) => new Promise((resolve) => {
         if(!this.isActive){
           resolve(false);
         }
@@ -89,20 +88,18 @@ class TCPClient {
         if(!this.client.writable){
            resolve(false);
         }
-        if(this.client._writableState.needDrain) {
+        /*if(this.client._writableState.needDrain) {
           console.log("needs drain");
+        }*/
+        console.log(msg);
+        try {
+          this.client.write(`${msg}\r\n`);
+          resolve(true);
+        } catch(e) {
+          this.isActive = false;
+          setTimeout(this.setup, 3000);
+          resolve(false);
         }
-
-        setTimeout(() => {
-          try {
-            const res = this.client.write(`${msg}\r\n`);
-            resolve(true);
-          } catch(e) {
-            this.isActive = false;
-            setTimeout(this.setup, 3000);
-            resolve(false);
-          }
-        }, 100 + (index * 100));
       }));
   }
 
