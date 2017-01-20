@@ -63,6 +63,10 @@ class Chat extends MasterDetailView {
     return this.state.selectedDetail && (choice.id === this.state.selectedDetail.id);
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return true;
+  }
+
   componentWillReceiveProps(nextProps) {
     this.setState({
       masterChoices: nextProps.tagSelected !== 'all' ? nextProps.messageThreads.filter(x =>
@@ -125,9 +129,9 @@ class Chat extends MasterDetailView {
   }
 
   onSend(messages = []) {
+    console.log(messages);
     this.props.dispatch(
       chatActions.newMessage(messages[0], this.state.selectedDetail.id));
-    this.forceUpdate();
   }
 
   renderDetailView() {
@@ -135,16 +139,21 @@ class Chat extends MasterDetailView {
       return (<View/>);
     }
     const messages = this.state.selectedDetail.messages;
+    const chat = (
+      <GiftedChat
+        messages={messages}
+        onSend={this.onSend}
+        user={{
+          //id: this.props.user.organisationId,
+          _id: 'shavaun',
+          id: 'shavaun'
+        }}
+      />
+    );
+    console.log(messages.length, "MSGSLEN");
     return (
       <View style={chatWrapperStyle}>
-        <GiftedChat
-          messages={messages}
-          onSend={this.onSend}
-          user={{
-            //id: this.props.user.organisationId,
-            _id: 'shavaun',
-          }}
-        />
+        { chat }
       </View>
     );
   }
