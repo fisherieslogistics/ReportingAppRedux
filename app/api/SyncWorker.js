@@ -29,7 +29,7 @@ class SyncWorker {
     this.dispatchMessageSent = this.dispatchMessageSent.bind(this);
     this.mutateMessage = this.mutateMessage.bind(this);
     this.performMutation = this.performMutation.bind(this);
-    this.startSync();
+    // this.startSync();
   }
 
   startSync(){

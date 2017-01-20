@@ -80,13 +80,13 @@ class ReportingApp extends Component {
     this.setSelectedTab = this.setSelectedTab.bind(this);
     this.renderChat = this.renderChat.bind(this);
     this.tabs = {
-      trip: { render: this.renderTrip, icon: 'fishing-boat', onPress: () => this.setSelectedTab('trip') },
-      fishing: { render: this.renderFishing, icon: 'fishing', onPress: () => this.setSelectedTab('fishing') },
-      forms: { render: this.renderForms, icon: 'form', onPress: () => {
+      trip: { render: this.renderTrip, icon: 'fishing-boat', selectedIcon: 'fishing-boat-filled', onPress: () => this.setSelectedTab('trip') },
+      fishing: { render: this.renderFishing, icon: 'fishing', selectedIcon: 'fishing-filled', onPress: () => this.setSelectedTab('fishing') },
+      forms: { render: this.renderForms, icon: 'form', selectedIcon: 'form-filled', onPress: () => {
         this.setupForms();
         setTimeout(() => this.setSelectedTab('forms'), 150);
       }},
-      chat: { render: this.renderChat, icon: 'user', onPress: () => this.setSelectedTab('chat') },
+      chat: { render: this.renderChat, icon: 'user', selectedIcon: 'user-filled', onPress: () => this.setSelectedTab('chat') },
     };
   }
 
@@ -122,7 +122,7 @@ class ReportingApp extends Component {
           title={ tab.capitalize() }
           selected={ this.state.selectedTab === tab }
           iconName={ this.tabs[tab].icon }
-          selectedIconName={`${this.tabs[tab].icon}-filled`}
+          selectedIconName={ this.tabs[tab].selectedIcon }
           hitSlop={ styles.hitSlop }
           style={ styles.tab }
           onPress={this.tabs[tab].onPress}

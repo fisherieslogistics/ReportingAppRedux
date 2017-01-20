@@ -9,7 +9,9 @@ import React from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import ProductActions from '../actions/ProductActions';
+import FishingEventActions from '../actions/FishingEventActions';
 import ProductModel from '../models/ProductModel';
+import OtherSpeciesWeightModel from '../models/OtherSpeciesWeightModel';
 import { colors, modelEditorStyles, productEditorStyles } from '../styles/styles';
 import ModelEditor from './common/ModelEditor';
 /* eslint-disable */
@@ -18,6 +20,7 @@ import Icon8 from './common/Icon8';
 /* eslint-enable */
 
 const productActions = new ProductActions();
+const fishingEventActions = new FishingEventActions();
 const styles = StyleSheet.create(Object.assign({}, modelEditorStyles, productEditorStyles));
 const inputOrder = [
   'code',
@@ -33,7 +36,8 @@ class EventProductsEditor extends React.Component{
       };
       this.onEnterPress = this.onEnterPress.bind(this);
       this.getEditorProps = this.getEditorProps.bind(this);
-      this.onChange = this.onChange.bind(this);
+      this.onChangeProduct = this.onChangeProduct.bind(this);
+      this.onChangeOtherSpeciesWeight = this.onChangeOtherSpeciesWeight.bind(this);
   }
 
   getEditorProps(attribute, product, index) {
@@ -47,10 +51,6 @@ class EventProductsEditor extends React.Component{
       extraProps.maxLength = 3;
       if(usedChoices.indexOf(product.code) !== -1){
         extraProps.error = true;
-      }
-      if(product.code === 'OTH' || product.code === 'Other Species Weight'){
-        extraProps.maxLength = 34;
-        extraProps.value = 'Other Species Weight';
       }
     }
     return {
@@ -66,7 +66,7 @@ class EventProductsEditor extends React.Component{
     return true;
   }
 
-  onChange(name, value, index) {
+  onChangeProduct(name, value, index) {
     if(!this.validateInput(name, value)){
       return;
     }
@@ -81,6 +81,16 @@ class EventProductsEditor extends React.Component{
         this.props.dispatch(productActions.changeWeight(
           this.props.fishingEvent.id, index, value, this.props.fishingEvent.objectId));
         break;
+    }
+  }
+
+  onChangeOtherSpeciesWeight(name, value) {
+    if(!this.validateInput(name, value)) {
+      return;
+    }
+    if (name === 'weight') {
+      this.props.dispatch(fishingEventActions.setFishingEventValue(
+        this.props.fishingEvent.id, 'otherSpeciesWeight', value));
     }
   }
 
@@ -100,7 +110,7 @@ class EventProductsEditor extends React.Component{
   }
 
   renderProductEditor(product, index) {
-    const onChange = (name, value) => this.onChange(name, value, index);
+    const onChange = (name, value) => this.onChangeProduct(name, value, index);
     return (
       <View key={`product_editor_${index}`}>
         <ModelEditor
@@ -113,6 +123,25 @@ class EventProductsEditor extends React.Component{
           onChange={ onChange }
         />
         { this.renderDeleteButton(index) }
+      </View>
+    )
+  }
+
+  renderOtherSpeciesEditor() {
+    const onChange = (name, value) => this.onChangeOtherSpeciesWeight(value);
+    const getEditorProps = () => ({});
+    return (
+      <View
+        key={`other_species_weight_editor`}
+      >
+        <ModelEditor
+          getEditorProps={ getEditorProps }
+          iamTheOne={ true }
+          model={ OtherSpeciesWeightModel }
+          modelValues={ this.props.fishingEvent }
+          index={ 0 }
+          onChange={ onChange }
+        />
       </View>
     )
   }
@@ -157,6 +186,7 @@ class EventProductsEditor extends React.Component{
           style={spacer}
         />
         { this.renderProductEditors() }
+        { this.renderOtherSpeciesEditor() }
         <View style={mass}/>
       </KeyboardAwareScrollView>
     );

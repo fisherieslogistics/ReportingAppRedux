@@ -54,6 +54,7 @@ class FishingEventActions{
       }
     }
 
+    // Use this to change other species weight
     setfishingEventValue(fishingEventId, inputId, value) {
       return (dispatch, getState) => {
         const state = getState().default;

@@ -12,9 +12,11 @@ import Icon8 from '../components/common/Icon8';
 import { colors, iconStyles, listViewStyles } from '../styles/styles';
 import { MasterToolbar } from './layout/Toolbar';
 import { BigButton } from './common/Buttons';
-import UserActions from '../actions/UserActions';
+// import UserActions from '../actions/UserActions';
+import ChatActions from '../actions/ChatActions';
 
-const userActions = new UserActions();
+const chatActions = new ChatActions();
+// const userActions = new UserActions();
 const chatWrapperStyle = { flex: 1, alignItems: 'stretch', paddingBottom: 50 };
 const viewStyles = {
   marginLeft: 2,
@@ -25,14 +27,21 @@ const listTextStyle = {
   fontSize: 18,
 };
 
+const tags = ['all', 'shoreside', 'vessel'];
+
 class Chat extends MasterDetailView {
   constructor (props){
     super(props);
-    this.onSend = this.onSend.bind(this);
-    this.sendMessage = this.sendMessage.bind(this);
+
+    const masterChoices = props.tagSelected !== 'all' ? props.messageThreads.filter(x =>
+      x.tags.includes(props.tagSelected)) : props.messageThreads;
+
     this.state = {
-      masterChoices: props.masterChoices,
+      masterChoices,
+      tagSelected: props.tagSelected,
     };
+    this.onSend = this.onSend.bind(this);
+    this.onMasterButtonPress = this.onMasterButtonPress.bind(this);
   }
 
   getMasterDescription(choice) {
@@ -56,14 +65,28 @@ class Chat extends MasterDetailView {
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      masterChoices: nextProps.masterChoices,
-      selectedDetail: nextProps.masterChoices.find(this.isDetailSelected),
+      masterChoices: nextProps.tagSelected !== 'all' ? nextProps.messageThreads.filter(x =>
+        x.tags.includes(nextProps.tagSelected)) : nextProps.messageThreads,
+      selectedDetail: nextProps.messageThreads.find(this.isDetailSelected),
+      tagSelected: nextProps.tagSelected,
     });
   }
 
+  onMasterButtonPress() {
+    let index = tags.indexOf(this.state.tagSelected);
+    if (index + 1 > 2) {
+      index = 0;
+    } else {
+      index++;
+    }
+    const nextTag = tags[index];
+    this.props.dispatch(
+      chatActions.tagSelected(nextTag));
+  }
+
   renderMasterToolbar() {
-    const backgroundColor = colors.backgrounds.blue;
-    const text = "Chat";
+    const backgroundColor = colors.blue;
+    const text = `${this.props.tagSelected.charAt(0).toUpperCase()}${this.props.tagSelected.slice(1)}`
     const textColor = colors.white;
 
     const button = (
@@ -71,7 +94,7 @@ class Chat extends MasterDetailView {
         text={text}
         backgroundColor={backgroundColor}
         textColor={textColor}
-        onPress={this.onMasterButtonPress }
+        onPress={ this.onMasterButtonPress }
       />
     );
     return(
@@ -87,9 +110,13 @@ class Chat extends MasterDetailView {
     if(isSelected){
       backgroundStyle = { backgroundColor: colors.white, color: colors.blue };
     }
+    let icon = 'user';
+    if (choice.tags.includes('vessel')) {
+      icon = 'fishing-boat';
+    }
     return (
       <Icon8
-        name={"user"}
+        name={icon}
         size={30}
         color={colors.white}
         style={[ iconStyles, backgroundStyle ]}
@@ -98,30 +125,14 @@ class Chat extends MasterDetailView {
   }
 
   onSend(messages = []) {
-    const detail = this.state.selectedDetail;
-    if(!detail){
-      return;
-    }
-    this.sendMessage(messages[0]);
-    this.setState({
-      selectedDetail: Object.assign({}, detail, { messages: messages.concat(detail.messages)}),
-    });
-  }
-
-  sendMessage(msg) {
-    const contact = this.state.selectedDetail;
-    const message = {
-      text: msg.text,
-      messageThread_id: contact.messageThread.id,
-      organisation_id: this.props.user.organisationId,
-      image: null,
-    };
-    this.props.dispatch(userActions.sendMessage(message));
+    this.props.dispatch(
+      chatActions.newMessage(messages[0], this.state.selectedDetail.id));
+    this.forceUpdate();
   }
 
   renderDetailView() {
     if(!this.state.selectedDetail){
-      return (<View />);
+      return (<View/>);
     }
     const messages = this.state.selectedDetail.messages;
     return (
@@ -130,7 +141,8 @@ class Chat extends MasterDetailView {
           messages={messages}
           onSend={this.onSend}
           user={{
-            _id: this.props.user.organisationId,
+            //id: this.props.user.organisationId,
+            _id: 'shavaun',
           }}
         />
       </View>
@@ -143,7 +155,8 @@ const select = (State) => {
   const state = State.default;
   return {
     user: state.me.user,
-    masterChoices: state.me.user.contacts,
+    messageThreads: state.chat.messageThreads,
+    tagSelected: state.chat.tagSelected,
   };
 }
 
