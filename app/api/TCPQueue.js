@@ -3,9 +3,10 @@ import AsyncStorage from 'AsyncStorage';
 /* eslint-enable */
 import Helper from '../utils/Helper';
 import TCPClient from './TCPClient';
+import moment from 'moment';
 
 const helper = new Helper();
-
+const numberOfSent = 1;
 
 class TCPQueue {
 
@@ -17,8 +18,10 @@ class TCPQueue {
     this.shiftQueue = this.shiftQueue.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
     this.saveQueue = this.saveQueue.bind(this);
+    this.sendInTime = this.sendInTime.bind(this);
     this.send = this.send.bind(this);
     this.setup = this.setup.bind(this);
+    this.startContinousMessages = this.startContinousMessages.bind(this);
     this.queue = [];
     this.sending = false;
     this.setup();
@@ -30,42 +33,35 @@ class TCPQueue {
       this.queue = [...saved, ...this.queue];
       this.tcpClient = new TCPClient();
       this.startSending();
+      this.startContinousMessages()
     });
   }
 
+  startContinousMessages() {
+    const message = { index: numberOfSent, timestamp: new moment().toISOString()};
+    setInterval(() => this.addToQueue(`$CONTINOUS:${numberOfSent}`, message), 60000);
+  }
+
+  sendInTime() {
+    this.sending = false;
+    setTimeout(this.startSending, 3000);
+  }
+
   startSending() {
-    if(!this.tcpClient) {
-      return setTimeout(this.startSending, 2000);
+    if(this.tcpClient && this.tcpClient.isActive && this.queue.length && !this.sending){
+      this.sending = true;
+      const toSend = this.queue[0];
+      this.send(toSend).then(this.sendInTime).catch(this.sendInTime);
+    } else {
+      this.sendInTime();
     }
-    if(this.tcpClient.isActive !== true){
-      return setTimeout(this.startSending, 2000);
-    }
-    if(!this.queue.length) {
-      return setTimeout(this.startSending, 2000);
-    }
-    if(this.sending) {
-      return setTimeout(this.startSending, 2000);
-    }
-    this.sending = true;
-    const toSend = this.queue[0];
-    this.send(toSend).then(
-      () => {
-        console.log("did send");
-        this.sending = false;
-        setTimeout(this.startSending, 2000);
-      }).catch(
-        (e) => {
-            console.log("didint", e);
-            this.sending = false;
-            setTimeout(this.startSending, 2000);
-        });
   }
 
   send(toSend) {
+    console.log(JSON.stringify(toSend.input), this.queue.length);
     this.sending = true;
     return new Promise((resolve, reject) => {
       this.tcpClient.send(toSend.key, toSend.input).then((results) => {
-        console.log(results);
         if(results.every(d => !!d)){
           this.shiftQueue().then(resolve);
         } else {
@@ -76,9 +72,8 @@ class TCPQueue {
   }
 
   addToQueue(key, input) {
-    const toAdd = { key, input };
-    this.queue.push(toAdd);
-    return this.saveQueue().then(this.startSending);
+    this.queue.push({ input, key });
+    return this.saveQueue();
   }
 
   shiftQueue() {
