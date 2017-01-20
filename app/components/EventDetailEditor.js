@@ -10,8 +10,7 @@ import React from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import ModelEditor from './common/ModelEditor';
 import FishingEventActions from '../actions/FishingEventActions';
-import {getFishingEventModelByTypeCode} from '../utils/FormUtils';
-
+import ModelUtils from '../utils/ModelUtils';
 /* eslint-disable */
 import speciesCodesDesc from '../constants/speciesDesc';
 /* eslint-enable */
@@ -21,21 +20,11 @@ const fishingEventActions = new FishingEventActions();
 const tcerOrder = [
   'targetSpecies',
   'bottomDepth',
-  //'groundropeDepth',
   'averageSpeed',
-  /*'wingSpread',
-  'headlineHeight',*/
-];
-
-const lcerOrder = [
-  'targetSpecies',
-  'numberOfHooks',
-  'bottomDepth',
 ];
 
 const inputOrder = {
   tcer: tcerOrder,
-  lcer: lcerOrder,
 }
 
 class EventDetailEditor extends React.Component{
@@ -68,7 +57,7 @@ class EventDetailEditor extends React.Component{
     }
 
     getInputOrder(){
-      return inputOrder[this.props.formType];
+      return tcerOrder;
     }
 
     onChange(name, value){
@@ -136,9 +125,9 @@ class EventDetailEditor extends React.Component{
     if(!this.props.fishingEvent){
       return this.props.renderMessage("No shots to edit");
     }
-    let model = getFishingEventModelByTypeCode(this.props.formType).complete;
+    let model = ModelUtils.getFishingEventModel();
     if(!this.props.showOptionalFields) {
-      model = model.filter(f => {
+      model.filter(f => {
         if(f.optionalRender ){
           const value = this.props.fishingEvent[f.id];
           return !f.valid.func(value);
