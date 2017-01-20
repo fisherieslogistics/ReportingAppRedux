@@ -1,12 +1,13 @@
 import moment from 'moment';
 import base64 from 'base-64';
+import FishingEventModel from '../models/FishingEventModel';
+import TCERFishingEventModel from '../models/TCERFishingEventModel';
+
 function mongoObjectId() {
-    var timestamp = (new Date().getTime() / 1000 | 0).toString(16);
-    var id = timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function() {
-        return (Math.random() * 16 | 0).toString(16);
-    }).toLowerCase();
+    const timestamp = (new Date().getTime() / 1000 | 0).toString(16);
+    const id = timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, () => (Math.random() * 16 | 0).toString(16)).toLowerCase();
     return id;
-};
+}
 
 function toGlobalId(type, id) {
  return base64.encode([type, id].join(':'));
@@ -21,7 +22,9 @@ function attributeShouldRender(attr) {
 }
 
 export default {
-
+  getFishingEventModel(){
+    return FishingEventModel.concat(TCERFishingEventModel);
+  },
   blankModel: (model, type) => {
     const blankModel = {};
     model.forEach(value => {
@@ -37,8 +40,6 @@ export default {
     });
     return blankModel;
   },
-  getRenderableAttributes: (model) => {
-    return model.filter(attributeShouldRender);
-  },
+  getRenderableAttributes: (model) => model.filter(attributeShouldRender),
 
 };
