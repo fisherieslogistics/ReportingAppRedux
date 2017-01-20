@@ -8,6 +8,7 @@ class FishingEventActions {
   startFishingEvent(position) {
     return (dispatch, getState) => {
       const state = getState().default;
+      const id = state.fishingEvents.events.length;
       dispatch({
         type: 'startFishingEvent',
         location: position,
@@ -16,8 +17,8 @@ class FishingEventActions {
         wingSpread: state.trip.wingSpread,
         headlineHeight: state.trip.headlineHeight,
       });
-      const fishingEvents = state.fishingEvents.events;
-      if(fishingEvents.length){
+      if(state.fishingEvents.events.length){
+          const eventId = id;
           dispatch(this.setViewingFishingEvent(eventId));
       }
     };
@@ -43,6 +44,7 @@ class FishingEventActions {
   }
 
   // Use this to change other species weight
+  setFishingEventValue(fishingEventId, inputId, value) {
     return (dispatch, getState) => {
       dispatch({
           type: 'setFishingEventValue',
@@ -51,6 +53,10 @@ class FishingEventActions {
           value,
           timestamp: moment()
       });
+      if(['wingSpread', 'headlineHeight'].includes(inputId)){
+        const state = getState().default;
+        dispatch(tripActions.updateTrip(inputId, value, state.trip.started))
+      }
     }
   }
 
