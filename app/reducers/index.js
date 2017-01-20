@@ -1,5 +1,5 @@
 "use strict";
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 import AuthReducer from './AuthReducer';
 import FishingEventReducer from './FishingEventReducer';
 import MeReducer from './MeReducer';
@@ -12,6 +12,8 @@ import SyncReducer from './SyncReducer';
 import APIReducer from './APIReducer';
 import MigrationReducer from './MigrationReducer';
 import HistoryReducer from './HistoryReducer';
+import ChatReducer from './ChatReducer';
+
 import TCPQueue from '../api/TCPQueue';
 const tcpQueue = new TCPQueue();
 
@@ -30,6 +32,7 @@ const reducers = {
   api: APIReducer,
   migrations: MigrationReducer,
   history: HistoryReducer,
+  chat: ChatReducer,
 }
 
 const MainReducer = combineReducers(reducers);
