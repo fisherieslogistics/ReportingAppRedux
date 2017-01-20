@@ -1,32 +1,24 @@
 "use strict";
 
 const initialState = {
-  tagSelected: 'shoreside',
+  tagSelected: 'fisherylogistics',
   messageThreads: [
     {
-      id: 'beef',
-      name: 'Mary Net Shed',
+      id: 'rimuandrick',
+      name: 'Rimu and Mike',
       tags: [],
       messages: [
         {
           _id: "my_id4354",
-          text: "I am Shavaun please get my nets ready",
+          text: "Hey Rick hope you liek the chat!",
           createdAt: new Date(),
           image: null,
-          user: { name: 'Shavaun', _id: 'shavaun', avatar: null },
-        },
-        {
-          _id: "my_id4444",
-          text: "Mate you didn't pay for the last nets I dont want to make you a $40000 net for no money!",
-          createdAt: new Date(),
-          image: null,
-          user: { name: 'Mary Net Shed', _id: 'mary', avatar: null },
+          user: { name: 'Rimu and Mike', _id: 'rimuandrick', avatar: null },
         },
       ],
       users: [
-        { name: 'Mary', _id: 'mary', avatar: null },
-        { name: 'Shavaun', _id: 'shavaun', avatar: null },
-      ]
+        {_id: 'rimuandrick', name: 'Rimu and Mike', avatar: null },
+      ],
     },
     {
       id: 'toothfish',
