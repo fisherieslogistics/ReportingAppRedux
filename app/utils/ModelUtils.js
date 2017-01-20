@@ -2,10 +2,10 @@ import moment from 'moment';
 import base64 from 'base-64';
 function mongoObjectId() {
     var timestamp = (new Date().getTime() / 1000 | 0).toString(16);
-    var _id = timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function() {
+    var id = timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function() {
         return (Math.random() * 16 | 0).toString(16);
     }).toLowerCase();
-    return _id;
+    return id;
 };
 
 function toGlobalId(type, id) {
