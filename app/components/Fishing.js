@@ -333,7 +333,8 @@ class Fishing extends MasterDetailView {
         fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents || []].reverse())}
         onPress={this.masterListOnPress}
         selectedFishingEvent={this.props.viewingEvent}
-    />);
+      />
+    );
   }
 
   renderMessage(message){

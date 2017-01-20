@@ -6,7 +6,6 @@ import TCPClient from './TCPClient';
 import moment from 'moment';
 
 const helper = new Helper();
-const numberOfSent = 1;
 
 class TCPQueue {
 
@@ -21,6 +20,7 @@ class TCPQueue {
     this.sendInTime = this.sendInTime.bind(this);
     this.send = this.send.bind(this);
     this.setup = this.setup.bind(this);
+    this.onDataRecieved = this.onDataRecieved.bind(this);
     this.startContinousMessages = this.startContinousMessages.bind(this);
     this.queue = [];
     this.sending = false;
@@ -31,15 +31,23 @@ class TCPQueue {
     this.loadQueue().then((tcpQueue) => {
       const saved = tcpQueue || [];
       this.queue = [...saved, ...this.queue];
-      this.tcpClient = new TCPClient();
+      this.tcpClient = new TCPClient(this.onDataRecieved);
       this.startSending();
       this.startContinousMessages()
     });
   }
 
+  onDataRecieved(data){
+
+  }
+
   startContinousMessages() {
+    let numberOfSent = 1;
     const message = { index: numberOfSent, timestamp: new moment().toISOString()};
-    setInterval(() => this.addToQueue(`$CONTINOUS:${numberOfSent}`, message), 60000);
+    setInterval(() => {
+      numberOfSent += 1;
+      this.addToQueue(`$CONTINOUS:${numberOfSent}`, message);
+    }, 15000);
   }
 
   sendInTime() {
@@ -58,7 +66,6 @@ class TCPQueue {
   }
 
   send(toSend) {
-    console.log(JSON.stringify(toSend.input), this.queue.length);
     this.sending = true;
     return new Promise((resolve, reject) => {
       this.tcpClient.send(toSend.key, toSend.input).then((results) => {

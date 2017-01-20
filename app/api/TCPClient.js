@@ -36,19 +36,17 @@ class TCPClient {
   }
 
   handleData(data) {
-    //console.log(data.toString());
-    console.log(data);
     this.dataCalllback(data);
   }
 
   handleError(error) {
     this.isActive = false;
-    console.log("handling an error", error);
     //this.client.close();
   }
 
   handleDrain(drain) {
     console.log("drain", drain);
+    this.active = true;
   }
 
   handleClose(close) {
@@ -59,8 +57,7 @@ class TCPClient {
 
   handleConnect(connect) {
     this.isActive = true;
-    console.log('connected as bro', connect);
-    //const sent = this.send('CON', { connected: new moment().toISOString() });
+    const sent = this.send('CON', { connected: new moment().toISOString() });
   }
 
   connect() {
@@ -88,10 +85,9 @@ class TCPClient {
         if(!this.client.writable){
            resolve(false);
         }
-        /*if(this.client._writableState.needDrain) {
-          console.log("needs drain");
-        }*/
-        console.log(msg);
+        if(this.client._writableState.needDrain) {
+          resolve(false);
+        }
         try {
           this.client.write(`${msg}\r\n`);
           resolve(true);

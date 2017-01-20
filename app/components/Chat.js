@@ -129,7 +129,6 @@ class Chat extends MasterDetailView {
   }
 
   onSend(messages = []) {
-    console.log(messages);
     this.props.dispatch(
       chatActions.newMessage(messages[0], this.state.selectedDetail.id));
   }
@@ -150,7 +149,6 @@ class Chat extends MasterDetailView {
         }}
       />
     );
-    console.log(messages.length, "MSGSLEN");
     return (
       <View style={chatWrapperStyle}>
         { chat }

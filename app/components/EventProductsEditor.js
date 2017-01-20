@@ -12,6 +12,7 @@ import ProductActions from '../actions/ProductActions';
 import FishingEventActions from '../actions/FishingEventActions';
 import ProductModel from '../models/ProductModel';
 import OtherSpeciesWeightModel from '../models/OtherSpeciesWeightModel';
+import ModelUtils from '../utils/ModelUtils';
 import { colors, modelEditorStyles, productEditorStyles } from '../styles/styles';
 import ModelEditor from './common/ModelEditor';
 /* eslint-disable */
@@ -61,15 +62,7 @@ class EventProductsEditor extends React.Component{
     }
   }
 
-
-  validateInput() {
-    return true;
-  }
-
   onChangeProduct(name, value, index) {
-    if(!this.validateInput(name, value)){
-      return;
-    }
     switch (name) {
       case "code":
         if(!value || !this.props.fishingEvent.products.find(p => p.code === value)){
@@ -84,14 +77,9 @@ class EventProductsEditor extends React.Component{
     }
   }
 
-  onChangeOtherSpeciesWeight(name, value) {
-    if(!this.validateInput(name, value)) {
-      return;
-    }
-    if (name === 'weight') {
-      this.props.dispatch(fishingEventActions.setFishingEventValue(
-        this.props.fishingEvent.id, 'otherSpeciesWeight', value));
-    }
+  onChangeOtherSpeciesWeight(value) {
+    this.props.dispatch(fishingEventActions.setFishingEventValue(
+      this.props.fishingEvent.id, 'otherSpeciesWeight', value));
   }
 
   onEnterPress(attributeId, productIndex){
@@ -130,16 +118,18 @@ class EventProductsEditor extends React.Component{
   renderOtherSpeciesEditor() {
     const onChange = (name, value) => this.onChangeOtherSpeciesWeight(value);
     const getEditorProps = () => ({});
+    const otherS = ModelUtils.blankModel(OtherSpeciesWeightModel);
+    otherS.otherSpeciesWeight = this.props.fishingEvent.otherSpeciesWeight;
     return (
       <View
         key={`other_species_weight_editor`}
       >
         <ModelEditor
           getEditorProps={ getEditorProps }
-          iamTheOne={ true }
           model={ OtherSpeciesWeightModel }
-          modelValues={ this.props.fishingEvent }
-          index={ 0 }
+          modelValues={ otherS }
+          values={ this.props.fishingEvent }
+          index={ this.props.fishingEvent.id }
           onChange={ onChange }
         />
       </View>

@@ -72,7 +72,7 @@ class EventDetailEditor extends React.Component{
 
     onChangeText(name, value) {
         this.props.dispatch(
-          fishingEventActions.setfishingEventValue(this.props.fishingEvent.id, name, value));
+          fishingEventActions.setFishingEventValue(this.props.fishingEvent.id, name, value));
     }
 
     onNonFishChange(name, value){
@@ -125,9 +125,9 @@ class EventDetailEditor extends React.Component{
     if(!this.props.fishingEvent){
       return this.props.renderMessage("No shots to edit");
     }
-    let model = ModelUtils.getFishingEventModel();
+    let model = [...ModelUtils.getFishingEventModel()];
     if(!this.props.showOptionalFields) {
-      model.filter(f => {
+      model = model.filter(f => {
         if(f.optionalRender ){
           const value = this.props.fishingEvent[f.id];
           return !f.valid.func(value);

@@ -1,66 +1,82 @@
 'use strict';
 import{
   View,
-  Text,
   TouchableHighlight,
   ListView,
-  RecyclerViewBackedScrollView
+  RecyclerViewBackedScrollView,
+  Dimensions,
 } from 'react-native';
-import React from 'react';
-
+import React, { Component } from 'react';
 import {listViewStyles, colors} from '../../styles/styles';
+const { height } = Dimensions.get('window');
 
-const renderSeperator = (sectionID: number, rowID: number, adjacentRowHighlighted: bool) => (
+function renderSeperator(sectionID, rowID) {
+  return (
     <View
       key={`${sectionID}-${rowID}`}
       style={listViewStyles.seperator}
     />
-  )
-
-const renderRow = (item, sectionId, rowId, props) => {
-  const selected = props.isSelected(item, rowId);
-  const rowStyle = selected ? listViewStyles.selectedListRow : {}
-  let icon = null;
-  if(props.getIcon) {
-    icon = (
-      <View style={[listViewStyles.listRowItemTiny]}>
-        {props.getIcon(item, selected)}
-      </View>
-    );
-  }
-  return (
-    <TouchableHighlight
-      onPress={() => {
-        props.onPress(item, rowId);
-      }}
-      underlayColor={ colors.blue }
-      activeOpacity={0.3}
-    >
-      <View style={[listViewStyles.listRow, rowStyle]}>
-        { icon }
-        {props.getDescription(item, sectionId, rowId, selected)}
-      </View>
-    </TouchableHighlight>);
-}
-
-const renderScroll = (props) => (<RecyclerViewBackedScrollView {...props} />);
-
-const MasterListView = (props) => {
-  let renderAddProps = (item, sectionId, rowId) => renderRow(item, sectionId, rowId, props);
-  if(props.renderRow) {
-    renderAddProps = (item, sectionId, rowId) => props.renderRow(item, sectionId, rowId, props);
-  }
-  return (
-    <ListView
-      style={[listViewStyles.listView]}
-      enableEmptySections
-      dataSource={props.dataSource}
-      renderRow={renderAddProps}
-      renderScrollComponent={renderScroll}
-      renderSeparator={renderSeperator}
-    />
   );
 }
 
-export {renderSeperator, renderRow}
+class MasterListView extends Component {
+
+  constructor(props){
+    super(props);
+    this.renderScroll = this.renderScroll.bind(this);
+    this.renderSeperator = renderSeperator.bind(this);
+    this.renderRow = this.renderRow.bind(this);
+  }
+
+  renderRow(item, sectionId, rowId) {
+    const selected = this.props.isSelected(item, rowId);
+    const rowStyle = selected ? listViewStyles.selectedListRow : {}
+    let icon = null;
+    if(this.props.getIcon) {
+      icon = (
+        <View style={[listViewStyles.listRowItemTiny]}>
+          {this.props.getIcon(item, selected)}
+        </View>
+      );
+    }
+    return (
+      <TouchableHighlight
+        onPress={() => {
+          this.props.onPress(item, rowId);
+        }}
+        underlayColor={ colors.blue }
+        activeOpacity={0.3}
+      >
+        <View style={[listViewStyles.listRow, rowStyle]}>
+          { icon }
+          {this.props.getDescription(item, sectionId, rowId, selected)}
+        </View>
+      </TouchableHighlight>
+    );
+  }
+
+  renderScroll() {
+    return (<RecyclerViewBackedScrollView />);
+  }
+
+  render() {
+    const renderRow = this.props.renderRow || this.renderRow;
+    const taller = { height };
+    return (
+      <View
+        style={[listViewStyles.listViewWrapper, taller, this.props.wrapperStyle]}
+      >
+        <ListView
+          style={[listViewStyles.listView]}
+          enableEmptySections
+          dataSource={ this.props.dataSource }
+          renderRow={ renderRow  }
+          renderScrollComponent={this.renderScroll}
+          renderSeparator={this.renderSeperator}
+        />
+      </View>
+    );
+  }
+}
+
 export default MasterListView

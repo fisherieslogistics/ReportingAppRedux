@@ -226,9 +226,11 @@ class Trip extends MasterDetailView {
       allTrips.unshift(currentTrip);
     }
     const f1 = { flex: 1 }
+    const wrapStyle = { height: 90 };
     return (
       <View style={f1}>
         <MasterListView
+          wrapperStyle={ wrapStyle }
           getDescription={ this.getTripDescription }
           isSelected={ this.isTripSelected }
           onPress={ this.tripsListOnPress }

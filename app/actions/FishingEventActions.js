@@ -1,5 +1,7 @@
 "use strict";
 import moment from 'moment';
+import TripActions from './TripActions';
+const tripActions = new TripActions();
 
 class FishingEventActions {
 
@@ -10,13 +12,12 @@ class FishingEventActions {
         type: 'startFishingEvent',
         location: position,
         tripId: state.trip.objectId,
+        timestamp: moment(),
         wingSpread: state.trip.wingSpread,
         headlineHeight: state.trip.headlineHeight,
-        timestamp: moment(),
       });
       const fishingEvents = state.fishingEvents.events;
       if(fishingEvents.length){
-          const eventId = fishingEvents[fishingEvents.length - 1].id;
           dispatch(this.setViewingFishingEvent(eventId));
       }
     };
@@ -42,9 +43,7 @@ class FishingEventActions {
   }
 
   // Use this to change other species weight
-  setfishingEventValue(fishingEventId, inputId, value) {
     return (dispatch, getState) => {
-      const state = getState().default;
       dispatch({
           type: 'setFishingEventValue',
           inputId,

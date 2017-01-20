@@ -9,7 +9,7 @@ import React from 'react';
 
 const SignatureComponent = requireNativeComponent('RSSignatureView', null);
 
-var styles = {
+const styles = {
   signatureBox: {
     flex: 0.7
   },
