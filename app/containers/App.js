@@ -98,7 +98,6 @@ class App extends Component {
   }
 
   resetState(state){
-    const auth = Object.assign({}, state.auth || {});
     const me = Object.assign({}, state.me || {});
     this.setState({
       loaded: false,
@@ -107,7 +106,7 @@ class App extends Component {
       helper.saveErrorToLocalStorage(state, 'error'),
       helper.saveToLocalStorage({}, 'reset'),
     ]).then((res) => {
-      store.dispatch(stateLoadActions.loadSavedState({auth, me}));
+      store.dispatch(stateLoadActions.loadSavedState({me}));
       setTimeout(() => {
         this.setState({loaded: true});
       }, 2000);
