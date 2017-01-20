@@ -14,15 +14,12 @@ import AutoSuggestBar from '../components/common/AutoSuggestBar';
 import Orientation from 'react-native-orientation';
 import ViewActions from '../actions/ViewActions';
 import FormActions from '../actions/FormActions';
-import SyncWorker from '../api/SyncWorker';
 import Icon8 from '../components/common/Icon8';
 import Login from '../components/Login';
 import {createForms} from '../utils/FormUtils';
-import GPSControlActions from '../actions/GPSControlActions';
-import ApiActions from '../actions/ApiActions';
+//import GPSControlActions from '../actions/GPSControlActions';
 
-const apiActions = new ApiActions();
-const gpsControlActions = new GPSControlActions();
+//const gpsControlActions = new GPSControlActions();
 const viewActions = new ViewActions();
 const formActions = new FormActions();
 
@@ -72,13 +69,7 @@ class ReportingApp extends Component {
       email: '',
       password: '',
     };
-    apiActions.setUpClient(props.dispatch, props.ApiEndpoint, props.AuthEndpoint);
-    this.SyncWorker = new SyncWorker(props.dispatch,
-                                     props.store.getState,
-                                     apiActions,
-                                     2000);
-
-    this.props.dispatch(gpsControlActions.nativeGPSOn());
+    //this.props.dispatch(gpsControlActions.nativeGPSOn());
     this.orientationDidChange = this.orientationDidChange.bind(this);
     this.renderTrip = this.renderTrip.bind(this);
     this.renderFishing = this.renderFishing.bind(this);

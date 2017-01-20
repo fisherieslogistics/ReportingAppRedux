@@ -8,10 +8,10 @@ import ReportingApp from './ReportingApp';
 import StateLoadActions from '../actions/StateLoadActions';
 import Helper from '../utils/Helper';
 import StateMigratorizer from '../utils/StateMigratorizer';
+import moment from 'moment';
 //eslint unfriendly imports
 /* eslint-disable */
 import * as reducers from '../reducers';
-import ErrorUtils from 'ErrorUtils';
 const Mailer = require('NativeModules').RNMail;
 /* eslint-enable */
 
@@ -33,17 +33,16 @@ class App extends Component {
     this.email = this.email.bind(this);
     this.sendErrorMail = this.sendErrorMail.bind(this);
     this.resetState = this.resetState.bind(this);
-
-    ErrorUtils.setGlobalHandler(this.handleError);
-
+    //ErrorUtils.setGlobalHandler(this.handleError);
     this.watchId = null;
     this.state = {
       loaded: false,
+      tcpClient: null,
     }
   }
 
   handleError(err){
-    throw err;
+    console.log(err);
     return;
     AlertIOS.alert(
       "Fatal Error",
@@ -139,6 +138,7 @@ class App extends Component {
   }
 
   componentDidMount(){
+
     this.loadMigratedState.then((state) => {
       store.dispatch(stateLoadActions.loadSavedState(state));
       //setTimeout(() => {

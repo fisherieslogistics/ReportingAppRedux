@@ -4,16 +4,19 @@ import Helper from '../utils/Helper';
 import {
   AlertIOS,
 } from 'react-native';
+import moment from 'moment';
 const helper = new Helper();
 
 const initialState = {
-  loggedIn: false,
-  token: null,
-  refreshToken: null,
-  message: ""
+  loggedIn: true,
+  token: "sdfsdfsdf",
+  refreshToken: "sdfsdfsdf",
+  message: "",
+  expiresAt: new moment(),
 }
 
 export default (state = initialState, action) => {
+  return initialState;
   switch (action.type) {
     case 'setAuth':
       return helper.updateAuth(state, action.auth);

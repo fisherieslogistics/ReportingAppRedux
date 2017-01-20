@@ -2,7 +2,7 @@ import EventEmitter from 'EventEmitter';
 import PositionProvider from '../providers/NativeLocation';
 
 const pos = new PositionProvider();
-pos.startUpdatingLocation();
+//pos.startUpdatingLocation();
 
 const initialState = {
   eventEmitter: new EventEmitter(),

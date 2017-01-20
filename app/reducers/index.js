@@ -12,6 +12,8 @@ import SyncReducer from './SyncReducer';
 import APIReducer from './APIReducer';
 import MigrationReducer from './MigrationReducer';
 import HistoryReducer from './HistoryReducer';
+import TCPQueue from '../api/TCPQueue';
+const tcpQueue = new TCPQueue();
 
 const helper = new Helper();
 const AsyncStorage = require('AsyncStorage');
@@ -34,7 +36,7 @@ const MainReducer = combineReducers(reducers);
 
 const mutateState = (state, action) => {
   const newState = MainReducer(state, action);
-  if(action.type == 'loadSavedState'){
+  if(action.type === 'loadSavedState'){
     const loadedState = MainReducer(undefined, {type: 'init'});
     const savedState = action.savedState
     if(!savedState){
@@ -47,7 +49,9 @@ const mutateState = (state, action) => {
     });
     return MainReducer(loadedState, action);
   }
+
   helper.saveToLocalStorage(newState, action.type);
+  tcpQueue.addToQueue('ACT', action);
   return newState;
 }
 
