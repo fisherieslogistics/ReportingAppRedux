@@ -7,8 +7,8 @@ class FormActions{
   setViewingForm(form, index){
     return {
       type: 'setViewingForm',
-      form: form,
-      index: index
+      form,
+      index
     }
   }
   signForm(form, signature){
@@ -16,9 +16,8 @@ class FormActions{
       dispatch({
         type: 'formSigned',
         fishingEvents: form.fishingEvents,
-        signature: signature,
+        signature,
         dateSigned: new moment(),
-        formType: getState().default.me.formType,
       });
     }
   }
