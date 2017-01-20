@@ -17,6 +17,15 @@ const tripModel = [
      display: { type: 'single'},
     },
     {
+      label: 'Wing Spread', id: 'wingSpread', valid: Validator.valid.greaterThanZero, type: 'number',
+      display: { type: 'single'}, unit: 'm',
+    },
+    {
+      label: 'Headline Height', id: 'headlineHeight', valid: Validator.valid.greaterThanZero,
+      type: 'float', unit: 'm',
+      display: { type: 'single'},
+    },
+    {
      id: 'started', defaultValue: false, valid: Validator.valid.alwaysValid, type: 'bool',
     },
     {
