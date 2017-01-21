@@ -15,12 +15,12 @@ const flatten = list => list.reduce(
 );
 
 const parseMessage = (msg) => ({
-  _id: msg.id,
+  id: msg.id,
   text: msg.text,
   createdAt: new Date(msg.created),
   image: msg.image,
   user: {
-    _id: msg.createdBy.id,
+    id: msg.createdBy.id,
     name: msg.createdBy.name,
   }
 });
@@ -36,7 +36,8 @@ const parseUser = (viewer) => {
         messages: c.messageThread.messages.edges.map(m => parseMessage(m.node)),
         messageThread_id: c.messageThread.id,
       }
-    ));
+    )
+  );
 
   return {
     firstName: viewer.firstName,
