@@ -33,6 +33,7 @@ class App extends Component {
   componentDidMount(){
     helper.loadSavedStateAsync().then((state) => {
       store.dispatch(stateLoadActions.loadSavedState(state));
+      store.dispatch(stateLoadActions.setTcpDispatch(store.dispatch));
       this.setState({loaded: true});
     });
   }
