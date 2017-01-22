@@ -4,6 +4,9 @@ import packMessage from './PackMessage';
 import moment from 'moment';
 import S from 'string';
 
+const SOCKET_TIMEOUT = 4000;
+const RETRY_TIME = SOCKET_TIMEOUT + 1000;
+
 const logIt = (toLog) => { console.log(toLog) };
 
 class TCPClient {
@@ -28,6 +31,7 @@ class TCPClient {
       this.client.removeAllListeners();
     }
     this.client = new net.Socket();
+    this.client.setTimeout(SOCKET_TIMEOUT);
     this.client.on('error', this.handleError);
     this.client.on('data', this.handleData);
     this.client.on('close', this.handleClose);
@@ -41,6 +45,7 @@ class TCPClient {
 
   handleError(error) {
     this.isActive = false;
+    debugger;
     //this.client.close();
   }
 
@@ -52,19 +57,20 @@ class TCPClient {
   handleClose(close) {
     this.isActive = false;
     console.log("close", close);
-    setTimeout(this.setup, 4000);
+    debugger;
+    setTimeout(this.setup, RETRY_TIME);
   }
 
   handleConnect(connect) {
     this.isActive = true;
-    const sent = this.send('CON', { connected: new moment().toISOString() });
+    //-=const sent = this.send('CON', { connected: new moment().toISOString() });
   }
 
   connect() {
     try {
       this.client.connect(TCPEndpoint.port, TCPEndpoint.ip, this.handleConnect);
     } catch(e) {
-      setTimeout(this.setup, 4000);
+      setTimeout(this.setup, RETRY_TIME);
     }
   }
 
@@ -93,7 +99,7 @@ class TCPClient {
           resolve(true);
         } catch(e) {
           this.isActive = false;
-          setTimeout(this.setup, 3000);
+          setTimeout(this.setup, RETRY_TIME);
           resolve(false);
         }
       }));
