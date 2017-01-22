@@ -1,12 +1,11 @@
 "use strict";
-import moment from 'moment';
 
 class LocationActions {
 
   NMEAStringRecieved(NMEAString) {
     return {
       type: 'NMEAStringRecieved',
-      payload: { data: NMEAString, timestamp: new moment().toISOString() },
+      payload: { data: NMEAString },
       error: false,
     };
   }
