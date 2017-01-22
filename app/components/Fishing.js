@@ -15,10 +15,12 @@ import PositionDisplay from './PositionDisplay';
 import EventProductsEditor from './EventProductsEditor';
 import PlaceholderMessage from './common/PlaceholderMessage';
 import ProductActions from '../actions/ProductActions';
+import Helper from '../utils/Helper';
 import { LongButton, TextButton, BigButton } from './common/Buttons';
 import { MasterToolbar, DetailToolbar } from './layout/Toolbar';
 import { colors, toolbarStyles } from '../styles/styles';
 
+const helper = new Helper();
 const fishingEventActions = new FishingEventActions();
 const productActions = new ProductActions();
 const spacer = { height: 40 };
@@ -73,7 +75,7 @@ class Fishing extends MasterDetailView {
   }
 
   getCurrentLocation(){
-    const pos = this.props.positionProvider.getPosition()
+    const pos = helper.getLatestPosition(this.props.location);
     if(pos && pos.coords){
       return {
         lat: pos.coords.latitude,
@@ -88,7 +90,7 @@ class Fishing extends MasterDetailView {
   }
 
   startFishingEvent(){
-    const pos = this.getCurrentLocation();
+    const pos = helper.getLatestPosition(this.props.location);
     this.startEvent(pos);
   }
 
@@ -203,8 +205,6 @@ class Fishing extends MasterDetailView {
             editorType={'event'}
             orientation={this.props.orientation}
             renderMessage={this.renderMessage}
-            containerChoices={this.props.containerChoices}
-            optionalFields={this.props.catchDetailsExpanded}
             deleteProduct={this.deleteProduct}
           />
         );
@@ -349,7 +349,7 @@ class Fishing extends MasterDetailView {
     const deleteActive = this.props.lastEvent && (!this.props.lastEvent.datetimeAtEnd);
     const posDisplay = (
       <PositionDisplay
-        provider={this.props.positionProvider}
+        location={this.props.location}
       />
     );
     const rightProps = (
@@ -378,7 +378,7 @@ class Fishing extends MasterDetailView {
 
   renderMasterToolbar(){
     let backgroundColor = this.props.enableStartEvent ? colors.green : colors.red;
-    const text = this.props.enableStartEvent ? "Start Fishing" : "Haul";
+    const text = this.props.enableStartEvent ? "Shoot" : "Haul";
     let textColor = colors.white;
     if(!this.props.tripStarted) {
       backgroundColor = colors.backgrounds.dark;
@@ -409,9 +409,7 @@ const select = (State) => {
       height: state.view.height,
       tripStarted: state.trip.started,
       enableStartEvent: state.trip.started,
-      containerChoices: state.me.containers,
-      positionProvider: state.uiEvents.uipositionProvider,
-      catchDetailsExpanded: state.me.catchDetailsExpanded,
+      location: state.location,
     }
     if(!state.fishingEvents.events.length){
       return props;
