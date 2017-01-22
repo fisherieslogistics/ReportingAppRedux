@@ -24,6 +24,7 @@ class TCPQueue {
     this.startContinousMessages = this.startContinousMessages.bind(this);
     this.queue = [];
     this.sending = false;
+    this.dispatch = null;
     this.setup();
   }
 
@@ -32,12 +33,16 @@ class TCPQueue {
       const saved = tcpQueue || [];
       this.queue = [...saved, ...this.queue];
       this.tcpClient = new TCPClient(this.onDataRecieved);
+      this.tcpClient = new TCPClient(this.dispatch, this.onDataRecieved);
       this.startSending();
       this.startContinousMessages()
     });
   }
 
   onDataRecieved(data){
+  setDispatch(dispatch){
+    this.dispatch = dispatch;
+  }
 
   }
 
