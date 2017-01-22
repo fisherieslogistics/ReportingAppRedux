@@ -278,7 +278,7 @@ class Trip extends MasterDetailView {
 
   renderMasterToolbar() {
     let backgroundColor = colors.backgrounds.dark;
-    let text = "Log out";
+    let text = "FLL";
     let textColor = 'rgba(255, 255, 255, 0.2)';
     if(this.props.tripCanStart) {
       backgroundColor = colors.green;
