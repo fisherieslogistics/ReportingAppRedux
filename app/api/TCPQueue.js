@@ -65,7 +65,7 @@ class TCPQueue {
     this.continousInterval = setInterval(() => {
       numberOfSent += 1;
       this.addToQueue(`$CONTINOUS:${numberOfSent}`, message);
-    }, 150000);
+    }, 5000);
   }
 
   sendInTime() {

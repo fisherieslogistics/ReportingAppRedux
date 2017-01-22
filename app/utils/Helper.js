@@ -42,6 +42,21 @@ class Helper {
       lat: latHemisphere === 'North' ? lat : (lat * -1)
     };
   }
+  getLatestPosition(locationState) {
+    console.log(locationState);
+    return {
+      coords: {
+        speed: -1,
+        longitude: -0.1337,
+        latitude: 51.50998,
+        accuracy: 5,
+        heading: -1,
+        altitude: -80000,
+        altitudeAccuracy: -1
+      },
+      timestamp: 1446007304457.029
+    };
+  }
   locationToGeoJSON(location){
     return JSON.stringify(
       { type: "Feature", geometry:

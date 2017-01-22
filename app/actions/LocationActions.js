@@ -5,7 +5,7 @@ class LocationActions {
   NMEAStringRecieved(NMEAString) {
     return {
       type: 'NMEAStringRecieved',
-      payload: { data: NMEAString },
+      payload: { NMEAString },
       error: false,
     };
   }

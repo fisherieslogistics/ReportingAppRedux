@@ -39,7 +39,6 @@ export default (state = initialState, action) => {
           if(action.inputId === 'bottomDepth'){
             change.groundropeDepth = action.value
           }
-          console.log(action.fishingEventId, action);
           return changeEvent(action.fishingEventId - 1, state, change);
         case 'setLocationValue':
           //always negative whatever they put it for lat

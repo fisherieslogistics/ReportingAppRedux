@@ -17,18 +17,6 @@ class PositionDisplay extends React.Component{
     }
   }
 
-  componentWillMount(){
-    this.interval = setInterval(() => {
-      this.setState({
-        position: this.props.provider.getPosition()
-      });
-    }, 2000);
-  }
-
-  componentWillUnmount(){
-    clearInterval(this.interval);
-  }
-
   getPositionText(){
     if(!this.state.position || !this.state.position.coords){
       return "awaiting position";
