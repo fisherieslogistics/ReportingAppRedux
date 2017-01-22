@@ -10,12 +10,13 @@ import EventsReducer from './EventsReducer';
 import MigrationReducer from './MigrationReducer';
 import HistoryReducer from './HistoryReducer';
 import ChatReducer from './ChatReducer';
+import LocationReducer from './LocationReducer';
 import moment from 'moment';
 
 import TCPQueue from '../api/TCPQueue';
 const tcpQueue = new TCPQueue();
 const helper = new Helper();
-let then = new moment();
+const then = new moment();
 
 const actionsNotSending = [
   'initAutoSuggestBarChoices',
@@ -60,6 +61,7 @@ const reducers = {
   forms: FormReducer,
   uiEvents: EventsReducer,
   migrations: MigrationReducer,
+  location: LocationReducer,
   history: HistoryReducer,
 }
 
@@ -83,17 +85,16 @@ const mutateState = (state, action) => {
   }
 
   helper.saveToLocalStorage(newState, action.type);
+  if(action.type === 'setTcpDispatch'){
+    tcpQueue.setDispatch(action.payload);
+  }
   if(actionsNotSending.every((str) => action.type.indexOf(str) === -1)) {
-    tcpQueue.addToQueue('ACT', action);
+    setTimeout(() => tcpQueue.addToQueue('ACT', action), 500);
   }
 
-  const now = new moment();
-  if(then.diff(now, 'seconds') > 10){
-    sendStateInParts(`$SNAP-${now.toISOString()}`, newState);
-    then = now;
-  }
+  //const now = new moment();
   if(action.type === 'endTrip'){
-    sendStateInParts('$ENDTRIP', state);
+    //sendStateInParts('$ENDTRIP', { trip: state.trip, fishingEvents: state.fishingEvents.events });
   }
   return newState;
 }
