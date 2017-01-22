@@ -4,6 +4,12 @@ import AsyncStorage from 'AsyncStorage';
 import Helper from '../utils/Helper';
 import TCPClient from './TCPClient';
 import moment from 'moment';
+import LocationActions from '../actions/LocationActions';
+const locationActions = new LocationActions();
+const NMEAS = [
+  '$GPGGA',
+  '$GPRMC',
+];
 
 const helper = new Helper();
 
@@ -32,18 +38,24 @@ class TCPQueue {
     this.loadQueue().then((tcpQueue) => {
       const saved = tcpQueue || [];
       this.queue = [...saved, ...this.queue];
-      this.tcpClient = new TCPClient(this.onDataRecieved);
       this.tcpClient = new TCPClient(this.dispatch, this.onDataRecieved);
       this.startSending();
       this.startContinousMessages()
     });
   }
 
-  onDataRecieved(data){
   setDispatch(dispatch){
     this.dispatch = dispatch;
   }
 
+  onDataRecieved(data){
+    if(! this.dispatch ){
+      return;
+    }
+    const line = data.toString();
+    if( NMEAS.find(str => line.indexOf(str) !== -1)){
+      this.dispatch.dispatch(locationActions.NMEAStringRecieved(line));
+    }
   }
 
   startContinousMessages() {
@@ -57,7 +69,7 @@ class TCPQueue {
 
   sendInTime() {
     this.sending = false;
-    setTimeout(this.startSending, 3000);
+    setTimeout(this.startSending, 5000);
   }
 
   startSending() {
