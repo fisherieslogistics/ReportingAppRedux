@@ -34,14 +34,14 @@ class PositionDisplay extends React.Component{
   }
 
   render() {
-    const viewStyle = {flex: 1, marginBottom: 20, marginLeft: 25, height: 40};
-    const textStyle = [textStyles.font, {fontSize: 18, color: colors.green}];
+    const viewStyle = {flex: 1, marginBottom: 20, marginLeft: 25, height: 40, marginTop: 10};
+    const textStyle = [textStyles.font, {fontSize: 16, color: colors.green}];
     return (
       <View style={viewStyle}>
           <Text style={textStyle}>
             {this.getPositionText()}
           </Text>
-          <Text style={[textStyle, { fontSize: 12 }]}>
+          <Text style={[textStyle]}>
             {this.getTimeText()}
           </Text>
       </View>
