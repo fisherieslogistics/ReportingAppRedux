@@ -31,20 +31,20 @@ const styles = {
     padding: 8
   },
   resultText: {
-    color: colors.white,
+    color: '#000',
   },
   resultTextValue: {
     fontSize: 20,
     fontWeight: '600',
   },
   resultTextSelected: {
-    color: colors.white
+    color: '#000'
   },
   resultBackgroundSelected: {
-    backgroundColor: colors.blue
+    backgroundColor: colors.green
   },
   resultBackground: {
-    backgroundColor: colors.lightBlue
+    backgroundColor: colors.green,
   },
   result: {
     height: 62,
@@ -129,7 +129,7 @@ class AutoSuggestBar extends React.Component {
           <Text style={[textStyles.font,resultTextStyle, styles.resultTextValue]}>
             { resultValue }
           </Text>
-          <Text style={[textStyles.font,resultTextStyle]}>
+          <Text style={[textStyles.font, resultTextStyle]}>
             { description }
           </Text>
         </View>
@@ -149,7 +149,11 @@ class AutoSuggestBar extends React.Component {
       return null;
     }
     const style =  {width: this.props.width };
-    const keyboardplace = 315;
+
+    let keyboardplace = 315;
+    if(this.props.width === 1024){
+      keyboardplace = 400;
+    }
     return (
       <View style={styles.resultsBarWrapper, { bottom: keyboardplace } }>
         <View style={[styles.resultsBar, style]}>
