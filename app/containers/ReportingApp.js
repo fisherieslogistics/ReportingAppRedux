@@ -2,6 +2,7 @@
 import {
   View,
   TabBarIOS,
+  Text,
 } from 'react-native';
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
@@ -114,6 +115,8 @@ class ReportingApp extends Component {
   }
 
   renderTabs(){
+    const textStyle = { color: 'white' }
+    const connectionDataStyle = { right: 70, top: 1, position: 'absolute', backgroundColor: 'transparent' }
     return Object.keys(this.tabs).map(
       (tab) => (
         <Icon8.TabBarItemIOS
@@ -127,7 +130,12 @@ class ReportingApp extends Component {
           onPress={this.tabs[tab].onPress}
         >
           <View style={[styles.col, styles.fill]}>
-            { this.tabs[tab].render() }
+           { this.tabs[tab].render() }
+            <View style={connectionDataStyle}>
+              <Text style={textStyle}>
+                { `Data to send: ${this.props.connection.dataToSend} - ${this.props.connection.status}` }
+              </Text>
+            </View>
           </View>
       </Icon8.TabBarItemIOS>)
     );
@@ -199,6 +207,7 @@ const select = (State) => {
     tripStarted: state.trip.started,
     fishingEvents: state.fishingEvents.events,
     viewingForm: state.view.viewingForm,
+    connection: state.connection,
   };
 }
 
