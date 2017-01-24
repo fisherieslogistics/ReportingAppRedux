@@ -27,7 +27,7 @@ const UserModel = [
     display: { type: 'single'},
   },
   {
-    label: 'Host Port or Navicom use 5003', defaultValue: "5003", type: 'number', id: "hostPort", valid: valid.anyValue,
+    label: 'Host Port or Navicom use 5003', defaultValue: 5003, type: 'number', id: "hostPort", valid: valid.anyValue,
     display: { type: 'single'},
   },
   {

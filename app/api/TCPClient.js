@@ -1,5 +1,4 @@
 import net from 'react-native-tcp';
-import TCPEndpoint from './TCPEndpoint';
 
 const SOCKET_TIMEOUT = 4000;
 const RETRY_TIME = SOCKET_TIMEOUT + 1000;

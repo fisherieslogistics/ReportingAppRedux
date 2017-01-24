@@ -59,7 +59,7 @@ const mutateState = (state, action) => {
       }
     });
     if(!tcpQueue){
-      tcpQueue = new TcpQueue({ ip: loadedState.me.user.ip, 'port': loadedState.me.user.port });
+      tcpQueue = new TcpQueue({ ip: '192.168.1.1', 'port': 5003 });
     }
     return MainReducer(loadedState, action);
   }

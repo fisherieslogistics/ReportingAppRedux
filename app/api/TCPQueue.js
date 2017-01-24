@@ -6,6 +6,7 @@ import TCPClient from './TCPClient';
 import moment from 'moment';
 import LocationActions from '../actions/LocationActions';
 import ConnectionActions from '../actions/ConnectionActions';
+import TCPEndpoint from './TCPEndpoint';
 
 import nmea from 'nmea-0183';
 const locationActions = new LocationActions();
@@ -40,6 +41,7 @@ class TCPQueue {
     this.sending = false;
     this.dispatch = null;
     this.setup();
+    this.startSending();
   }
 
   updateStatus(status) {
@@ -62,7 +64,7 @@ class TCPQueue {
         this.queue = [...saved, ...this.queue];
         this.updateDataToSend();
         this.tcpClient = new TCPClient(this.dispatch, this.onDataRecieved, this.updateStatus, this.clientEndPoint);
-        this.startContinousMessages()
+        this.startContinousMessages();
       });
     } else {
       setTimeout(this.setup, 3000);
