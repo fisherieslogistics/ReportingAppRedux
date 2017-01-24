@@ -45,7 +45,7 @@ class ProfileEditor extends Component {
     getVesselEditorProps(attribute){
       return this.getEditorProps(attribute, this.props.vessel);
     }
-
+    
     render() {
       const styleGap = {
         marginTop: 20,
