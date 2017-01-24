@@ -76,7 +76,7 @@ class AutoSuggestBar extends React.Component {
     const results = [];
     const regExp = this.regExp(term);
     for(let i = 0; i < this.props.choices.length && results.length < MAX_AUTOSUGGEST_RESULTS; i++){
-      const choice = this.props.choices[i];
+      const choice = this.props.choices[i] || "";
       const toTest = `${choice.value}${choice.description}`;
       if(regExp.test(toTest)){
         results.push(choice);
@@ -85,7 +85,7 @@ class AutoSuggestBar extends React.Component {
     return results;
   }
 
-  searchChoices(term){
+  searchChoices(term = ""){
     this.setState({
       results: this.getSearchResults(term),
     });
@@ -138,7 +138,7 @@ class AutoSuggestBar extends React.Component {
   }
 
   renderResults(){
-    if(this.props.text.length){
+    if(this.props.text && this.props.text.length){
       return this.state.results.map(({ value, description }, i) => this.renderResult(value, description, i));
     }
     return this.getSearchResults().map(({ value, description }, i) => this.renderResult(value, description, i));
