@@ -4,11 +4,10 @@ import{
   TouchableHighlight,
   ListView,
   RecyclerViewBackedScrollView,
-  Dimensions,
 } from 'react-native';
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
 import {listViewStyles, colors} from '../../styles/styles';
-const { height } = Dimensions.get('window');
 
 function renderSeperator(sectionID, rowID) {
   return (
@@ -61,10 +60,10 @@ class MasterListView extends Component {
 
   render() {
     const renderRow = this.props.renderRow || this.renderRow;
-    const taller = { height };
+    const tall = { height: this.props.height * 0.6 };
     return (
       <View
-        style={[listViewStyles.listViewWrapper, taller, this.props.wrapperStyle]}
+        style={[listViewStyles.listViewWrapper, tall, this.props.wrapperStyle]}
       >
         <ListView
           style={[listViewStyles.listView]}
@@ -79,4 +78,11 @@ class MasterListView extends Component {
   }
 }
 
-export default MasterListView
+const select = (State) => {
+  const state = State.default;
+  return {
+    height: state.view.height,
+  };
+}
+
+export default connect(select)(MasterListView)
