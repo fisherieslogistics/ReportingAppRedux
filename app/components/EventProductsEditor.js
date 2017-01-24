@@ -65,7 +65,7 @@ class EventProductsEditor extends React.Component{
   onChangeProduct(name, value, index) {
     switch (name) {
       case "code":
-        if(!value || !this.props.fishingEvent.products.find(p => p.code === value)){
+        if(!this.props.fishingEvent.products.find(p => p.code === value)){
           this.props.dispatch(productActions.changeSpecies(
             this.props.fishingEvent.id, index, value, this.props.fishingEvent.objectId));
         }

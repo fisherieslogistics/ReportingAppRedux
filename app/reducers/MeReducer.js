@@ -11,6 +11,7 @@ const initialState = {
   user: initialUser,
   autoSuggestFavourites: {
     speciesCode: [],
+    targetSpecies: [],
   },
 };
 
@@ -28,19 +29,15 @@ export default (state = initialState, action) => {
       state.ports[action.region].push(action.port);
       return state;
     case 'changeSpecies':
-      if(action.value.length !== 3){
-        return state;
+      if(action.value && action.value.toString().length === 3){
+        const faves = state.autoSuggestFavourites.speciesCode.filter(s => s !== action.value);
+        faves.unshift(action.value);
+        if(faves.length >= 10){
+          faves.pop();
+        }
+        state.autoSuggestFavourites.speciesCode = faves;
+        state.autoSuggestFavourites.targetSpecies = faves;
       }
-      if(!state.autoSuggestFavourites.speciesCode){
-        state.autoSuggestFavourites.speciesCode = [];
-      }
-      const faves = state.autoSuggestFavourites.speciesCode.filter(s => s !== action.value);
-      faves.unshift(action.value);
-      if(faves.length >= 10){
-        faves.pop();
-      }
-      state.autoSuggestFavourites.speciesCode = faves;
-      state.autoSuggestFavourites.targetSpecies = faves;
       return state;
     default:
       return state;
