@@ -2,10 +2,10 @@
 
 class LocationActions {
 
-  NMEAStringRecieved(NMEAString) {
+  NMEAStringRecieved(NMEAString, position) {
     return {
       type: 'NMEAStringRecieved',
-      payload: { NMEAString },
+      payload: { NMEAString, position },
       error: false,
     };
   }

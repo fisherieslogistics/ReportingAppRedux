@@ -45,7 +45,6 @@ class TCPClient {
 
   handleError(error) {
     this.isActive = false;
-    debugger;
     //this.client.close();
   }
 
@@ -57,7 +56,6 @@ class TCPClient {
   handleClose(close) {
     this.isActive = false;
     console.log("close", close);
-    debugger;
     setTimeout(this.setup, RETRY_TIME);
   }
 

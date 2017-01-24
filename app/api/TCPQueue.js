@@ -5,6 +5,7 @@ import Helper from '../utils/Helper';
 import TCPClient from './TCPClient';
 import moment from 'moment';
 import LocationActions from '../actions/LocationActions';
+import nmea from 'nmea-0183';
 const locationActions = new LocationActions();
 const NMEAS = [
   '$GPGGA',
@@ -52,10 +53,22 @@ class TCPQueue {
     if(! this.dispatch ){
       return;
     }
-    const line = data.toString();
-    if( NMEAS.find(str => line.indexOf(str) !== -1)){
-      this.dispatch.dispatch(locationActions.NMEAStringRecieved(line));
-    }
+    const lines = data.toString().split('\n');
+    lines.forEach((line) => {
+      if( NMEAS.find(str =>  line.indexOf(str) > -1)){
+        try {
+          const pos = nmea.parse(line);
+          if(isNaN(parseFloat(pos.latitude))){
+            return;
+          }
+          pos.time = new moment().toISOString();
+          this.dispatch.dispatch(locationActions.NMEAStringRecieved(line, pos));
+        } catch(e) {
+          console.log(e);
+        }
+      }
+    });
+
   }
 
   startContinousMessages() {

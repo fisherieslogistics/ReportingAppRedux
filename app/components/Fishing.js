@@ -76,7 +76,7 @@ class Fishing extends MasterDetailView {
 
   getCurrentLocation(){
     const pos = helper.getLatestPosition(this.props.location);
-    if(pos && pos.coords){
+    if(!isNaN(pos.coords.latitude)){
       return {
         lat: pos.coords.latitude,
         lon: pos.coords.longitude
@@ -90,7 +90,7 @@ class Fishing extends MasterDetailView {
   }
 
   startFishingEvent(){
-    const pos = helper.getLatestPosition(this.props.location);
+    const pos = this.getCurrentLocation();
     this.startEvent(pos);
   }
 
@@ -347,9 +347,10 @@ class Fishing extends MasterDetailView {
 
   renderDetailToolbar(){
     const deleteActive = this.props.lastEvent && (!this.props.lastEvent.datetimeAtEnd);
+    const position = helper.getLatestPosition(this.props.location);
     const posDisplay = (
       <PositionDisplay
-        location={this.props.location}
+        position={position}
       />
     );
     const rightProps = (
