@@ -18,7 +18,7 @@ const helper = new Helper();
 
 class TCPQueue {
 
-  constructor() {
+  constructor(tcpEndPoint) {
     this.tcpClient = {};
     this.loadQueue = this.loadQueue.bind(this);
     this.startSending = this.startSending.bind(this);
@@ -30,12 +30,18 @@ class TCPQueue {
     this.setup = this.setup.bind(this);
     this.onDataRecieved = this.onDataRecieved.bind(this);
     this.startContinousMessages = this.startContinousMessages.bind(this);
+    this.setClientEndpoint = this.setClientEndpoint.bind(this);
+    this.clientEndPoint = tcpEndPoint;
     this.queue = [];
     this.sending = false;
     this.dispatch = null;
     this.setup();
   }
 
+  setClientEndpoint(tcpEndPoint) {
+    this.clientEndPoint = tcpEndPoint;
+    this.tcpClient.setTcpEndpoint(tcpEndPoint);
+  }
   setup() {
     this.loadQueue().then((tcpQueue) => {
       const saved = tcpQueue || [];
@@ -44,6 +50,7 @@ class TCPQueue {
       this.startSending();
       this.startContinousMessages()
     });
+        this.tcpClient = new TCPClient(this.dispatch, this.onDataRecieved, this.updateStatus, this.clientEndPoint);
   }
 
   setDispatch(dispatch){
