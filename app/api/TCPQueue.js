@@ -113,7 +113,7 @@ class TCPQueue {
   }
 
   addToQueue(key, input) {
-    const messages = packMessage(key, input);
+    const messages = packMessage(key, helper.deflate(input));
     messages.forEach(msg => this.queue.push(msg));
     return this.saveQueue();
   }
