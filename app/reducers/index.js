@@ -23,6 +23,7 @@ const actionsNotSending = [
   'NMEAStringRecieved',
   'toggleAutoSuggestBar',
   'changeAutoSuggestBarText',
+  'setViewingForm',
   '@@redux',
   '$$redux',
 ];

@@ -7,6 +7,8 @@ import moment from 'moment';
 import LocationActions from '../actions/LocationActions';
 import nmea from 'nmea-0183';
 const locationActions = new LocationActions();
+import packMessage from './PackMessage';
+
 const NMEAS = [
   '$GPGGA',
   '$GPRMC',
@@ -21,7 +23,6 @@ class TCPQueue {
     this.loadQueue = this.loadQueue.bind(this);
     this.startSending = this.startSending.bind(this);
     this.loadQueue = this.loadQueue.bind(this);
-    this.shiftQueue = this.shiftQueue.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
     this.saveQueue = this.saveQueue.bind(this);
     this.sendInTime = this.sendInTime.bind(this);
@@ -78,12 +79,12 @@ class TCPQueue {
     this.continousInterval = setInterval(() => {
       numberOfSent += 1;
       this.addToQueue(`$CONTINOUS:${numberOfSent}`, message);
-    }, 5000);
+    },  60000);
   }
 
   sendInTime() {
     this.sending = false;
-    setTimeout(this.startSending, 5000);
+    setTimeout(this.startSending, 100);
   }
 
   startSending() {
@@ -98,24 +99,22 @@ class TCPQueue {
 
   send(toSend) {
     this.sending = true;
-    return new Promise((resolve, reject) => {
-      this.tcpClient.send(toSend.key, toSend.input).then((results) => {
-        if(results.every(d => !!d)){
-          this.shiftQueue().then(resolve);
+    return new Promise((resolve) => {
+      this.tcpClient.send(toSend).then((result) => {
+          console.log(result);
+        if(result){
+          this.queue.shift();
+          this.saveQueue().then(resolve);
         } else {
-          reject();
+          resolve();
         }
       });
     });
   }
 
   addToQueue(key, input) {
-    this.queue.push({ input, key });
-    return this.saveQueue();
-  }
-
-  shiftQueue() {
-    this.queue.shift();
+    const messages = packMessage(key, input);
+    messages.forEach(msg => this.queue.push(msg));
     return this.saveQueue();
   }
 
