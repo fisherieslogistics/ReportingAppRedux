@@ -132,6 +132,7 @@ function newFishingEvent (state, location, wingSpread, headlineHeight) {
   newEvent.datetimeAtStart = moment();
   newEvent.locationAtStart = location;
   newEvent.products = [];
+  newEvent.otherSpeciesWeight = 0;
   const previousEvent = state.events[newEvent.id - 2];
   if(previousEvent){
     fishingEventModel.filter(attr => attr.repeating).forEach((attribute) => {
