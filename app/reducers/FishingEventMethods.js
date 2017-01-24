@@ -125,7 +125,7 @@ function endFishingEvent (state, location, id) {
   ]});
 }
 
-function newFishingEvent (state, location) {
+function newFishingEvent (state, location, wingSpread, headlineHeight) {
   const fishingEventModel = ModelUtils.getFishingEventModel();
   const newEvent = ModelUtils.blankModel(fishingEventModel, 'FishingEvent');
   newEvent.id = state.events.length + 1;
@@ -139,12 +139,15 @@ function newFishingEvent (state, location) {
     });
     newEvent.products = previousEvent.products.map(
         p => update(p, { weight: 0 }));
-  }
-  for(let i = newEvent.products.length; i < 9; i++) {
-    newEvent.products.push(ModelUtils.blankModel(ProductModel, 'PRODUCT'));
+  } else {
+    for(let i = newEvent.products.length; i < 9; i++) {
+      newEvent.products.push(ModelUtils.blankModel(ProductModel, 'PRODUCT'));
+    }
   }
   newEvent.eventValid = false;
   newEvent.productsValid = false;
+  newEvent.wingSpread = wingSpread;
+  newEvent.headlineHeight = headlineHeight;
   const events = [...state.events, newEvent];
   return update(state, { events });
 }
