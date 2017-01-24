@@ -3,14 +3,15 @@ import moment from 'moment';
 
 class ProductActions{
   changeSpecies(id, catchId, value, objectId) {
-      return (dispatch, getState) => {
-        dispatch({
-          type: 'changeSpecies',
-          fishingEventId: id,
-          objectId,
-          catchIndex: catchId,
-          value,
-          timestamp: moment(),
+    const val = value && value.toUpperCase ? value.toUpperCase() : value;
+    return (dispatch) => {
+      dispatch({
+        type: 'changeSpecies',
+        fishingEventId: id,
+        objectId,
+        catchIndex: catchId,
+        value: val,
+        timestamp: moment(),
       });
     }
   }
