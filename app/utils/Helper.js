@@ -43,18 +43,17 @@ class Helper {
     };
   }
   getLatestPosition(locationState) {
-    console.log(locationState);
     return {
       coords: {
         speed: -1,
-        longitude: -0.1337,
-        latitude: 51.50998,
+        longitude: parseFloat(locationState.latest.latitude),
+        latitude: parseFloat(locationState.latest.longitude),
         accuracy: 5,
         heading: -1,
-        altitude: -80000,
+        altitude: 0,
         altitudeAccuracy: -1
       },
-      timestamp: 1446007304457.029
+      timestamp: locationState.latest.time,
     };
   }
   locationToGeoJSON(location){
