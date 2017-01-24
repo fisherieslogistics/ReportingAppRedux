@@ -1,17 +1,14 @@
 import net from 'react-native-tcp';
 import TCPEndpoint from './TCPEndpoint';
-import packMessage from './PackMessage';
-import moment from 'moment';
-import S from 'string';
 
 const SOCKET_TIMEOUT = 4000;
 const RETRY_TIME = SOCKET_TIMEOUT + 1000;
 
-const logIt = (toLog) => { console.log(toLog) };
-
 class TCPClient {
-  constructor(dispatch, dataCalllback = logIt) {
+  constructor(dispatch, dataCalllback, updateStatusCallback, tcpEndPoint) {
     this.dispatch = dispatch;
+    this.tcpEndPoint = tcpEndPoint;
+    this.updateStatusCallback = updateStatusCallback;
     this.dataCalllback = dataCalllback;
     this.connect = this.connect.bind(this);
     this.handleData = this.handleData.bind(this);
@@ -21,6 +18,7 @@ class TCPClient {
     this.handleClose = this.handleClose.bind(this);
     this.send = this.send.bind(this);
     this.setup = this.setup.bind(this);
+    this.setTcpEndpoint = this.setTcpEndpoint.bind(this);
     this.isActive = false;
     this.setup();
   }
@@ -38,41 +36,53 @@ class TCPClient {
     this.connect();
   }
 
+  setTcpEndpoint(tcpEndPoint) {
+    if(this.client){
+      this.client.destroy();
+    }
+    this.tcpEndPoint = tcpEndPoint;
+  }
+
+  updateStatus(status){
+    this.statusCallback(status);
+  }
+
   handleData(data) {
     this.dataCalllback(data);
   }
 
-  handleError(error) {
+  handleError() {
+    this.updateStatusCallback('Error');
     this.isActive = false;
     //this.client.close();
   }
 
-  handleDrain(drain) {
-    console.log("drain", drain);
+  handleDrain() {
     this.active = true;
   }
 
-  handleClose(close) {
+  handleClose() {
     this.isActive = false;
-    console.log("close", close);
+    this.updateStatusCallback('Closed');
     setTimeout(this.setup, RETRY_TIME);
   }
 
-  handleConnect(connect) {
+  handleConnect() {
     this.isActive = true;
+    this.updateStatusCallback('Connected');
     //-=const sent = this.send('CON', { connected: new moment().toISOString() });
   }
 
   connect() {
+    this.updateStatusCallback('Starting');
     try {
-      this.client.connect(TCPEndpoint.port, TCPEndpoint.ip, this.handleConnect);
+      this.client.connect(this.tcpEndPoint.port, this.tcpEndPoint.ip, this.handleConnect);
     } catch(e) {
       setTimeout(this.setup, RETRY_TIME);
     }
   }
 
   send(msg) {
-    const self = this;
     return new Promise((resolve) => {
       if(!this.isActive){
         resolve(false);
