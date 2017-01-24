@@ -11,12 +11,11 @@ import MigrationReducer from './MigrationReducer';
 import HistoryReducer from './HistoryReducer';
 import ChatReducer from './ChatReducer';
 import LocationReducer from './LocationReducer';
-import moment from 'moment';
+import ConnectionReducer from './ConnectionReducer';
 
-import TCPQueue from '../api/TCPQueue';
-const tcpQueue = new TCPQueue();
+import TcpQueue from '../api/TCPQueue';
+let tcpQueue;
 const helper = new Helper();
-const then = new moment();
 
 const actionsNotSending = [
   'initAutoSuggestBarChoices',
@@ -26,32 +25,8 @@ const actionsNotSending = [
   'setViewingForm',
   '@@redux',
   '$$redux',
+  'updateDataToSend',
 ];
-
-function createSnapshotMessage(state) {
-  const clone = Object.assign({}, state);
-  const {
-    chat,
-    fishingEvents,
-    trip,
-    forms,
-  } = clone;
-  const snapShot = JSON.stringify(helper.deflate({ chat, fishingEvents, trip, forms }));
-  const parts = snapShot.match(/[\s\S]{1,100}/g) || [];
-  const snapshotId = `${clone.trip.id}-${new moment().toISOString()}`;
-  return parts.map((part, index) => ({
-      snapshotId,
-      part,
-      index,
-  }));
-}
-
-function sendStateInParts(key, state) {
-  const snap = createSnapshotMessage(state);
-  snap.forEach((s, i) => {
-    tcpQueue.addToQueue(`{key}:${i}`, s);
-  });
-}
 
 const reducers = {
   chat: ChatReducer,
@@ -64,6 +39,7 @@ const reducers = {
   migrations: MigrationReducer,
   location: LocationReducer,
   history: HistoryReducer,
+  connection: ConnectionReducer,
 }
 
 const MainReducer = combineReducers(reducers);
@@ -82,21 +58,26 @@ const mutateState = (state, action) => {
         loadedState[k] = savedState[k];
       }
     });
+    if(!tcpQueue){
+      tcpQueue = new TcpQueue({ ip: loadedState.me.user.ip, 'port': loadedState.me.user.port });
+    }
     return MainReducer(loadedState, action);
   }
 
   helper.saveToLocalStorage(newState, action.type);
-  if(action.type === 'setTcpDispatch'){
-    tcpQueue.setDispatch(action.payload);
-  }
-  if(actionsNotSending.every((str) => action.type.indexOf(str) === -1)) {
-    setTimeout(() => tcpQueue.addToQueue('ACT', action), 500);
+  if(tcpQueue){
+    if(action.type === 'setTcpDispatch'){
+      tcpQueue.setDispatch(action.payload);
+    }
+
+    if(action.type === 'updateUser' && ['hostIp', 'hostPort'].includes(action.inputId)){
+      tcpQueue.setClientEndpoint(Object.assign({ip: state.me.user.hostIp, port: state.me.user.hostPort }, action.change));
+    }
+    if(actionsNotSending.every((str) => action.type.indexOf(str) === -1)) {
+      tcpQueue.addToQueue(action.type, action);
+    }
   }
 
-  //const now = new moment();
-  if(action.type === 'endTrip'){
-    //sendStateInParts('$ENDTRIP', { trip: state.trip, fishingEvents: state.fishingEvents.events });
-  }
   return newState;
 }
 
