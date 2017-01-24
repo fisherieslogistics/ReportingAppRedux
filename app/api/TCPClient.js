@@ -19,7 +19,6 @@ class TCPClient {
     this.handleDrain = this.handleDrain.bind(this);
     this.handleConnect = this.handleConnect.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.writeAll = this.writeAll.bind(this);
     this.send = this.send.bind(this);
     this.setup = this.setup.bind(this);
     this.isActive = false;
@@ -72,35 +71,29 @@ class TCPClient {
     }
   }
 
-  send(key, input){
-    const messages = packMessage(key, input);
-    const results = Promise.all(this.writeAll(messages));
-    return results;
-  }
-
-  writeAll(messages) {
-    return messages.map((msg) => new Promise((resolve) => {
-        if(!this.isActive){
-          resolve(false);
-        }
-        if(!this.client._state){
-          resolve(false);
-        }
-        if(!this.client.writable){
-           resolve(false);
-        }
-        if(this.client._writableState.needDrain) {
-          resolve(false);
-        }
-        try {
-          this.client.write(`${msg}\r\n`);
-          resolve(true);
-        } catch(e) {
-          this.isActive = false;
-          setTimeout(this.setup, RETRY_TIME);
-          resolve(false);
-        }
-      }));
+  send(msg) {
+    const self = this;
+    return new Promise((resolve) => {
+      if(!this.isActive){
+        resolve(false);
+      }
+      if(!this.client._state){
+        resolve(false);
+      }
+      if(!this.client.writable){
+         resolve(false);
+      }
+      if(this.client._writableState.needDrain) {
+        resolve(false);
+      }
+      try {
+        resolve(this.client.write(`${msg}\r\n`));
+      } catch(e) {
+        this.isActive = false;
+        setTimeout(this.setup, RETRY_TIME);
+        resolve(false);
+      }
+    });
   }
 
 }
