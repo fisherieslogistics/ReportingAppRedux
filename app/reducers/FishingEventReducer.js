@@ -28,7 +28,7 @@ export default (state = initialState, action) => {
           const deletedProducts = update({}, state.deletedProducts);
           deletedProducts[state.events.length + 1] = [];
           state = update(state, { deletedProducts });
-          return newFishingEvent(state, action.location);
+          return newFishingEvent(state, action.location, action.wingSpread, action.headlineHeight);
         case 'endFishingEvent':
           return endFishingEvent(state, action.location, action.id);
         case 'cancelFishingEvent':
