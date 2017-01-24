@@ -148,12 +148,12 @@ class AutoSuggestBar extends React.Component {
       return null;
     }
     const style =  {width: this.props.width };
+    const keyboardplace = 315;
     return (
-      <View style={styles.resultsBarWrapper }>
+      <View style={styles.resultsBarWrapper, { bottom: keyboardplace } }>
         <View style={[styles.resultsBar, style]}>
           {this.renderResults()}
         </View>
-        <KeyboardSpacer />
       </View>
     );
   }
@@ -167,6 +167,7 @@ const select = (State) => {
     choices: props.choices,
     text: props.text,
     inputId:  props.inputId,
+    height: state.view.height,
     eventEmitter: state.uiEvents.eventEmitter,
   };
 }
