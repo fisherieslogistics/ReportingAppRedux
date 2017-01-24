@@ -59,7 +59,8 @@ class AutoSuggestPicker extends Component {
 
   onKeyPress(event) {
     if(event.nativeEvent.key === 'Enter' && this.props.onEnterPress){
-      this.props.onEnterPress(event.nativeEvent, this.state.value);
+      const val = this.state.value || "";
+      this.props.onEnterPress(event.nativeEvent, val.toUpperCase());
     }
   }
 
@@ -80,7 +81,8 @@ class AutoSuggestPicker extends Component {
   }
 
   onBlur(event, eventValue){
-    this.props.onChange(eventValue || this.state.value);
+    const val = eventValue || this.state.value;
+    this.props.onChange(val.toUpperCase());
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
     this.props.handleBlur(this.props.inputId);
   }
@@ -90,7 +92,8 @@ class AutoSuggestPicker extends Component {
   }
 
   dispatchChange(text){
-    this.props.dispatch(viewActions.changeAutoSuggestBarText(this.props.showAll ? "" :  text, this.props.inputId));
+    const val = this.props.showAll ? "" :  text;
+    this.props.dispatch(viewActions.changeAutoSuggestBarText(val.toUpperCase(), this.props.inputId));
   }
 
   onChangeText(text) {
