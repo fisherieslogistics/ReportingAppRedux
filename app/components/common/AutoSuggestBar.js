@@ -72,7 +72,7 @@ class AutoSuggestBar extends React.Component {
     return new RegExp("\\b" + term.replace(/[^\w\s]/gi, ''), "gi");
   }
 
-  getSearchResults(term){
+  getSearchResults(term = ""){
     const results = [];
     const regExp = this.regExp(term);
     for(let i = 0; i < this.props.choices.length && results.length < MAX_AUTOSUGGEST_RESULTS; i++){
@@ -115,32 +115,33 @@ class AutoSuggestBar extends React.Component {
 
   }
 
-  renderResult(result, i){
+  renderResult(resultValue = "", description = "", i){
     const text = this.props.text || "";
-    const isSelected = (result.value.toString().toUpperCase() === text.toUpperCase()) || (this.state.results === 1);
+    const isSelected = (resultValue.toString().toUpperCase() === text.toUpperCase()) || (this.state.results === 1);
     const resultTextStyle = isSelected ? styles.resultTextSelected : styles.resultText;
     const backgroundStyle = isSelected ? styles.resultBackgroundSelected : styles.resultBackground;
-    const onPress = () => this.onResultPress(result.value);
+    const onPress = () => this.onResultPress(resultValue);
     return (
       <TouchableOpacity key={i + "_autoSuggest"}
         onPress={onPress}
       >
         <View style={[styles.result, backgroundStyle]}>
           <Text style={[textStyles.font,resultTextStyle, styles.resultTextValue]}>
-            {result.value}
+            { resultValue }
           </Text>
           <Text style={[textStyles.font,resultTextStyle]}>
-            {result.description}
+            { description }
           </Text>
         </View>
-      </TouchableOpacity>);
+      </TouchableOpacity>
+    );
   }
 
   renderResults(){
     if(this.props.text.length){
-      return this.state.results.map(this.renderResult);
+      return this.state.results.map(({ value, description }, i) => this.renderResult(value, description, i));
     }
-    return this.getSearchResults("").map(this.renderResult);
+    return this.getSearchResults().map(({ value, description }, i) => this.renderResult(value, description, i));
   }
 
   render () {

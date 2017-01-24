@@ -81,8 +81,8 @@ class AutoSuggestPicker extends Component {
   }
 
   onBlur(event, eventValue){
-    const val = eventValue || this.state.value;
-    this.props.onChange(val.toUpperCase());
+    const val = (eventValue || this.state.value);
+    this.props.onChange(val);
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
     this.props.handleBlur(this.props.inputId);
   }
@@ -91,9 +91,8 @@ class AutoSuggestPicker extends Component {
     this.props.dispatch(viewActions.toggleAutoSuggestBar(false));
   }
 
-  dispatchChange(text){
-    const val = this.props.showAll ? "" :  text;
-    this.props.dispatch(viewActions.changeAutoSuggestBarText(val.toUpperCase(), this.props.inputId));
+  dispatchChange(value){
+    this.props.dispatch(viewActions.changeAutoSuggestBarText(value, this.props.inputId));
   }
 
   onChangeText(text) {
