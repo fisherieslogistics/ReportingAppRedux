@@ -8,6 +8,8 @@ class UserActions{
     return {
       type: 'updateUser',
       change,
+      inputId,
+      value,
     }
   }
 

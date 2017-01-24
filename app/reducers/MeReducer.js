@@ -9,10 +9,13 @@ const initialState = {
   ports,
   vessel: initialVessel,
   user: initialUser,
+  hostIp: '192.168.1.1',
+  hostPort: '5003',
   autoSuggestFavourites: {
     speciesCode: [],
     targetSpecies: [],
   },
+  dataToSend: 0,
 };
 
 const update = (obj, change) => Object.assign({}, obj, change)
@@ -22,6 +25,8 @@ export default (state = initialState, action) => {
     case 'updateUser':
       const updatedUser = update(state.user, action.change);
       return update(state, { user: updatedUser });
+    case 'updateDataToSend':
+      return update(state, { dataToSend: action.payload })
     case 'updateVessel':
       const updatedVessel = update(state.vessel, action.change);
       return update(state, { vessel: updatedVessel });
