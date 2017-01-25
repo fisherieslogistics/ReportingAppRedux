@@ -1,108 +1,93 @@
 import net from 'react-native-tcp';
+import { AlertIOS } from 'react-native';
 
-const SOCKET_TIMEOUT = 4000;
-const RETRY_TIME = SOCKET_TIMEOUT + 1000;
+const SOCKET_TIMEOUT = 5000;
+const RETRY_TIME = 10000;
 
 class TCPClient {
-  constructor(dispatch, dataCalllback, updateStatusCallback, tcpEndPoint) {
-    this.dispatch = dispatch;
+  constructor(dataCalllback, updateStatusCallback, tcpEndPoint) {
     this.tcpEndPoint = tcpEndPoint;
+    console.log(tcpEndPoint);
     this.updateStatusCallback = updateStatusCallback;
     this.dataCalllback = dataCalllback;
+
     this.connect = this.connect.bind(this);
-    this.handleData = this.handleData.bind(this);
-    this.handleError = this.handleError.bind(this);
-    this.handleDrain = this.handleDrain.bind(this);
-    this.handleConnect = this.handleConnect.bind(this);
-    this.handleClose = this.handleClose.bind(this);
     this.send = this.send.bind(this);
-    this.setup = this.setup.bind(this);
-    this.setTcpEndpoint = this.setTcpEndpoint.bind(this);
-    this.isActive = false;
-    this.setup();
+    this.setupSocket = this.setupSocket.bind(this);
+    this.canSend = this.canSend.bind(this);
+
+    this.ready = false;
+    this.setupSocket();
   }
 
-  setup() {
-    if(this.client) {
-      this.client.removeAllListeners();
-    }
+  setupSocket() {
     this.client = new net.Socket();
-    this.client.setTimeout(SOCKET_TIMEOUT);
-    this.client.on('error', this.handleError);
-    this.client.on('data', this.handleData);
-    this.client.on('close', this.handleClose);
-    this.client.on('drain', this.handleDrain);
+    /*this.client.setTimeout(SOCKET_TIMEOUT, () => {
+       console.log("timeout");
+       this.client.end();
+     });*/
+    this.client.on('error', (error) => {
+      console.log(error);
+    });
+    this.client.on('data', (data) => {
+      this.dataCalllback(data);
+    });
+    this.client.on('close', () => {
+      console.log('close');
+      this.connected = false;
+      setTimeout(this.connect, 10000);
+    });
+    this.client.on('drain', () => {
+      console.log('drained');
+    });
+    this.client.on('end', (end) => {
+      console.log('END ON END', end);
+    });
     this.connect();
   }
 
-  setTcpEndpoint(tcpEndPoint) {
-    if(this.client){
-      this.client.destroy();
-    }
-    this.tcpEndPoint = tcpEndPoint;
-  }
-
-  updateStatus(status){
-    this.statusCallback(status);
-  }
-
-  handleData(data) {
-    this.dataCalllback(data);
-  }
-
-  handleError() {
-    this.updateStatusCallback('Error');
-    this.isActive = false;
-    //this.client.close();
-  }
-
-  handleDrain() {
-    this.active = true;
-  }
-
-  handleClose() {
-    this.isActive = false;
-    this.updateStatusCallback('Closed');
-    setTimeout(this.setup, RETRY_TIME);
-  }
-
-  handleConnect() {
-    this.isActive = true;
-    this.updateStatusCallback('Connected');
-    //-=const sent = this.send('CON', { connected: new moment().toISOString() });
-  }
-
   connect() {
-    this.updateStatusCallback('Starting');
-    try {
-      this.client.connect(this.tcpEndPoint.port, this.tcpEndPoint.ip, this.handleConnect);
-    } catch(e) {
-      setTimeout(this.setup, RETRY_TIME);
+    const self = this;
+    this.client.connect(parseInt(this.tcpEndPoint.port), this.tcpEndPoint.ip.replace(/ /g,''), () => {
+      self.connected = true;
+      console.log("connected");
+      const message = { open: true };
+      self.send(`1,1,OPEN,OPEN${this.tcpEndPoint.port}${this.tcpEndPoint.ip}`);
+    });
+  }
+
+  canSend() {
+    if(this.client._state &&
+      this.client.writable &&
+      !this.client._writableState.needDrain &&
+      this.connected){
+        return true;
     }
+    console.log(`
+        _state:${this.client._state}
+        writable: ${this.client.writable}
+        needDrain: ${this.client._writableState.needDrain}
+        connected: ${this.connected}
+      `);
+    return false;
   }
 
   send(msg) {
-    return new Promise((resolve) => {
-      if(!this.isActive){
-        resolve(false);
-      }
-      if(!this.client._state){
-        resolve(false);
-      }
-      if(!this.client.writable){
-         resolve(false);
-      }
-      if(this.client._writableState.needDrain) {
-        resolve(false);
-      }
-      try {
-        resolve(this.client.write(`${msg}\r\n`));
-      } catch(e) {
-        this.isActive = false;
-        setTimeout(this.setup, RETRY_TIME);
-        resolve(false);
-      }
-    });
+    if(this.canSend()){
+      return new Promise((resolve) => {
+        try {
+          this.client.write(`${msg}-\r\n`, 'UTF8', () => {
+            resolve(true);
+          });
+        } catch(e) {
+          console.log(e);
+          resolve(false);
+        }
+
+      });
+    }
+    console.log('no send');
+    return Promise.resolve();
   }
 
 }
