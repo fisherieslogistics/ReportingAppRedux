@@ -6,30 +6,32 @@ import TCPClient from './TCPClient';
 import moment from 'moment';
 import LocationActions from '../actions/LocationActions';
 import ConnectionActions from '../actions/ConnectionActions';
-import TCPEndpoint from './TCPEndpoint';
 
 import nmea from 'nmea-0183';
 const locationActions = new LocationActions();
 const connectionActions = new ConnectionActions();
 import packMessage from './PackMessage';
 
+const TIME_TO_SEND = 1000;
+const RETRY_TIME = 5000;
+
 const NMEAS = [
   '$GPGGA',
   '$GPRMC',
 ];
 
+const sendNum = 0;
 const helper = new Helper();
 
 class TCPQueue {
 
   constructor(tcpEndPoint) {
-    this.tcpClient = {};
+    this.tcpClient = null;
     this.loadQueue = this.loadQueue.bind(this);
     this.startSending = this.startSending.bind(this);
     this.loadQueue = this.loadQueue.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
     this.saveQueue = this.saveQueue.bind(this);
-    this.sendInTime = this.sendInTime.bind(this);
     this.send = this.send.bind(this);
     this.setup = this.setup.bind(this);
     this.onDataRecieved = this.onDataRecieved.bind(this);
@@ -37,11 +39,10 @@ class TCPQueue {
     this.updateDataToSend = this.updateDataToSend.bind(this);
     this.setClientEndpoint = this.setClientEndpoint.bind(this);
     this.clientEndPoint = tcpEndPoint;
+    this.tcpClient = new TCPClient(this.onDataRecieved, this.updateStatus, this.clientEndPoint);
     this.queue = [];
-    this.sending = false;
     this.dispatch = null;
     this.setup();
-    this.startSending();
   }
 
   updateStatus(status) {
@@ -52,22 +53,22 @@ class TCPQueue {
 
   setClientEndpoint(tcpEndPoint) {
     this.clientEndPoint = tcpEndPoint;
-    this.tcpClient.setTcpEndpoint(tcpEndPoint);
+    clearTimeout(this.startTimeout);
+    this.startTimeout= setTimeout(this.setup, 3000);
   }
 
   setup() {
+    clearTimeout(this.startTimeout);
     if(this.dispatch){
-      this.updateStatus('waiting');
-      this.updateDataToSend();
       this.loadQueue().then((tcpQueue) => {
-        const saved = tcpQueue || [];
-        this.queue = [...saved, ...this.queue];
+        this.ready = true;
+        this.queue = [...tcpQueue];
         this.updateDataToSend();
-        this.tcpClient = new TCPClient(this.dispatch, this.onDataRecieved, this.updateStatus, this.clientEndPoint);
         this.startContinousMessages();
+        this.startSending();
       });
     } else {
-      setTimeout(this.setup, 3000);
+      this.startTimeout = setTimeout(this.setup, 3000);
     }
   }
 
@@ -99,7 +100,7 @@ class TCPQueue {
 
   startContinousMessages() {
     clearInterval(this.continousInterval);
-    let numberOfSent = 1;
+    let numberOfSent = 0;
     this.continousInterval = setInterval(() => {
       numberOfSent += 1;
       const message = { index: numberOfSent, timestamp: new moment().toISOString()};
@@ -107,20 +108,20 @@ class TCPQueue {
     },  60000);
   }
 
-  sendInTime() {
-    this.sending = false;
-    setTimeout(this.startSending, 250);
-  }
-
   startSending() {
-    if(this.tcpClient && this.tcpClient.isActive && this.queue.length && !this.sending){
-      this.sending = true;
-      const toSend = this.queue[0];
-      this.updateDataToSend();
-      this.send(toSend).then(this.sendInTime).catch(this.sendInTime);
-    } else {
-      this.sendInTime();
+    const retry = (result) => {
+      clearTimeout(this.sendTimeout);
+      this.sendTimeout = setTimeout(this.startSending, TIME_TO_SEND);
     }
+
+    if(this.queue.length){
+      const toSend = this.queue[0];
+      this.send(toSend).then(retry).catch(retry);
+    } else {
+      console.log('too small');
+      retry();
+    }
+
   }
 
   updateDataToSend(){
@@ -131,34 +132,37 @@ class TCPQueue {
   }
 
   send(toSend) {
-    this.sending = true;
-    return new Promise((resolve) => {
+    if(!toSend){
+      throw new Error(`trying to send ${toSend}`);
+    }
+    return new Promise((resolve, reject) => {
       this.tcpClient.send(toSend).then((result) => {
         if(result){
           this.queue.shift();
-          this.updateDataToSend();
-          this.saveQueue().then(resolve);
+          this.saveQueue().then(() => resolve(result)).catch(() => resolve(result));
         } else {
-          resolve();
+          resolve(result);
         }
       });
     });
   }
 
   addToQueue(key, input) {
-    const messages = packMessage(key, helper.deflate(input));
+    const messages = packMessage(key, helper.serialize(input));
     messages.forEach(msg => this.queue.push(msg));
-    return this.saveQueue();
+    this.saveQueue();
+    setTimeout(this.updateDataToSend, 100);
   }
 
   async loadQueue() {
     const queue = await AsyncStorage.getItem('TCPQueue');
-    return helper.deserialize(queue);
+    return helper.deserialize(queue || "[]");
   }
 
   async saveQueue() {
-    const queue = helper.serialize(this.queue);
-    return await AsyncStorage.setItem('TCPQueue', queue);
+    console.log("SAVING");
+    setTimeout(this.updateDataToSend, 100);
+    return await AsyncStorage.setItem('TCPQueue', helper.serialize(this.queue));
   }
 
 }
