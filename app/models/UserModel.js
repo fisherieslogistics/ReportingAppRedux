@@ -22,6 +22,14 @@ const UserModel = [
     id: 'email', defaultValue: "", label: "Email", valid: valid.anyValue,
     display: { type: 'single'},
   },
+  /*{
+    label: 'Host IP for Navicom use 192.168.1.1', defaultValue: "192.168.1.1", id: "hostIp", valid: valid.anyValue,
+    display: { type: 'single'},
+  },
+  {
+    label: 'Host Port or Navicom use 5003', defaultValue: 5003, type: 'number', id: "hostPort", valid: valid.anyValue,
+    display: { type: 'single'},
+  },*/
   {
     label: 'Host IP for Navicom use 192.168.1.1', defaultValue: "192.168.1.1", id: "hostIp", valid: valid.anyValue,
     display: { type: 'single'},
