@@ -26,6 +26,10 @@ const actionsNotSending = [
   '@@redux',
   '$$redux',
   'updateDataToSend',
+  'orientation',
+  'updateConnectionStatus',
+  'setTcpDispatch',
+
 ];
 
 const reducers = {
@@ -59,7 +63,7 @@ const mutateState = (state, action) => {
       }
     });
     if(!tcpQueue){
-      tcpQueue = new TcpQueue({ ip: '192.168.1.1', 'port': 5003 });
+      tcpQueue = new TcpQueue({ ip: loadedState.me.user.hostIp, 'port': loadedState.me.user.hostPort });
     }
     return MainReducer(loadedState, action);
   }
@@ -70,10 +74,11 @@ const mutateState = (state, action) => {
       tcpQueue.setDispatch(action.payload);
     }
 
-    if(action.type === 'updateUser' && ['hostIp', 'hostPort'].includes(action.inputId)){
-      tcpQueue.setClientEndpoint(Object.assign({ip: state.me.user.hostIp, port: state.me.user.hostPort }, action.change));
+    if(tcpQueue.ready && action.type === 'updateUser' && ['hostIp', 'hostPort'].includes(action.inputId)){
+      tcpQueue.setClientEndpoint(Object.assign({ip: newState.me.user.hostIp, port: newState.me.user.hostPort }, action.change));
     }
-    if(actionsNotSending.every((str) => action.type.indexOf(str) === -1)) {
+
+    if(tcpQueue.ready && actionsNotSending.every((str) => action.type.indexOf(str) === -1)) {
       tcpQueue.addToQueue(action.type, action);
     }
   }
