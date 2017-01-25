@@ -12,12 +12,12 @@ const hashCode = function(str) {
   return hash;
 };
 
-export default function generateSetances(type, input, payloadLength = 800) {
+export default function generateSetances(type, input, payloadLength = 80) {
 
   function generateString(numberOfFragments, fragmentIndex, timestamp, fragment) {
-    const data = `$FLL,${type},${numberOfFragments},${fragmentIndex},${timestamp},${fragment}`;
-    const hash = hashCode(data);
-    return `${data}*${hash}`;
+    const data = `$FLL,${type},${parseInt(numberOfFragments)},${parseInt(fragmentIndex)},${fragment}`;
+    //const hash = hashCode(data);
+    return `${data}*1`;
   }
 
   const buffer = msgpack.encode(input);
