@@ -10,47 +10,38 @@ import {textStyles, colors} from '../styles/styles';
 import moment from 'moment';
 
 class PositionDisplay extends React.Component{
-  constructor(props){
+
+  constructor(props) {
     super(props);
-    this.state={
-      position: null,
-    }
-  }
-
-  componentWillMount(){
-    this.interval = setInterval(() => {
-      this.setState({
-        position: this.props.provider.getPosition()
-      });
-    }, 2000);
-  }
-
-  componentWillUnmount(){
-    clearInterval(this.interval);
+    this.getPositionText = this.getPositionText.bind(this);
+    this.getTimeText = this.getTimeText.bind(this);
   }
 
   getPositionText(){
-    if(!this.state.position || !this.state.position.coords){
+    if(!(this.props.position && this.props.position.coords)){
       return "awaiting position";
     }
-    const coords = this.state.position.coords;
+    const coords = this.props.position.coords;
     const posText = `${Sexagesimal.format(coords.latitude, 'lat')}   ${Sexagesimal.format(coords.longitude, 'lon')}`;
     return posText;
   }
 
   getTimeText(){
-    return new moment(this.state.position ? this.state.position.timestamp : 0).fromNow();
+    if(!(this.props.position && this.props.position.coords)){
+      return "";
+    }
+    return new moment(this.props.position.timestamp).fromNow();
   }
 
   render() {
-    const viewStyle = {flex: 1, marginBottom: 20, marginLeft: 25, height: 40};
-    const textStyle = [textStyles.font, {fontSize: 18, color: colors.green}];
+    const viewStyle = {flex: 1, marginBottom: 20, marginLeft: 25, height: 40, marginTop: 10};
+    const textStyle = [textStyles.font, {fontSize: 16, color: colors.green}];
     return (
       <View style={viewStyle}>
           <Text style={textStyle}>
             {this.getPositionText()}
           </Text>
-          <Text style={[textStyle, { fontSize: 12 }]}>
+          <Text style={[textStyle]}>
             {this.getTimeText()}
           </Text>
       </View>

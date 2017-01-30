@@ -15,10 +15,12 @@ import PositionDisplay from './PositionDisplay';
 import EventProductsEditor from './EventProductsEditor';
 import PlaceholderMessage from './common/PlaceholderMessage';
 import ProductActions from '../actions/ProductActions';
+import Helper from '../utils/Helper';
 import { LongButton, TextButton, BigButton } from './common/Buttons';
 import { MasterToolbar, DetailToolbar } from './layout/Toolbar';
 import { colors, toolbarStyles } from '../styles/styles';
 
+const helper = new Helper();
 const fishingEventActions = new FishingEventActions();
 const productActions = new ProductActions();
 const spacer = { height: 40 };
@@ -73,8 +75,8 @@ class Fishing extends MasterDetailView {
   }
 
   getCurrentLocation(){
-    const pos = this.props.positionProvider.getPosition()
-    if(pos && pos.coords){
+    const pos = helper.getLatestPosition(this.props.location);
+    if(!isNaN(pos.coords.latitude)){
       return {
         lat: pos.coords.latitude,
         lon: pos.coords.longitude
@@ -89,11 +91,7 @@ class Fishing extends MasterDetailView {
 
   startFishingEvent(){
     const pos = this.getCurrentLocation();
-    if(this.props.formType === 'tcer'){
-      this.startEvent(pos);
-    }else{
-      this.startLCEREvent(pos);
-    }
+    this.startEvent(pos);
   }
 
   startEvent(position){
@@ -131,11 +129,7 @@ class Fishing extends MasterDetailView {
       return;
     }
     const pos = this.getCurrentLocation();
-    if(this.props.formType === 'tcer'){
-      this.endTCEREvent(pos);
-    }else{
-      this.endLCEREvent(pos);
-    }
+    this.endTCEREvent(pos);
   }
 
   removeFishingEvent(){
@@ -193,7 +187,6 @@ class Fishing extends MasterDetailView {
             renderMessage={this.renderMessage}
             fishingEvent={this.props.viewingEvent}
             dispatch={this.props.dispatch}
-            formType={this.props.formType}
             optionalFieldsPress={this.toggleOptionalFields}
             showOptionalFields={this.state.showOptionalFields}
           />
@@ -212,8 +205,6 @@ class Fishing extends MasterDetailView {
             editorType={'event'}
             orientation={this.props.orientation}
             renderMessage={this.renderMessage}
-            containerChoices={this.props.containerChoices}
-            optionalFields={this.props.catchDetailsExpanded}
             deleteProduct={this.deleteProduct}
           />
         );
@@ -342,7 +333,8 @@ class Fishing extends MasterDetailView {
         fishingEvents={this.state.ds.cloneWithRows([...this.props.fishingEvents || []].reverse())}
         onPress={this.masterListOnPress}
         selectedFishingEvent={this.props.viewingEvent}
-    />);
+      />
+    );
   }
 
   renderMessage(message){
@@ -355,9 +347,10 @@ class Fishing extends MasterDetailView {
 
   renderDetailToolbar(){
     const deleteActive = this.props.lastEvent && (!this.props.lastEvent.datetimeAtEnd);
+    const position = helper.getLatestPosition(this.props.location);
     const posDisplay = (
       <PositionDisplay
-        provider={this.props.positionProvider}
+        position={position}
       />
     );
     const rightProps = (
@@ -386,7 +379,7 @@ class Fishing extends MasterDetailView {
 
   renderMasterToolbar(){
     let backgroundColor = this.props.enableStartEvent ? colors.green : colors.red;
-    const text = this.props.enableStartEvent ? "Start Fishing" : "Haul";
+    const text = this.props.enableStartEvent ? "Shoot" : "Haul";
     let textColor = colors.white;
     if(!this.props.tripStarted) {
       backgroundColor = colors.backgrounds.dark;
@@ -417,10 +410,7 @@ const select = (State) => {
       height: state.view.height,
       tripStarted: state.trip.started,
       enableStartEvent: state.trip.started,
-      containerChoices: state.me.containers,
-      positionProvider: state.uiEvents.uipositionProvider,
-      catchDetailsExpanded: state.me.catchDetailsExpanded,
-      formType: state.me.formType,
+      location: state.location,
     }
     if(!state.fishingEvents.events.length){
       return props;
@@ -431,12 +421,8 @@ const select = (State) => {
     props.viewingEvent = fEvents[state.view.viewingEventId -1];
     props.fishingEvents = fEvents;
     props.deletedProducts = state.fishingEvents.deletedProducts[state.view.viewingEventId];
-    if(state.me.formType === 'tcer'){
-      props.enableStartEvent = state.trip.started && ((!lastEvent) || lastEvent.datetimeAtEnd);
-      props.enableHaul = lastEvent && (!lastEvent.datetimeAtEnd);
-    }else{
-      props.enableHaul = props.viewingEvent && (!props.viewingEvent.datetimeAtEnd);
-    }
+    props.enableStartEvent = state.trip.started && ((!lastEvent) || lastEvent.datetimeAtEnd);
+    props.enableHaul = lastEvent && (!lastEvent.datetimeAtEnd);
     return props;
 }
 

@@ -14,7 +14,7 @@
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* FLLReportingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* FLLReportingTests.m */; };
 		049A7E26BBEC4D4F8EB3FF54 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BA4325ABF83B4494921457A9 /* Foundation.ttf */; };
-		09D418C31E282B6500462D6B /* Reporting-App.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 09D418C21E282B6500462D6B /* Reporting-App.ttf */; };
+		09D418FC1E283BF100462D6B /* Reporting-App.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 09D418FB1E283BF100462D6B /* Reporting-App.ttf */; };
 		133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
 		139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139105C11AF99BAD00B5F7CC /* libRCTSettings.a */; };
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
@@ -196,7 +196,7 @@
 		00E356EE1AD99517003FC87E /* FLLReportingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FLLReportingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* FLLReportingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FLLReportingTests.m; sourceTree = "<group>"; };
-		09D418C21E282B6500462D6B /* Reporting-App.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Reporting-App.ttf"; path = "Fonts/Reporting-App.ttf"; sourceTree = "<group>"; };
+		09D418FB1E283BF100462D6B /* Reporting-App.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Reporting-App.ttf"; path = "Fonts/Reporting-App.ttf"; sourceTree = "<group>"; };
 		0A4C987D33FE481F95FF98D4 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		0BA9ECAB00EC473084989B0E /* libRNBlur.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNBlur.a; sourceTree = "<group>"; };
 		103B076B80BD4B8B8819ECAA /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
@@ -437,7 +437,7 @@
 		6072487B008140218285335D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				09D418C21E282B6500462D6B /* Reporting-App.ttf */,
+				09D418FB1E283BF100462D6B /* Reporting-App.ttf */,
 				E300B02895624C77A8D3948E /* Entypo.ttf */,
 				9D3DB64266AB407A92CDB859 /* EvilIcons.ttf */,
 				B3CE3D071831431E8010D864 /* FontAwesome.ttf */,
@@ -828,7 +828,7 @@
 				049A7E26BBEC4D4F8EB3FF54 /* Foundation.ttf in Resources */,
 				4CE61A015D4E4278AE411CB3 /* Ionicons.ttf in Resources */,
 				F6F64C7606154814AAFD31C3 /* MaterialIcons.ttf in Resources */,
-				09D418C31E282B6500462D6B /* Reporting-App.ttf in Resources */,
+				09D418FC1E283BF100462D6B /* Reporting-App.ttf in Resources */,
 				F77955A968EE4652AF1261DC /* Octicons.ttf in Resources */,
 				3797FFD675DA4208A73D6BF6 /* Zocial.ttf in Resources */,
 			);
@@ -952,7 +952,8 @@
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 79B7S79V9T;
 				HEADER_SEARCH_PATHS = (
@@ -975,7 +976,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.FLLReporting01;
 				PRODUCT_NAME = FLLReporting;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
@@ -984,7 +985,8 @@
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				DEVELOPMENT_TEAM = 79B7S79V9T;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1006,7 +1008,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.FLLReporting01;
 				PRODUCT_NAME = FLLReporting;
 				TARGETED_DEVICE_FAMILY = 2;
 			};

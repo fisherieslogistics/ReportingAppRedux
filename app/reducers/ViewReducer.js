@@ -51,10 +51,12 @@ function getOrientationDetail(state, orientation){
   switch (orientation) {
     case 'PORTRAIT':
     case 'PORTRAITUPSIDEDOWN':
-      return update(state, {width: 768, height: 1024, orientation});
+      const newState = update(state, { width: 768, height: 1024, orientation });
+      return newState;
     case 'LANDSCAPE':
     case 'LANDSCAPEUPSIDEDOWN':
-      return update(state, {width: 1024, height: 768, orientation});
+      const newLState = update(state, { width: 1024, height: 768, orientation });
+      return newLState;
     default:
       return state;
   }

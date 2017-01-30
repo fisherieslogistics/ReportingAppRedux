@@ -7,7 +7,6 @@ import {
 import React from 'react';
 import MasterListView from '../../components/common/MasterListView';
 import { MasterToolbar, DetailToolbar } from './Toolbar';
-
 import {shadowStyles, colors, iconStyles, masterDetailStyles, listViewStyles } from '../../styles/styles';
 import { BigButton } from '../../components/common/Buttons';
 import Icon8 from '../../components/common/Icon8';

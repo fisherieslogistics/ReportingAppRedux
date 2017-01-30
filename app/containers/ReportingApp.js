@@ -2,6 +2,7 @@
 import {
   View,
   TabBarIOS,
+  Text,
 } from 'react-native';
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
@@ -15,7 +16,6 @@ import Orientation from 'react-native-orientation';
 import ViewActions from '../actions/ViewActions';
 import FormActions from '../actions/FormActions';
 import Icon8 from '../components/common/Icon8';
-import Login from '../components/Login';
 import {createForms} from '../utils/FormUtils';
 //import GPSControlActions from '../actions/GPSControlActions';
 
@@ -80,18 +80,18 @@ class ReportingApp extends Component {
     this.setSelectedTab = this.setSelectedTab.bind(this);
     this.renderChat = this.renderChat.bind(this);
     this.tabs = {
-      trip: { render: this.renderTrip, icon: 'fishing-boat', onPress: () => this.setSelectedTab('trip') },
-      fishing: { render: this.renderFishing, icon: 'fishing', onPress: () => this.setSelectedTab('fishing') },
-      forms: { render: this.renderForms, icon: 'form', onPress: () => {
+      trip: { render: this.renderTrip, icon: 'fishing-boat', selectedIcon: 'fishing-boat-filled', onPress: () => this.setSelectedTab('trip') },
+      fishing: { render: this.renderFishing, icon: 'fishing', selectedIcon: 'fishing-filled', onPress: () => this.setSelectedTab('fishing') },
+      forms: { render: this.renderForms, icon: 'form', selectedIcon: 'form-filled', onPress: () => {
         this.setupForms();
         setTimeout(() => this.setSelectedTab('forms'), 150);
       }},
-      chat: { render: this.renderChat, icon: 'user', onPress: () => this.setSelectedTab('chat') },
+      //chat: { render: this.renderChat, icon: 'user', selectedIcon: 'user-filled', onPress: () => this.setSelectedTab('chat') },
     };
   }
 
   setupForms(){
-    const forms = createForms(this.props.fishingEvents, this.props.formType);
+    const forms = createForms(this.props.fishingEvents);
     this.props.dispatch(formActions.setViewingForm(forms[forms.length-1]));
   }
 
@@ -115,6 +115,8 @@ class ReportingApp extends Component {
   }
 
   renderTabs(){
+    const textStyle = { color: 'white' }
+    const connectionDataStyle = { right: 70, top: 1, position: 'absolute', backgroundColor: 'transparent' }
     return Object.keys(this.tabs).map(
       (tab) => (
         <Icon8.TabBarItemIOS
@@ -122,13 +124,18 @@ class ReportingApp extends Component {
           title={ tab.capitalize() }
           selected={ this.state.selectedTab === tab }
           iconName={ this.tabs[tab].icon }
-          selectedIconName={`${this.tabs[tab].icon}-filled`}
+          selectedIconName={ this.tabs[tab].selectedIcon }
           hitSlop={ styles.hitSlop }
           style={ styles.tab }
           onPress={this.tabs[tab].onPress}
         >
           <View style={[styles.col, styles.fill]}>
-            { this.tabs[tab].render() }
+           { this.tabs[tab].render() }
+            <View style={connectionDataStyle}>
+              <Text style={textStyle}>
+                { `Data to send: ${this.props.connection.dataToSend} - ${this.props.connection.status}` }
+              </Text>
+            </View>
           </View>
       </Icon8.TabBarItemIOS>)
     );
@@ -155,7 +162,7 @@ class ReportingApp extends Component {
   }
 
   renderForms(){
-    const forms = createForms(this.props.fishingEvents, this.props.formType);
+    const forms = createForms(this.props.fishingEvents);
     return (
       <FormView forms={forms} />
     );
@@ -165,15 +172,11 @@ class ReportingApp extends Component {
     return (
       <Fishing
         position={this.props.position}
-        formType={this.props.formType}
       />
     );
   }
 
   render(){
-    if(!this.props.loggedIn) {
-      return (<Login dispatch={this.props.dispatch} />);
-    }
     const wrapStyles = [styles.wrapper, {width: this.props.width, height: this.props.height}];
     return (
       <View style={wrapStyles}>
@@ -198,17 +201,13 @@ const select = (State) => {
   const state = State.default;
   return {
     trip: state.trip,
-    auth: state.auth,
     orientation: state.view.orientation,
     height: state.view.height,
     width: state.view.width,
     tripStarted: state.trip.started,
-    loggedIn: state.auth.loggedIn,
     fishingEvents: state.fishingEvents.events,
     viewingForm: state.view.viewingForm,
-    formType: state.me.formType,
-    ApiEndpoint: state.api.ApiEndpoint,
-    AuthEndpoint: state.api.AuthEndpoint,
+    connection: state.connection,
   };
 }
 

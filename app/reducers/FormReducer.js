@@ -5,6 +5,8 @@ const initialState = {
   viewingFormIndex: null,
 }
 
+const update = (obj, change) => Object.assign({}, obj, change)
+
 const FormReducer = (state = initialState, action) => {
   switch(action.type) {
     case 'endTrip':
@@ -14,9 +16,5 @@ const FormReducer = (state = initialState, action) => {
     }
     return state;
 };
-
-const update = (obj, change) => {
-  return Object.assign({}, obj, change);
-}
 
 export default FormReducer;

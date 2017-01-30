@@ -1,107 +1,91 @@
 "use strict";
 import moment from 'moment';
+import TripActions from './TripActions';
+const tripActions = new TripActions();
 
-class FishingEventActions{
+class FishingEventActions {
 
-    addUnsoughtCatch(fishingEventId, unsoughtCatches, unsoughtType, formType){
-      return (dispatch, getState) => {
-        dispatch({
-          type: 'addUnsoughtCatch',
-          unsoughtCatch: unsoughtCatches,
-          unsoughtType: unsoughtType,
-          timestamp: moment(),
-          formType: formType,
-          fishingEventId: fishingEventId,
-        });
+  startFishingEvent(position) {
+    return (dispatch, getState) => {
+      const state = getState().default;
+      const id = state.fishingEvents.events.length;
+      dispatch({
+        type: 'startFishingEvent',
+        location: position,
+        tripId: state.trip.objectId,
+        timestamp: moment(),
+        wingSpread: state.trip.wingSpread,
+        headlineHeight: state.trip.headlineHeight,
+      });
+      if(state.fishingEvents.events.length){
+          const eventId = id;
+          dispatch(this.setViewingFishingEvent(eventId));
+      }
+    };
+  }
+  endFishingEvent(fishingEventId, pos) {
+    return (dispatch) => {
+      dispatch({
+        type: 'endFishingEvent',
+        location: pos,
+        timestamp: moment(),
+        id: fishingEventId,
+      });
+    }
+  }
+  cancelFishingEvent(id) {
+    return(dispatch) => {
+      dispatch({
+          type: 'cancelFishingEvent',
+          timestamp: moment()
+      });
+      dispatch(this.setViewingFishingEvent(id -1));
+    }
+  }
+
+  // Use this to change other species weight
+  setFishingEventValue(fishingEventId, inputId, value) {
+    return (dispatch, getState) => {
+      dispatch({
+          type: 'setFishingEventValue',
+          inputId,
+          fishingEventId,
+          value,
+          timestamp: moment()
+      });
+      if(['wingSpread', 'headlineHeight'].includes(inputId)){
+        const state = getState().default;
+        dispatch(tripActions.updateTrip(inputId, value, state.trip.started))
       }
     }
+  }
 
-    startFishingEvent(position) {
-        return (dispatch, getState) => {
-            const state = getState().default;
-            dispatch({
-                type: 'startFishingEvent',
-                location: position,
-                tripId: state.trip.objectId,
-                timestamp: moment(),
-                formType: state.me.formType
-            });
-            let fishingEvents = state.fishingEvents.events;
-            if(fishingEvents.length){
-                let eventId = fishingEvents[fishingEvents.length - 1].id;
-                dispatch(this.setViewingFishingEvent(eventId));
-            }
-        };
-    }
-    endFishingEvent(fishingEventId, pos) {
-      return (dispatch, getState) => {
-        dispatch({
-          type: 'endFishingEvent',
-          location: pos,
+  setfishingEventLocationValue(fishingEventId, changes) {
+      return {
+          type: 'setLocationValue',
+          changes,
           timestamp: moment(),
           id: fishingEventId,
-          formType: getState().default.me.formType
-        });
-      }
-    }
-    cancelFishingEvent(id) {
+      };
+  }
+  setViewingFishingEvent(id) {
       return(dispatch) => {
-        dispatch({
-            type: 'cancelFishingEvent',
-            timestamp: moment()
-        });
-        dispatch(this.setViewingFishingEvent(id -1));
-      }
-    }
-
-    setfishingEventValue(fishingEventId, inputId, value) {
-      return (dispatch, getState) => {
-        const state = getState().default;
-        dispatch({
-            type: 'setFishingEventValue',
-            inputId: inputId,
-            fishingEventId: fishingEventId,
-            value: value,
-            formType: state.me.formType,
-            timestamp: moment()
-        });
-        const fEvent = state.fishingEvents.events[fishingEventId - 1];
-        if(fEvent.datetimeAtEnd){
           dispatch({
-            type: "syncEvent",
-            objectId: fEvent.objectId
+              type: 'setViewingFishingEvent',
+              fishingEventId: id
           });
-        }
       }
-    }
-
-    setfishingEventLocationValue(fishingEventId, changes) {
-        return {
-            type: 'setLocationValue',
-            changes: changes,
-            timestamp: moment(),
-            id: fishingEventId,
-            formType: getState().default.me.formType,
-        };
-    }
-    setViewingFishingEvent(id) {
-        return(dispatch) => {
-            dispatch({
-                type: 'setViewingFishingEvent',
-                fishingEventId: id
-            });
-        }
-    }
-    hideLocationEditor(){
-        return {
-            type: 'hideLocationEditor'
-        };
-    }
-    showLocationEditor(){
-        return {
-            type: 'showLocationEditor'
-        };
-    }
+  }
+  hideLocationEditor(){
+      return {
+          type: 'hideLocationEditor'
+      };
+  }
+  showLocationEditor(){
+      return {
+          type: 'showLocationEditor'
+      };
+  }
 }
 
 export default FishingEventActions

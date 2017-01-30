@@ -34,9 +34,10 @@ class StartTripEditor extends React.Component {
         const date = this.props.trip.startDate.clone().add(parseInt(value), "days");
         this.props.dispatch(tripActions.updateTrip(name, date));
         break;
-      case "startPort":
-      case "endPort":
-        this.props.dispatch(tripActions.updateTrip(name, value));
+      default:
+        if(this.props.trip[name] !== value){
+          this.props.dispatch(tripActions.updateTrip(name, value));
+        }
         break
     }
   }

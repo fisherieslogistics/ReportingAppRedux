@@ -1,3 +1,3 @@
-const ip = 'localhost'//'192.168.1.1';
-const port = 5004;//5003;
+const ip = '192.168.1.1';//'192.168.1.1';
+const port = 5003;//5004
 export default { port, ip }

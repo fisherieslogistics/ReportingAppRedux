@@ -2,59 +2,31 @@
 
 class UserActions{
 
+  updateUser(inputId, value) {
+    const change = {};
+    change[inputId] = value
+    return {
+      type: 'updateUser',
+      change,
+      inputId,
+      value,
+    }
+  }
+
+  updateVessel(inputId, value) {
+    const change = {};
+    change[inputId] = value
+    return {
+      type: 'updateVessel',
+      change,
+    }
+  }
+
   addPort(region, port){
     return {
       type: 'addPort',
       region,
       port
-    }
-  }
-
-  setUser(user){
-    return {
-      type: 'setUser',
-      user
-    }
-  }
-
-  sendMessage(message) {
-    return {
-      type: 'sendMessage',
-      message,
-    }
-  }
-
-  messageSent() {
-    return {
-      type: 'messageSent',
-    }
-  }
-
-  setCatchDetailsExpanded(expanded){
-    return {
-      type: 'setCatchDetailsExpanded',
-      catchDetailsExpanded: expanded
-    }
-  }
-
-  setVessels(vessels){
-    return {
-      type: 'setVessels',
-      vessels
-    }
-  }
-
-  setVessel(vessel){
-    return {
-      type: 'setVessel',
-      vessel
-    }
-  }
-
-  setFormType(formType){
-    return {
-      type: 'setFormType',
-      formType,
     }
   }
 

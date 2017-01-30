@@ -46,9 +46,6 @@ const FishingEventModel = [
     label: 'products', id: 'products', valid: valid.alwaysValid,
     defaultValue: [],
   },
-  {
-    label: 'formType', id: 'formType', valid: valid.alwaysValid,
-  },
   {id: 'signature', valid: valid.alwaysValid, defaultValue: false},
   {id: 'dateSigned', valid: valid.alwaysValid, defaultValue: false},
   {id: 'committed', valid: valid.alwaysValid, defaultValue: false},

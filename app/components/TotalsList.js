@@ -17,17 +17,18 @@ class TotalsList extends React.Component {
       }
       this.getDescription = this.getDescription.bind(this);
       this.isSelected = this.isSelected.bind(this);
+      this.renderRow = this.renderRow.bind(this);
     }
 
     isSelected(code){
       return this.state.selectedCode === code;
     }
 
-    renderRow(item, sectionId, rowId, props) {
+    renderRow(item, sectionId, rowId) {
       const rowStyle = { backgroundColor: colors.transparent };
       return (
         <View style={[styles.listRow, rowStyle]}>
-          { props.getDescription(item, sectionId, rowId) }
+          { this.getDescription(item, sectionId, rowId) }
         </View>
       )
     }

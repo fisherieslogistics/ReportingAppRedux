@@ -3,22 +3,15 @@ import moment from 'moment';
 
 class ProductActions{
   changeSpecies(id, catchId, value, objectId) {
-      if(value === 'Other Species Wieght') {
-        value = 'OTH';
-      }
-      return (dispatch, getState) => {
-        dispatch({
-          type: 'changeSpecies',
-          fishingEventId: id,
-          objectId,
-          catchIndex: catchId,
-          value,
-          timestamp: moment(),
-          formType: getState().default.me.formType,
-      });
+    const val = value && value.toUpperCase ? value.toUpperCase() : value;
+    return (dispatch) => {
       dispatch({
-        type: "syncEvent",
-        objectId: id
+        type: 'changeSpecies',
+        fishingEventId: id,
+        objectId,
+        catchIndex: catchId,
+        value: val,
+        timestamp: moment(),
       });
     }
   }
@@ -31,11 +24,6 @@ class ProductActions{
         catchIndex: catchId,
         value,
         timestamp: moment(),
-        formType: getState().default.me.formType,
-      });
-      dispatch({
-        type: "syncEvent",
-        objectId: id
       });
     }
   }
@@ -49,11 +37,6 @@ class ProductActions{
         catchIndex: catchId,
         value,
         timestamp: moment(),
-        formType: getState().default.me.formType,
-      });
-      dispatch({
-        type: "syncEvent",
-        objectId: id
       });
     }
   }
@@ -63,11 +46,6 @@ class ProductActions{
         type: 'addProduct',
         fishingEventId: id,
         objectId,
-        formType: getState().default.me.formType,
-      });
-      dispatch({
-        type: "syncEvent",
-        objectId: id
       });
     }
   }
@@ -78,11 +56,6 @@ class ProductActions{
         fishingEventId,
         productIndex,
         objectId,
-        formType: getState().default.me.formType,
-      });
-      dispatch({
-        type: "syncEvent",
-        objectId: fishingEventId
       });
     }
   }
@@ -92,11 +65,6 @@ class ProductActions{
         type: 'undoDeleteProduct',
         fishingEventId,
         objectId,
-        formType: getState().default.me.formType,
-      });
-      dispatch({
-        type: "syncEvent",
-        objectId: fishingEventId
       });
     }
   }

@@ -4,73 +4,27 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-
 import Helper from './Helper';
 import moment from 'moment';
 import ModelUtils from './ModelUtils';
-
 import FormModel from '../models/FormModel';
 import TCERFormModel from '../models/TCERFormModel';
-import LCERFormModel from '../models/LCERFormModel';
 
-import FishingEventModel from '../models/FishingEventModel';
-import TCERFishingEventModel from '../models/TCERFishingEventModel';
-import LCERFishingEventModel from '../models/LCERFishingEventModel';
+const formModel = FormModel.concat(TCERFormModel);
 
-const lcerModel = FormModel.concat(LCERFormModel);
-const tcerModel = FormModel.concat(TCERFormModel);
-
-const tcerFishingEventModel = FishingEventModel.concat(TCERFishingEventModel);
-const lcerFishingEventModel = FishingEventModel.concat(LCERFishingEventModel);
-
-function renderForm(formType, text, styles){
-  switch(formType){
-    case 'tcer':
-      return (
-        <Image source={require('../images/TCER.png')} style={[styles.bgImageTCER]}>
-          <View style={styles.form}>
-            {text}
-          </View>
-        </Image>
-      );
-    case 'lcer':
-      return (
-        <Image source={require('../images/LCER.png')} style={[styles.bgImageLCER]}>
-          <View style={styles.form}>
-            {text}
-          </View>
-        </Image>
-      );
-  }
-}
-
-const formModels = {
-  tcer: tcerModel,
-  lcer: lcerModel,
-}
-
-const fishingEventModels = {
-  tcer: {
-    complete: tcerFishingEventModel,
-    specific: TCERFishingEventModel,
-  },
-  lcer: {
-    complete: lcerFishingEventModel,
-    specific: LCERFishingEventModel,
-  }
+function renderForm(text, styles){
+  return (
+    <Image source={require('../images/TCER.png')} style={[styles.bgImageTCER]}>
+      <View style={styles.form}>
+        {text}
+      </View>
+    </Image>
+  );
 }
 
 const helper = new Helper();
 
-function firstEventValue(fishingEvents, id){
-  if(typeof id === 'function'){
-    return id(fishingEvents[0]);
-  }
-  return fishingEvents[0][id];
-}
-
-function createForms(fishingEvents, formType) {
-  const formModel = formModels[formType];
+function createForms(fishingEvents) {
   const forms = [];
   const newForm = (fe) => {
     const values = {
@@ -78,7 +32,7 @@ function createForms(fishingEvents, formType) {
       created: new moment(fe.datetimeAtStart.unix()),
       fishingEvents: [helper.assign({}, fe)]
     }
-    const form = helper.assign(ModelUtils.blankModel(formModel), values);
+    const form = helper.assign(ModelUtils.blankModel(formModel, 'FORM'), values);
     newForm.signature = fe.signature;
     forms.push(form);
   }
@@ -98,18 +52,4 @@ function createForms(fishingEvents, formType) {
   return forms;
 }
 
-function getFormModelByTypeCode(typeCode){
-  if(!( typeCode in formModels)){
-    throw new Error("invalid type code for form model");
-  }
-  return formModels[typeCode];
-}
-
-function getFishingEventModelByTypeCode(typeCode){
-  if(!( typeCode in fishingEventModels)){
-    throw new Error("invalid type code for fishing event model");
-  }
-  return fishingEventModels[typeCode];
-}
-
-export {firstEventValue, createForms, getFormModelByTypeCode, getFishingEventModelByTypeCode, renderForm}
+export { createForms, renderForm }

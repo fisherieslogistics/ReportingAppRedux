@@ -30,9 +30,6 @@ export default {
     },
     targetProduct: {
       func: (value) => {
-        if(value === 'OTH' || value === 'Other Species Weight'){
-          return true;
-        }
         if(!value){
           return false;
         }
@@ -42,9 +39,6 @@ export default {
     },
     productCode: {
       func: (value = "") => {
-        if(value === 'OTH' || value === 'Other Species Weight'){
-          return true;
-        }
         if(value.length === 0){
           return true;
         }
