@@ -1,27 +1,32 @@
 "use strict";
 
 const initialState = {
-  tagSelected: 'fisherylogistics',
+  tagSelected: 'all',
+  addContactSelected: false,
   messageThreads: [
     {
-      id: 'rimuandrick',
-      name: 'Rimu and Mike',
+      id: 'harry',
       tags: [],
+      name: 'Mary NetShed',
       messages: [
         {
           _id: "my_id4354",
           text: "Hey Rick hope you liek the chat!",
           createdAt: new Date(),
           image: null,
-          user: { name: 'Rimu and Mike', _id: 'rimuandrick', avatar: null },
+          user: { name: 'Shavaun', _id: 'shavaun@fisherylogistics.com', avatar: null },
         },
-      ],
-      users: [
-        {_id: 'rimuandrick', name: 'Rimu and Mike', avatar: null },
+        {
+          _id: "my_id4444",
+          text: "Mate you didn't pay for the last nets I dont want to make you a $40000 net for no money!",
+          createdAt: new Date(),
+          image: null,
+          user: { name: 'Mary Net Shed', _id: 'mary@netshed.co.nz', avatar: null },
+        },
       ],
     },
     {
-      id: 'toothfish',
+      id: 'randomid',
       name: 'San Aspiring',
       tags: ['vessel'],
       messages: [
@@ -30,23 +35,23 @@ const initialState = {
           text: "Any whales where your at bro?",
           createdAt: new Date(),
           image: null,
-          user: { name: 'Shavaun', _id: 'shavaun', avatar: null },
+          user: { name: 'Shavaun', _id: 'shavaun@fisherylogistics.com', avatar: null },
         },
         {
           _id: "my_id45555444",
           text: "Yeah nah not much around",
           createdAt: new Date(),
           image: null,
-          user: { name: 'Steve', _id: 'steve', avatar: null },
+          user: { name: 'Steve', _id: 'san@aspiring.com', avatar: null },
         },
       ],
       users: [
-        { name: 'Shavaun', _id: 'shavaun', avatar: null },
-        { name: 'Steve', _id: 'steve', avatar: null },
-      ]
+        { _id: 'shavaun@fisherylogistics.com', archived: false },
+        { _id: 'san@aspiring.com', archived: false },
+      ],
     },
     {
-      id: 'something',
+      id: 'fishy',
       name: 'Talleys',
       tags: ['shoreside'],
       messages: [
@@ -55,20 +60,20 @@ const initialState = {
           text: "I am silly cos I write code all day instead of swimming in the sea",
           createdAt: new Date(),
           image: null,
-          user: { name: 'Rimu', _id: 'pppct', avatar: null },
+          user: { name: 'Rimu', _id: 'rimu@talleys.co.nz', avatar: null },
         },
         {
           _id: "my_id4",
           text: "I am Shavaun",
           createdAt: new Date(),
           image: null,
-          user: { name: 'Shavaun', _id: 'shavaun', avatar: null },
+          user: { name: 'Shavaun', _id: 'shavaun@fisherylogistics.com', avatar: null },
         },
       ],
       users: [
-        { name: 'Shavaun', _id: 'shavaun', avatar: null },
-        { name: 'Rimu', _id: 'pppct', avatar: null },
-      ]
+        { _id: 'shavaun@fisherylogistics.com', archived: false },
+        { _id: 'rimu@talleys.co.nz', archived: false },
+      ],
     }
   ],
 };
@@ -76,6 +81,7 @@ const initialState = {
 const update = (obj, change) => Object.assign({}, obj, change)
 
 const ChatReducer = (state = initialState, action) => {
+  // return initialState;
   switch(action.type) {
     case 'newMessage':
       const thread = Object.assign({}, state.messageThreads.find(
@@ -85,6 +91,10 @@ const ChatReducer = (state = initialState, action) => {
       return update(state, { messageThreads: [...threads, thread] });
     case 'tagSelected':
       return update(state, { tagSelected: action.tag });
+    case 'addContactSelected':
+      console.log(action.current, !action.current);
+      const toggle = !action.current;
+      return update(state, { addContactSelected: toggle});
   }
   return state;
 };
