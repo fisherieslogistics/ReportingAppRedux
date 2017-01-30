@@ -16,6 +16,13 @@ class ChatActions {
       tag,
     }
   }
+
+  addConversationSelected(current) {
+    return {
+      type: 'addContactSelected',
+      current
+    }
+  }
 }
 
 export default ChatActions;
