@@ -46,8 +46,8 @@ class Helper {
     return {
       coords: {
         speed: -1,
-        longitude: parseFloat(locationState.latest.latitude),
-        latitude: parseFloat(locationState.latest.longitude),
+        longitude: parseFloat(locationState.latest.longitude),
+        latitude: parseFloat(locationState.latest.latitude),
         accuracy: 5,
         heading: -1,
         altitude: 0,
