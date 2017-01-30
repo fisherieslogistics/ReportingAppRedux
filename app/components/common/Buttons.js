@@ -40,14 +40,14 @@ const getTextStyle = (color, disabled) =>[
     {color: ! disabled ? color : colors.midGray},
 ];
 
-const BigButton = ({onPress, backgroundColor, text, textColor}) => {
+const BigButton = ({onPress, backgroundColor, text, textColor, style}) => {
   const textStyle = [
     {color: textColor},
     styles.bigButtonText,
   ];
   const buttonStyle = [styles.BigButton, { backgroundColor }]
   return (
-      <TouchableOpacity onPress={onPress} style={buttonStyle}>
+      <TouchableOpacity onPress={onPress} style={[buttonStyle, style]}>
          <View style={ styles.BigButtonInner }>
           <Text style={ textStyle }>
             { text }
