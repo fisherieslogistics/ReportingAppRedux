@@ -15,7 +15,6 @@ import Helper from '../utils/Helper';
 import StartTripEditor from './StartTripEditor';
 import TotalsList from './TotalsList';
 import MasterListView from './common/MasterListView';
-import AuthActions from '../actions/AuthActions';
 import ProfileEditor from './ProfileEditor';
 import { colors, listViewStyles, textStyles} from '../styles/styles';
 import { MasterToolbar } from './layout/Toolbar';
@@ -23,7 +22,6 @@ import { BigButton } from './common/Buttons';
 
 const helper = new Helper();
 const tripActions = new TripActions();
-const authActions = new AuthActions();
 const masterChoices = [
   'Trip',
   'Totals',
@@ -74,12 +72,20 @@ class Trip extends MasterDetailView {
     this.tripsListOnPress = this.tripsListOnPress.bind(this);
     this.isTripSelected = this.isTripSelected.bind(this);
     this.getTripDescription = this.getTripDescription.bind(this);
-    this.logout = this.logout.bind(this);
     this.getMessages = this.getMessages.bind(this);
   }
 
   updateTrip(attribute, value){
     this.props.dispatch(tripActions.updateTrip(attribute, value, this.props.trip.started));
+  }
+
+  componentDidMount(){
+    const lastTrip = this.props.history.pastTrips[this.props.history.pastTrips.length-1];
+    const thisTrip = this.props.trip;
+    if(lastTrip){
+      tripActions.updateTrip('wingSpread', thisTrip.wingSpread || lastTrip.wingSpread);
+      tripActions.updateTrip('headlineHeight', thisTrip.headlineHeight || lastTrip.headlineHeight);
+    }
   }
 
   tripsListOnPress(trip){
@@ -220,9 +226,11 @@ class Trip extends MasterDetailView {
       allTrips.unshift(currentTrip);
     }
     const f1 = { flex: 1 }
+    const wrapStyle = { height: 90 };
     return (
       <View style={f1}>
         <MasterListView
+          wrapperStyle={ wrapStyle }
           getDescription={ this.getTripDescription }
           isSelected={ this.isTripSelected }
           onPress={ this.tripsListOnPress }
@@ -266,12 +274,11 @@ class Trip extends MasterDetailView {
     if(this.props.tripCanEnd) {
       return this.endTrip()
     }
-    this.logout();
   }
 
   renderMasterToolbar() {
     let backgroundColor = colors.backgrounds.dark;
-    let text = "Log out";
+    let text = "FLL";
     let textColor = 'rgba(255, 255, 255, 0.2)';
     if(this.props.tripCanStart) {
       backgroundColor = colors.green;
@@ -317,7 +324,9 @@ class Trip extends MasterDetailView {
       case 'Profile':
         view = (<ProfileEditor
                   user={this.props.user}
-                  vessel={this.props.vessel} />);
+                  vessel={this.props.vessel}
+                  dispatch={this.props.dispatch}
+                />);
         break;
     }
     const padStyle = { padding: 5 };
@@ -328,20 +337,6 @@ class Trip extends MasterDetailView {
     );
   }
 
-  logout(){
-    AlertIOS.alert(
-      "Logout",
-      'Logout from FLL - You will need internet to log back in',
-      [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Logout', onPress: () => {
-            this.props.dispatch(authActions.logout());
-          }
-        }
-      ]
-    );
-  }
 }
 
 const select = (State) => {

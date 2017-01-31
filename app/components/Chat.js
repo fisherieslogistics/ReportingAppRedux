@@ -78,6 +78,10 @@ class Chat extends MasterDetailView {
     this.onConfirmDelete = this.onConfirmDelete.bind(this);
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return true;
+  }
+
   componentWillReceiveProps(nextProps) {
     console.log(nextProps.messageThreads);
     this.setState({
@@ -217,6 +221,17 @@ class Chat extends MasterDetailView {
 
   renderChatConversation() {
     const messages = this.state.selectedDetail.messages;
+    const chat = (
+      <GiftedChat
+        messages={messages}
+        onSend={this.onSend}
+        user={{
+          //id: this.props.user.organisationId,
+          _id: 'shavaun',
+          id: 'shavaun'
+        }}
+      />
+    );
     return (
       <View style={styles.chatWrapperStyle}>
         <GiftedChat

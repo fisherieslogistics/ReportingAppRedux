@@ -1,12 +1,8 @@
 import EventEmitter from 'EventEmitter';
-import PositionProvider from '../providers/NativeLocation';
-
-const pos = new PositionProvider();
-pos.startUpdatingLocation();
+const emitter = new EventEmitter();
 
 const initialState = {
-  eventEmitter: new EventEmitter(),
-  uipositionProvider: pos,
+  eventEmitter: emitter,
 }
 
 export default (state) => initialState

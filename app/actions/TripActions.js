@@ -11,7 +11,7 @@ class TripActions{
   }
 
   endTrip(trip, fishingEvents, vesselId, message){
-    return (dispatch, getState) => {
+    return (dispatch) => {
       dispatch({
         type: 'endTrip',
         timestamp: moment(),
@@ -19,7 +19,6 @@ class TripActions{
         fishingEvents,
         vesselId,
         message,
-        formType: getState().default.me.formType,
       });
     }
   }

@@ -12,17 +12,118 @@ import {
 import React from 'react';
 import FormsList from './FormsList';
 import { MasterDetail } from './layout/MasterDetailView';
-import ModelUtils from '../utils/ModelUtils';
 import SignatureView from './SignatureView';
 import FormActions from '../actions/FormActions';
-const formActions = new FormActions();
-
+import FormModel from '../models/FormModel';
+import TCERFormModel from '../models/TCERFormModel';
 import {connect} from 'react-redux';
 import {MasterToolbar, DetailToolbar} from './layout/Toolbar';
 import {colors, textStyles, shadowStyles} from '../styles/styles';
-import {getFormModelByTypeCode, renderForm, createForms } from '../utils/FormUtils';
+import { renderForm, createForms } from '../utils/FormUtils';
+import ModelUtils from '../utils/ModelUtils';
 
-let styles = null;
+const formActions = new FormActions();
+const formModel = FormModel.concat(TCERFormModel);
+const meta = ModelUtils.blankModel(formModel, 'FORM').meta;
+
+/* eslint-disable */
+const styles = StyleSheet.create({
+  wrapper:{
+   backgroundColor: colors.backgrounds.veryDark,
+   margin: 5,
+   borderRadius: 10,
+  },
+  row: {
+    flexDirection: 'row'
+  },
+  fill: {
+    flex: 1,
+  },
+  col: {
+    flexDirection: 'column'
+  },
+  text: {
+    color: colors.red
+  },
+  textWrapper: {
+    position: 'absolute',
+    backgroundColor: 'transparent'
+  },
+  listRowItemNarrow: {
+    width: 35,
+    flexDirection: 'column'
+  },
+  listRowItem:{
+    flexDirection: 'column'
+  },
+  listRow: {
+    flexDirection: 'row',
+    paddingLeft: 20,
+    paddingTop: 7,
+    paddingBottom: 7,
+    borderColor: '#ccc',
+    borderRightWidth: 1,
+    borderLeftWidth: 1
+  },
+  selectedListRow: {
+    backgroundColor: '#eee',
+  },
+  bgImageTCER: {
+    resizeMode: "stretch",
+    height: 495,
+    width: 710,
+  },
+  signature: {
+    flex: 1,
+    borderColor: '#000033',
+    borderWidth: 1,
+  },
+  buttonStyle: {
+   flex: 1, justifyContent: "center", alignItems: "center", height: 50,
+   backgroundColor: "#eeeeee",
+   margin: 10
+  },
+  signatureViewContainer:{
+    position: 'absolute',
+    top: 100,
+    left: 0,
+    height: 310,
+    width: 450,
+    padding: 10,
+    borderRadius: 6,
+  },
+  signatureWarningViewContainer:{
+    position: 'absolute',
+    top: 150,
+    left: 0,
+    height: 130,
+    width: 350,
+    padding: 10,
+    borderRadius: 6,
+  },
+  greyBackground:{
+    position: 'absolute',
+    top: -1000,
+    left: -1000,
+    height: 2200,
+    width: 2200,
+    backgroundColor: colors.backgrounds.shadow,
+  },
+  signImageTCER: {
+    position: 'absolute',
+    top: 420,
+    left: 550,
+    height: 40,
+    width: 120,
+  },
+  dateSignedTCER:{
+    position: 'absolute',
+    top: 448,
+    left: 570,
+    backgroundColor: 'transparent',
+  },
+});
+/* eslint-enable */
 
 class FormView extends React.Component {
   constructor(props){ //icon ans sign form fix it
@@ -37,6 +138,8 @@ class FormView extends React.Component {
     this._onSaveEvent = this._onSaveEvent.bind(this);
     this.toggleSignature = this.toggleSignature.bind(this);
     this.getMasterToolbar = this.getMasterToolbar.bind(this);
+    this.hideSignatureWarning = this.hideSignatureWarning.bind(this);
+    this.hideSignatureView = this.hideSignatureView.bind(this);
   }
 
   componentWillReceiveProps(props){
@@ -71,7 +174,7 @@ class FormView extends React.Component {
       showSignature: false,
     });
     setTimeout(() => {
-      const forms = createForms(this.props.fishingEvents, this.props.formType);
+      const forms = createForms(this.props.fishingEvents);
       this.setState({
         forms
       })
@@ -172,7 +275,10 @@ class FormView extends React.Component {
   }
 
   formReadyToSign(form){
-    return (!!form && (!form.fishingEvents.find(f => !f.eventValid)) && (!form.fishingEvents.find(f => f.signature)));
+    if(!form){
+      return false;
+    }
+    return form.fishingEvents.every(f => f.eventValid && f.productsValid && !f.signature);
   }
 
   renderSignatureAndDate(){
@@ -222,6 +328,90 @@ class FormView extends React.Component {
     );
   }
 
+  renderSignatureBackground() {
+    if(!(this.state.showSignature || this.state.showSignatureWarning)){
+      return null;
+    }
+    return (
+      <View style={[styles.greyBackground]} />
+    );
+  }
+
+  hideSignatureWarning() {
+    this.setState({showSignatureWarning: false, showSignature: true});
+  }
+
+  hideSignatureView() {
+    this.setState({showSignatureWarning: false, showSignature: false});
+  }
+
+  showSignature(){
+    this.setState({showSignature: false, showSignatureWarning: false});
+  }
+
+  renderSignatureWarning() {
+    if(!(this.state.showSignatureWarning)){
+      return null;
+    }
+    const outerStyle = [styles.signatureWarningViewContainer, {backgroundColor: "white"}, shadowStyles.shadowDown];
+    const cancelStyle = {flexDirection: 'row', margin: 0};
+    const continueStyle = {color: colors.orange, textAlign: 'right', fontSize: 18, padding: 0};
+    const contButtonStyle = {flex: 1};
+    const cancelTextStyle = {textAlign: 'left', fontSize: 18, padding: 0};
+    const text = `
+      Once you tap continue, you will no longer be able to edit the shots on this form.
+    `;
+    const textStyle = {
+      textAlign: 'center',
+    };
+    return (
+      <View style={outerStyle}>
+        <View>
+          <Text style={textStyle}>
+            { text }
+          </Text>
+        </View>
+        <View style={cancelStyle}>
+          <TouchableOpacity
+            onPress={ this.hideSignatureView }
+          >
+          <Text style={cancelTextStyle}>
+            Cancel
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={contButtonStyle}
+          onPress={ this.hideSignatureWarning }
+        >
+          <Text style={continueStyle}>
+          Continue
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+    );
+  }
+
+  renderSignatureView() {
+    if(!this.state.showSignature){
+      return null;
+    }
+    const outerStyle = [styles.signatureViewContainer, {backgroundColor: "white"}, shadowStyles.shadowDown];
+    const innerStyle = [{flex:1}, styles.signature];
+    return (
+      <View style={outerStyle}>
+        <SignatureView
+          style={innerStyle}
+          ref="sign"
+          onSaveEvent={this._onSaveEvent}
+          saveImageFileInExtStorage={false}
+          showNativeButtons={false}
+          viewMode={"landscape"}
+        />
+      </View>
+    );
+  }
+
   render() {
     let text = [];
     const form = this.props.viewingForm;
@@ -239,54 +429,25 @@ class FormView extends React.Component {
     );
 
     const master = this.renderFormsListView();
-
-    const signatureView = this.state.showSignature ?
-      (<View style={[styles.signatureViewContainer, {backgroundColor: "white"}, shadowStyles.shadowDown]}>
-        <SignatureView
-          style={[{flex:1}, styles.signature]}
-          ref="sign"
-          onSaveEvent={this._onSaveEvent}
-          saveImageFileInExtStorage={false}
-          showNativeButtons={false}
-          viewMode={"landscape"}/>
-        </View>) : null;
-//<View style={[styles.greyBackground]}></View>
-    const greyBackground = (this.state.showSignature || this.state.showSignatureWarning) ?
-      (<View style={[styles.greyBackground]}></View>):null;
-
-
-    const signatureWarningView = this.state.showSignatureWarning ?
-      (<View style={[styles.signatureWarningViewContainer, {backgroundColor: "white"}, shadowStyles.shadowDown, ]}>
-        <Text style={{color: 'red', textAlign: 'center', fontSize: 17, padding: 10}}>WARNING</Text>
-        <Text>Once you tap continue, you will no longer be able to edit the shots on this form.</Text>
-        <Text>Please note: Signing this form will submit the form directly to FishServe.</Text>
-        <Text>This Form has the same legal status as the paper TCER form.</Text>
-        <View style={{flexDirection: 'row', marginTop: 30, margin: 0}}>
-        <TouchableOpacity key={"Cancel"} style={{ flex: 1}}
-            onPress={() => this.setState({showSignatureWarning: false, showSignature: false})}
-          ><Text style={{textAlign: 'left', fontSize: 18, padding: 10}}>Cancel</Text></TouchableOpacity>
-        <TouchableOpacity key={"Continue"} style={{flex: 1}}
-            onPress={() => this.setState({showSignatureWarning: false, showSignature: true})}
-          ><Text style={{color: colors.orange, textAlign: 'right', fontSize: 18, padding: 10}}>Continue</Text></TouchableOpacity>
-        </View>
-        </View>) : null;
-
-    const renderedForm = renderForm(this.props.formType, text, styles);
+    const renderedForm = renderForm(text, styles);
+    const lotsofstyle = [styles.col, styles.fill, {alignSelf: 'flex-start'},
+                  styles.wrapper, {opacity:this.props.viewingForm ? 1 : 0}]
     const detailView = (
       <ScrollView horizontal>
-        <View style={[styles.col, styles.fill, {alignSelf: 'flex-start'},
-                      styles.wrapper, {opacity:this.props.viewingForm ? 1 : 0}]}>
+        <View
+          style={lotsofstyle}
+        >
           {renderedForm}
-          {this.renderSignatureAndDate()}
-          {greyBackground}
-          {signatureView}
-          {signatureWarningView}
+          { this.renderSignatureAndDate()}
+          {this.renderSignatureBackground()}
+          {this.renderSignatureView()}
+          {this.renderSignatureWarning()}
         </View>
       </ScrollView>
     );
 
     return (
-      <MasterDetail 
+      <MasterDetail
         master={master}
         detail={detailView}
         detailToolbar={detailToolbar}
@@ -304,124 +465,10 @@ const select = (State) => {
       viewingForm: state.forms.viewingForm,
       fishingEvents: state.fishingEvents.events,
       selectedIndex: state.forms.viewingFormIndex,
-      formType: state.me.formType,
-      formModelMeta: ModelUtils.blankModel(getFormModelByTypeCode(state.me.formType)).meta,
+      formModelMeta: meta,
     };
 }
 
-styles = StyleSheet.create({
-  wrapper:{
-   backgroundColor: colors.backgrounds.veryDark,
-   margin: 5,
-   borderRadius: 10,
-  },
-  row: {
-    flexDirection: 'row'
-  },
-  fill: {
-    flex: 1,
-  },
-  col: {
-    flexDirection: 'column'
-  },
-  text: {
-    color: colors.red
-  },
-  textWrapper: {
-    position: 'absolute',
-    backgroundColor: 'transparent'
-  },
-  listRowItemNarrow: {
-    width: 35,
-    flexDirection: 'column'
-  },
-  listRowItem:{
-    flexDirection: 'column'
-  },
-  listRow: {
-    flexDirection: 'row',
-    paddingLeft: 20,
-    paddingTop: 7,
-    paddingBottom: 7,
-    borderColor: '#ccc',
-    borderRightWidth: 1,
-    borderLeftWidth: 1
-  },
-  selectedListRow: {
-    backgroundColor: '#eee',
-  },
-  bgImageLCER:{
-    resizeMode: "stretch",
-    height: 485,
-    width: 700
-  },
-  bgImageTCER: {//change for formType
-    resizeMode: "stretch",
-    height: 495,
-    width: 710,
-  },
-  signature: {
-    flex: 1,
-    borderColor: '#000033',
-    borderWidth: 1,
-  },
-  buttonStyle: {
-   flex: 1, justifyContent: "center", alignItems: "center", height: 50,
-   backgroundColor: "#eeeeee",
-   margin: 10
-  },
-  signatureViewContainer:{
-    position: 'absolute',
-    top: 100,
-    left: 0,
-    height: 310,
-    width: 450,
-    padding: 10,
-    borderRadius: 6,
-  },
-  signatureWarningViewContainer:{
-    position: 'absolute',
-    top: 150,
-    left: 0,
-    height: 210,
-    width: 450,
-    padding: 10,
-    borderRadius: 6,
-  },
-  greyBackground:{
-    position: 'absolute',
-    top: -1000,
-    left: -1000,
-    height: 2200,
-    width: 2200,
-    backgroundColor: colors.backgrounds.shadow,
-  },
-  signImageTCER: {
-    position: 'absolute',
-    top: 420,
-    left: 550,
-    height: 40,
-    width: 120,
-  },
-  dateSignedTCER:{
-    position: 'absolute',
-    top: 448,
-    left: 570,
-    backgroundColor: 'transparent',
-  },
-  signImageLCER: {
-    position: 'absolute',
-    top: 420,
-    left: 550,
-    height: 20,
-    width: 150,
-  },
-  dateSignedLCER:{
-    position: 'absolute',
-    top: 466,
-    left: 570,
-    backgroundColor: 'transparent',
-  }
-});
+
 
 export default connect(select)(FormView);

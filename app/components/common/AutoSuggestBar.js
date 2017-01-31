@@ -31,20 +31,20 @@ const styles = {
     padding: 8
   },
   resultText: {
-    color: colors.white,
+    color: '#000',
   },
   resultTextValue: {
     fontSize: 20,
     fontWeight: '600',
   },
   resultTextSelected: {
-    color: colors.white
+    color: '#000'
   },
   resultBackgroundSelected: {
-    backgroundColor: colors.blue
+    backgroundColor: colors.green
   },
   resultBackground: {
-    backgroundColor: colors.lightBlue
+    backgroundColor: colors.green,
   },
   result: {
     height: 62,
@@ -72,11 +72,11 @@ class AutoSuggestBar extends React.Component {
     return new RegExp("\\b" + term.replace(/[^\w\s]/gi, ''), "gi");
   }
 
-  getSearchResults(term){
+  getSearchResults(term = ""){
     const results = [];
     const regExp = this.regExp(term);
     for(let i = 0; i < this.props.choices.length && results.length < MAX_AUTOSUGGEST_RESULTS; i++){
-      const choice = this.props.choices[i];
+      const choice = this.props.choices[i] || "";
       const toTest = `${choice.value}${choice.description}`;
       if(regExp.test(toTest)){
         results.push(choice);
@@ -85,7 +85,7 @@ class AutoSuggestBar extends React.Component {
     return results;
   }
 
-  searchChoices(term){
+  searchChoices(term = ""){
     this.setState({
       results: this.getSearchResults(term),
     });
@@ -115,32 +115,33 @@ class AutoSuggestBar extends React.Component {
 
   }
 
-  renderResult(result, i){
+  renderResult(resultValue = "", description = "", i){
     const text = this.props.text || "";
-    const isSelected = (result.value.toString().toUpperCase() === text.toUpperCase()) || (this.state.results === 1);
+    const isSelected = (resultValue.toString().toUpperCase() === text.toUpperCase()) || (this.state.results === 1);
     const resultTextStyle = isSelected ? styles.resultTextSelected : styles.resultText;
     const backgroundStyle = isSelected ? styles.resultBackgroundSelected : styles.resultBackground;
-    const onPress = () => this.onResultPress(result.value);
+    const onPress = () => this.onResultPress(resultValue);
     return (
       <TouchableOpacity key={i + "_autoSuggest"}
         onPress={onPress}
       >
         <View style={[styles.result, backgroundStyle]}>
           <Text style={[textStyles.font,resultTextStyle, styles.resultTextValue]}>
-            {result.value}
+            { resultValue }
           </Text>
-          <Text style={[textStyles.font,resultTextStyle]}>
-            {result.description}
+          <Text style={[textStyles.font, resultTextStyle]}>
+            { description }
           </Text>
         </View>
-      </TouchableOpacity>);
+      </TouchableOpacity>
+    );
   }
 
   renderResults(){
-    if(this.props.text.length){
-      return this.state.results.map(this.renderResult);
+    if(this.props.text && this.props.text.length){
+      return this.state.results.map(({ value, description }, i) => this.renderResult(value, description, i));
     }
-    return this.getSearchResults("").map(this.renderResult);
+    return this.getSearchResults().map(({ value, description }, i) => this.renderResult(value, description, i));
   }
 
   render () {
@@ -148,12 +149,16 @@ class AutoSuggestBar extends React.Component {
       return null;
     }
     const style =  {width: this.props.width };
+
+    let keyboardplace = 315;
+    if(this.props.width === 1024){
+      keyboardplace = 400;
+    }
     return (
-      <View style={styles.resultsBarWrapper }>
+      <View style={styles.resultsBarWrapper, { bottom: keyboardplace } }>
         <View style={[styles.resultsBar, style]}>
           {this.renderResults()}
         </View>
-        <KeyboardSpacer />
       </View>
     );
   }
@@ -167,6 +172,7 @@ const select = (State) => {
     choices: props.choices,
     text: props.text,
     inputId:  props.inputId,
+    height: state.view.height,
     eventEmitter: state.uiEvents.eventEmitter,
   };
 }

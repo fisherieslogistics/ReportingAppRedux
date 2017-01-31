@@ -27,9 +27,13 @@ export default {
   alignRight: {
     alignItems: 'flex-end'
   },
+  listViewWrapper: {
+    backgroundColor: 'transparent',
+    flex: 1,
+    padding: 0,
+    alignItems: 'stretch',
+  },
   listView:{
-    marginTop: -20,
-    marginRight: 0,
   },
   detail: {
     marginTop: 5

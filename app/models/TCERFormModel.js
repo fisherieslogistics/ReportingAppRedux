@@ -31,7 +31,7 @@ const meta = {
       bottomDepth: {x: 218, y: 227, resolve: (fe) => isNaN(parseInt(fe.bottomDepth)) ? "" : parseInt(fe.bottomDepth)},
       groundropeDepth: {x: 282, y: 227, resolve: fe => isNaN(parseInt(fe.groundropeDepth)) ? "" : parseInt(fe.groundropeDepth)},
       nonFishProtected: {x: 195, y: 312, resolve: fe => fe.nonFishProtected ? "X" : "           X"},
-      averageSpeed: {x: 173, y: 258, align: 'right', resolve: fe => isNaN(parseFloat(fe.averageSpeed)) ? "" : parseFloat(fe.averageSpeed).toFixed(1)},
+      averageSpeed: {x: 190, y: 258, align: 'right', resolve: fe => isNaN(parseFloat(fe.averageSpeed)) ? "" : parseFloat(fe.averageSpeed).toFixed(1)},
       locationAtStart: {
         multiple: true,
         parts:[
@@ -63,11 +63,8 @@ const meta = {
       products: {
         multiple: true,
         repeating: true,
-        prep: (products) => {
-          //sort highest to lowest take the highest 8 by weight
-          const prods = products.filter(p => p.code !== 'OTH' && p.code !== 'Other Species Weight');
-          return helper.getTotals(prods).sort((c1, c2) => c2.weight - c1.weight).slice(0, 8);
-        },
+        prep: (products) =>
+           helper.getTotals(products).sort((c1, c2) => c2.weight - c1.weight).slice(0, 8),
         parts: [
           {
             id: 'code',
@@ -85,10 +82,7 @@ const meta = {
           },
         ]
       },
-      otherSpeciesWeight: {id: 'products', resolve: (fe) => {
-        const other =  fe.products.find(p => p.code === 'OTH');
-        return other ? other.weight : 0;
-      }, x: 244, y: 572}
+      otherSpeciesWeight: {id: 'products', resolve: (fe) => fe.otherSpeciesWeight, x: 244, y: 572}
     }
   }
 }

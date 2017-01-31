@@ -1,6 +1,5 @@
 "use strict";
 import { combineReducers } from 'redux';
-import AuthReducer from './AuthReducer';
 import FishingEventReducer from './FishingEventReducer';
 import MeReducer from './MeReducer';
 import ViewReducer from './ViewReducer';
@@ -8,35 +7,51 @@ import TripReducer from './TripReducer';
 import FormReducer from './FormReducer';
 import Helper from '../utils/Helper';
 import EventsReducer from './EventsReducer';
-import SyncReducer from './SyncReducer';
-import APIReducer from './APIReducer';
 import MigrationReducer from './MigrationReducer';
 import HistoryReducer from './HistoryReducer';
 import ChatReducer from './ChatReducer';
+import LocationReducer from './LocationReducer';
+import ConnectionReducer from './ConnectionReducer';
 
+import TcpQueue from '../api/TCPQueue';
+let tcpQueue;
 const helper = new Helper();
-const AsyncStorage = require('AsyncStorage');
+
+const actionsNotSending = [
+  'initAutoSuggestBarChoices',
+  'NMEAStringRecieved',
+  'toggleAutoSuggestBar',
+  'changeAutoSuggestBarText',
+  'setViewingForm',
+  '@@redux',
+  '$$redux',
+  'updateDataToSend',
+  'orientation',
+  'updateConnectionStatus',
+  'setTcpDispatch',
+
+];
 
 const reducers = {
-  auth: AuthReducer,
+  chat: ChatReducer,
   fishingEvents: FishingEventReducer,
   me: MeReducer,
   view: ViewReducer,
   trip: TripReducer,
   forms: FormReducer,
   uiEvents: EventsReducer,
-  sync: SyncReducer,
-  api: APIReducer,
   migrations: MigrationReducer,
+  location: LocationReducer,
   history: HistoryReducer,
-  chat: ChatReducer,
+  connection: ConnectionReducer,
 }
 
 const MainReducer = combineReducers(reducers);
 
 const mutateState = (state, action) => {
   const newState = MainReducer(state, action);
-  if(action.type == 'loadSavedState'){
+
+  if(action.type === 'loadSavedState'){
     const loadedState = MainReducer(undefined, {type: 'init'});
     const savedState = action.savedState
     if(!savedState){
@@ -47,9 +62,27 @@ const mutateState = (state, action) => {
         loadedState[k] = savedState[k];
       }
     });
+    if(!tcpQueue){
+      tcpQueue = new TcpQueue({ ip: loadedState.me.user.hostIp, 'port': loadedState.me.user.hostPort });
+    }
     return MainReducer(loadedState, action);
   }
+
   helper.saveToLocalStorage(newState, action.type);
+  if(tcpQueue){
+    if(action.type === 'setTcpDispatch'){
+      tcpQueue.setDispatch(action.payload);
+    }
+
+    if(tcpQueue.ready && action.type === 'updateUser' && ['hostIp', 'hostPort'].includes(action.inputId)){
+      tcpQueue.setClientEndpoint(Object.assign({ip: newState.me.user.hostIp, port: newState.me.user.hostPort }, action.change));
+    }
+
+    if(tcpQueue.ready && actionsNotSending.every((str) => action.type.indexOf(str) === -1)) {
+      tcpQueue.addToQueue(action.type, action);
+    }
+  }
+
   return newState;
 }
 

@@ -3,7 +3,7 @@ const valid = Validator.valid;
 
 const model = [
   {
-    label: 'OtherSpeciesWeight', id: 'otherSpeciesWeight', valid: valid.anyValue, type: 'number', defaultValue: "0", unit: 'kg',
+    label: 'OtherSpeciesWeight', id: 'otherSpeciesWeight', valid: valid.anyValue, type: 'number', unit: 'kg',
     display: { type: 'single' },
   },
 ];

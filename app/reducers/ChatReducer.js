@@ -11,7 +11,7 @@ const initialState = {
       messages: [
         {
           _id: "my_id4354",
-          text: "I am Shavaun please get my nets ready",
+          text: "Hey Rick hope you liek the chat!",
           createdAt: new Date(),
           image: null,
           user: { name: 'Shavaun', _id: 'shavaun@fisherylogistics.com', avatar: null },
@@ -83,11 +83,11 @@ const update = (obj, change) => Object.assign({}, obj, change)
 const ChatReducer = (state = initialState, action) => {
   switch(action.type) {
     case 'newMessage':
-      const threadsAppend = [...state.messageThreads];
-      threadsAppend.find(
-        mt => mt.id === action.messageThread_id)
-          .messages.unshift(action.message);
-      return update(state, { messageThreads: threadsAppend });
+      const thread = Object.assign({}, state.messageThreads.find(
+        mt => mt.id === action.messageThread_id));
+      thread.messages = [action.message, ...thread.messages];
+      const threads = state.messageThreads.filter(mt => mt.id !== action.messageThread_id);
+      return update(state, { messageThreads: [...threads, thread] });
     case 'tagSelected':
       return update(state, { tagSelected: action.payload });
     case 'addConversationSelected':

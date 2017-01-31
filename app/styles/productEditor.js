@@ -16,8 +16,12 @@ export default {
   },
   deleteButtonWrapper: {
     position: 'absolute',
-    right: 10,
-    top: 14,
+    height: 50,
+    width: 50,
+    paddingTop: 15,
+    paddingLeft: 25,
+    right: 0,
+    top: 0,
   },
   rowSection: {
     flex: 0.24,
