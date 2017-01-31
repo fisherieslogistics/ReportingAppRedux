@@ -96,8 +96,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 150,
     left: 0,
-    height: 250,
-    width: 450,
+    height: 130,
+    width: 350,
     padding: 10,
     borderRadius: 6,
   },
@@ -353,37 +353,33 @@ class FormView extends React.Component {
     if(!(this.state.showSignatureWarning)){
       return null;
     }
-    const warningSty = {color: 'red', textAlign: 'center', fontSize: 17, padding: 10};
     const outerStyle = [styles.signatureWarningViewContainer, {backgroundColor: "white"}, shadowStyles.shadowDown];
-    const cancelStyle = {flexDirection: 'row', marginTop: 30, margin: 0};
-    const continueStyle = {color: colors.orange, textAlign: 'right', fontSize: 18, padding: 10};
+    const cancelStyle = {flexDirection: 'row', margin: 0};
+    const continueStyle = {color: colors.orange, textAlign: 'right', fontSize: 18, padding: 0};
     const contButtonStyle = {flex: 1};
-    const cancelTextStyle = {textAlign: 'left', fontSize: 18, padding: 10};
+    const cancelTextStyle = {textAlign: 'left', fontSize: 18, padding: 0};
     const text = `
       Once you tap continue, you will no longer be able to edit the shots on this form.
-      Please note: Signing this form will submit the form directly to FishServe.
-      This Form has the same legal status as the paper TCER form.
     `;
+    const textStyle = {
+      textAlign: 'center',
+    };
     return (
       <View style={outerStyle}>
         <View>
-          <Text style={warningSty}>
-            WARNING
-          </Text>
-          <Text>
+          <Text style={textStyle}>
             { text }
           </Text>
         </View>
-      <View style={cancelStyle}>
-        <TouchableOpacity key={"Cancel"} style={{ flex: 1}}
+        <View style={cancelStyle}>
+          <TouchableOpacity
             onPress={ this.hideSignatureView }
-        >
+          >
           <Text style={cancelTextStyle}>
             Cancel
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          key={"Continue"}
           style={contButtonStyle}
           onPress={ this.hideSignatureWarning }
         >
