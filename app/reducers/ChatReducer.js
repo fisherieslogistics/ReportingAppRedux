@@ -2,7 +2,7 @@
 
 const initialState = {
   tagSelected: 'all',
-  addContactSelected: false,
+  addConversationSelected: false,
   messageThreads: [
     {
       id: 'harry',
@@ -81,20 +81,26 @@ const initialState = {
 const update = (obj, change) => Object.assign({}, obj, change)
 
 const ChatReducer = (state = initialState, action) => {
-  // return initialState;
   switch(action.type) {
     case 'newMessage':
-      const threads = [...state.messageThreads];
-      threads.find(
+      const threadsAppend = [...state.messageThreads];
+      threadsAppend.find(
         mt => mt.id === action.messageThread_id)
           .messages.unshift(action.message);
-      return update(state, { messageThreads: threads });
+      return update(state, { messageThreads: threadsAppend });
     case 'tagSelected':
-      return update(state, { tagSelected: action.tag });
-    case 'addContactSelected':
-      console.log(action.current, !action.current);
-      const toggle = !action.current;
-      return update(state, { addContactSelected: toggle});
+      return update(state, { tagSelected: action.payload });
+    case 'addConversationSelected':
+      return update(state, { addConversationSelected: action.payload });
+    case 'createConversation':
+      const threadsAdd = [...state.messageThreads];
+      threadsAdd.push(action.payload);
+      return update(state, { messageThreads: threadsAdd });
+    case 'removeConversation':
+      const threadsRemove = [...state.messageThreads];
+      const index = threadsRemove.findIndex((thread) => thread.id === action.threadId);
+      threadsRemove.splice(index, 1);
+      return update(state, { messageThreads: threadsRemove });
   }
   return state;
 };

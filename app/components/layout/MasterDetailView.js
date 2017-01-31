@@ -22,7 +22,7 @@ const viewStyles = {
   paddingTop: 5
 };
 
-const styles = {
+export const styles = {
   outerStyle: {
     padding: 0,
     margin: 0,
@@ -34,7 +34,7 @@ const styles = {
     padding: 0,
     margin: 0,
     flexDirection: 'row',
-    height: 150,
+    flex: 1
   },
   midStyle: {
     alignItems: 'flex-start',

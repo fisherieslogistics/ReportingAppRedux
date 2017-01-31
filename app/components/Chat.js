@@ -2,10 +2,7 @@
 import {
   View,
   Text,
-  TextInput,
-  Switch,
 } from 'react-native';
-
 import React from 'react';
 import {connect} from 'react-redux';
 import { GiftedChat } from 'react-native-gifted-chat';
@@ -14,31 +11,52 @@ import Icon8 from '../components/common/Icon8';
 import { colors, iconStyles, listViewStyles } from '../styles/styles';
 import { MasterToolbar, DetailToolbar } from './layout/Toolbar';
 import { BigButton, IconButton } from './common/Buttons';
-// import UserActions from '../actions/UserActions';
+import ChatAddContact from './ChatAddContact';
 import ChatActions from '../actions/ChatActions';
 
 const chatActions = new ChatActions();
-// const userActions = new UserActions();
-const chatWrapperStyle = { flex: 1, alignItems: 'stretch', paddingBottom: 50 };
-const viewStyles = {
-  marginLeft: 2,
-  alignItems: 'flex-start',
-  paddingTop: 5
-};
-const listTextStyle = {
-  fontSize: 18,
-};
 
-const textInputStyle = {
-  width: 500,
-  marginTop: 10,
-  height: 30,
-  borderColor: colors.white,
-  borderWidth: 1,
-  color: colors.white,
+const styles = {
+  chatWrapperStyle: {
+    flex: 1,
+    alignItems: 'stretch',
+    paddingBottom: 50
+  },
+  viewStyles: {
+    flexDirection: 'row',
+    marginLeft: 2,
+    alignItems: 'flex-start',
+    paddingTop: 5,
+  },
+  listTextStyle: {
+    fontSize: 18,
+  },
+  textInputStyle: {
+    width: 500,
+    marginTop: 10,
+    height: 30,
+    borderColor: colors.white,
+    borderWidth: 1,
+    color: colors.white,
+  },
+  detailButton: {
+    height: 70,
+    width: 70,
+    padding: 15,
+  },
+  addButton: {
+    backgroundColor: colors.pastelGreen,
+  },
+  exitButton: {
+    backgroundColor: colors.red,
+  },
+  flex1: {
+    flex: 1,
+  },
+  flex4: {
+    flex: 4,
+  },
 };
-
-const tags = ['all', 'shoreside', 'vessel', 'other', 'archived'];
 
 class Chat extends MasterDetailView {
   constructor (props){
@@ -46,38 +64,22 @@ class Chat extends MasterDetailView {
 
     const masterChoices = props.tagSelected !== 'all' ? props.messageThreads.filter(x =>
       x.tags.includes(props.tagSelected)) : props.messageThreads;
-
     this.state = {
       masterChoices,
       tagSelected: props.tagSelected,
-      addConversationSelected: true,
+      addConversationSelected: props.addConversationSelected,
+      showModal: false,
     };
     this.onSend = this.onSend.bind(this);
     this.onMasterButtonPress = this.onMasterButtonPress.bind(this);
     this.onDetailButtonPress = this.onDetailButtonPress.bind(this);
-  }
-
-  getMasterDescription(choice) {
-    const textColor = {
-      color: this.isDetailSelected(choice) ? colors.white : colors.black,
-    };
-    return (
-      <View
-        style={ [listViewStyles.listRowItem, viewStyles] }
-        key={`${choice.id}___Chat_Page` }>
-        <Text style={ [listTextStyle, textColor] }>
-          { choice.name }
-        </Text>
-      </View>
-    );
-  }
-
-  isDetailSelected(choice) {
-    return this.state.selectedDetail && (choice.id === this.state.selectedDetail.id);
+    this.createConversation = this.createConversation.bind(this);
+    this.onDeleteButtonPress = this.onDeleteButtonPress.bind(this);
+    this.onConfirmDelete = this.onConfirmDelete.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('Props received');
+    console.log(nextProps.messageThreads);
     this.setState({
       masterChoices: nextProps.tagSelected !== 'all' ? nextProps.messageThreads.filter(x =>
         x.tags.includes(nextProps.tagSelected)) : nextProps.messageThreads,
@@ -87,22 +89,31 @@ class Chat extends MasterDetailView {
     });
   }
 
-  onMasterButtonPress() {
-    let index = tags.indexOf(this.state.tagSelected);
-    if (index + 1 > (tags.length - 1)) {
-      index = 0;
-    } else {
-      index++;
-    }
-    const nextTag = tags[index];
-    this.props.dispatch(
-      chatActions.tagSelected(nextTag));
-  }
-
-  onDetailButtonPress() {
-    console.log('Button pressed');
-    console.log(this.props.addContactSelected);
-    this.props.dispatch(chatActions.addConversationSelected(this.props.addConversationSelected));
+  getMasterDescription(choice) {
+    const textColor = {
+      color: this.isDetailSelected(choice) ? colors.white : colors.black,
+    };
+    const deleteButton = this.state.addConversationSelected ?
+      (<View style={styles.flex1}>
+        <IconButton
+          icon='delete'
+          size={25}
+          onPress={() => this.onDeleteButtonPress(choice.id)}
+          color={colors.red}
+        />
+      </View>) : null;
+    return (
+      <View
+        style={ [listViewStyles.listRowItem, styles.viewStyles] }
+        key={`${choice.id}___Chat_Page` }>
+        <View style={styles.flex4}>
+          <Text style={ [styles.listTextStyle, textColor] }>
+            { choice.name }
+          </Text>
+        </View>
+        { deleteButton }
+      </View>
+    );
   }
 
   renderMasterToolbar() {
@@ -145,21 +156,73 @@ class Chat extends MasterDetailView {
     );
   }
 
+  onMasterButtonPress() {
+    this.props.dispatch(
+      chatActions.tagSelected(this.state.tagSelected));
+  }
+
+  renderDetailView() {
+    if(this.state.addConversationSelected) {
+      return (
+        <ChatAddContact
+          createConversation={this.createConversation}
+          deleteModal={this.state.showModal}
+          closeModal={() => this.setState({showModal: false})}
+          confirmDelete={this.onConfirmDelete}
+        />
+      );
+    }
+    if(this.state.selectedDetail){
+      return this.renderChatConversation();
+    }
+    return (<View/>);
+  }
+
+  renderDetailToolbar(){
+    let icon = 'plus-math';
+    let style = styles.addButton;
+    if(this.state.addConversationSelected) {
+      icon = 'delete';
+      style = styles.exitButton;
+    }
+    const button = (
+      <IconButton
+        icon={icon}
+        size={40}
+        onPress={ this.onDetailButtonPress }
+        color={ colors.white }
+        style={ [styles.detailButton, style] }
+      />
+    );
+    return (
+      <DetailToolbar
+        right={ button }
+      />
+    );
+  }
+
+  isDetailSelected(choice) {
+    return this.state.selectedDetail && (choice.id === this.state.selectedDetail.id);
+  }
+
+  onDetailButtonPress() {
+    this.props.dispatch(
+      chatActions.addConversationSelected(!this.state.addConversationSelected));
+  }
+
   onSend(messages = []) {
     this.props.dispatch(
       chatActions.newMessage(messages[0], this.state.selectedDetail.id));
-    this.forceUpdate();
   }
 
   renderChatConversation() {
     const messages = this.state.selectedDetail.messages;
     return (
-      <View style={chatWrapperStyle}>
+      <View style={styles.chatWrapperStyle}>
         <GiftedChat
           messages={messages}
           onSend={this.onSend}
           user={{
-            //id: this.props.user.organisationId,
             _id: 'shavaun@fisherylogistics.com',
           }}
         />
@@ -167,80 +230,24 @@ class Chat extends MasterDetailView {
     );
   }
 
-  renderAddContactView() {
-    return (
-      <View>
-        <View style={{ margin: 20 }}>
-          <Text style={{ color: colors.white, fontSize: 40 }}>Add a New Contact</Text>
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ color: colors.white }}>Name</Text>
-            <TextInput
-              style={textInputStyle}
-              autoCapitalize={"none"}
-              autoCorrect={false}
-              onChangeText={this.handleNameChange}
-            />
-          </View>
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ color: colors.white, }}>Email address</Text>
-            <TextInput
-              style={textInputStyle}
-              autoCapitalize={"none"}
-              autoCorrect={false}
-              onChangeText={this.handleEmailChange}
-            />
-          </View>
-          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
-            <Text style={{ color: colors.white }}>Tag as vessel</Text><Switch/>
-            <Text style={{ color: colors.white }}>Tag as shoreside</Text><Switch/>
-            <Text style={{ color: colors.white }}>Tag as other</Text><Switch/>
-          </View>
-          <BigButton
-            text="Add"
-            backgroundColor={colors.blue}
-            textColor={colors.white}
-            onPress={ null }
-            style={{ width: 200, height: 60, marginTop: 20 }}
-          />
-        </View>
-      </View>
-    );
+  createConversation(messageThread) {
+    this.props.dispatch(
+      chatActions.createConversation(messageThread));
+    this.props.dispatch(
+      chatActions.addConversationSelected(!this.state.addConversationSelected));
   }
 
-  renderDetailView() {
-    // if(this.state.addContactSelected) {
-    //   return this.renderAddContactView();
-    // }
-    // if(!this.state.selectedDetail){
-    //   return (<View/>);
-    // }
-    //return this.renderChatConversation();
-    return this.renderAddContactView();
+  onDeleteButtonPress(id) {
+    this.setState({
+      showModal: true,
+      id,
+    });
   }
 
-  renderDetailToolbar(){
-    const button = (
-      <IconButton
-        icon='plus-math'
-        onPress={ this.onDetailButtonPress }
-        color={ colors.lightestGray }
-        style={{
-          backgroundColor: colors.green,
-          borderRadius: 5,
-          borderWidth: 1,
-          borderColor: colors.green,
-          marginTop: 20,
-          marginRight: 20,
-        }}
-      />
-    );
-    return (
-      <DetailToolbar
-        right={ button }
-      />
-  );
+  onConfirmDelete() {
+    this.setState({ showModal: false });
+    this.props.dispatch(chatActions.removeConversation(this.state.id));
   }
-
 }
 
 const select = (State) => {
@@ -249,6 +256,7 @@ const select = (State) => {
     user: state.me.user,
     messageThreads: state.chat.messageThreads,
     tagSelected: state.chat.tagSelected,
+    addConversationSelected: state.chat.addConversationSelected,
   };
 }
 

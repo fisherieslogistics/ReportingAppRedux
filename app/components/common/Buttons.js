@@ -60,16 +60,17 @@ const BigButton = ({onPress, backgroundColor, text, textColor, style}) => {
 const Button = ({onPress, content, disabled }) => (
     <TouchableOpacity
       activeOpacity={ getActiveOpacity(disabled) }
-      onPress={ disabled ? null : onPress }>
+      onPress={ disabled ? null : onPress }
+    >
         { content }
     </TouchableOpacity>
   )
 
-const IconButton = ({icon, onPress, style, disabled, color}) => {
+const IconButton = ({icon, onPress, style, disabled, color, size}) => {
   const content = (
     <Icon8
       name={icon}
-      size={30}
+      size={size || 30}
       color={color || 'red'}
       style={style}
     />
