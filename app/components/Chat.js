@@ -14,11 +14,9 @@ import Icon8 from '../components/common/Icon8';
 import { colors, iconStyles, listViewStyles } from '../styles/styles';
 import { MasterToolbar, DetailToolbar } from './layout/Toolbar';
 import { BigButton, IconButton } from './common/Buttons';
-// import UserActions from '../actions/UserActions';
 import ChatActions from '../actions/ChatActions';
 
 const chatActions = new ChatActions();
-// const userActions = new UserActions();
 const chatWrapperStyle = { flex: 1, alignItems: 'stretch', paddingBottom: 50 };
 const viewStyles = {
   marginLeft: 2,
