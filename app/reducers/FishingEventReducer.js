@@ -31,7 +31,7 @@ export default (state = initialState, action) => {
           return newFishingEvent(state, action.location, action.wingSpread, action.headlineHeight);
         case 'endFishingEvent':
           return endFishingEvent(state, action.location, action.id);
-        case 'cancelFishingEvent':
+        case 'deleteFishingEvent':
           return update(state, {events: [...state.events.slice(0, state.events.length - 1)]});
         case 'setFishingEventValue':
           const change = {};
