@@ -33,10 +33,10 @@ class FishingEventActions {
       });
     }
   }
-  cancelFishingEvent(id) {
+  deleteFishingEvent(id) {
     return(dispatch) => {
       dispatch({
-          type: 'cancelFishingEvent',
+          type: 'deleteFishingEvent',
           timestamp: moment()
       });
       dispatch(this.setViewingFishingEvent(id -1));
