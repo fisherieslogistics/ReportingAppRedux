@@ -145,7 +145,7 @@ class Fishing extends MasterDetailView {
         {text: 'Cancel', onPress: () => null, style: 'cancel'},
         {text: 'Delete', onPress: () => {
           this.props.dispatch(fishingEventActions.setViewingFishingEvent(null));
-          this.props.dispatch(fishingEventActions.cancelFishingEvent(this.props.lastEvent.id));
+          this.props.dispatch(fishingEventActions.deleteFishingEvent(this.props.lastEvent.id));
         }}
       ]
     );
@@ -261,20 +261,18 @@ class Fishing extends MasterDetailView {
   renderProductButtons() {
     const buttonWrapper = { alignItems: 'stretch', flex: 1 };
     const catchesOpen = this.state.selectedDetail === 'catches';
-    if(!catchesOpen){
+    if(!(this.props.viewingEvent && catchesOpen && this.props.viewingEvent.datetimeAtEnd)){
       return (
         <View style={[styles.row, styles.fill]} />
       );
     }
-    const haveDeleted = !!this.props.deletedProducts.length;
-    const canUndo = (catchesOpen && haveDeleted);
-    const undo = canUndo ? (
+    const undo = this.props.deletedProducts.length ? (
       <LongButton
         bgColor={ colors.red }
         text={ "Undo" }
         onPress={ this.undoDeleteProduct }
-        disabled={ !canUndo }
-        active={ canUndo }
+        disabled={ false }
+        active
       />
     ) : null;
     return (
@@ -346,7 +344,8 @@ class Fishing extends MasterDetailView {
   }
 
   renderDetailToolbar(){
-    const deleteActive = this.props.lastEvent && (!this.props.lastEvent.datetimeAtEnd);
+    const deleteActive = (this.props.lastEvent && this.props.viewingEvent) &&
+    (this.props.viewingEvent.id === this.props.lastEvent.id);
     const position = helper.getLatestPosition(this.props.location);
     const posDisplay = (
       <PositionDisplay
