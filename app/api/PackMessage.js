@@ -1,23 +1,34 @@
 import msgpack from 'msgpack-lite';
 import moment from 'moment';
 
-const hashCode = function(str) {
-  let hash = 0, i, chr, len;
-  if (str.length === 0) return hash;
-  for (i = 0, len = str.length; i < len; i++) {
-    chr   = str.charCodeAt(i);
-    hash  = ((hash << 5) - hash) + chr;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return hash;
-};
+const m_hex = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+
+export function toHexString(v: number): string {
+    const msn = (v >> 4) & 0x0f;
+    const lsn = (v >> 0) & 0x0f;
+    return m_hex[msn] + m_hex[lsn];
+}
+
+function computeNmeaChecksum(sentenceWithoutChecksum) {
+    // init to first character value after the $
+    let checksum = sentenceWithoutChecksum.charCodeAt(1);
+    // process rest of characters, zero delimited
+    for (let i = 2; i < sentenceWithoutChecksum.length; i += 1) {
+        checksum ^= sentenceWithoutChecksum.charCodeAt(i);
+    }
+    // checksum is between 0x00 and 0xff
+    checksum &= 0xff;
+    return checksum;
+}
+
 
 export default function generateSetances(type, input, payloadLength = 80) {
 
   function generateString(numberOfFragments, fragmentIndex, timestamp, fragment) {
-    const data = `$FLL,${type},${parseInt(numberOfFragments)},${parseInt(fragmentIndex)},${fragment}`;
-    //const hash = hashCode(data);
-    return `${data}*1`;
+    const nmeaString = `$FLL,${type},${parseInt(numberOfFragments)},${parseInt(fragmentIndex)},${fragment}`;
+    const checksum = toHexString(computeNmeaChecksum(nmeaString));
+    console.log(checksum);
+    return `${nmeaString}*${checksum}`;
   }
 
   const buffer = msgpack.encode(input);
