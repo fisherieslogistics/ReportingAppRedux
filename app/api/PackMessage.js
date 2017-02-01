@@ -27,7 +27,6 @@ export default function generateSetances(type, input, payloadLength = 80) {
   function generateString(numberOfFragments, fragmentIndex, timestamp, fragment) {
     const nmeaString = `$FLL,${type},${parseInt(numberOfFragments)},${parseInt(fragmentIndex)},${fragment}`;
     const checksum = toHexString(computeNmeaChecksum(nmeaString));
-    console.log(checksum);
     return `${nmeaString}*${checksum}`;
   }
 
