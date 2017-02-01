@@ -86,7 +86,7 @@ class ReportingApp extends Component {
         this.setupForms();
         setTimeout(() => this.setSelectedTab('forms'), 150);
       }},
-      //chat: { render: this.renderChat, icon: 'user', selectedIcon: 'user-filled', onPress: () => this.setSelectedTab('chat') },
+      chat: { render: this.renderChat, icon: 'user', selectedIcon: 'user-filled', onPress: () => this.setSelectedTab('chat') },
     };
   }
 

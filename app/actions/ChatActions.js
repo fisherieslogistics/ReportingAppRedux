@@ -5,8 +5,10 @@ class ChatActions {
   newMessage(message, messageThread_id){
     return {
       type: 'newMessage',
-      message,
-      messageThread_id,
+      payload: {
+        message,
+        messageThread_id,
+      },
     }
   }
 

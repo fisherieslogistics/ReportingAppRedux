@@ -64,6 +64,7 @@ class Chat extends MasterDetailView {
 
     const masterChoices = props.tagSelected !== 'all' ? props.messageThreads.filter(x =>
       x.tags.includes(props.tagSelected)) : props.messageThreads;
+
     this.state = {
       masterChoices,
       tagSelected: props.tagSelected,
@@ -147,6 +148,7 @@ class Chat extends MasterDetailView {
       backgroundStyle = { backgroundColor: colors.white, color: colors.blue };
     }
     let icon = 'user';
+    console.log(choice);
     if (choice.tags.includes('vessel')) {
       icon = 'fishing-boat';
     }
@@ -221,17 +223,6 @@ class Chat extends MasterDetailView {
 
   renderChatConversation() {
     const messages = this.state.selectedDetail.messages;
-    const chat = (
-      <GiftedChat
-        messages={messages}
-        onSend={this.onSend}
-        user={{
-          //id: this.props.user.organisationId,
-          _id: 'shavaun',
-          id: 'shavaun'
-        }}
-      />
-    );
     return (
       <View style={styles.chatWrapperStyle}>
         <GiftedChat
@@ -240,6 +231,7 @@ class Chat extends MasterDetailView {
           user={{
             _id: 'shavaun@fisherylogistics.com',
           }}
+          bottomOffset={50}
         />
       </View>
     );
